@@ -5,6 +5,7 @@ import "../../public/assets/css/community.css";
 import "./production-ui.css";
 import "./dashboard-blue.css";
 import "./professional-ui.css";
+import "./header-modern.css";
 import { browserRuntimeConfig } from "@/lib/runtime-config";
 import { site } from "@/lib/site-content";
 import BlobUploadBridge from "./blob-upload-bridge";
