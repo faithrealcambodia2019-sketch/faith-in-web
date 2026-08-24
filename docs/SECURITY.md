@@ -13,7 +13,7 @@
 - Other signed-in members can read the email-free `publicProfiles/{uid}` projection used by the member directory.
 - Profile creates and updates use field allowlists; unknown or privileged fields are denied.
 - UID, email, status, and creation metadata cannot be changed by client updates.
-- New uploads require a valid Firebase ID token, are stored under the verified UID, and are checked by file signature as well as declared type and a 25 MB limit.
+- New uploads require a valid Firebase ID token, receive a short-lived UID-scoped Blob token, and are restricted by declared content type and a 50 MB limit. Current clients upload directly to Blob so files larger than Vercel's Function request-body limit work reliably; the legacy server fallback additionally checks file signatures.
 - Vercel Blob uploads currently use public, unguessable URLs. Post visibility protects the Firestore record, not a Blob URL that has already been shared. Moving sensitive media to a private Blob store with an authenticated download proxy is recommended before treating uploads as confidential.
 - Firebase Storage legacy paths remain readable only by authenticated members.
 - All unspecified Firestore and Storage access is denied.
