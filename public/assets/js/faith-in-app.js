@@ -5771,7 +5771,8 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
         const savedHeading = state.savedPostsOnly ? `<section class="cv-saved-feed-heading"><div><span>Private collection</span><h1>Saved posts</h1><p>Only you can see the posts you save.</p></div><button type="button" onclick="setTab('home')"><i data-lucide="arrow-left"></i><span>Back to feed</span></button></section>` : '';
         let html = `
             <div class="cv-feed-page cv-feed-page-linkedin cv-react-feed-page max-w-7xl mx-auto w-full px-4 md:px-6 py-8 animate-fade-in pb-32">
-                <div class="cv-feed-layout cv-feed-layout--focus">
+                <div class="cv-feed-layout cv-feed-layout--three-col">
+                    ${cvRenderFeedLeftSidebar()}
                     <main class="cv-feed-main-column">
                         ${state.savedPostsOnly ? savedHeading : cvRenderStoriesCarousel() + cvRenderFeedComposer()}
                         ${desktopSortToolbar}
@@ -5892,7 +5893,7 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
                 `;
             });
         }
-        html += `</div></main></div>${cvRenderBlessingStoryModal()}</div>`;
+        html += `</div></main>${cvRenderFeedRightSidebar()}</div>${cvRenderBlessingStoryModal()}</div>`;
         return html;
     }
 
