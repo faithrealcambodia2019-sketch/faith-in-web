@@ -27,6 +27,7 @@
         favorites: [],
         settings: ((cv_ajax.auth && cv_ajax.auth.current_user && cv_ajax.auth.current_user.settings) || { theme: 'light', lang: 'English', notifications: true }),
         feedFilter: 'All',
+        feedSort: 'Top',
         exploreSubTab: 'resources',
         exploreSearch: '',
         exploreCat: 'All',
@@ -71,6 +72,7 @@
         postMediaMode: 'none',
         postMediaReadyPercent: 0,
         postMediaReadyStatus: '',
+        postMediaUploadError: '',
         postMediaUploadInProgress: false,
         postMediaServerReady: false,
         stagedPostMedia: [],
@@ -141,7 +143,7 @@
         publishStatus: '',
         publishTimer: null,
         followLoadingUserId: null,
-        bibleStudio: { activeTool: 5, book: 'John', chapter: '1', version: 'KHMER_OLD_1954', version2: 'KJV', verses: [], verses2: [], dictionaryQuery: '', dictionaryResult: null, quotesType: 'General', quotes: [], media: [], typingRef: 'Psalm 23:1-3', typingInput: '', typingStart: 0, typingFinished: false, sermonNotes: { Doctrine: '', Encouragement: '', Application: '' }, stats: { streak: 5, weeks: 17 }, socialText: 'ព្រះអម្ចាស់ ទ្រង់ជាអ្នកគង្វាលខ្ញុំ ខ្ញុំនឹងមិនខ្វះខាតអ្វីឡើយ។\n(The Lord is my shepherd; I shall not want.)', socialRef: 'ទំនុកដំកើង ២៣:១', socialFontSize: 44, socialFont: 'Koh Santepheap', socialBold: true, socialItalic: false, socialUnderline: false, socialStrike: false, socialUppercase: false, socialLineHeight: 128, socialAlign: 'center', socialColor: '#ffffff', socialBg: 0, socialCustomBg: '', socialAiPrompt: '', socialOverlay: 38, loading: false, error: '' },
+        bibleStudio: { activeTool: 5, book: 'John', chapter: '1', version: 'KJV', version2: 'WEB', verses: [], verses2: [], dictionaryQuery: '', dictionaryResult: null, quotesType: 'General', quotes: [], media: [], typingRef: 'Psalm 23:1-3', typingInput: '', typingStart: 0, typingFinished: false, sermonNotes: { Doctrine: '', Encouragement: '', Application: '' }, stats: { streak: 5, weeks: 17 }, socialText: 'ព្រះអម្ចាស់ ទ្រង់ជាអ្នកគង្វាលខ្ញុំ ខ្ញុំនឹងមិនខ្វះខាតអ្វីឡើយ។\n(The Lord is my shepherd; I shall not want.)', socialRef: 'ទំនុកដំកើង ២៣:១', socialFontSize: 44, socialFont: 'Koh Santepheap', socialBold: true, socialItalic: false, socialUnderline: false, socialStrike: false, socialUppercase: false, socialLineHeight: 128, socialAlign: 'center', socialColor: '#ffffff', socialBg: 0, socialCustomBg: '', socialAiPrompt: '', socialOverlay: 38, loading: false, error: '' },
         modal: { isOpen: false, type: null, data: null }
     };
 
@@ -2126,8 +2128,16 @@ window.cvOpenRegisterLink = (event) => {
     function loadPrayers() {
         ajaxRequest('cv_get_prayers').done(function(response) {
             if (response.success) {
-                setState({ prayers: response.data });
+                const payload = response.data;
+                const items = Array.isArray(payload) ? payload : (payload && Array.isArray(payload.items) ? payload.items : []);
+                setState({ prayers: items });
+            } else {
+                setState({ prayers: Array.isArray(state.prayers) ? state.prayers : [] });
+                window.showToast((response && response.data) ? String(response.data) : 'Could not load prayer requests.', 'error');
             }
+        }).fail(function(xhr) {
+            setState({ prayers: Array.isArray(state.prayers) ? state.prayers : [] });
+            window.showToast((xhr && xhr.responseJSON && xhr.responseJSON.data) ? xhr.responseJSON.data : 'Could not load prayer requests.', 'error');
         });
     }
 
@@ -2206,6 +2216,7 @@ window.cvOpenRegisterLink = (event) => {
     window.goBack = () => state.selectedResource ? setState({ selectedResource: null }) : setState({ tab: 'home' });
     window.toggleNotifs = () => setState({ showNotifs: !state.showNotifs });
     window.setFeedFilter = (feedFilter) => setState({ feedFilter });
+    window.cvToggleFeedSort = () => setState({ feedSort: state.feedSort === 'Recent' ? 'Top' : 'Recent' });
     window.setExploreCat = (exploreCat) => { setState({ exploreCat }); window.clearTimeout(window.cvExploreReloadTimer); window.cvExploreReloadTimer = window.setTimeout(loadResources, 150); };
     window.setExploreSort = () => setState({ exploreSort: state.exploreSort === 'Popular' ? 'Newest' : 'Popular' });
     window.handleExploreSearch = (val) => { setState({ exploreSearch: val }); window.clearTimeout(window.cvExploreReloadTimer); window.cvExploreReloadTimer = window.setTimeout(loadResources, 250); };
@@ -3547,7 +3558,7 @@ window.signOut = () => {
                         postTitle: '', postExcerpt: '', postContent: '', postType: 'Text', createIntent: 'post', blessingBgColor: 'blue',
                         selectedBlessingMusicFile: null, selectedBlessingMusicName: '', selectedBlessingPresetMusic: '', blessingMusicPreviewUrl: '',
                         postAuthorName: '', postAuthorRole: '', postAuthorChurch: '', postAuthorMinistry: '',
-                        selectedPostCoverName: '', selectedPostCoverFile: null, postCoverPreviewUrl: '', selectedPostMediaFiles: [], postMediaPreviewUrls: [], postMediaMode: 'none', postMediaReadyPercent: 0, postMediaReadyStatus: '',
+                        selectedPostCoverName: '', selectedPostCoverFile: null, postCoverPreviewUrl: '', selectedPostMediaFiles: [], postMediaPreviewUrls: [], postMediaMode: 'none', postMediaReadyPercent: 0, postMediaReadyStatus: '', postMediaUploadError: '',
         postMediaUploadInProgress: false,
         postMediaServerReady: false,
         stagedPostMedia: [], postAllowDownload: true, postVisibility: 'public', tab: 'home'
@@ -3830,6 +3841,7 @@ window.signOut = () => {
             postMediaServerReady: false,
             postMediaReadyPercent: 0,
             postMediaReadyStatus: 'Starting upload to server...',
+            postMediaUploadError: '',
             stagedPostMedia: []
         });
         $.ajax({
@@ -3851,27 +3863,41 @@ window.signOut = () => {
                 return xhr;
             }
         }).done(function(response) {
-            if (response && response.success && response.data && response.data.media_items) {
+            const payload = response && response.data ? response.data : {};
+            const uploadedItems = Array.isArray(payload.media_items)
+                ? payload.media_items
+                : (Array.isArray(payload.staged_media) ? payload.staged_media : (Array.isArray(payload.items) ? payload.items : []));
+            if (response && response.success && uploadedItems.length) {
                 setState({
                     postMediaUploadInProgress: false,
                     postMediaServerReady: true,
-                    stagedPostMedia: response.data.media_items || [],
-                    postMediaMode: response.data.media_type || mediaMode || state.postMediaMode,
+                    stagedPostMedia: uploadedItems,
+                    postMediaMode: payload.media_type || mediaMode || state.postMediaMode,
                     postMediaReadyPercent: 100,
-                    postMediaReadyStatus: '100% uploaded. Fast preview is ready. You can publish now.'
+                    postMediaReadyStatus: '100% uploaded. Fast preview is ready. You can publish now.',
+                    postMediaUploadError: ''
                 });
                 window.showToast('Media upload 100% complete. You can publish now.', 'success');
             } else {
                 const msg = (response && response.data) ? response.data : 'Server upload failed.';
-                setState({ postMediaUploadInProgress: false, postMediaServerReady: false, postMediaReadyPercent: 0, postMediaReadyStatus: '' });
+                setState({ postMediaUploadInProgress: false, postMediaServerReady: false, postMediaReadyPercent: 0, postMediaReadyStatus: '', postMediaUploadError: String(msg) });
                 window.showToast(msg, 'error');
             }
         }).fail(function(xhr) {
             const msg = (xhr.responseJSON && xhr.responseJSON.data) ? xhr.responseJSON.data : 'Server upload failed. Please try again.';
-            setState({ postMediaUploadInProgress: false, postMediaServerReady: false, stagedPostMedia: [], postMediaReadyPercent: 0, postMediaReadyStatus: '' });
+            setState({ postMediaUploadInProgress: false, postMediaServerReady: false, stagedPostMedia: [], postMediaReadyPercent: 0, postMediaReadyStatus: '', postMediaUploadError: String(msg) });
             window.showToast(msg, 'error');
         });
     }
+
+    window.cvPostingRetryMediaUpload = () => {
+        const files = Array.isArray(state.selectedPostMediaFiles) ? state.selectedPostMediaFiles : [];
+        if (!files.length) {
+            window.showToast('Choose a photo or Reel before retrying.', 'info');
+            return;
+        }
+        uploadPostMediaToServer(files, state.postMediaMode || 'gallery');
+    };
 
     window.updatePostCoverName = (input) => {
         const files = Array.from((input && input.files) ? input.files : []);
@@ -3889,6 +3915,7 @@ window.signOut = () => {
             state.postMediaMode = 'none';
             state.postMediaReadyPercent = 0;
             state.postMediaReadyStatus = '';
+            state.postMediaUploadError = '';
             state.postMediaUploadInProgress = false;
             state.postMediaServerReady = false;
             state.stagedPostMedia = [];
@@ -3927,6 +3954,7 @@ window.signOut = () => {
             state.postMediaMode = 'reel';
             state.postMediaReadyPercent = 0;
             state.postMediaReadyStatus = 'Waiting to upload...';
+            state.postMediaUploadError = '';
             state.postMediaUploadInProgress = false;
             state.postMediaServerReady = false;
             state.stagedPostMedia = [];
@@ -3948,6 +3976,7 @@ window.signOut = () => {
         state.postMediaMode = selected.length > 1 ? 'gallery' : (selected.length ? 'image' : 'none');
         state.postMediaReadyPercent = selected.length ? 0 : 0;
         state.postMediaReadyStatus = selected.length ? 'Waiting to upload...' : '';
+        state.postMediaUploadError = '';
         state.postMediaUploadInProgress = false;
         state.postMediaServerReady = false;
         state.stagedPostMedia = [];
@@ -4551,8 +4580,7 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
     // Rendering functions (adapted from original)
     function renderNav() {
         const isDark = state.settings.theme === 'dark';
-        const navUser = state.currentUser || {};
-        const navUserName = String(navUser.name || navUser.displayName || navUser.display_name || 'Profile').trim().split(/\s+/)[0] || 'Profile';
+        const navUserName = 'Me';
         const desktopItems = [
             { id: 'home', label: 'Home', icon: 'home' },
             { id: 'explore', label: 'Library', icon: 'book-open' },
@@ -4588,27 +4616,9 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
         const messageMobile = state.isLoggedIn ? '<div id="cv-nav-message-slot-mobile" class="cv-nav-integrated-slot cv-nav-inline-slot cv-nav-message-slot cv-react-round-action-slot"></div>' : '';
         const notificationDesktop = state.isLoggedIn ? '<div id="cv-nav-notification-slot-desktop" class="cv-nav-integrated-slot cv-nav-inline-slot cv-react-round-action-slot"></div>' : '';
         const notificationMobile = state.isLoggedIn ? '<div id="cv-nav-notification-slot-mobile" class="cv-nav-integrated-slot cv-nav-inline-slot cv-react-round-action-slot"></div>' : '';
-        const uploadButton = state.isLoggedIn ? `
-            <button type="button" onclick="openUpload()" class="cv-upload-button cv-nav-clean-item cv-react-menu-action" aria-label="Upload">
-                <i data-lucide="cloud-upload" class="w-4 h-4"></i>
-                <span>Upload</span>
-            </button>
-        ` : '';
-        const studioButton = state.isLoggedIn ? `
-            <button type="button" onclick="setTab('bible')" class="cv-studio-button cv-nav-clean-item cv-react-menu-action" aria-label="Social Studio">
-                <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
-                <span>Studio</span>
-            </button>
-        ` : '';
         const menuButton = state.isLoggedIn ? `
             <button type="button" onclick="setTab('menu')" class="cv-react-round-action cv-react-nav-menu-button ${state.tab === 'menu' ? 'is-active' : ''}" aria-label="Open all functions">
-                <i data-lucide="menu"></i>
-            </button>
-        ` : '';
-        const createButton = state.isLoggedIn ? `
-            <button type="button" onclick="cvOpenFeedCreate('text')" class="cv-react-header-create" aria-label="Create a post">
-                <i data-lucide="plus" aria-hidden="true"></i>
-                <span>Create</span>
+                <i data-lucide="grid-3x3"></i>
             </button>
         ` : '';
         const profileButtonMarkup = state.isLoggedIn ? `
@@ -4653,12 +4663,9 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
                     </div>
 
                     <div class="cv-nav-utility-actions cv-react-nav-actions cv-react-social-actions" aria-label="Account actions">
-                        ${createButton}
                         ${menuButton}
                         ${messageDesktop}
                         ${notificationDesktop}
-                        ${uploadButton}
-                        ${studioButton}
                         ${profileButtonMarkup}
                         ${loggedOutAction}
                     </div>
@@ -4826,7 +4833,7 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
                 subtitle: 'Reading, design, study, and sermon preparation tools.',
                 items: [
                     { key: 'bibleDashboard', title: 'Bible Studio Dashboard', meta: 'Open the full scripture workspace with reader, design, quotes, typing, and notes.', icon: 'layout-dashboard', badge: 'Studio', featured: true, keywords: 'bible studio dashboard scripture workspace' },
-                    { key: 'bibleReader', title: 'Khmer Bible Reader', meta: 'Read Khmer Old 1954 scripture with valid book and chapter controls.', icon: 'book-open-check', badge: '1954', keywords: 'khmer bible reader old version 1954 verses book chapter' },
+                    { key: 'bibleReader', title: 'Bible Reader', meta: 'Read complete KJV, WEB, and ASV chapters with valid book and chapter controls.', icon: 'book-open-check', badge: 'Scripture', keywords: 'bible reader kjv web asv verses book chapter' },
                     { key: 'parallelBible', title: 'Parallel Bible', meta: 'Compare the same passage across two translations in a cleaner study layout.', icon: 'columns-3', keywords: 'parallel bible compare translations versions study' },
                     { key: 'concordance', title: 'Concordance Search', meta: 'Search keywords, references, and fallback word-study content through the Bible tools.', icon: 'search-check', keywords: 'concordance search word study bible keyword reference' },
                     { key: 'scriptureDesign', title: 'Scripture Design Studio', meta: 'Design social verse images with backgrounds, fonts, spacing, overlays, and download tools.', icon: 'image', badge: 'Design', featured: true, keywords: 'scripture design verse image social studio background font overlay download' },
@@ -5271,16 +5278,7 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
             </button>
         `).join('');
         return `
-            <section class="cv-blessings-module" aria-labelledby="cv-blessings-title">
-                <header class="cv-blessings-heading">
-                    <div>
-                        <span class="cv-blessings-kicker">Community moments</span>
-                        <h2 id="cv-blessings-title">Blessings</h2>
-                    </div>
-                    <button type="button" onclick="cvOpenFeedCreate('blessing')" aria-label="Share a blessing">
-                        <i data-lucide="plus" aria-hidden="true"></i><span>Share</span>
-                    </button>
-                </header>
+            <section class="cv-blessings-module" aria-label="Blessings">
                 <div class="cv-react-stories" aria-label="Recent blessings">
                     <button type="button" class="cv-react-story-card cv-react-create-story cv-react-create-blessing" onclick="cvOpenFeedCreate('blessing')" aria-label="Add blessing">
                         <span class="cv-react-story-create-media">${renderProfileAvatar(current, 'w-full h-full', 'text-sm')}</span>
@@ -5294,12 +5292,11 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
 
     function cvRenderFeedComposer() {
         const user = state.currentUser || { name: state.postAuthorName || 'You' };
-        const composerName = String(user.name || user.displayName || user.display_name || 'Friend').trim().split(/\s+/)[0] || 'Friend';
         return `
             <section class="cv-feed-composer-card cv-react-fb-composer">
                 <div class="cv-feed-composer-head">
                     <button type="button" class="cv-feed-composer-avatar cv-plain-button" onclick="openProfile(); return false;" data-cv-profile-trigger="1" aria-label="Open your profile">${renderProfileAvatar(user, 'w-full h-full', 'text-sm')}</button>
-                    <button type="button" class="cv-feed-compose-trigger" onclick="cvOpenFeedCreate('text')" aria-label="Create a post">What would you like to share, ${escapeHtml(composerName)}?</button>
+                    <button type="button" class="cv-feed-compose-trigger" onclick="cvOpenFeedCreate('blessing')" aria-label="Share a blessing, testimony, or encouragement">Share a blessing, testimony, or encouragement…</button>
                 </div>
                 <div class="cv-feed-composer-actions">
                     <button type="button" class="cv-feed-compose-action cv-feed-compose-action--live" onclick="cvOpenFeedCreate('blessing')">${cvRenderBlessingIcon("cv-blessing-svg-icon--compose")}<span>Add Blessing</span></button>
@@ -5743,48 +5740,40 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
         return `<div class="cv-feed-skeleton-group" role="status" aria-live="polite" aria-label="Loading community posts"><span class="screen-reader-text">Loading community posts…</span>${card}${card}</div>`;
     }
 
-    function cvRenderFeedWelcome() {
-        const user = state.currentUser || {};
-        const emailName = user.email ? String(user.email).split('@')[0] : '';
-        const fullName = String(user.name || user.displayName || user.display_name || emailName || 'Friend').trim();
-        const firstName = fullName.split(/\s+/)[0] || 'Friend';
-        return `
-            <header class="cv-community-welcome" aria-labelledby="cv-community-welcome-title">
-                <div class="cv-community-welcome__copy">
-                    <span class="cv-community-welcome__eyebrow"><i data-lucide="sparkles" aria-hidden="true"></i> Faith In community</span>
-                    <h1 id="cv-community-welcome-title">Welcome back, ${escapeHtml(firstName)}</h1>
-                    <p>Share what matters, support someone in prayer, and grow together.</p>
-                </div>
-                <div class="cv-community-welcome__actions" aria-label="Quick actions">
-                    <button type="button" class="cv-community-quick-action cv-community-quick-action--secondary" onclick="setTab('prayer')">
-                        <i data-lucide="heart-handshake" aria-hidden="true"></i><span>Prayer wall</span>
-                    </button>
-                    <button type="button" class="cv-community-quick-action cv-community-quick-action--primary" onclick="cvOpenFeedCreate('text')">
-                        <i data-lucide="plus" aria-hidden="true"></i><span>Create post</span>
-                    </button>
-                </div>
-            </header>`;
-    }
-
     function renderHomeFeed() {
         const isDark = state.settings.theme === 'dark';
         const posts = Array.isArray(state.posts) ? state.posts : [];
         // Blessings behave like stories: keep them in the Blessing carousel/viewer, but do not render them as normal feed cards.
-        const filteredPosts = cvVisibleFeedPosts(posts);
+        const feedSort = state.feedSort === 'Recent' ? 'Recent' : 'Top';
+        const postTimestamp = post => {
+            const raw = post && (post.created_at || post.published_at || post.updated_at || post.date);
+            const parsed = raw ? Date.parse(raw) : 0;
+            return Number.isFinite(parsed) ? parsed : 0;
+        };
+        const postEngagement = post => (
+            cvReactionCount(post) * 2
+            + Number(post && (post.comment_count || post.comments) || 0) * 4
+            + Number(post && (post.repost_count || post.reposts) || 0) * 5
+            + Number(post && (post.share_count || post.shares) || 0) * 5
+        );
+        const filteredPosts = cvVisibleFeedPosts(posts).slice().sort((a, b) => (
+            feedSort === 'Recent'
+                ? postTimestamp(b) - postTimestamp(a)
+                : postEngagement(b) - postEngagement(a) || postTimestamp(b) - postTimestamp(a)
+        ));
         const showDesktopSort = !cvIsMobileViewport();
         const desktopSortToolbar = showDesktopSort ? `
                         <div class="cv-feed-toolbar cv-react-sort-row ${isDark ? 'is-dark' : ''}">
                             <hr />
-                            <button type="button" class="cv-feed-toolbar__sort cv-feed-sort-btn">Sort by: <strong>Top</strong> <i data-lucide="chevron-down"></i></button>
+                            <button type="button" onclick="cvToggleFeedSort()" class="cv-feed-toolbar__sort cv-feed-sort-btn" aria-label="Sort feed by ${feedSort === 'Top' ? 'most recent' : 'top posts'}">Sort by: <strong>${feedSort}</strong> <i data-lucide="chevron-down"></i></button>
                         </div>` : '';
 
         const savedHeading = state.savedPostsOnly ? `<section class="cv-saved-feed-heading"><div><span>Private collection</span><h1>Saved posts</h1><p>Only you can see the posts you save.</p></div><button type="button" onclick="setTab('home')"><i data-lucide="arrow-left"></i><span>Back to feed</span></button></section>` : '';
         let html = `
             <div class="cv-feed-page cv-feed-page-linkedin cv-react-feed-page max-w-7xl mx-auto w-full px-4 md:px-6 py-8 animate-fade-in pb-32">
-                <div class="cv-feed-layout cv-feed-layout--three-col">
-                    ${cvRenderFeedLeftSidebar()}
+                <div class="cv-feed-layout cv-feed-layout--focus">
                     <main class="cv-feed-main-column">
-                        ${state.savedPostsOnly ? savedHeading : cvRenderFeedWelcome() + cvRenderStoriesCarousel() + cvRenderFeedComposer()}
+                        ${state.savedPostsOnly ? savedHeading : cvRenderStoriesCarousel() + cvRenderFeedComposer()}
                         ${desktopSortToolbar}
                         <div class="space-y-6 cv-feed-stream">
         `;
@@ -5813,6 +5802,7 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
                 const isLiked = !!selectedReaction;
                 const isSaved = (state.bookmarks || []).map(String).includes(String(post.id));
                 const author = post.author || {};
+                const postType = String(post.type || '').toLowerCase();
                 html += `
                     <article class="cv-feed-card cv-react-post-card p-6 rounded-3xl shadow-sm border transition-shadow hover:shadow-md ${isDark ? 'bg-slate-800 border-slate-700/50' : 'bg-white border-slate-100'}">
                         <div class="cv-feed-card-head flex justify-between items-start mb-5">
@@ -5827,6 +5817,8 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
                                         </h3>
                                     </button>
                                     <div class="cv-feed-meta cv-feed-meta--privacy-only flex flex-wrap items-center gap-1.5 mt-1.5">
+                                        <span class="cv-feed-time">${escapeHtml(post.time || 'Just now')}</span>
+                                        <span aria-hidden="true">·</span>
                                         ${cvPostVisibilityPill(post.post_visibility || post.visibility || 'public')}
                                         ${String(post.type || '').toLowerCase() === 'blessing' ? `<span class="cv-blessing-pill">${cvRenderBlessingIcon('cv-blessing-svg-icon--pill')}Blessing</span>` : ''}
                                     </div>
@@ -5842,7 +5834,7 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
                         </div>
 
                         <div class="cv-feed-body mb-6 ${isDark ? 'text-slate-200' : 'text-slate-700'}">
-                            ${post.type === 'article' ? `
+                            ${postType === 'article' ? `
                                 <div class="cv-feed-article-box rounded-2xl overflow-hidden ${isDark ? 'bg-slate-900/60 border border-slate-700/60' : 'bg-slate-50 border border-slate-100'}">
                                     ${cvRenderPostMedia(post, isDark)}
                                     <div class="p-5">
@@ -5852,7 +5844,7 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
                                     </div>
                                 </div>
                             ` : `
-                                <div class="text-[16px] leading-relaxed ${post.type === 'verse' ? 'font-serif text-lg italic' : ''}">
+                                <div class="text-[16px] leading-relaxed ${postType === 'verse' ? 'cv-feed-verse-content font-serif text-lg italic' : ''}">
                                     <p>${escapeHtml(post.content || '')}</p>
                                     ${cvRenderPostMedia(post, isDark)}
                                 </div>
@@ -5900,7 +5892,7 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
                 `;
             });
         }
-        html += `</div></main>${cvRenderFeedRightSidebar()}</div>${cvRenderBlessingStoryModal()}</div>`;
+        html += `</div></main></div>${cvRenderBlessingStoryModal()}</div>`;
         return html;
     }
 
@@ -6019,8 +6011,9 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
         const filters = ['All', 'Full-time', 'Part-time', 'Volunteer', 'Remote'];
         const quickFilters = [
             { label: 'Jobs', value: 'All' },
-            { label: 'Date posted', value: 'All' },
-            { label: 'Experience level', value: 'All' },
+            { label: 'Full-time', value: 'Full-time' },
+            { label: 'Part-time', value: 'Part-time' },
+            { label: 'Volunteer', value: 'Volunteer' },
             { label: 'Remote', value: 'Remote' }
         ];
         const search = String(state.jobSearch || '').toLowerCase().trim();
@@ -6142,7 +6135,7 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
                             <div class="flex flex-col md:flex-row">
                                 <div class="flex items-center p-3 flex-1 border-b md:border-b-0 md:border-r border-[#e0dfdc]">
                                     <i data-lucide="search" class="w-5 h-5 text-black/60 mr-2 flex-shrink-0"></i>
-                                    <input type="text" value="${escapeAttr(state.jobSearch || 'Christian Jobs & Ministry Roles')}" onfocus="if (this.value === 'Christian Jobs & Ministry Roles') this.value = '';" oninput="handleJobSearch(this.value === 'Christian Jobs & Ministry Roles' ? '' : this.value)" placeholder="Job title, skill, or company" class="w-full outline-none text-black/90 placeholder-black/60 text-sm font-semibold bg-transparent border-none" />
+                                    <input type="search" value="${escapeAttr(state.jobSearch || '')}" oninput="handleJobSearch(this.value)" placeholder="Christian jobs, ministry roles, or organizations" aria-label="Search ministry jobs" class="w-full outline-none text-black/90 placeholder-black/60 text-sm font-semibold bg-transparent border-none" />
                                 </div>
                                 <div class="flex items-center p-3 flex-1">
                                     <i data-lucide="map-pin" class="w-5 h-5 text-black/60 mr-2 flex-shrink-0"></i>
@@ -6157,7 +6150,7 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
                         <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 px-4 md:px-0 gap-4 mt-4">
                             <div class="flex gap-2 overflow-x-auto pb-2 md:pb-0 custom-scrollbar w-full md:w-auto">
                                 ${quickFilters.map(f => {
-                                    const active = (f.label === 'Jobs' && (state.jobFilter || 'All') === 'All') || (f.value === 'Remote' && state.jobFilter === 'Remote');
+                                    const active = String(state.jobFilter || 'All') === f.value;
                                     return `<button type="button" onclick="setJobFilter('${escapeAttr(f.value)}')" class="cv-job-filter-pill ${active ? 'cv-job-filter-active' : 'cv-job-filter-normal'} whitespace-nowrap px-3 py-1.5 rounded-full text-sm font-semibold transition-all shadow-sm border ${active ? 'bg-[#469b76] text-white border-[#469b76] hover:bg-[#388462]' : 'border-black/60 text-black/60 hover:bg-gray-100 hover:text-black/90 hover:border-black/90'}"><span class="cv-job-filter-label">${escapeHtml(f.label)}</span></button>`;
                                 }).join('')}
                             </div>
@@ -6232,7 +6225,8 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
 
     function renderPrayer() {
         const isDark = state.settings.theme === 'dark';
-        let sorted = [...state.prayers].sort((a, b) => {
+        const prayers = Array.isArray(state.prayers) ? state.prayers : [];
+        let sorted = prayers.slice().sort((a, b) => {
             if (state.prayerFilter === 'Most Prayed') return (b.prayed_count||0) - (a.prayed_count||0);
             if (state.prayerFilter === 'Urgent') return (a.urgent === b.urgent) ? 0 : a.urgent ? -1 : 1;
             return new Date(b.timestamp) - new Date(a.timestamp);
@@ -6645,8 +6639,9 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
                             <div class="cv-upload-status-card cv-posting-upload-status-card ${mediaReady ? 'is-complete' : 'is-loading'}">
                                 <div class="cv-media-ready cv-posting-media-ready" role="status" aria-live="polite">
                                     <div class="cv-media-ready__top"><span>Upload to server</span><strong>${mediaReadyPercent}% complete</strong></div>
-                                    <div class="cv-media-ready__status"><i data-lucide="check-circle-2" class="w-5 h-5"></i><span>${escapeHtml(state.postMediaReadyStatus || 'Media is ready. You can publish now.')}</span></div>
+                                    <div class="cv-media-ready__status"><i data-lucide="${state.postMediaUploadError ? 'circle-alert' : (mediaReady ? 'check-circle-2' : 'cloud-upload')}" class="w-5 h-5"></i><span>${escapeHtml(state.postMediaUploadError || state.postMediaReadyStatus || 'Waiting to upload...')}</span></div>
                                     <div class="cv-media-ready__bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${mediaReadyPercent}"><span style="width:${mediaReadyPercent}%"></span></div>
+                                    ${state.postMediaUploadError ? `<button type="button" class="cv-media-upload-retry" onclick="cvPostingRetryMediaUpload()"><i data-lucide="refresh-cw" class="w-4 h-4"></i><span>Retry upload</span></button>` : ''}
                                 </div>
                                 <label class="cv-modern-download-option cv-posting-download-option"><span class="cv-modern-download-option__icon"><i data-lucide="download" class="w-5 h-5"></i></span><span class="cv-modern-download-option__copy"><strong>Allow media download</strong><small>Other users can download your image or Reel to share on another platform.</small></span><input class="cv-modern-download-option__toggle" type="checkbox" ${state.postAllowDownload ? 'checked' : ''} onchange="updatePostForm('postAllowDownload', this.checked)" /></label>
                             </div>
@@ -7191,9 +7186,11 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
     }
 
     function loadBibleStudioInitial() {
-        if (!state.bibleStudio || !state.bibleStudio.verses || !state.bibleStudio.verses.length) loadBibleVerses(false);
-        if (!state.bibleStudio.media || !state.bibleStudio.media.length) loadBibleMedia(false);
-        if (!state.bibleStudio.quotes || !state.bibleStudio.quotes.length) loadBibleQuotes(false);
+        const studio = state.bibleStudio || {};
+        const active = Number.isFinite(parseInt(studio.activeTool, 10)) ? parseInt(studio.activeTool, 10) : 5;
+        if ((active === 1 || active === 2) && (!studio.verses || !studio.verses.length)) loadBibleVerses(false);
+        if (active === 4 && (!studio.media || !studio.media.length)) loadBibleMedia(false);
+        if ((active === 6 || active === 7) && (!studio.quotes || !studio.quotes.length)) loadBibleQuotes(false);
         if (state.isLoggedIn) loadBibleNotes(false);
     }
 
@@ -7375,11 +7372,9 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
     }
 
     const CV_BIBLE_VERSION_OPTIONS = [
-        { value: 'KHMER_OLD_1954', label: 'Khmer Old 1954' },
         { value: 'KJV', label: 'KJV' },
         { value: 'WEB', label: 'WEB' },
-        { value: 'ESV', label: 'ESV' },
-        { value: 'NIV', label: 'NIV' }
+        { value: 'ASV', label: 'ASV 1901' }
     ];
 
     function bibleVersionOptions(selected) {
@@ -7401,9 +7396,10 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
     function renderBiblePanel() {
         const b = state.bibleStudio || {};
         if (b.error) window.setTimeout(function(){ window.showToast(b.error, 'error'); }, 50);
-        switch (parseInt(b.activeTool || 5, 10)) {
+        const activeTool = Number.isFinite(parseInt(b.activeTool, 10)) ? parseInt(b.activeTool, 10) : 5;
+        switch (activeTool) {
             case 0: return renderBibleDashboard();
-            case 1: return `<div class="cv-bible-page">${renderBibleHero('Library Reader', 'Read Khmer Old Version 1954 scripture cards from the backend, with only supported chapter options shown.')}${bibleTopControls(false)}<div class="cv-bible-reader cv-bible-section-card">${renderVerses(b.verses)}</div></div>`;
+            case 1: return `<div class="cv-bible-page">${renderBibleHero('Bible Reader', 'Read complete public-domain chapters with clear book, chapter, and translation controls.')}${bibleTopControls(false)}<div class="cv-bible-reader cv-bible-section-card">${renderVerses(b.verses)}</div></div>`;
             case 2: return `<div class="cv-bible-page">${renderBibleHero('Parallel Analysis', 'Compare the same passage across two translations without clipped labels or hidden words.')}${bibleTopControls(true)}<div class="cv-bible-parallel"><div class="cv-bible-section-card">${renderVerses(b.verses)}</div><div class="cv-bible-section-card">${renderVerses(b.verses2)}</div></div></div>`;
             case 3: return renderBibleDictionary();
             case 4: return renderBibleMedia();
@@ -7427,8 +7423,8 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
                     <div class="cv-bible-stats"><span><i data-lucide="zap"></i> Streak <strong>${parseInt(stats.streak||5,10)}</strong></span><span><i data-lucide="star"></i> Weeks <strong>${parseInt(stats.weeks||17,10)}</strong></span></div>
                 </div>
                 <div class="cv-bible-overview-cards">
-                    <article class="cv-bible-overview-card"><i data-lucide="book-open"></i><h3>Smart reading</h3><p>Only valid local chapters are shown, so your reader stays tidy and useful.</p></article>
-                    <article class="cv-bible-overview-card"><i data-lucide="image"></i><h3>Beautiful graphics</h3><p>Create social verse images with improved spacing, cleaner controls, and Gemini image backgrounds.</p></article>
+                    <article class="cv-bible-overview-card"><i data-lucide="book-open"></i><h3>Smart reading</h3><p>Read complete KJV, WEB, and ASV chapters with valid book and chapter choices.</p></article>
+                    <article class="cv-bible-overview-card"><i data-lucide="image"></i><h3>Beautiful graphics</h3><p>Create social verse images with real wallpapers, personal photos, and clear typography controls.</p></article>
                     <article class="cv-bible-overview-card"><i data-lucide="edit-3"></i><h3>Message notes</h3><p>Write doctrine, encouragement, and application notes and save them to the backend.</p></article>
                 </div>
             </div>
@@ -7439,18 +7435,23 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
         const b = state.bibleStudio || {}, r = b.dictionaryResult, items = b.dictionaryItems || [];
         const searchItems = items.length ? `<div class="cv-bible-section-card cv-bible-search-results">${items.map(x=>`<article><strong>${escapeHtml(x.reference||'')}</strong><p>${escapeHtml(x.text||'')}</p></article>`).join('')}</div>` : '';
         const wordStudy = r ? `<div class="cv-bible-result cv-bible-section-card"><h3>${escapeHtml(b.dictionaryQuery||'')}</h3><p class="cv-bible-blue">${escapeHtml(r.original)} / ${escapeHtml(r.transliteration)}</p><p>${escapeHtml(r.meaning)}</p></div>` : '';
-        const empty = (!r && !items.length) ? `<div class="cv-bible-empty cv-bible-section-card"><i data-lucide="search"></i><p>${b.dictionaryQuery ? 'No result found yet. Add API.Bible settings for full concordance search.' : 'Search words like grace, faith, love, peace, or any Bible keyword.'}</p></div>` : '';
-        return `<div class="cv-bible-page">${renderBibleHero('Concordance Search', 'Search Bible keywords through your backend. API.Bible results show verses; local word-study fallback shows meanings.')}<div class="cv-bible-search cv-bible-section-card"><input value="${escapeAttr(b.dictionaryQuery||'')}" oninput="cvBibleSet('dictionaryQuery', this.value)" placeholder="Search: grace, love, faith, peace"><button onclick="cvBibleSearchDictionary()"><i data-lucide="search"></i> Search</button></div>${searchItems}${wordStudy}${empty}</div>`;
+        const empty = (!r && !items.length) ? `<div class="cv-bible-empty cv-bible-section-card"><i data-lucide="search"></i><p>${b.dictionaryQuery ? 'No word study was found. Try grace, faith, love, hope, peace, or prayer.' : 'Search words like grace, faith, love, hope, peace, or prayer.'}</p></div>` : '';
+        return `<div class="cv-bible-page">${renderBibleHero('Concordance Search', 'Explore clear word studies for sermon preparation and personal study.')}<div class="cv-bible-search cv-bible-section-card"><input value="${escapeAttr(b.dictionaryQuery||'')}" oninput="cvBibleSet('dictionaryQuery', this.value)" placeholder="Search: grace, love, faith, peace"><button onclick="cvBibleSearchDictionary()"><i data-lucide="search"></i> Search</button></div>${searchItems}${wordStudy}${empty}</div>`;
     }
 
     function renderBibleMedia() {
         const b = state.bibleStudio || {};
-        return `<div class="cv-bible-page">${renderBibleHero('Media Library', 'Keep your study videos and lessons in a cleaner card layout.')}<div class="cv-bible-media-grid">${(b.media||[]).map(v=>`<article class="cv-bible-media"><div style="background-image:url('${escapeAttr(v.image)}')"><button><i data-lucide="play"></i></button><span>${escapeHtml(v.duration)}</span></div><h3>${escapeHtml(v.title)}</h3><p>${escapeHtml(v.speaker)}</p></article>`).join('')}</div></div>`;
+        const items = (Array.isArray(b.media) ? b.media : []).filter((item) => item && item.url);
+        const cards = items.map(v=>`<article class="cv-bible-media"><a href="${escapeAttr(v.url)}" target="_blank" rel="noopener noreferrer" style="background-image:url('${escapeAttr(v.image)}')" aria-label="Open ${escapeAttr(v.title || 'Bible media')}"><span class="cv-bible-media-play"><i data-lucide="play"></i></span><span>${escapeHtml(v.duration || 'Media')}</span></a><h3>${escapeHtml(v.title)}</h3><p>${escapeHtml(v.speaker || 'Faith In Library')}</p></article>`).join('');
+        const empty = items.length ? '' : `<div class="cv-bible-empty cv-bible-section-card"><i data-lucide="video"></i><p>No Bible videos have been published yet. Upload a video resource and it will appear here automatically.</p><button type="button" onclick="openUpload()">Upload Bible media</button></div>`;
+        return `<div class="cv-bible-page">${renderBibleHero('Media Library', 'Study videos and lessons published through the Faith In Library.')}<div class="cv-bible-media-grid">${cards}</div>${empty}</div>`;
     }
 
     function renderBibleQuotes(type) {
         const b = state.bibleStudio || {};
-        return `<div class="cv-bible-page">${renderBibleHero(type + ' Inspiration', 'Copy favorite quotes for sermons, posts, or personal encouragement.')}<div class="cv-bible-quotes">${(b.quotes||[]).map((q,i)=>`<article><div class="cv-bible-quote-head"><span class="cv-bible-status-chip">Quote</span><button onclick="cvBibleCopyQuote(${i})"><i data-lucide="copy"></i></button></div><p>“${escapeHtml(q.text)}”</p><strong>— ${escapeHtml(q.author)}</strong></article>`).join('')}</div></div>`;
+        const quotes = Array.isArray(b.quotes) ? b.quotes : [];
+        const empty = quotes.length ? '' : `<div class="cv-bible-empty cv-bible-section-card"><i data-lucide="quote"></i><p>No quotes are available right now. Please try again.</p></div>`;
+        return `<div class="cv-bible-page">${renderBibleHero(type + ' Inspiration', 'Copy favorite quotes for sermons, posts, or personal encouragement.')}<div class="cv-bible-quotes">${quotes.map((q,i)=>`<article><div class="cv-bible-quote-head"><span class="cv-bible-status-chip">Quote</span><button onclick="cvBibleCopyQuote(${i})" aria-label="Copy quote"><i data-lucide="copy"></i></button></div><p>“${escapeHtml(q.text)}”</p><strong>— ${escapeHtml(q.author)}</strong></article>`).join('')}</div>${empty}</div>`;
     }
 
     function renderBibleTyping() {
@@ -7525,14 +7526,13 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
                 tone: 'frames',
                 icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3v6"/><path d="M17 3v6"/><path d="M7 15v6"/><path d="M17 15v6"/><path d="M3 7h6"/><path d="M15 7h6"/><path d="M3 17h6"/><path d="M15 17h6"/></svg>'
             }
-        ];
-        const activeTool = creativeTools.find((item) => item.id === socialAssetTab) || creativeTools[4];
-        const helperText = socialAssetTab === 'photos'
-            ? '<strong>Photos is active.</strong> Upload a personal image or choose a real wallpaper below to use it directly in your preview and export.'
-            : `<strong>${activeTool.label}</strong> has been added as a category in Social Studio. Photo tools remain available below while this section is prepared for a future release.`;
+        ].filter((item) => item.status === 'Ready');
+        const activeTool = creativeTools.find((item) => item.id === socialAssetTab) || creativeTools[0];
+        const activeSocialAssetTab = activeTool ? activeTool.id : 'photos';
+        const helperText = '<strong>Photos is active.</strong> Upload a personal image or choose a real wallpaper below to use it directly in your preview and export.';
         return `<div class="cv-bible-page">${renderBibleHero('Social Studio', 'Create clean scripture graphics with elegant typography and real photo nature wallpapers.')}
             <section class="cv-bible-social-toolkit">
-                <div class="cv-bible-social-tool-grid">${creativeTools.map((tool)=>`<button type="button" class="cv-bible-social-tool ${socialAssetTab===tool.id?'is-active':''}" onclick="cvBibleSelectCreativeTool('${tool.id}')" data-tone="${tool.tone}"><span class="cv-bible-social-tool-icon cv-bible-social-tool-icon-${tool.tone}" aria-hidden="true">${tool.icon}</span><span class="cv-bible-social-tool-text"><strong>${tool.label}</strong><small>${tool.hint}</small></span><em class="${tool.status==='Ready'?'is-ready':'is-soon'}">${tool.status.toUpperCase()}</em></button>`).join('')}</div>
+                <div class="cv-bible-social-tool-grid">${creativeTools.map((tool)=>`<button type="button" class="cv-bible-social-tool ${activeSocialAssetTab===tool.id?'is-active':''}" onclick="cvBibleSelectCreativeTool('${tool.id}')" data-tone="${tool.tone}"><span class="cv-bible-social-tool-icon cv-bible-social-tool-icon-${tool.tone}" aria-hidden="true">${tool.icon}</span><span class="cv-bible-social-tool-text"><strong>${tool.label}</strong><small>${tool.hint}</small></span><em class="${tool.status==='Ready'?'is-ready':'is-soon'}">${tool.status.toUpperCase()}</em></button>`).join('')}</div>
                 <div class="cv-bible-social-tool-banner">${helperText}</div>
             </section>
             <div class="cv-bible-social cv-bible-social-two-col">
@@ -7563,11 +7563,11 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
                     <div class="cv-bible-editor cv-bible-social-controls">
                         <div class="cv-bible-editor-stack">
                             <label>Typography</label>
-                            <div class="cv-bible-typebar"><select onchange="cvBibleSocial('socialFont', this.value)">${fontOptions.map(f=>`<option value="${escapeAttr(f)}" ${b.socialFont===f?'selected':''}>${escapeHtml(f)}</option>`).join('')}</select><button type="button" onclick="cvBibleStepFont(-2)">-</button><strong>${fontSize.toFixed(fontSize % 1 ? 1 : 0)}</strong><button type="button" onclick="cvBibleStepFont(2)">+</button><button type="button" class="${active('socialBold')}" onclick="cvBibleSocial('socialBold', !state.bibleStudio.socialBold)"><b>B</b></button><button type="button" class="${active('socialItalic')}" onclick="cvBibleSocial('socialItalic', !state.bibleStudio.socialItalic)"><em>I</em></button><button type="button" class="${active('socialUnderline')}" onclick="cvBibleSocial('socialUnderline', !state.bibleStudio.socialUnderline)"><u>U</u></button><button type="button" class="${active('socialStrike')}" onclick="cvBibleSocial('socialStrike', !state.bibleStudio.socialStrike)"><s>S</s></button><button type="button" class="${active('socialUppercase')}" onclick="cvBibleSocial('socialUppercase', !state.bibleStudio.socialUppercase)">aA</button><button type="button" onclick="cvBibleCycleAlign()"><i data-lucide="align-center"></i></button></div>
+                            <div class="cv-bible-typebar"><select onchange="cvBibleSocial('socialFont', this.value)" aria-label="Typeface">${fontOptions.map(f=>`<option value="${escapeAttr(f)}" ${b.socialFont===f?'selected':''}>${escapeHtml(f)}</option>`).join('')}</select><button type="button" onclick="cvBibleStepFont(-2)" aria-label="Decrease font size">-</button><strong>${fontSize.toFixed(fontSize % 1 ? 1 : 0)}</strong><button type="button" onclick="cvBibleStepFont(2)" aria-label="Increase font size">+</button><button type="button" class="${active('socialBold')}" onclick="cvBibleSocial('socialBold', !state.bibleStudio.socialBold)" aria-label="Toggle bold" aria-pressed="${b.socialBold ? 'true' : 'false'}"><b>B</b></button><button type="button" class="${active('socialItalic')}" onclick="cvBibleSocial('socialItalic', !state.bibleStudio.socialItalic)" aria-label="Toggle italic" aria-pressed="${b.socialItalic ? 'true' : 'false'}"><em>I</em></button><button type="button" class="${active('socialUnderline')}" onclick="cvBibleSocial('socialUnderline', !state.bibleStudio.socialUnderline)" aria-label="Toggle underline" aria-pressed="${b.socialUnderline ? 'true' : 'false'}"><u>U</u></button><button type="button" class="${active('socialStrike')}" onclick="cvBibleSocial('socialStrike', !state.bibleStudio.socialStrike)" aria-label="Toggle strikethrough" aria-pressed="${b.socialStrike ? 'true' : 'false'}"><s>S</s></button><button type="button" class="${active('socialUppercase')}" onclick="cvBibleSocial('socialUppercase', !state.bibleStudio.socialUppercase)" aria-label="Toggle uppercase" aria-pressed="${b.socialUppercase ? 'true' : 'false'}">aA</button><button type="button" onclick="cvBibleCycleAlign()" aria-label="Cycle text alignment"><i data-lucide="align-center"></i></button></div>
                             <div class="cv-bible-range-head"><label>Font Size</label><strong>${parseInt(b.socialFontSize||44,10)} px</strong></div>
-                            <input type="range" min="20" max="86" value="${parseInt(b.socialFontSize||44,10)}" oninput="cvBibleSocial('socialFontSize', this.value)">
+                            <input type="range" min="20" max="86" value="${parseInt(b.socialFontSize||44,10)}" oninput="cvBibleSocial('socialFontSize', this.value)" aria-label="Font size">
                             <div class="cv-bible-range-head"><label>Dark Overlay</label><strong>${parseInt(b.socialOverlay||38,10)}%</strong></div>
-                            <input type="range" min="0" max="80" value="${parseInt(b.socialOverlay||38,10)}" oninput="cvBibleSocial('socialOverlay', this.value)">
+                            <input type="range" min="0" max="80" value="${parseInt(b.socialOverlay||38,10)}" oninput="cvBibleSocial('socialOverlay', this.value)" aria-label="Dark overlay opacity">
                             <div class="cv-bible-field-grid is-tight"><label class="cv-bible-field"><span>Text Align</span><select onchange="cvBibleSocial('socialAlign', this.value)"><option value="left" ${b.socialAlign==='left'?'selected':''}>Left</option><option value="center" ${b.socialAlign==='center'?'selected':''}>Center</option><option value="right" ${b.socialAlign==='right'?'selected':''}>Right</option></select></label><label class="cv-bible-field"><span>Text Color</span><input type="color" value="${escapeAttr(b.socialColor||'#ffffff')}" oninput="cvBibleSocial('socialColor', this.value)"></label></div>
                         </div>
                     </div>
@@ -7751,7 +7751,7 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
             wrap.style.setProperty('margin-top', '0', 'important');
             wrap.style.setProperty('padding', '0', 'important');
             var cvMobileNoTopGap = !!(window.matchMedia && window.matchMedia('(max-width: 900px), (hover: none) and (pointer: coarse)').matches);
-            wrap.style.setProperty('padding-top', cvMobileNoTopGap ? '0' : '72px', 'important');
+            wrap.style.setProperty('padding-top', cvMobileNoTopGap ? '0' : '96px', 'important');
             wrap.style.setProperty('transform', 'none', 'important');
             wrap.style.setProperty('contain', 'none', 'important');
             wrap.style.setProperty('z-index', '1', 'important');
@@ -7777,9 +7777,9 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
                 nav.style.setProperty('bottom', 'auto', 'important');
                 nav.style.setProperty('width', '100%', 'important');
                 nav.style.setProperty('max-width', '100vw', 'important');
-                nav.style.setProperty('height', cvMobileNoTopGap ? 'auto' : '72px', 'important');
-                nav.style.setProperty('min-height', cvMobileNoTopGap ? '0' : '72px', 'important');
-                nav.style.setProperty('max-height', cvMobileNoTopGap ? 'none' : '72px', 'important');
+                nav.style.setProperty('height', cvMobileNoTopGap ? 'auto' : '96px', 'important');
+                nav.style.setProperty('min-height', cvMobileNoTopGap ? '0' : '96px', 'important');
+                nav.style.setProperty('max-height', cvMobileNoTopGap ? 'none' : '96px', 'important');
                 nav.style.setProperty('margin', '0', 'important');
                 nav.style.setProperty('margin-top', '0', 'important');
                 nav.style.setProperty('padding', '0', 'important');
@@ -7791,9 +7791,9 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
             });
             document.querySelectorAll('#cv-react-global-nav .cv-nav-shell, .cv-react-global-nav .cv-nav-shell, .cv-fixed-clean-nav .cv-nav-shell, #cv-root .cv-react-nav-shell').forEach(function (shell) {
                 var cvMobileNoTopGap = !!(window.matchMedia && window.matchMedia('(max-width: 900px), (hover: none) and (pointer: coarse)').matches);
-                shell.style.setProperty('height', cvMobileNoTopGap ? '0' : '72px', 'important');
-                shell.style.setProperty('min-height', cvMobileNoTopGap ? '0' : '72px', 'important');
-                shell.style.setProperty('max-height', cvMobileNoTopGap ? '0' : '72px', 'important');
+                shell.style.setProperty('height', cvMobileNoTopGap ? '0' : '96px', 'important');
+                shell.style.setProperty('min-height', cvMobileNoTopGap ? '0' : '96px', 'important');
+                shell.style.setProperty('max-height', cvMobileNoTopGap ? '0' : '96px', 'important');
                 if (cvMobileNoTopGap) { shell.style.setProperty('display', 'none', 'important'); }
                 shell.style.setProperty('margin', '0 auto', 'important');
                 shell.style.setProperty('padding-top', '0', 'important');
@@ -7917,8 +7917,10 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
         cvMountAppAtBodyTop();
         if (window.requestAnimationFrame) requestAnimationFrame(cvMountAppAtBodyTop);
         setTimeout(cvMountAppAtBodyTop, 30);
-        const cvHomeFeedDesktop = window.matchMedia ? window.matchMedia('(min-width: 1101px)').matches : true;
-        const cvHomeFeedLocked = state.tab === 'home' && !cvIsSignedOut() && !state.selectedResource && cvHomeFeedDesktop;
+        // The home feed follows the document's natural scroll. Locking only the
+        // middle column made the app feel cramped and produced two competing
+        // scrollbars on desktop.
+        const cvHomeFeedLocked = false;
         const cvBibleStudioLocked = state.tab === 'bible' && !cvIsSignedOut();
         root.classList.toggle('cv-home-feed-locked', cvHomeFeedLocked);
         root.classList.toggle('cv-bible-studio-locked', cvBibleStudioLocked);
@@ -8189,7 +8191,7 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
                 previousDay=currentDay||previousDay;
                 return `${separator}<div class="cv-feed-msg-row ${m.mine?'mine':'theirs'} ${m.pending?'is-pending':''}" data-message-id="${e(m.id||'')}"><div class="cv-feed-msg-bubble ${m.mine?'mine':'theirs'}">${renderAttachment(m.attachment,m.mine)}${m.body?`<p dir="auto">${e(m.body||'')}</p>`:''}<small><span>${m.pending?'Sending…':e(timeLabel(m.created_at)||m.created_at||'')}</span>${m.mine&&!m.pending?`<span class="cv-feed-msg-checks">${msgIcon('checkcheck',14)}</span>`:''}</small></div></div>`;
             }).join(''):`<div class="cv-feed-msg-empty small cv-feed-msg-start"><span class="cv-feed-msg-start-icon">${msgIcon('message',32)}</span><strong>Start your conversation</strong><p>Send a kind hello, a prayer, or an encouragement.</p></div>`;
-        return `<div class="cv-feed-msg-chat"><div class="cv-feed-msg-chat-head"><button type="button" data-cv-main-msg-back class="cv-feed-msg-back" aria-label="Back to conversations">${msgIcon('back',18)}</button><span class="cv-feed-msg-chat-avatar">${av(u)}<i aria-hidden="true"></i></span><div class="cv-feed-msg-chat-title"><strong>${e(u.name||'Chat')}</strong><small><span class="cv-feed-msg-online-dot"></span>Faith In member</small></div><div class="cv-feed-msg-chat-actions"><button type="button" class="cv-feed-msg-chat-action" data-cv-msg-focus-search title="Find another member" aria-label="Find another member">${msgIcon('search',20)}</button><button type="button" class="cv-feed-msg-chat-action cv-feed-msg-phone-action" data-cv-main-msg-call="audio" title="Voice calling coming soon" aria-label="Voice calling information">${msgIcon('phone',20)}</button><button type="button" class="cv-feed-msg-chat-action cv-feed-msg-video-action" data-cv-main-msg-call="video" title="Video calling coming soon" aria-label="Video calling information">${msgIcon('video',20)}</button></div></div><div class="cv-feed-msg-bubbles" data-cv-main-msg-bubbles role="log" aria-live="polite" aria-relevant="additions text">${bubbles}</div>${composer()}</div>`;
+        return `<div class="cv-feed-msg-chat"><div class="cv-feed-msg-chat-head"><button type="button" data-cv-main-msg-back class="cv-feed-msg-back" aria-label="Back to conversations">${msgIcon('back',18)}</button><span class="cv-feed-msg-chat-avatar">${av(u)}<i aria-hidden="true"></i></span><div class="cv-feed-msg-chat-title"><strong>${e(u.name||'Chat')}</strong><small><span class="cv-feed-msg-online-dot"></span>Faith In member</small></div><div class="cv-feed-msg-chat-actions"><button type="button" class="cv-feed-msg-chat-action" data-cv-msg-focus-search title="Find another member" aria-label="Find another member">${msgIcon('search',20)}</button></div></div><div class="cv-feed-msg-bubbles" data-cv-main-msg-bubbles role="log" aria-live="polite" aria-relevant="additions text">${bubbles}</div>${composer()}</div>`;
     }
     function syncComposerHeight(scope){
         const target = scope && scope.querySelector ? scope.querySelector("[data-cv-main-msg-body]") : q("[data-cv-main-msg-body]");

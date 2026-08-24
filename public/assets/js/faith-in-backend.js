@@ -364,24 +364,7 @@
             ));
         }
 
-        return user.getIdToken().then(function (token) {
-            // Upload directly to Blob so files larger than Vercel Function's
-            // request limit do not fail before reaching /api/upload.
-            if (window.cvBlobUpload) {
-                var completed = 0;
-                return list.reduce(function (promise, file) {
-                    return promise.then(function (items) {
-                        return window.cvBlobUpload(file, token, function (fraction) {
-                            if (onProgress) onProgress((completed + fraction) / list.length);
-                        }).then(function (item) {
-                            completed += 1;
-                            items.push(item);
-                            return items;
-                        });
-                    });
-                }, Promise.resolve([]));
-            }
-
+        function uploadThroughServer(token) {
             var form = new FormData();
             list.forEach(function (file) { form.append('files', file); });
 
@@ -406,9 +389,6 @@
                         resolve((body.data && body.data.items) || []);
                         return;
                     }
-                    // Only surface `data` when it is actually a message. On a
-                    // non-2xx response it can still be the success-shaped
-                    // object, which would render as "[object Object]".
                     var message = (body && typeof body.data === 'string' && body.data)
                         ? body.data
                         : 'Upload failed. Please check your connection and try again.';
@@ -420,6 +400,37 @@
 
                 xhr.send(form);
             });
+        }
+
+        return user.getIdToken(true).then(function (token) {
+            // Upload directly to Blob so files larger than Vercel Function's
+            // request limit do not fail before reaching /api/upload.
+            if (window.cvBlobUpload) {
+                var completed = 0;
+                return list.reduce(function (promise, file) {
+                    return promise.then(function (items) {
+                        return window.cvBlobUpload(file, token, function (fraction) {
+                            if (onProgress) onProgress((completed + fraction) / list.length);
+                        }).then(function (item) {
+                            completed += 1;
+                            items.push(item);
+                            return items;
+                        });
+                    });
+                }, Promise.resolve([])).catch(function (directError) {
+                    // Small files can still use the server compatibility route.
+                    // This also returns the route's useful configuration or
+                    // authentication message instead of Blob's generic token error.
+                    var canUseServerFallback = list.every(function (file) { return file.size <= 4 * 1024 * 1024; });
+                    if (canUseServerFallback) return uploadThroughServer(token);
+                    var message = directError && directError.message ? directError.message : '';
+                    if (/client token|retrieve the client token/i.test(message)) {
+                        throw new Error('Large video upload storage could not start. Connect Faith In file storage in Vercel, then try again.');
+                    }
+                    throw directError;
+                });
+            }
+            return uploadThroughServer(token);
         });
     }
 
@@ -810,7 +821,7 @@
         return requireUser(b).then(function (user) {
             var list = files['post_media[]'] || files['media[]'] || files.file || [];
             return uploadAll(b, user, list, onProgress).then(function (items) {
-                return { staged_media: items, items: items, ready: true };
+                return { media_items: items, staged_media: items, items: items, ready: true };
             });
         });
     };
@@ -1758,6 +1769,87 @@
             }).then(function () {
                 return { request: request, tiers: VERIFICATION_TIERS };
             });
+        });
+    };
+
+    var BIBLE_TRANSLATIONS = { KJV: 'kjv', WEB: 'web', ASV: 'asv' };
+    var BIBLE_WORD_STUDIES = {
+        grace: { original: 'χάρις', transliteration: 'charis', meaning: 'God’s freely given favor and kindness, received rather than earned.' },
+        faith: { original: 'πίστις', transliteration: 'pistis', meaning: 'Trust, confidence, and faithful reliance on God.' },
+        love: { original: 'ἀγάπη', transliteration: 'agapē', meaning: 'Self-giving love that seeks the good of another.' },
+        hope: { original: 'ἐλπίς', transliteration: 'elpis', meaning: 'Confident expectation rooted in God’s character and promises.' },
+        peace: { original: 'εἰρήνη', transliteration: 'eirēnē', meaning: 'Wholeness, reconciliation, and settled well-being in God.' },
+        prayer: { original: 'προσευχή', transliteration: 'proseuchē', meaning: 'Prayer addressed to God through worship, confession, thanksgiving, and request.' }
+    };
+
+    actions.cv_bible_get_verses = function (b, params) {
+        var book = text(params.book || 'John', 80);
+        var chapter = Math.max(1, parseInt(params.chapter || 1, 10) || 1);
+        var requested = text(params.version || 'KJV').toUpperCase();
+        var translation = BIBLE_TRANSLATIONS[requested] || BIBLE_TRANSLATIONS.KJV;
+        var reference = encodeURIComponent(book + ' ' + chapter);
+        return fetch('https://bible-api.com/' + reference + '?translation=' + translation, {
+            method: 'GET',
+            headers: { Accept: 'application/json' }
+        }).then(function (response) {
+            if (!response.ok) throw new Error('Bible reader request failed.');
+            return response.json();
+        }).then(function (payload) {
+            var verses = Array.isArray(payload.verses) ? payload.verses : [];
+            return {
+                items: verses.map(function (verse) {
+                    return {
+                        v: parseInt(verse.verse || 0, 10) || 0,
+                        text: text(verse.text),
+                        reference: text(verse.book_name || book) + ' ' + chapter + ':' + (parseInt(verse.verse || 0, 10) || 0)
+                    };
+                }),
+                translation: requested,
+                reference: text(payload.reference || (book + ' ' + chapter))
+            };
+        }).catch(function () {
+            throw new Error('The Bible reader is temporarily unavailable. Please try again.');
+        });
+    };
+
+    actions.cv_bible_dictionary = function (b, params) {
+        var query = text(params.query).trim().toLowerCase();
+        var key = Object.keys(BIBLE_WORD_STUDIES).find(function (word) {
+            return query === word || query.indexOf(word) !== -1;
+        });
+        return Promise.resolve({ item: key ? BIBLE_WORD_STUDIES[key] : null, items: [] });
+    };
+
+    actions.cv_bible_get_quotes = function (b, params) {
+        var preacher = text(params.type).toLowerCase() === 'preacher';
+        var items = preacher ? [
+            { text: 'Visit many good books, but live in the Bible.', author: 'Charles Spurgeon' },
+            { text: 'The Bible knows nothing of solitary religion.', author: 'John Wesley' },
+            { text: 'The Bible was not given for our information but for our transformation.', author: 'D. L. Moody' }
+        ] : [
+            { text: 'Faith is to believe what you do not see.', author: 'Augustine' },
+            { text: 'Prayer is the nearest approach to God.', author: 'William Law' },
+            { text: 'Hope has two beautiful daughters: anger and courage.', author: 'Augustine' }
+        ];
+        return Promise.resolve({ items: items });
+    };
+
+    actions.cv_bible_get_media = function (b) {
+        return actions.cv_get_resources(b).then(function (result) {
+            var resources = result && Array.isArray(result.items) ? result.items : [];
+            var items = resources.filter(function (resource) {
+                return /video|mp4|mov|webm|youtube|vimeo/i.test(text(resource.format || resource.type || resource.url));
+            }).map(function (resource) {
+                return {
+                    id: resource.id,
+                    title: resource.title,
+                    speaker: resource.author,
+                    image: resource.image_url || resource.thumbnail_url || '',
+                    duration: 'Video',
+                    url: resource.open_url || resource.url || resource.file_url || ''
+                };
+            });
+            return { items: items };
         });
     };
 
