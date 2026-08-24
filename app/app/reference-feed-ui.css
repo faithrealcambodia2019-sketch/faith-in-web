@@ -728,6 +728,613 @@ html body #cv-root .cv-saved-feed-heading {
   }
 }
 
+/* Classic social refinement — restrained surfaces, editorial contrast, and
+   a clearer rhythm. This layer intentionally stays last so the established
+   interactions and responsive layout remain unchanged. */
+#cv-root {
+  --rf-brand: #2457d6;
+  --rf-brand-strong: #183d9f;
+  --rf-brand-soft: #edf3ff;
+  --rf-canvas: #f5f6f8;
+  --rf-surface: #ffffff;
+  --rf-ink: #14213d;
+  --rf-copy: #34425a;
+  --rf-muted: #748096;
+  --rf-line: #e7eaf0;
+  --rf-line-soft: #eef0f4;
+  --rf-radius: 18px;
+  --rf-shadow: 0 1px 2px rgba(20, 33, 61, .035), 0 12px 34px rgba(20, 33, 61, .055);
+  background:
+    radial-gradient(circle at 50% -180px, rgba(36, 87, 214, .065), transparent 430px),
+    var(--rf-canvas) !important;
+  font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
+}
+
+@media (min-width: 901px) {
+  html body #cv-root .cv-react-global-nav {
+    height: 78px !important;
+    min-height: 78px !important;
+    max-height: 78px !important;
+    border-bottom-color: rgba(20, 33, 61, .08) !important;
+    background: rgba(255, 255, 255, .93) !important;
+    box-shadow: 0 1px 0 rgba(20, 33, 61, .025), 0 8px 30px rgba(20, 33, 61, .035) !important;
+    backdrop-filter: blur(20px) saturate(175%) !important;
+  }
+
+  html body #cv-root .cv-react-nav-shell-social {
+    width: min(100%, 1500px) !important;
+    height: 78px !important;
+    min-height: 78px !important;
+    max-height: 78px !important;
+    padding-inline: clamp(22px, 3vw, 44px) !important;
+  }
+
+  html body #cv-root .cv-react-wordmark {
+    font-size: 28px !important;
+    font-weight: 880 !important;
+    letter-spacing: -.065em !important;
+  }
+
+  html body #cv-root .cv-react-social-search {
+    height: 44px !important;
+    border: 1px solid transparent !important;
+    border-radius: 14px !important;
+    background: #f3f5f8 !important;
+    box-shadow: none !important;
+    transition: background 180ms ease, border-color 180ms ease, box-shadow 180ms ease !important;
+  }
+
+  html body #cv-root .cv-react-social-search:focus-within {
+    border-color: rgba(36, 87, 214, .22) !important;
+    background: #fff !important;
+    box-shadow: 0 0 0 4px rgba(36, 87, 214, .07) !important;
+  }
+
+  html body #cv-root .cv-react-primary-nav {
+    height: 78px !important;
+    gap: 8px !important;
+  }
+
+  html body #cv-root .cv-react-primary-nav .cv-top-nav-tile {
+    width: 100px !important;
+    min-width: 100px !important;
+    height: 78px !important;
+    min-height: 78px !important;
+    gap: 5px !important;
+    padding-top: 4px !important;
+    border-radius: 12px 12px 0 0 !important;
+  }
+
+  html body #cv-root .cv-react-primary-nav .cv-top-nav-tile:hover {
+    background: linear-gradient(180deg, transparent, rgba(36, 87, 214, .045)) !important;
+  }
+
+  html body #cv-root .cv-react-primary-nav .cv-top-nav-tile svg {
+    width: 24px !important;
+    height: 24px !important;
+  }
+
+  html body #cv-root .cv-react-primary-nav .cv-top-nav-label {
+    font-size: 12px !important;
+    font-weight: 700 !important;
+  }
+
+  html body #cv-root .cv-react-primary-nav .cv-top-nav-tile.is-active::after {
+    right: 18px !important;
+    left: 18px !important;
+    height: 3px !important;
+  }
+
+  html body #cv-root .cv-react-social-actions { gap: 7px !important; }
+
+  html body #cv-root .cv-react-round-action,
+  html body #cv-root .cv-react-round-action-slot .cv-feed-messenger-button,
+  html body #cv-root .cv-react-round-action-slot .cv-feed-notifications-button {
+    width: 42px !important;
+    min-width: 42px !important;
+    height: 42px !important;
+    min-height: 42px !important;
+    background: #f4f6f9 !important;
+  }
+
+  html body #cv-root .cv-react-round-action:hover,
+  html body #cv-root .cv-react-round-action-slot :is(.cv-feed-messenger-button, .cv-feed-notifications-button):hover {
+    background: #eaf0ff !important;
+  }
+
+  html body #cv-root .cv-react-profile-avatar-button {
+    min-width: 88px !important;
+    height: 46px !important;
+    padding: 2px 8px 2px 2px !important;
+    border-radius: 24px !important;
+  }
+
+  html body #cv-root .cv-react-profile-avatar-media {
+    width: 42px !important;
+    height: 42px !important;
+    flex-basis: 42px !important;
+    box-shadow: 0 0 0 2px #fff, 0 0 0 3px rgba(36, 87, 214, .22) !important;
+  }
+}
+
+html body #cv-root .cv-react-feed-page,
+html body #cv-root .cv-feed-page-linkedin {
+  min-height: calc(100vh - 78px) !important;
+  padding-top: 28px !important;
+  background: transparent !important;
+}
+
+@media (min-width: 1181px) {
+  html body #cv-root .cv-feed-layout--three-col {
+    width: min(100%, 1400px) !important;
+    grid-template-columns: minmax(218px, 242px) minmax(540px, 680px) minmax(276px, 304px) !important;
+    gap: clamp(22px, 2.2vw, 34px) !important;
+  }
+
+  html body #cv-root .cv-feed-layout--three-col .cv-feed-main-column { max-width: 680px !important; }
+
+  html body #cv-root .cv-feed-left-sidebar,
+  html body #cv-root .cv-feed-right-sidebar {
+    top: 102px !important;
+    gap: 18px !important;
+  }
+}
+
+/* Profile and shortcuts */
+html body #cv-root .cv-feed-profile-card {
+  overflow: hidden !important;
+  border: 0 !important;
+  border-radius: 22px !important;
+  background: #fff !important;
+  box-shadow: var(--rf-shadow) !important;
+}
+
+html body #cv-root .cv-feed-profile-cover {
+  height: 76px !important;
+  background:
+    radial-gradient(circle at 78% 18%, rgba(255, 255, 255, .32), transparent 23%),
+    linear-gradient(135deg, #173577 0%, #2457d6 56%, #5e83e3 100%) !important;
+}
+
+html body #cv-root .cv-feed-profile-main { padding: 0 18px 16px !important; }
+
+html body #cv-root .cv-feed-profile-avatar {
+  margin-top: -29px !important;
+  box-shadow: 0 0 0 4px #fff, 0 8px 20px rgba(20, 33, 61, .16) !important;
+}
+
+html body #cv-root .cv-feed-profile-name {
+  color: var(--rf-ink) !important;
+  font-size: 16px !important;
+  font-weight: 800 !important;
+  letter-spacing: -.025em !important;
+}
+
+html body #cv-root .cv-feed-profile-role {
+  color: var(--rf-muted) !important;
+  font-size: 12px !important;
+}
+
+html body #cv-root .cv-react-profile-metrics {
+  margin-top: 16px !important;
+  padding-top: 14px !important;
+  border-top: 1px solid var(--rf-line-soft) !important;
+}
+
+html body #cv-root .cv-react-profile-metrics button { border-radius: 10px !important; }
+html body #cv-root .cv-react-profile-metrics button:hover { background: #f6f8fb !important; }
+
+html body #cv-root .cv-react-profile-metrics span {
+  color: var(--rf-muted) !important;
+  font-size: 10px !important;
+  font-weight: 650 !important;
+}
+
+html body #cv-root .cv-react-profile-metrics strong {
+  color: var(--rf-ink) !important;
+  font-size: 15px !important;
+  font-weight: 800 !important;
+}
+
+html body #cv-root .cv-react-saved-items {
+  min-height: 44px !important;
+  border-top-color: var(--rf-line-soft) !important;
+  color: #58657a !important;
+  background: #fbfcfd !important;
+}
+
+html body #cv-root .cv-feed-shortcuts-card {
+  display: grid !important;
+  gap: 5px !important;
+  padding: 2px !important;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+html body #cv-root .cv-feed-left-sidebar .cv-feed-shortcut {
+  min-height: 46px !important;
+  gap: 13px !important;
+  padding: 0 12px !important;
+  border: 0 !important;
+  border-radius: 14px !important;
+  color: #59667a !important;
+  background: transparent !important;
+  font-size: 13px !important;
+  font-weight: 690 !important;
+  transition: color 160ms ease, background 160ms ease, transform 160ms ease !important;
+}
+
+html body #cv-root .cv-feed-left-sidebar .cv-feed-shortcut svg {
+  width: 19px !important;
+  height: 19px !important;
+  color: #778399 !important;
+  stroke-width: 1.9 !important;
+}
+
+html body #cv-root .cv-feed-left-sidebar .cv-feed-shortcut:hover {
+  color: var(--rf-ink) !important;
+  background: rgba(255, 255, 255, .8) !important;
+  transform: translateX(2px) !important;
+}
+
+html body #cv-root .cv-feed-left-sidebar .cv-feed-shortcut.is-active {
+  color: #fff !important;
+  background: linear-gradient(135deg, #1d49bd, #2b65e7) !important;
+  box-shadow: 0 8px 20px rgba(36, 87, 214, .2) !important;
+}
+
+html body #cv-root .cv-feed-left-sidebar .cv-feed-shortcut.is-active svg { color: #fff !important; }
+
+/* Story rail */
+html body #cv-root .cv-blessings-module { margin-bottom: 22px !important; }
+
+html body #cv-root .cv-react-stories {
+  gap: 12px !important;
+  padding: 2px 2px 10px !important;
+}
+
+html body #cv-root .cv-react-story-card {
+  width: 124px !important;
+  height: 190px !important;
+  flex-basis: 124px !important;
+  border: 0 !important;
+  border-radius: 20px !important;
+  box-shadow: 0 5px 16px rgba(20, 33, 61, .1) !important;
+  transition: transform 180ms ease, box-shadow 180ms ease, filter 180ms ease !important;
+}
+
+html body #cv-root .cv-react-story-card:hover {
+  filter: saturate(1.05) !important;
+  box-shadow: 0 12px 28px rgba(20, 33, 61, .16) !important;
+  transform: translateY(-3px) !important;
+}
+
+html body #cv-root .cv-react-story-card::after {
+  position: absolute !important;
+  inset: 0 !important;
+  border: 1px solid rgba(255, 255, 255, .2) !important;
+  border-radius: inherit !important;
+  content: "" !important;
+  pointer-events: none !important;
+}
+
+html body #cv-root .cv-react-story-card strong {
+  right: 12px !important;
+  bottom: 13px !important;
+  left: 12px !important;
+  font-size: 12px !important;
+  font-weight: 760 !important;
+  letter-spacing: -.01em !important;
+}
+
+html body #cv-root .cv-react-story-avatar {
+  top: 12px !important;
+  left: 12px !important;
+  width: 36px !important;
+  height: 36px !important;
+  box-shadow: 0 0 0 2px #fff, 0 0 0 4px #2d67e8, 0 5px 12px rgba(10, 20, 42, .2) !important;
+}
+
+html body #cv-root .cv-react-create-story {
+  background: #fff !important;
+  box-shadow: 0 5px 18px rgba(20, 33, 61, .075) !important;
+}
+
+html body #cv-root .cv-react-story-create-media { height: 120px !important; }
+
+html body #cv-root .cv-react-create-story .cv-react-story-create-footer {
+  min-height: 70px !important;
+  background: #fff !important;
+}
+
+/* Composer */
+html body #cv-root .cv-react-fb-composer {
+  margin-bottom: 18px !important;
+  padding: 20px 22px 12px !important;
+  border: 0 !important;
+  border-radius: 20px !important;
+  box-shadow: var(--rf-shadow) !important;
+}
+
+html body #cv-root .cv-react-fb-composer .cv-feed-composer-head { gap: 14px !important; }
+
+html body #cv-root .cv-react-fb-composer .cv-feed-composer-avatar {
+  width: 48px !important;
+  height: 48px !important;
+  flex-basis: 48px !important;
+  box-shadow: 0 0 0 2px #fff, 0 0 0 3px #dfe6f2 !important;
+}
+
+html body #cv-root .cv-react-fb-composer .cv-feed-compose-trigger {
+  min-height: 50px !important;
+  padding-inline: 20px !important;
+  border: 0 !important;
+  border-radius: 16px !important;
+  color: #68758a !important;
+  background: #f3f5f8 !important;
+  font-size: 15px !important;
+  font-weight: 540 !important;
+}
+
+html body #cv-root .cv-react-fb-composer .cv-feed-compose-trigger:hover {
+  color: var(--rf-copy) !important;
+  background: #eceff4 !important;
+}
+
+html body #cv-root .cv-react-fb-composer .cv-feed-compose-actions {
+  justify-content: space-between !important;
+  gap: 4px !important;
+  margin-top: 13px !important;
+  padding-top: 11px !important;
+  border-top: 1px solid var(--rf-line-soft) !important;
+}
+
+html body #cv-root .cv-react-fb-composer .cv-feed-compose-action {
+  min-height: 44px !important;
+  flex: 1 1 25% !important;
+  gap: 8px !important;
+  padding-inline: 8px !important;
+  border-radius: 12px !important;
+  color: #566277 !important;
+  background: transparent !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+}
+
+html body #cv-root .cv-react-fb-composer .cv-feed-compose-action:hover { background: #f4f6f9 !important; }
+html body #cv-root .cv-react-fb-composer .cv-feed-compose-action svg { width: 20px !important; height: 20px !important; }
+html body #cv-root .cv-react-fb-composer .cv-feed-compose-action--live svg { color: #2457d6 !important; }
+html body #cv-root .cv-react-fb-composer .cv-feed-compose-action--text svg { color: #159467 !important; }
+html body #cv-root .cv-react-fb-composer .cv-feed-compose-action--photo svg { color: #d44768 !important; }
+html body #cv-root .cv-react-fb-composer .cv-feed-compose-action--article svg { color: #7c4dcc !important; }
+
+/* Feed cards */
+html body #cv-root .cv-feed-toolbar {
+  min-height: 36px !important;
+  margin-bottom: 14px !important;
+}
+
+html body #cv-root .cv-feed-stream { gap: 18px !important; }
+
+html body #cv-root .cv-react-post-card {
+  border: 0 !important;
+  border-radius: 20px !important;
+  box-shadow: var(--rf-shadow) !important;
+}
+
+html body #cv-root .cv-react-post-card:hover {
+  border-color: transparent !important;
+  box-shadow: 0 2px 4px rgba(20, 33, 61, .035), 0 16px 38px rgba(20, 33, 61, .075) !important;
+}
+
+html body #cv-root .cv-react-post-card .cv-feed-card-head { padding: 22px 24px 12px !important; }
+
+html body #cv-root .cv-react-post-card .cv-avatar-trigger,
+html body #cv-root .cv-react-post-card .cv-avatar-trigger > * {
+  width: 48px !important;
+  height: 48px !important;
+}
+
+html body #cv-root .cv-react-post-card .cv-avatar-trigger {
+  border-radius: 50% !important;
+  box-shadow: 0 0 0 2px #fff, 0 0 0 3px #dfe6f2 !important;
+}
+
+html body #cv-root .cv-react-post-card .cv-feed-author { gap: 13px !important; }
+
+html body #cv-root .cv-react-post-card .cv-feed-author h3 {
+  font-size: 15px !important;
+  font-weight: 800 !important;
+}
+
+html body #cv-root .cv-react-post-card .cv-feed-meta {
+  margin-top: 3px !important;
+  font-size: 12px !important;
+}
+
+html body #cv-root .cv-react-post-card .cv-social-follow-btn {
+  min-height: 38px !important;
+  padding-inline: 16px !important;
+  border: 1px solid rgba(36, 87, 214, .4) !important;
+  border-radius: 12px !important;
+  font-size: 13px !important;
+  font-weight: 760 !important;
+}
+
+html body #cv-root .cv-react-post-card .cv-feed-body {
+  padding: 8px 24px 20px !important;
+  font-size: 15px !important;
+  line-height: 1.62 !important;
+}
+
+html body #cv-root .cv-react-post-card .cv-feed-body:has(.cv-feed-media-grid),
+html body #cv-root .cv-react-post-card .cv-feed-body:has(.cv-feed-reel-wrap) {
+  padding-bottom: 0 !important;
+}
+
+html body #cv-root .cv-react-post-card .cv-feed-body .cv-feed-media-grid,
+html body #cv-root .cv-react-post-card .cv-feed-body .cv-feed-reel-wrap.is-video-wide {
+  width: calc(100% + 48px) !important;
+  max-width: none !important;
+  margin-right: -24px !important;
+  margin-left: -24px !important;
+}
+
+html body #cv-root .cv-react-post-card .cv-feed-body .cv-feed-media-grid.is-one.is-portrait .cv-feed-media-item,
+html body #cv-root .cv-react-post-card .cv-feed-body .cv-feed-reel-wrap.is-video-reel,
+html body #cv-root .cv-react-post-card .cv-feed-body .cv-feed-reel-wrap.is-video-portrait {
+  margin-inline: auto !important;
+}
+
+html body #cv-root .cv-react-post-card .cv-feed-body .cv-feed-reel-wrap.is-video-reel {
+  width: min(100%, 405px) !important;
+}
+
+html body #cv-root .cv-react-post-card .cv-feed-body .cv-feed-reel-wrap.is-video-portrait {
+  width: min(100%, 540px) !important;
+}
+
+html body #cv-root .cv-feed-verse-content {
+  border: 0 !important;
+  border-radius: 16px !important;
+  color: #2d3d59 !important;
+  background: linear-gradient(145deg, #f7f4ec, #fbfaf6) !important;
+  box-shadow: inset 0 0 0 1px rgba(138, 112, 63, .1) !important;
+}
+
+html body #cv-root .cv-feed-verse-content::before { color: rgba(177, 137, 63, .2) !important; }
+
+html body #cv-root .cv-react-post-card .cv-post-social-stats {
+  min-height: 44px !important;
+  padding-inline: 24px !important;
+}
+
+html body #cv-root .cv-react-post-card .cv-linkedin-actions { padding: 6px 12px !important; }
+
+html body #cv-root .cv-react-post-card :is(.cv-linkedin-action, .cv-reaction-trigger) {
+  min-height: 44px !important;
+  border-radius: 11px !important;
+  font-size: 13px !important;
+}
+
+html body #cv-root .cv-linkedin-comment-row {
+  padding: 13px 22px 18px !important;
+  background: #fbfcfd !important;
+}
+
+/* Right rail */
+html body #cv-root .cv-feed-right-sidebar .cv-feed-side-card {
+  padding: 18px !important;
+  border: 0 !important;
+  border-radius: 20px !important;
+  background: #fff !important;
+  box-shadow: var(--rf-shadow) !important;
+}
+
+html body #cv-root .cv-feed-right-sidebar .cv-ui-verse-card {
+  position: relative !important;
+  overflow: hidden !important;
+  color: #fff !important;
+  background:
+    radial-gradient(circle at 100% 0, rgba(113, 151, 255, .28), transparent 42%),
+    linear-gradient(145deg, #102653, #193e8f) !important;
+}
+
+html body #cv-root .cv-feed-right-sidebar .cv-ui-verse-card::after {
+  position: absolute !important;
+  right: -24px !important;
+  bottom: -52px !important;
+  width: 130px !important;
+  height: 130px !important;
+  border: 1px solid rgba(255, 255, 255, .08) !important;
+  border-radius: 50% !important;
+  content: "" !important;
+}
+
+html body #cv-root .cv-ui-verse-heading,
+html body #cv-root .cv-ui-verse-heading h3,
+html body #cv-root .cv-ui-verse-heading i { color: #fff !important; }
+
+html body #cv-root .cv-ui-verse-heading h3 span {
+  font-family: Georgia, "Times New Roman", serif !important;
+  font-size: 17px !important;
+  font-weight: 700 !important;
+}
+
+html body #cv-root .cv-ui-verse-heading h3 small { color: rgba(255, 255, 255, .65) !important; }
+
+html body #cv-root .cv-ui-verse-box {
+  position: relative !important;
+  z-index: 1 !important;
+  border-left: 2px solid #d3af5c !important;
+  color: rgba(255, 255, 255, .92) !important;
+  background: transparent !important;
+}
+
+html body #cv-root .cv-ui-verse-box p { color: inherit !important; }
+html body #cv-root .cv-ui-verse-box strong { color: #e2c577 !important; }
+
+html body #cv-root .cv-ui-contacts-heading {
+  padding-bottom: 12px !important;
+  border-bottom: 1px solid var(--rf-line-soft) !important;
+}
+
+html body #cv-root .cv-ui-contacts-heading h3 {
+  color: var(--rf-ink) !important;
+  font-size: 15px !important;
+  font-weight: 800 !important;
+}
+
+html body #cv-root .cv-ui-contact-row {
+  padding: 9px 5px !important;
+  border-radius: 13px !important;
+  transition: background 150ms ease !important;
+}
+
+html body #cv-root .cv-ui-contact-row:hover { background: #f5f7fa !important; }
+html body #cv-root .cv-ui-contact-name { color: var(--rf-ink) !important; font-weight: 760 !important; }
+html body #cv-root .cv-ui-contact-message { border-color: #dce3ef !important; border-radius: 8px !important; background: #fff !important; }
+
+@media (max-width: 900px) {
+  html body #cv-root .cv-react-feed-page,
+  html body #cv-root .cv-feed-page-linkedin { padding-top: 18px !important; }
+
+  html body #cv-root .cv-react-fb-composer { border-radius: 18px !important; }
+  html body #cv-root .cv-react-post-card { border-radius: 18px !important; }
+}
+
+@media (max-width: 560px) {
+  html body #cv-root .cv-react-story-card { width: 110px !important; height: 170px !important; flex-basis: 110px !important; }
+  html body #cv-root .cv-react-story-create-media { height: 107px !important; }
+  html body #cv-root .cv-react-create-story .cv-react-story-create-footer { min-height: 63px !important; }
+  html body #cv-root .cv-react-fb-composer { margin-inline: 8px !important; padding: 14px 14px 8px !important; }
+  html body #cv-root .cv-react-fb-composer .cv-feed-compose-action { padding-inline: 4px !important; }
+  html body #cv-root .cv-react-post-card { border-radius: 0 !important; box-shadow: 0 1px 0 rgba(20, 33, 61, .08), 0 -1px 0 rgba(20, 33, 61, .04) !important; }
+  html body #cv-root .cv-react-post-card .cv-feed-card-head { padding: 17px 14px 9px !important; }
+  html body #cv-root .cv-react-post-card .cv-feed-body { padding: 7px 14px 16px !important; }
+  html body #cv-root .cv-react-post-card .cv-feed-body .cv-feed-media-grid,
+  html body #cv-root .cv-react-post-card .cv-feed-body .cv-feed-reel-wrap.is-video-wide {
+    width: calc(100% + 28px) !important;
+    margin-right: -14px !important;
+    margin-left: -14px !important;
+  }
+}
+
+.dark #cv-root {
+  --rf-canvas: #10141c;
+  --rf-surface: #181e29;
+  --rf-ink: #f3f5f8;
+  --rf-copy: #d7dde7;
+  --rf-muted: #98a3b5;
+  --rf-line: rgba(255, 255, 255, .09);
+  --rf-line-soft: rgba(255, 255, 255, .07);
+}
+
+.dark #cv-root :is(.cv-feed-profile-card, .cv-react-fb-composer, .cv-react-post-card, .cv-feed-right-sidebar .cv-feed-side-card) {
+  background: var(--rf-surface) !important;
+}
+
 /* Social media framing: single images are 1:1 or 3:4, videos adapt to
    9:16, 16:9, 3:4, or 1:1, and galleries use a compact photo grid. */
 html body #cv-root .cv-react-post-card .cv-feed-media-grid {
