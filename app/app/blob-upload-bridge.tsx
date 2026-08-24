@@ -49,7 +49,14 @@ export default function BlobUploadBridge() {
       const blob = await upload(`faith-in/${payload.sub}/${safeName(file.name)}`, file, {
         access: "public",
         handleUploadUrl: "/api/upload",
-        clientPayload: JSON.stringify({ idToken }),
+        // The Vercel client-token request is a separate request from the Blob
+        // PUT. Authenticate that request explicitly; relying on an ID token in
+        // clientPayload left the route unable to distinguish it from the
+        // legacy multipart endpoint in production.
+        headers: {
+          Authorization: `Bearer ${idToken}`,
+          "x-faith-in-blob-token-request": "1",
+        },
         contentType: file.type,
         onUploadProgress: ({ percentage }) => onProgress?.(percentage / 100),
       });
