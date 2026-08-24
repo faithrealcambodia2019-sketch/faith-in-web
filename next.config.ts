@@ -11,7 +11,7 @@ const contentSecurityPolicy = [
   "img-src 'self' data: blob: https:",
   "font-src 'self' data: https:",
   "media-src 'self' blob: https:",
-  "connect-src 'self' https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com https://*.blob.vercel-storage.com https://accounts.google.com https://bible-api.com",
+  "connect-src 'self' https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com https://vercel.com https://*.blob.vercel-storage.com https://accounts.google.com https://bible-api.com",
   "frame-src https://accounts.google.com https://*.firebaseapp.com",
   "worker-src 'self' blob:",
   "manifest-src 'self'",
