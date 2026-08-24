@@ -678,3 +678,90 @@ html body #cv-root .cv-saved-feed-heading {
 .dark #cv-root :is(.cv-feed-compose-trigger, .cv-comment-input-wrap) { color: var(--rf-muted) !important; background: #202836 !important; }
 .dark #cv-root .cv-feed-verse-content { color: #dce4f2 !important; border-color: rgba(255, 255, 255, .09) !important; background: #1d2532 !important; }
 .dark #cv-root .cv-linkedin-comment-row { background: #151b25 !important; }
+
+/* Restore the complete desktop community workspace. The focused-feed variant
+   remains available for narrow screens, while desktop keeps the familiar
+   profile, feed, and contacts rhythm people expect from a social network. */
+@media (min-width: 1181px) {
+  html body #cv-root .cv-react-nav-shell-social {
+    grid-template-columns: minmax(330px, 1fr) auto minmax(330px, 1fr) !important;
+  }
+
+  html body #cv-root .cv-react-social-nav-left {
+    gap: 24px !important;
+  }
+
+  html body #cv-root .cv-react-social-search {
+    display: flex !important;
+    width: min(280px, 24vw) !important;
+    min-width: 210px !important;
+  }
+
+  html body #cv-root .cv-react-feed-page,
+  html body #cv-root .cv-feed-page-linkedin {
+    padding: 34px clamp(22px, 2.8vw, 48px) 120px !important;
+  }
+
+  html body #cv-root .cv-feed-layout--three-col {
+    display: grid !important;
+    width: min(100%, 1480px) !important;
+    margin: 0 auto !important;
+    grid-template-columns: minmax(220px, 250px) minmax(540px, 720px) minmax(280px, 320px) !important;
+    justify-content: center !important;
+    align-items: start !important;
+    gap: clamp(22px, 2vw, 32px) !important;
+  }
+
+  html body #cv-root .cv-feed-layout--three-col .cv-feed-main-column {
+    width: 100% !important;
+    max-width: 720px !important;
+    min-width: 0 !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+  }
+
+  html body #cv-root .cv-feed-layout--three-col .cv-feed-left-sidebar,
+  html body #cv-root .cv-feed-layout--three-col .cv-feed-right-sidebar {
+    display: flex !important;
+    min-width: 0 !important;
+  }
+}
+
+@media (min-width: 901px) and (max-width: 1180px) {
+  html body #cv-root .cv-feed-layout--three-col {
+    display: grid !important;
+    width: min(100%, 1010px) !important;
+    margin: 0 auto !important;
+    grid-template-columns: minmax(210px, 250px) minmax(0, 720px) !important;
+    justify-content: center !important;
+    align-items: start !important;
+    gap: 26px !important;
+  }
+
+  html body #cv-root .cv-feed-layout--three-col .cv-feed-main-column {
+    width: 100% !important;
+    max-width: 720px !important;
+    min-width: 0 !important;
+  }
+
+  html body #cv-root .cv-feed-layout--three-col .cv-feed-left-sidebar {
+    display: flex !important;
+  }
+
+  html body #cv-root .cv-feed-layout--three-col .cv-feed-right-sidebar {
+    display: none !important;
+  }
+}
+
+@media (max-width: 900px) {
+  html body #cv-root .cv-feed-layout--three-col {
+    display: block !important;
+    width: min(100%, 720px) !important;
+    margin: 0 auto !important;
+  }
+
+  html body #cv-root .cv-feed-layout--three-col :is(.cv-feed-left-sidebar, .cv-feed-right-sidebar) {
+    display: none !important;
+  }
+}
