@@ -5761,7 +5761,7 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
                 <div class="cv-feed-layout cv-feed-layout--three-col">
                     ${cvRenderFeedLeftSidebar()}
                     <main class="cv-feed-main-column">
-                        ${state.savedPostsOnly ? savedHeading : cvRenderFeedWelcome() + cvRenderStoriesCarousel() + cvRenderFeedComposer()}
+                        ${state.savedPostsOnly ? savedHeading : cvRenderStoriesCarousel() + cvRenderFeedComposer()}
                         ${desktopSortToolbar}
                         <div class="space-y-6 cv-feed-stream">
         `;
