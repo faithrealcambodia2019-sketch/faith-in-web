@@ -103,7 +103,14 @@ html body #cv-root .cv-react-profile-name { max-width: 72px !important; color: #
 html body #cv-root .cv-react-feed-page,
 html body #cv-root .cv-feed-page-linkedin { max-width: none !important; min-height: calc(100vh - 72px) !important; padding: 36px 28px 120px !important; background: radial-gradient(circle at 50% -220px, rgba(73, 100, 232, .075), transparent 480px), var(--fix-canvas) !important; }
 html body #cv-root .cv-feed-layout--three-col { width: min(100%, 1370px) !important; margin: 0 auto !important; grid-template-columns: 238px minmax(580px, 720px) 300px !important; gap: 32px !important; align-items: start !important; }
-html body #cv-root .cv-feed-main-column { width: 100% !important; max-width: 720px !important; min-width: 0 !important; }
+html body #cv-root .cv-feed-main-column {
+  width: 100% !important;
+  max-width: 720px !important;
+  min-width: 0 !important;
+  height: auto !important;
+  max-height: none !important;
+  overflow: visible !important;
+}
 html body #cv-root .cv-feed-left-sidebar,
 html body #cv-root .cv-feed-right-sidebar { top: 104px !important; max-height: calc(100vh - 124px) !important; scrollbar-width: none !important; }
 html body #cv-root .cv-feed-left-sidebar::-webkit-scrollbar,
