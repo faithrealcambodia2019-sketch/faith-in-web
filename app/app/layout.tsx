@@ -3,8 +3,10 @@ import "./tailwind.css";
 import "../../public/assets/css/faith-in.css";
 import "../../public/assets/css/community.css";
 import "./production-ui.css";
+import "./dashboard-blue.css";
 import { browserRuntimeConfig } from "@/lib/runtime-config";
 import { site } from "@/lib/site-content";
+import BlobUploadBridge from "./blob-upload-bridge";
 
 /**
  * Layout for the signed-in application.
@@ -84,6 +86,7 @@ function bootstrap(config: unknown) {
 export default function AppLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <>
+      <BlobUploadBridge />
       <script
         id="faith-in-bootstrap"
         // Serialised configuration only; no user-controlled input.
