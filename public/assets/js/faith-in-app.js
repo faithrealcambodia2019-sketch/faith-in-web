@@ -5589,6 +5589,30 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
     }
 
 
+    window.cvClassifyFeedImage = (image) => {
+        if (!image || !image.closest) return;
+        const grid = image.closest('.cv-feed-media-grid.is-one');
+        if (!grid) return;
+        const width = Number(image.naturalWidth || 0);
+        const height = Number(image.naturalHeight || 0);
+        grid.classList.toggle('is-portrait', width > 0 && height / width >= 1.15);
+        grid.classList.toggle('is-square', !(width > 0 && height / width >= 1.15));
+    };
+
+    window.cvClassifyFeedVideo = (video) => {
+        if (!video || !video.closest) return;
+        const wrap = video.closest('.cv-feed-reel-wrap');
+        if (!wrap) return;
+        const width = Number(video.videoWidth || 0);
+        const height = Number(video.videoHeight || 0);
+        const ratio = width > 0 && height > 0 ? width / height : 1;
+        wrap.classList.remove('is-video-portrait', 'is-video-reel', 'is-video-square', 'is-video-wide');
+        if (ratio <= 0.66) wrap.classList.add('is-video-reel');
+        else if (ratio < 0.9) wrap.classList.add('is-video-portrait');
+        else if (ratio >= 1.35) wrap.classList.add('is-video-wide');
+        else wrap.classList.add('is-video-square');
+    };
+
     function cvRenderPostMedia(post, isDark) {
         const items = Array.isArray(post.media_items) ? post.media_items.filter(item => item && String(item.type || '').toLowerCase() !== 'audio' && !item.is_blessing_music && (item.local_url || item.url || item.drive_url || item.preview_url)) : [];
         if (!items.length && post.cover_image_url) items.push({ url: post.cover_image_url, local_url: post.cover_image_url, type: 'image', downloadable: true });
@@ -5602,16 +5626,16 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
             const mime = String(first.mime || '').trim().toLowerCase();
             if (!videoUrl && !previewUrl) return '';
             if (previewUrl && /drive\.google\.com\/file\/d\//i.test(previewUrl)) {
-                return `<div class="cv-feed-reel-wrap mt-4 is-ready is-drive-video"><iframe class="cv-feed-reel-video cv-feed-drive-video" src="${escapeAttr(previewUrl)}" allow="autoplay; fullscreen; encrypted-media; picture-in-picture" allowfullscreen loading="lazy"></iframe><span class="cv-reel-badge">Reel</span>${dl(first, 'Reel video')}</div>`;
+                return `<div class="cv-feed-reel-wrap mt-4 is-ready is-drive-video is-video-wide"><iframe class="cv-feed-reel-video cv-feed-drive-video" src="${escapeAttr(previewUrl)}" allow="autoplay; fullscreen; encrypted-media; picture-in-picture" allowfullscreen loading="lazy"></iframe><span class="cv-reel-badge">Reel</span>${dl(first, 'Reel video')}</div>`;
             }
             const ext = (videoUrl.split('?')[0].split('#')[0].match(/\.([a-z0-9]+)$/i) || [,''])[1].toLowerCase();
             const typeMap = { mp4: 'video/mp4', m4v: 'video/mp4', webm: 'video/webm', ogv: 'video/ogg', ogg: 'video/ogg', mov: 'video/quicktime', qt: 'video/quicktime' };
             const videoType = mime || typeMap[ext] || 'video/mp4';
-            return `<div class="cv-feed-reel-wrap mt-4 is-ready is-native-video"><video src="${escapeAttr(videoUrl)}" class="cv-feed-reel-video" data-cv-smooth-video="1" controls playsinline webkit-playsinline preload="auto"><source src="${escapeAttr(videoUrl)}" type="${escapeAttr(videoType)}"></video><span class="cv-reel-badge">Reel</span>${dl(first, 'Reel video')}</div>`;
+            return `<div class="cv-feed-reel-wrap mt-4 is-ready is-native-video is-video-square"><video src="${escapeAttr(videoUrl)}" class="cv-feed-reel-video" data-cv-smooth-video="1" controls playsinline webkit-playsinline preload="metadata" onloadedmetadata="cvClassifyFeedVideo(this)"><source src="${escapeAttr(videoUrl)}" type="${escapeAttr(videoType)}"></video><span class="cv-reel-badge">Reel</span>${dl(first, 'Reel video')}</div>`;
         }
         const count = items.length;
-        const cls = count === 1 ? 'is-one' : (count === 2 ? 'is-two' : 'is-many');
-        return `<div class="cv-feed-media-grid ${cls} mt-4">${items.slice(0, 10).map((item, idx) => `<div class="cv-feed-media-item"><img src="${safeImageUrl(item.local_url || item.url || item.drive_url, '')}" alt="Post image ${idx + 1}" loading="eager" decoding="async" fetchpriority="high" />${dl(item, 'image ' + (idx + 1))}${idx === 9 && count > 10 ? `<span class="cv-feed-media-more">+${count - 10}</span>` : ''}</div>`).join('')}</div>`;
+        const cls = count === 1 ? 'is-one is-square' : (count === 2 ? 'is-two' : (count === 3 ? 'is-three' : (count === 4 ? 'is-four' : 'is-many')));
+        return `<div class="cv-feed-media-grid ${cls} mt-4">${items.slice(0, 10).map((item, idx) => `<div class="cv-feed-media-item" data-media-index="${idx}"><img src="${safeImageUrl(item.local_url || item.url || item.drive_url, '')}" alt="Post image ${idx + 1}" loading="eager" decoding="async" fetchpriority="high" ${count === 1 ? 'onload="cvClassifyFeedImage(this)"' : ''} />${dl(item, 'image ' + (idx + 1))}${idx === 9 && count > 10 ? `<span class="cv-feed-media-more">+${count - 10}</span>` : ''}</div>`).join('')}</div>`;
     }
 
 
