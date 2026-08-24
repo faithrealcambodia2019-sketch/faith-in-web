@@ -635,6 +635,39 @@ html body #cv-root :where(input:not([type="file"]), textarea, select):focus {
   }
 }
 
+/* Final legacy-specific flattening. The old application stylesheet uses very
+   strong selectors for these three surfaces, so address them explicitly. */
+html body #cv-root .cv-feed-left-sidebar .cv-react-profile-metrics button,
+html body #cv-root .cv-feed-left-sidebar .cv-react-profile-metrics button:hover {
+  border: 0 !important;
+  border-radius: 0 !important;
+  outline: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+html body #cv-root .cv-feed-right-sidebar .cv-feed-side-card.cv-ui-rail-card,
+html body #cv-root .cv-feed-right-sidebar .cv-feed-side-card.cv-ui-verse-card,
+html body #cv-root .cv-feed-right-sidebar .cv-feed-side-card.cv-ui-contacts-card,
+html body #cv-root .cv-feed-right-sidebar .cv-feed-side-card.cv-react-contacts-card {
+  border: 0 !important;
+  border-radius: 0 !important;
+  outline: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+html body #cv-root .cv-feed-right-sidebar .cv-ui-verse-card {
+  border-bottom: 1px solid #e3e6eb !important;
+}
+
+html body #cv-root .cv-react-fb-composer.cv-feed-composer-card {
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
 /* --------------------------------------------------------------------------
    Open editorial mode — hierarchy through space, type, and tone instead of
    outlined boxes. Faith In should feel like a calm community publication,
