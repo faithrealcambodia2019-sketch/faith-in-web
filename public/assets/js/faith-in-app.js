@@ -488,7 +488,7 @@
             : (following
                 ? '<span class="cv-social-follow-btn__icon" aria-hidden="true"><i data-lucide="check"></i></span>'
                 : '<span class="cv-social-follow-btn__icon" aria-hidden="true"><i data-lucide="plus"></i></span>');
-        return `<button type="button" onclick="cvToggleFollow(${userId}, ${following ? 'true' : 'false'})" class="cv-social-follow-btn ${following ? 'is-following' : 'is-not-following'} ${extraClass}" style="box-shadow:none!important;filter:none!important;text-shadow:none!important;outline:none!important;background-clip:padding-box!important;-webkit-tap-highlight-color:transparent!important;" ${loading ? 'disabled' : ''} aria-label="${label}">${icon}<span class="cv-social-follow-btn__label">${label}</span></button>`;
+        return `<button type="button" onclick="cvToggleFollow(${userId}, ${following ? 'true' : 'false'})" class="cv-social-follow-btn ${following ? 'is-following' : 'is-not-following'} ${extraClass}" data-cv-follow-label="${escapeAttr(label)}" style="box-shadow:none!important;filter:none!important;text-shadow:none!important;outline:none!important;background-clip:padding-box!important;-webkit-tap-highlight-color:transparent!important;" ${loading ? 'disabled' : ''} aria-label="${label}">${icon}<span class="cv-social-follow-btn__label">${label}</span></button>`;
     }
 
     function cvSocialMoreButton(user, extraClass = '') {
