@@ -483,12 +483,13 @@
         const loading = parseInt(state.followLoadingUserId || 0, 10) === userId;
         const following = !!user.is_following;
         const label = loading ? 'Saving...' : (following ? 'Following' : 'Follow');
+        const labelColor = following ? '#5f6b7d' : '#2457d6';
         const icon = loading
             ? '<span class="cv-social-follow-btn__spinner" aria-hidden="true"></span>'
             : (following
                 ? '<span class="cv-social-follow-btn__icon" aria-hidden="true"><i data-lucide="check"></i></span>'
                 : '<span class="cv-social-follow-btn__icon" aria-hidden="true"><i data-lucide="plus"></i></span>');
-        return `<button type="button" onclick="cvToggleFollow(${userId}, ${following ? 'true' : 'false'})" class="cv-social-follow-btn ${following ? 'is-following' : 'is-not-following'} ${extraClass}" data-cv-follow-label="${escapeAttr(label)}" style="box-shadow:none!important;filter:none!important;text-shadow:none!important;outline:none!important;background-clip:padding-box!important;-webkit-tap-highlight-color:transparent!important;" ${loading ? 'disabled' : ''} aria-label="${label}">${icon}<span class="cv-social-follow-btn__label" style="display:inline-block!important;width:auto!important;max-width:none!important;overflow:visible!important;color:inherit!important;-webkit-text-fill-color:inherit!important;font-size:13px!important;line-height:1!important;visibility:visible!important;opacity:1!important;">${label}</span></button>`;
+        return `<button type="button" onclick="cvToggleFollow(${userId}, ${following ? 'true' : 'false'})" class="cv-social-follow-btn ${following ? 'is-following' : 'is-not-following'} ${extraClass}" data-cv-follow-label="${escapeAttr(label)}" style="box-shadow:none!important;filter:none!important;text-shadow:none!important;outline:none!important;background-clip:padding-box!important;-webkit-tap-highlight-color:transparent!important;" ${loading ? 'disabled' : ''} aria-label="${label}">${icon}<span class="cv-social-follow-btn__label" style="display:inline-block!important;width:auto!important;max-width:none!important;overflow:visible!important;color:${labelColor}!important;-webkit-text-fill-color:${labelColor}!important;font-size:13px!important;font-weight:780!important;line-height:1!important;visibility:visible!important;opacity:1!important;">${label}</span></button>`;
     }
 
     function cvSocialMoreButton(user, extraClass = '') {
