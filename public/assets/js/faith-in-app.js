@@ -5720,6 +5720,29 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
         return `<div class="cv-feed-skeleton-group" role="status" aria-live="polite" aria-label="Loading community posts"><span class="screen-reader-text">Loading community posts…</span>${card}${card}</div>`;
     }
 
+    function cvRenderFeedWelcome() {
+        const user = state.currentUser || {};
+        const emailName = user.email ? String(user.email).split('@')[0] : '';
+        const fullName = String(user.name || user.displayName || user.display_name || emailName || 'Friend').trim();
+        const firstName = fullName.split(/\s+/)[0] || 'Friend';
+        return `
+            <header class="cv-community-welcome" aria-labelledby="cv-community-welcome-title">
+                <div class="cv-community-welcome__copy">
+                    <span class="cv-community-welcome__eyebrow"><i data-lucide="sparkles" aria-hidden="true"></i> Faith In community</span>
+                    <h1 id="cv-community-welcome-title">Welcome back, ${escapeHtml(firstName)}</h1>
+                    <p>Share what matters, support someone in prayer, and grow together.</p>
+                </div>
+                <div class="cv-community-welcome__actions" aria-label="Quick actions">
+                    <button type="button" class="cv-community-quick-action cv-community-quick-action--secondary" onclick="setTab('prayer')">
+                        <i data-lucide="heart-handshake" aria-hidden="true"></i><span>Prayer wall</span>
+                    </button>
+                    <button type="button" class="cv-community-quick-action cv-community-quick-action--primary" onclick="cvOpenFeedCreate('text')">
+                        <i data-lucide="plus" aria-hidden="true"></i><span>Create post</span>
+                    </button>
+                </div>
+            </header>`;
+    }
+
     function renderHomeFeed() {
         const isDark = state.settings.theme === 'dark';
         const posts = Array.isArray(state.posts) ? state.posts : [];
@@ -5738,7 +5761,7 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
                 <div class="cv-feed-layout cv-feed-layout--three-col">
                     ${cvRenderFeedLeftSidebar()}
                     <main class="cv-feed-main-column">
-                        ${state.savedPostsOnly ? savedHeading : cvRenderStoriesCarousel() + cvRenderFeedComposer()}
+                        ${state.savedPostsOnly ? savedHeading : cvRenderFeedWelcome() + cvRenderStoriesCarousel() + cvRenderFeedComposer()}
                         ${desktopSortToolbar}
                         <div class="space-y-6 cv-feed-stream">
         `;
