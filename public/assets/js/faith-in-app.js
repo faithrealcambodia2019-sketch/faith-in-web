@@ -749,6 +749,25 @@
         }
     }
 
+    function cvReadableMessage(value, fallback) {
+        const safeFallback = typeof fallback === 'string' ? fallback : 'Something went wrong. Please try again.';
+        if (typeof value === 'string') return value.trim() || safeFallback;
+        if (value instanceof Error) return cvReadableMessage(value.message, safeFallback);
+        if (value && typeof value === 'object') {
+            const candidates = [value.message, value.error, value.detail, value.data, value.reason];
+            for (let i = 0; i < candidates.length; i += 1) {
+                const candidate = candidates[i];
+                if (candidate === value || candidate == null) continue;
+                const readable = cvReadableMessage(candidate, '');
+                if (readable) return readable;
+            }
+            return safeFallback;
+        }
+        if (value == null) return safeFallback;
+        const text = String(value).trim();
+        return text && text !== '[object Object]' ? text : safeFallback;
+    }
+
     window.showToast = (message, type = 'info') => {
         const container = document.getElementById('cv-toast-container');
         if (!container) return;
@@ -764,7 +783,7 @@
         toast.className = `cv-toast-pill cv-toast-pill--${normalizedType} toast-animate`;
         toast.setAttribute('role', normalizedType === 'error' ? 'alert' : 'status');
         toast.setAttribute('aria-live', normalizedType === 'error' ? 'assertive' : 'polite');
-        toast.innerHTML = `${iconMap[normalizedType]}<span>${escapeHtml(String(message || ''))}</span>`;
+        toast.innerHTML = `${iconMap[normalizedType]}<span>${escapeHtml(cvReadableMessage(message))}</span>`;
 
         container.appendChild(toast);
         setTimeout(() => {
@@ -4586,7 +4605,8 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
         ` : '';
         const profileButtonMarkup = state.isLoggedIn ? `
             <button type="button" onclick="openProfile(); return false;" data-cv-profile-trigger="1" class="cv-react-profile-avatar-button" aria-label="Profile account">
-                ${renderProfileAvatar(state.currentUser, 'w-full h-full', 'text-xs')}
+                <span class="cv-react-profile-avatar-media">${renderProfileAvatar(state.currentUser, 'w-full h-full', 'text-xs')}</span>
+                <i data-lucide="chevron-down" class="cv-react-profile-chevron" aria-hidden="true"></i>
             </button>
         ` : '';
         const mobileHeaderLinks = state.isLoggedIn ? `
@@ -4610,6 +4630,7 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
                     <div class="cv-react-nav-left cv-react-social-nav-left">
                         <a href="#" onclick="setTab('home'); return false;" class="cv-brand-name cv-logo-image-link cv-react-wordmark" aria-label="Faith In home">
                             <span class="cv-react-logo-faith">Faith</span><span class="cv-react-logo-in">In</span>
+                            <i data-lucide="globe-2" class="cv-react-logo-globe" aria-hidden="true"></i>
                         </a>
                         ${state.isLoggedIn ? `<label class="cv-global-search cv-react-social-search" aria-label="Search Faith In">
                             <i data-lucide="search"></i>
@@ -4636,6 +4657,7 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
                     <div class="cv-nav-mobile-row cv-top-icon-nav cv-top-icon-nav-mobile" aria-label="Mobile top navigation">
                         <a href="#" onclick="setTab('home'); return false;" class="cv-brand-name cv-brand-name-mobile cv-logo-image-link cv-react-wordmark" aria-label="Faith In home">
                             <span class="cv-react-logo-faith">Faith</span><span class="cv-react-logo-in">In</span>
+                            <i data-lucide="globe-2" class="cv-react-logo-globe" aria-hidden="true"></i>
                         </a>
                         ${messageMobile}
                         ${notificationMobile}

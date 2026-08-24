@@ -36,7 +36,7 @@
     'use strict';
 
     var SDK = '10.14.1';
-    var MAX_MEDIA_BYTES = 25 * 1024 * 1024; // Must stay in step with app/api/upload/route.ts.
+    var MAX_MEDIA_BYTES = 50 * 1024 * 1024; // Must stay in step with app/api/upload/route.ts.
     var MAX_MEDIA_FILES = 10;
     var FEED_PAGE_SIZE = 50;
 
@@ -136,7 +136,14 @@
 
     function publicErrorMessage(error) {
         var code = text(error && error.code).toLowerCase();
-        var message = text(error && error.message, 500);
+        var raw = error && error.message;
+        if (raw && typeof raw === 'object') {
+            raw = raw.message || raw.error || raw.detail || raw.data || '';
+        }
+        if (!raw && error && typeof error === 'object') {
+            raw = error.error || error.detail || error.data || '';
+        }
+        var message = (raw && typeof raw === 'object') ? '' : text(raw, 500);
         if (code === 'permission-denied') return 'You do not have permission to complete that action.';
         if (code === 'unavailable' || code === 'deadline-exceeded') return 'Faith In could not reach the service. Please check your connection and try again.';
         if (isFirestoreIndexError(error)) return 'We could not prepare this content right now. Please try again shortly.';
@@ -353,11 +360,28 @@
         if (oversize) {
             return Promise.reject(new Error(
                 '"' + (oversize.name || 'file') + '" is ' + Math.ceil(oversize.size / 1048576) +
-                'MB. The limit is 25MB — please choose a smaller file.'
+                'MB. The limit is 50MB — please choose a smaller file.'
             ));
         }
 
         return user.getIdToken().then(function (token) {
+            // Upload directly to Blob so files larger than Vercel Function's
+            // request limit do not fail before reaching /api/upload.
+            if (window.cvBlobUpload) {
+                var completed = 0;
+                return list.reduce(function (promise, file) {
+                    return promise.then(function (items) {
+                        return window.cvBlobUpload(file, token, function (fraction) {
+                            if (onProgress) onProgress((completed + fraction) / list.length);
+                        }).then(function (item) {
+                            completed += 1;
+                            items.push(item);
+                            return items;
+                        });
+                    });
+                }, Promise.resolve([]));
+            }
+
             var form = new FormData();
             list.forEach(function (file) { form.append('files', file); });
 
