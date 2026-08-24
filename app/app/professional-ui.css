@@ -1,0 +1,647 @@
+/*
+ * Faith In professional product layer
+ *
+ * A restrained, editorial interface for the signed-in community. This file is
+ * intentionally last in the cascade: the application still relies on legacy
+ * feature styles, while this layer standardises the visible product shell.
+ */
+
+html body #cv-root {
+  --fi-pro-brand: #3157d5;
+  --fi-pro-brand-hover: #2547bc;
+  --fi-pro-brand-soft: #eef2ff;
+  --fi-pro-ink: #18212f;
+  --fi-pro-muted: #657083;
+  --fi-pro-subtle: #8b95a5;
+  --fi-pro-canvas: #f5f6f8;
+  --fi-pro-surface: #ffffff;
+  --fi-pro-border: #e3e7ed;
+  --fi-pro-border-strong: #d6dce5;
+  --fi-pro-gold: #a97724;
+  --fi-pro-radius: 12px;
+  --fi-pro-shadow: 0 1px 2px rgba(24, 33, 47, 0.04), 0 8px 24px rgba(24, 33, 47, 0.035);
+  background: var(--fi-pro-canvas) !important;
+  color: var(--fi-pro-ink) !important;
+  font-family: var(--font-inter), Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  letter-spacing: -0.006em;
+}
+
+html body #cv-root :where(button, input, textarea, select) {
+  font: inherit;
+}
+
+html body #cv-root :where(button, a) {
+  transition-duration: 150ms !important;
+}
+
+/* Header: one calm 64px product bar with clear active navigation. */
+html body #cv-root .cv-react-global-nav {
+  min-height: 64px !important;
+  border-bottom: 1px solid var(--fi-pro-border) !important;
+  background: rgba(255, 255, 255, 0.96) !important;
+  box-shadow: none !important;
+  backdrop-filter: saturate(150%) blur(14px) !important;
+}
+
+html body #cv-root .cv-react-nav-shell-social {
+  width: min(100%, 1440px) !important;
+  min-height: 64px !important;
+  grid-template-columns: minmax(300px, 1fr) auto minmax(300px, 1fr) !important;
+  gap: 32px !important;
+  padding-inline: 32px !important;
+}
+
+html body #cv-root .cv-react-wordmark {
+  gap: 0 !important;
+  color: var(--fi-pro-ink) !important;
+  font-size: 21px !important;
+  font-weight: 780 !important;
+  letter-spacing: -0.045em !important;
+}
+
+html body #cv-root .cv-react-logo-faith { color: var(--fi-pro-brand) !important; }
+html body #cv-root .cv-react-logo-in { color: var(--fi-pro-ink) !important; }
+html body #cv-root .cv-react-logo-globe {
+  width: 15px !important;
+  height: 15px !important;
+  margin-left: 5px !important;
+  color: var(--fi-pro-brand) !important;
+  stroke-width: 1.8 !important;
+  opacity: 0.72 !important;
+}
+
+html body #cv-root .cv-react-social-search {
+  width: min(100%, 320px) !important;
+  height: 38px !important;
+  border: 1px solid var(--fi-pro-border-strong) !important;
+  border-radius: 9px !important;
+  background: #f8f9fb !important;
+  box-shadow: none !important;
+}
+
+html body #cv-root .cv-react-social-search input {
+  color: var(--fi-pro-ink) !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+}
+
+html body #cv-root .cv-react-social-search:focus-within {
+  width: min(100%, 340px) !important;
+  border-color: rgba(49, 87, 213, 0.7) !important;
+  background: #fff !important;
+  box-shadow: 0 0 0 3px rgba(49, 87, 213, 0.1) !important;
+}
+
+html body #cv-root .cv-react-primary-nav {
+  align-self: stretch !important;
+  gap: 4px !important;
+}
+
+html body #cv-root .cv-react-primary-nav .cv-top-nav-tile {
+  width: 78px !important;
+  min-height: 64px !important;
+  border-radius: 0 !important;
+  color: #697587 !important;
+  background: transparent !important;
+}
+
+html body #cv-root .cv-react-primary-nav .cv-top-nav-tile:hover {
+  color: var(--fi-pro-ink) !important;
+  background: transparent !important;
+}
+
+html body #cv-root .cv-react-primary-nav .cv-top-nav-tile svg {
+  width: 19px !important;
+  height: 19px !important;
+  stroke-width: 1.8 !important;
+}
+
+html body #cv-root .cv-react-primary-nav .cv-top-nav-tile .cv-top-nav-label {
+  margin-top: 3px !important;
+  font-size: 10.5px !important;
+  font-weight: 650 !important;
+  letter-spacing: 0 !important;
+}
+
+html body #cv-root .cv-react-primary-nav .cv-top-nav-tile.is-active {
+  color: var(--fi-pro-brand) !important;
+}
+
+html body #cv-root .cv-react-primary-nav .cv-top-nav-tile.is-active::after {
+  right: 13px !important;
+  bottom: 0 !important;
+  left: 13px !important;
+  height: 2px !important;
+  border-radius: 2px 2px 0 0 !important;
+  background: var(--fi-pro-brand) !important;
+}
+
+html body #cv-root .cv-react-round-action,
+html body #cv-root .cv-react-round-action-slot .cv-feed-messenger-button,
+html body #cv-root .cv-react-round-action-slot .cv-feed-notifications-button {
+  width: 36px !important;
+  height: 36px !important;
+  min-width: 36px !important;
+  min-height: 36px !important;
+  border: 0 !important;
+  border-radius: 9px !important;
+  background: transparent !important;
+  color: #637083 !important;
+  box-shadow: none !important;
+}
+
+html body #cv-root .cv-react-round-action:hover,
+html body #cv-root .cv-react-round-action-slot :is(.cv-feed-messenger-button, .cv-feed-notifications-button):hover {
+  background: #f1f3f6 !important;
+  color: var(--fi-pro-ink) !important;
+}
+
+html body #cv-root .cv-react-profile-avatar-button {
+  min-width: 48px !important;
+  height: 38px !important;
+  padding: 3px 7px 3px 3px !important;
+  border: 1px solid transparent !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+html body #cv-root .cv-react-profile-avatar-button:hover {
+  border-color: var(--fi-pro-border) !important;
+  background: #f8f9fb !important;
+}
+
+/* Main frame: intentional column proportions and a readable feed width. */
+html body #cv-root .cv-react-feed-page,
+html body #cv-root .cv-feed-page-linkedin {
+  padding: 28px 24px 104px !important;
+  background: var(--fi-pro-canvas) !important;
+}
+
+html body #cv-root .cv-feed-layout--three-col {
+  width: min(100%, 1240px) !important;
+  grid-template-columns: 248px minmax(560px, 660px) 280px !important;
+  gap: 26px !important;
+  align-items: start !important;
+}
+
+html body #cv-root .cv-feed-main-column {
+  width: 100% !important;
+  max-width: 660px !important;
+}
+
+html body #cv-root :where(.cv-feed-left-card, .cv-feed-side-card, .cv-feed-composer-card, .cv-feed-card) {
+  border: 1px solid var(--fi-pro-border) !important;
+  border-radius: var(--fi-pro-radius) !important;
+  background: var(--fi-pro-surface) !important;
+  box-shadow: var(--fi-pro-shadow) !important;
+}
+
+/* Profile rail: compact, useful, and less decorative. */
+html body #cv-root .cv-react-profile-card {
+  overflow: hidden !important;
+}
+
+html body #cv-root .cv-feed-profile-cover {
+  height: 54px !important;
+  background-color: #e8ebf2 !important;
+  background-image: linear-gradient(135deg, rgba(49, 87, 213, 0.08), transparent 55%), radial-gradient(rgba(24, 33, 47, 0.13) 0.8px, transparent 0.8px) !important;
+  background-size: auto, 14px 14px !important;
+}
+
+html body #cv-root .cv-feed-profile-main {
+  padding: 0 16px 14px !important;
+}
+
+html body #cv-root .cv-feed-profile-avatar {
+  width: 58px !important;
+  height: 58px !important;
+  margin-top: -29px !important;
+  border: 3px solid #fff !important;
+  box-shadow: 0 1px 4px rgba(24, 33, 47, 0.16) !important;
+}
+
+html body #cv-root .cv-feed-profile-name {
+  color: var(--fi-pro-ink) !important;
+  font-size: 16px !important;
+  font-weight: 730 !important;
+  letter-spacing: -0.025em !important;
+}
+
+html body #cv-root .cv-feed-profile-role {
+  color: var(--fi-pro-muted) !important;
+  font-size: 12px !important;
+}
+
+html body #cv-root .cv-react-profile-metrics {
+  margin-top: 15px !important;
+  padding-top: 12px !important;
+  border-top: 1px solid #edf0f4 !important;
+}
+
+html body #cv-root .cv-react-profile-metrics button {
+  min-height: 29px !important;
+  color: var(--fi-pro-muted) !important;
+  font-size: 11.5px !important;
+}
+
+html body #cv-root .cv-react-profile-metrics strong {
+  color: var(--fi-pro-brand) !important;
+  font-weight: 700 !important;
+}
+
+html body #cv-root .cv-react-saved-items {
+  min-height: 42px !important;
+  border-top: 1px solid #edf0f4 !important;
+  color: #4d596a !important;
+  background: #fff !important;
+  font-size: 12px !important;
+  font-weight: 640 !important;
+}
+
+html body #cv-root .cv-feed-shortcuts-card {
+  padding: 6px !important;
+  border-color: transparent !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+html body #cv-root .cv-feed-left-sidebar .cv-feed-shortcut {
+  min-height: 42px !important;
+  gap: 10px !important;
+  padding: 0 10px !important;
+  border: 1px solid transparent !important;
+  border-radius: 9px !important;
+  color: #596578 !important;
+  background: transparent !important;
+  font-size: 13px !important;
+  font-weight: 610 !important;
+  box-shadow: none !important;
+}
+
+html body #cv-root .cv-feed-left-sidebar .cv-feed-shortcut:hover {
+  background: #eceff4 !important;
+  color: var(--fi-pro-ink) !important;
+}
+
+html body #cv-root .cv-feed-left-sidebar .cv-feed-shortcut svg {
+  width: 31px !important;
+  height: 31px !important;
+  flex-basis: 31px !important;
+  padding: 7px !important;
+  border-radius: 8px !important;
+  background: transparent !important;
+  color: #7d899a !important;
+  stroke-width: 1.8 !important;
+}
+
+html body #cv-root .cv-feed-left-sidebar .cv-feed-shortcut.is-active {
+  border-color: #dfe5f4 !important;
+  background: #fff !important;
+  color: var(--fi-pro-brand) !important;
+  box-shadow: 0 1px 2px rgba(24, 33, 47, 0.04) !important;
+}
+
+html body #cv-root .cv-feed-left-sidebar .cv-feed-shortcut.is-active svg {
+  background: var(--fi-pro-brand-soft) !important;
+  color: var(--fi-pro-brand) !important;
+}
+
+/* Blessings read as a compact community strip, not promotional cards. */
+html body #cv-root .cv-react-stories {
+  gap: 10px !important;
+  margin-bottom: 14px !important;
+  padding: 0 0 2px !important;
+}
+
+html body #cv-root .cv-react-story-card {
+  width: 104px !important;
+  height: 150px !important;
+  flex-basis: 104px !important;
+  border: 1px solid var(--fi-pro-border) !important;
+  border-radius: 11px !important;
+  box-shadow: 0 1px 3px rgba(24, 33, 47, 0.07) !important;
+}
+
+html body #cv-root .cv-react-story-card:hover {
+  transform: translateY(-1px) !important;
+  border-color: var(--fi-pro-border-strong) !important;
+  box-shadow: 0 6px 16px rgba(24, 33, 47, 0.09) !important;
+}
+
+html body #cv-root .cv-react-story-create-media { height: 88px !important; }
+html body #cv-root .cv-react-story-avatar { border-color: #fff !important; box-shadow: 0 0 0 2px var(--fi-pro-brand) !important; }
+
+/* Composer: clear primary entry point with quieter secondary actions. */
+html body #cv-root .cv-react-fb-composer {
+  padding: 15px 16px 10px !important;
+  overflow: hidden !important;
+}
+
+html body #cv-root .cv-react-fb-composer .cv-feed-compose-trigger {
+  min-height: 44px !important;
+  border: 1px solid var(--fi-pro-border-strong) !important;
+  border-radius: 10px !important;
+  background: #fafbfc !important;
+  color: #707b8b !important;
+  font-size: 13.5px !important;
+  font-weight: 520 !important;
+}
+
+html body #cv-root .cv-react-fb-composer .cv-feed-compose-trigger:hover {
+  border-color: #c7cfda !important;
+  background: #f7f8fa !important;
+}
+
+html body #cv-root .cv-react-fb-composer .cv-feed-compose-actions {
+  margin-top: 11px !important;
+  padding-top: 9px !important;
+  border-top: 1px solid #eef0f3 !important;
+}
+
+html body #cv-root .cv-react-fb-composer .cv-feed-compose-action {
+  min-height: 38px !important;
+  border-radius: 8px !important;
+  color: #566274 !important;
+  font-size: 12.5px !important;
+  font-weight: 640 !important;
+}
+
+html body #cv-root .cv-react-fb-composer .cv-feed-compose-action:hover {
+  background: #f3f5f8 !important;
+  color: var(--fi-pro-ink) !important;
+}
+
+html body #cv-root .cv-feed-toolbar {
+  min-height: 34px !important;
+  margin: 10px 0 !important;
+  color: var(--fi-pro-muted) !important;
+}
+
+html body #cv-root .cv-feed-toolbar__sort {
+  color: #6e7888 !important;
+  font-size: 11px !important;
+  font-weight: 560 !important;
+}
+
+html body #cv-root .cv-feed-toolbar__sort strong {
+  color: var(--fi-pro-ink) !important;
+  font-weight: 700 !important;
+}
+
+/* Feed cards: content-first typography and low-noise interaction chrome. */
+html body #cv-root .cv-feed-stream {
+  gap: 16px !important;
+}
+
+html body #cv-root .cv-react-post-card {
+  overflow: hidden !important;
+  border-radius: 13px !important;
+}
+
+html body #cv-root .cv-react-post-card:hover {
+  border-color: var(--fi-pro-border-strong) !important;
+  box-shadow: 0 2px 3px rgba(24, 33, 47, 0.04), 0 12px 30px rgba(24, 33, 47, 0.05) !important;
+}
+
+html body #cv-root .cv-react-post-card .cv-feed-card-head {
+  padding: 16px 16px 9px !important;
+}
+
+html body #cv-root .cv-react-post-card .cv-feed-author h3 {
+  color: var(--fi-pro-ink) !important;
+  font-size: 13.5px !important;
+  font-weight: 720 !important;
+  letter-spacing: -0.015em !important;
+}
+
+html body #cv-root .cv-react-post-card .cv-feed-meta {
+  color: #808a99 !important;
+  font-size: 11px !important;
+}
+
+html body #cv-root .cv-react-post-card .cv-feed-body {
+  padding: 3px 16px 14px !important;
+  color: #2e3847 !important;
+  font-size: 14.5px !important;
+  line-height: 1.62 !important;
+}
+
+html body #cv-root .cv-feed-type .cv-social-follow-btn.is-not-following {
+  min-height: 34px !important;
+  padding-inline: 13px !important;
+  border: 1px solid #b9c5e8 !important;
+  border-radius: 9px !important;
+  background: #fff !important;
+  color: var(--fi-pro-brand) !important;
+  font-size: 11.5px !important;
+  font-weight: 690 !important;
+  box-shadow: none !important;
+}
+
+html body #cv-root .cv-feed-type .cv-social-follow-btn.is-not-following:hover {
+  border-color: #9daddb !important;
+  background: var(--fi-pro-brand-soft) !important;
+}
+
+html body #cv-root .cv-post-social-stats {
+  padding: 9px 16px !important;
+  border-top: 1px solid #eef0f3 !important;
+  color: #7a8595 !important;
+  font-size: 11.5px !important;
+}
+
+html body #cv-root .cv-linkedin-actions {
+  min-height: 46px !important;
+  margin: 0 !important;
+  padding: 4px 8px !important;
+  border-top: 1px solid #eef0f3 !important;
+  background: #fff !important;
+}
+
+html body #cv-root .cv-linkedin-action {
+  min-height: 38px !important;
+  border-radius: 8px !important;
+  color: #657083 !important;
+  font-size: 12px !important;
+  font-weight: 620 !important;
+}
+
+html body #cv-root .cv-linkedin-action:hover {
+  background: #f4f6f8 !important;
+  color: var(--fi-pro-ink) !important;
+}
+
+html body #cv-root .cv-linkedin-comment-row {
+  padding: 10px 16px 14px !important;
+  border-top: 1px solid #f0f2f5 !important;
+  background: #fbfcfd !important;
+}
+
+html body #cv-root .cv-comment-input-wrap {
+  border-color: var(--fi-pro-border-strong) !important;
+  border-radius: 10px !important;
+  background: #fff !important;
+}
+
+html body #cv-root .cv-comment-input-wrap:focus-within {
+  border-color: rgba(49, 87, 213, 0.6) !important;
+  box-shadow: 0 0 0 3px rgba(49, 87, 213, 0.08) !important;
+}
+
+/* Right rail: editorial verse treatment and simple directory rows. */
+html body #cv-root .cv-ui-rail-card {
+  padding: 16px !important;
+}
+
+html body #cv-root .cv-ui-rail-heading h3 {
+  color: var(--fi-pro-ink) !important;
+  font-size: 13px !important;
+  font-weight: 720 !important;
+  letter-spacing: -0.012em !important;
+}
+
+html body #cv-root .cv-ui-verse-card {
+  background: #fff !important;
+}
+
+html body #cv-root .cv-ui-verse-box {
+  margin-top: 13px !important;
+  padding-left: 14px !important;
+  border-left: 2px solid var(--fi-pro-gold) !important;
+}
+
+html body #cv-root .cv-ui-verse-kh {
+  color: #293343 !important;
+  font-size: 13px !important;
+  font-weight: 620 !important;
+  line-height: 1.65 !important;
+}
+
+html body #cv-root .cv-ui-verse-en {
+  color: #596477 !important;
+  font-family: Georgia, "Times New Roman", serif !important;
+  font-size: 13px !important;
+  line-height: 1.5 !important;
+}
+
+html body #cv-root .cv-ui-contact-row {
+  gap: 10px !important;
+  padding: 9px 3px !important;
+  border-radius: 8px !important;
+}
+
+html body #cv-root .cv-ui-contact-row:hover {
+  background: #f7f8fa !important;
+}
+
+html body #cv-root .cv-ui-contact-name {
+  color: var(--fi-pro-ink) !important;
+  font-size: 12.5px !important;
+  font-weight: 690 !important;
+}
+
+html body #cv-root .cv-ui-contact-headline {
+  color: #7b8594 !important;
+  font-size: 10.5px !important;
+}
+
+html body #cv-root .cv-ui-contact-message {
+  min-height: 25px !important;
+  padding-inline: 8px !important;
+  border: 1px solid #c7d0e7 !important;
+  border-radius: 7px !important;
+  background: #fff !important;
+  color: var(--fi-pro-brand) !important;
+  font-size: 10px !important;
+  font-weight: 650 !important;
+  box-shadow: none !important;
+}
+
+html body #cv-root .cv-ui-contact-message:hover {
+  border-color: #aebce0 !important;
+  background: var(--fi-pro-brand-soft) !important;
+}
+
+html body #cv-root .cv-ui-rail-footer {
+  color: #8a94a2 !important;
+  font-size: 10px !important;
+}
+
+html body #cv-root .cv-ui-rail-footer strong { color: #596578 !important; }
+
+/* Dialogs and forms retain the same product language. */
+html body #cv-root :where([role="dialog"], .cv-modal-content, .cv-react-modal) {
+  border-radius: 14px !important;
+  border-color: var(--fi-pro-border) !important;
+  box-shadow: 0 24px 70px rgba(24, 33, 47, 0.18) !important;
+}
+
+html body #cv-root :where(input:not([type="file"]), textarea, select) {
+  border-radius: 9px !important;
+}
+
+html body #cv-root :where(input:not([type="file"]), textarea, select):focus {
+  border-color: rgba(49, 87, 213, 0.72) !important;
+  box-shadow: 0 0 0 3px rgba(49, 87, 213, 0.09) !important;
+}
+
+/* Keep the three-column product shell useful across laptop widths. */
+@media (max-width: 1280px) {
+  html body #cv-root .cv-react-nav-shell-social {
+    grid-template-columns: minmax(250px, 1fr) auto minmax(250px, 1fr) !important;
+    gap: 18px !important;
+    padding-inline: 20px !important;
+  }
+
+  html body #cv-root .cv-feed-layout--three-col {
+    width: min(100%, 950px) !important;
+    grid-template-columns: 250px minmax(520px, 660px) !important;
+    gap: 24px !important;
+  }
+}
+
+@media (max-width: 960px) {
+  html body #cv-root .cv-react-nav-shell-social {
+    grid-template-columns: minmax(210px, 1fr) auto minmax(170px, 1fr) !important;
+    padding-inline: 14px !important;
+  }
+
+  html body #cv-root .cv-react-social-search { max-width: 210px !important; }
+  html body #cv-root .cv-react-primary-nav .cv-top-nav-tile { width: 66px !important; }
+}
+
+@media (max-width: 760px) {
+  html body #cv-root .cv-react-feed-page,
+  html body #cv-root .cv-feed-page-linkedin {
+    padding: 12px 0 88px !important;
+  }
+
+  html body #cv-root .cv-feed-main-column { max-width: none !important; }
+  html body #cv-root .cv-react-stories { padding-inline: 14px !important; }
+
+  html body #cv-root :where(.cv-react-fb-composer, .cv-react-post-card) {
+    border-right: 0 !important;
+    border-left: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+  }
+
+  html body #cv-root .cv-react-fb-composer { padding-inline: 14px !important; }
+  html body #cv-root .cv-react-story-card {
+    width: 100px !important;
+    height: 146px !important;
+    flex-basis: 100px !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html body #cv-root *,
+  html body #cv-root *::before,
+  html body #cv-root *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
