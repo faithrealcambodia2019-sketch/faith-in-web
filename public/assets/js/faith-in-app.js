@@ -5271,23 +5271,35 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
             </button>
         `).join('');
         return `
-            <section class="cv-react-stories" aria-label="Blessings">
-                <button type="button" class="cv-react-story-card cv-react-create-story cv-react-create-blessing" onclick="cvOpenFeedCreate('blessing')" aria-label="Add blessing">
-                    <span class="cv-react-story-create-media">${renderProfileAvatar(current, 'w-full h-full', 'text-sm')}</span>
-                    <span class="cv-react-story-create-footer">${cvRenderBlessingIcon("cv-blessing-svg-icon--create")}<strong>Add Blessing</strong></span>
-                </button>
-                ${storyCards}
+            <section class="cv-blessings-module" aria-labelledby="cv-blessings-title">
+                <header class="cv-blessings-heading">
+                    <div>
+                        <span class="cv-blessings-kicker">Community moments</span>
+                        <h2 id="cv-blessings-title">Blessings</h2>
+                    </div>
+                    <button type="button" onclick="cvOpenFeedCreate('blessing')" aria-label="Share a blessing">
+                        <i data-lucide="plus" aria-hidden="true"></i><span>Share</span>
+                    </button>
+                </header>
+                <div class="cv-react-stories" aria-label="Recent blessings">
+                    <button type="button" class="cv-react-story-card cv-react-create-story cv-react-create-blessing" onclick="cvOpenFeedCreate('blessing')" aria-label="Add blessing">
+                        <span class="cv-react-story-create-media">${renderProfileAvatar(current, 'w-full h-full', 'text-sm')}</span>
+                        <span class="cv-react-story-create-footer">${cvRenderBlessingIcon("cv-blessing-svg-icon--create")}<strong>Add Blessing</strong></span>
+                    </button>
+                    ${storyCards}
+                </div>
             </section>
         `;
     }
 
     function cvRenderFeedComposer() {
         const user = state.currentUser || { name: state.postAuthorName || 'You' };
+        const composerName = String(user.name || user.displayName || user.display_name || 'Friend').trim().split(/\s+/)[0] || 'Friend';
         return `
             <section class="cv-feed-composer-card cv-react-fb-composer">
                 <div class="cv-feed-composer-head">
                     <button type="button" class="cv-feed-composer-avatar cv-plain-button" onclick="openProfile(); return false;" data-cv-profile-trigger="1" aria-label="Open your profile">${renderProfileAvatar(user, 'w-full h-full', 'text-sm')}</button>
-                    <button type="button" class="cv-feed-compose-trigger" onclick="cvOpenFeedCreate('blessing')" aria-label="Add Blessing">Share a blessing, testimony, or encouragement...</button>
+                    <button type="button" class="cv-feed-compose-trigger" onclick="cvOpenFeedCreate('text')" aria-label="Create a post">What would you like to share, ${escapeHtml(composerName)}?</button>
                 </div>
                 <div class="cv-feed-composer-actions">
                     <button type="button" class="cv-feed-compose-action cv-feed-compose-action--live" onclick="cvOpenFeedCreate('blessing')">${cvRenderBlessingIcon("cv-blessing-svg-icon--compose")}<span>Add Blessing</span></button>
@@ -5772,7 +5784,7 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
                 <div class="cv-feed-layout cv-feed-layout--three-col">
                     ${cvRenderFeedLeftSidebar()}
                     <main class="cv-feed-main-column">
-                        ${state.savedPostsOnly ? savedHeading : cvRenderStoriesCarousel() + cvRenderFeedComposer()}
+                        ${state.savedPostsOnly ? savedHeading : cvRenderFeedWelcome() + cvRenderStoriesCarousel() + cvRenderFeedComposer()}
                         ${desktopSortToolbar}
                         <div class="space-y-6 cv-feed-stream">
         `;
@@ -7739,7 +7751,7 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
             wrap.style.setProperty('margin-top', '0', 'important');
             wrap.style.setProperty('padding', '0', 'important');
             var cvMobileNoTopGap = !!(window.matchMedia && window.matchMedia('(max-width: 900px), (hover: none) and (pointer: coarse)').matches);
-            wrap.style.setProperty('padding-top', cvMobileNoTopGap ? '0' : '58px', 'important');
+            wrap.style.setProperty('padding-top', cvMobileNoTopGap ? '0' : '72px', 'important');
             wrap.style.setProperty('transform', 'none', 'important');
             wrap.style.setProperty('contain', 'none', 'important');
             wrap.style.setProperty('z-index', '1', 'important');
@@ -7765,9 +7777,9 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
                 nav.style.setProperty('bottom', 'auto', 'important');
                 nav.style.setProperty('width', '100%', 'important');
                 nav.style.setProperty('max-width', '100vw', 'important');
-                nav.style.setProperty('height', cvMobileNoTopGap ? 'auto' : '58px', 'important');
-                nav.style.setProperty('min-height', cvMobileNoTopGap ? '0' : '58px', 'important');
-                nav.style.setProperty('max-height', cvMobileNoTopGap ? 'none' : '58px', 'important');
+                nav.style.setProperty('height', cvMobileNoTopGap ? 'auto' : '72px', 'important');
+                nav.style.setProperty('min-height', cvMobileNoTopGap ? '0' : '72px', 'important');
+                nav.style.setProperty('max-height', cvMobileNoTopGap ? 'none' : '72px', 'important');
                 nav.style.setProperty('margin', '0', 'important');
                 nav.style.setProperty('margin-top', '0', 'important');
                 nav.style.setProperty('padding', '0', 'important');
@@ -7779,9 +7791,9 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
             });
             document.querySelectorAll('#cv-react-global-nav .cv-nav-shell, .cv-react-global-nav .cv-nav-shell, .cv-fixed-clean-nav .cv-nav-shell, #cv-root .cv-react-nav-shell').forEach(function (shell) {
                 var cvMobileNoTopGap = !!(window.matchMedia && window.matchMedia('(max-width: 900px), (hover: none) and (pointer: coarse)').matches);
-                shell.style.setProperty('height', cvMobileNoTopGap ? '0' : '58px', 'important');
-                shell.style.setProperty('min-height', cvMobileNoTopGap ? '0' : '58px', 'important');
-                shell.style.setProperty('max-height', cvMobileNoTopGap ? '0' : '58px', 'important');
+                shell.style.setProperty('height', cvMobileNoTopGap ? '0' : '72px', 'important');
+                shell.style.setProperty('min-height', cvMobileNoTopGap ? '0' : '72px', 'important');
+                shell.style.setProperty('max-height', cvMobileNoTopGap ? '0' : '72px', 'important');
                 if (cvMobileNoTopGap) { shell.style.setProperty('display', 'none', 'important'); }
                 shell.style.setProperty('margin', '0 auto', 'important');
                 shell.style.setProperty('padding-top', '0', 'important');
