@@ -4551,6 +4551,8 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
     // Rendering functions (adapted from original)
     function renderNav() {
         const isDark = state.settings.theme === 'dark';
+        const navUser = state.currentUser || {};
+        const navUserName = String(navUser.name || navUser.displayName || navUser.display_name || 'Profile').trim().split(/\s+/)[0] || 'Profile';
         const desktopItems = [
             { id: 'home', label: 'Home', icon: 'home' },
             { id: 'explore', label: 'Library', icon: 'book-open' },
@@ -4603,9 +4605,16 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
                 <i data-lucide="menu"></i>
             </button>
         ` : '';
+        const createButton = state.isLoggedIn ? `
+            <button type="button" onclick="cvOpenFeedCreate('text')" class="cv-react-header-create" aria-label="Create a post">
+                <i data-lucide="plus" aria-hidden="true"></i>
+                <span>Create</span>
+            </button>
+        ` : '';
         const profileButtonMarkup = state.isLoggedIn ? `
             <button type="button" onclick="openProfile(); return false;" data-cv-profile-trigger="1" class="cv-react-profile-avatar-button" aria-label="Profile account">
                 <span class="cv-react-profile-avatar-media">${renderProfileAvatar(state.currentUser, 'w-full h-full', 'text-xs')}</span>
+                <span class="cv-react-profile-name">${escapeHtml(navUserName)}</span>
                 <i data-lucide="chevron-down" class="cv-react-profile-chevron" aria-hidden="true"></i>
             </button>
         ` : '';
@@ -4635,6 +4644,7 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
                         ${state.isLoggedIn ? `<label class="cv-global-search cv-react-social-search" aria-label="Search Faith In">
                             <i data-lucide="search"></i>
                             <input type="search" placeholder="Search Faith In" onkeydown="if(event.key==='Enter'){event.preventDefault(); setTab('users'); setTimeout(function(){ var input=document.getElementById('cv-find-users-search'); if(input){ input.value=this.value; input.dispatchEvent(new Event('input',{bubbles:true})); } }.bind(this),120); }" />
+                            <kbd class="cv-react-search-shortcut" aria-hidden="true">/</kbd>
                         </label>` : ''}
                     </div>
 
@@ -4643,6 +4653,7 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
                     </div>
 
                     <div class="cv-nav-utility-actions cv-react-nav-actions cv-react-social-actions" aria-label="Account actions">
+                        ${createButton}
                         ${menuButton}
                         ${messageDesktop}
                         ${notificationDesktop}
