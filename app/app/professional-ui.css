@@ -886,7 +886,7 @@ html body #cv-root .cv-feed-profile-copy {
   grid-row: 1 !important;
   min-width: 0 !important;
   margin: 0 !important;
-  padding: 0 !important;
+  padding: 0 0 0 18px !important;
   text-align: left !important;
   transform: none !important;
 }
