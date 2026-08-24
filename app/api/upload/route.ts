@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { put } from "@vercel/blob";
+import { handleUpload, type HandleUploadBody } from "@vercel/blob/client";
 import { requireMember } from "@/lib/verify-firebase-token";
 
 /**
@@ -20,7 +21,7 @@ export const runtime = "nodejs";
 // Uploads must not be cached or statically optimised.
 export const dynamic = "force-dynamic";
 
-const MAX_BYTES = 25 * 1024 * 1024;
+const MAX_BYTES = 50 * 1024 * 1024;
 const MAX_FILES = 10;
 const MAX_REQUEST_BYTES = MAX_BYTES * MAX_FILES + 2 * 1024 * 1024;
 
@@ -121,6 +122,45 @@ async function verifiedContentType(file: File): Promise<string | null> {
 }
 
 export async function POST(request: Request) {
+  // Generate a short-lived token for a direct browser-to-Blob upload. Only
+  // the small token request passes through this Function, so videos are not
+  // blocked by Vercel's 4.5 MB Function request-body limit.
+  const isBlobTokenRequest =
+    request.headers.get("x-faith-in-blob-token-request") === "1" ||
+    (request.headers.get("content-type") || "").includes("application/json");
+  if (isBlobTokenRequest) {
+    if (!process.env.BLOB_READ_WRITE_TOKEN) {
+      return NextResponse.json(
+        { success: false, data: "File storage is not configured yet. Connect the Faith In Blob store in Vercel, then try again." },
+        { status: 503 },
+      );
+    }
+    try {
+      const member = await requireMember(request);
+      const body = (await request.json()) as HandleUploadBody;
+      const jsonResponse = await handleUpload({
+        body,
+        request,
+        onBeforeGenerateToken: async (pathname) => {
+          const requiredPrefix = `faith-in/${member.uid}/`;
+          if (!pathname.startsWith(requiredPrefix)) throw new Error("That upload path is not allowed.");
+
+          return {
+            allowedContentTypes: Array.from(ALLOWED_TYPES),
+            maximumSizeInBytes: MAX_BYTES,
+            addRandomSuffix: true,
+            tokenPayload: JSON.stringify({ uid: member.uid }),
+          };
+        },
+      });
+      return NextResponse.json(jsonResponse);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Upload could not be started.";
+      return NextResponse.json({ success: false, data: message }, { status: 400 });
+    }
+  }
+
+  // Compatibility path for older cached clients and small files.
   let member;
   try {
     member = await requireMember(request);
@@ -177,7 +217,7 @@ export async function POST(request: Request) {
       return NextResponse.json(
         {
           success: false,
-          data: `"${displayName(file.name)}" is ${Math.ceil(file.size / 1048576)}MB. The limit is 25MB — please choose a smaller file.`,
+          data: `"${displayName(file.name)}" is ${Math.ceil(file.size / 1048576)}MB. The limit is 50MB — please choose a smaller file.`,
         },
         { status: 413 },
       );
