@@ -462,14 +462,24 @@
         return parseInt((state.currentUser && state.currentUser.id) || (cv_ajax.auth && cv_ajax.auth.current_user && cv_ajax.auth.current_user.id) || 0, 10);
     }
 
+    function cvSocialUserId(user) {
+        if (!user) return 0;
+        return parseInt(user.id || user.user_id || user.author_id || user.member_id || 0, 10);
+    }
+
     function cvSocialIsSelf(user) {
         const currentId = cvSocialCurrentUserId();
-        return !!(user && currentId && parseInt(user.id || 0, 10) === currentId) || !!(user && user.is_self);
+        const userId = cvSocialUserId(user);
+        const currentUid = String((state.currentUser && (state.currentUser.uid || state.currentUser.user_uid)) || '').trim();
+        const userUid = String((user && (user.uid || user.user_uid || user.author_uid)) || '').trim();
+        return !!(user && currentId && userId === currentId)
+            || !!(currentUid && userUid && currentUid === userUid)
+            || !!(user && user.is_self);
     }
 
     function cvSocialFollowButton(user, extraClass = '') {
-        if (!user || !user.id || cvSocialIsSelf(user)) return '';
-        const userId = parseInt(user.id, 10);
+        const userId = cvSocialUserId(user);
+        if (!user || !userId || cvSocialIsSelf(user)) return '';
         const loading = parseInt(state.followLoadingUserId || 0, 10) === userId;
         const following = !!user.is_following;
         const label = loading ? 'Saving...' : (following ? 'Following' : 'Follow');
@@ -4589,8 +4599,8 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
         ];
         const mobileItems = [
             { id: 'home', label: 'Home', icon: 'home' },
-            { id: 'explore', label: 'Library', icon: 'book-open' },
             { id: 'users', label: 'Network', icon: 'users' },
+            { id: 'messages', label: 'Messages', icon: 'message-circle' },
             { id: 'notifications', label: 'Alerts', icon: 'bell' },
             { id: 'menu', label: 'Menu', icon: 'menu' }
         ];
@@ -4602,8 +4612,11 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
         `).join('') : '';
 
         const mobileTiles = state.isLoggedIn ? mobileItems.map(item => {
+            if (item.id === 'messages') {
+                return `<button type="button" onclick="cvTriggerMainMessages()" class="cv-mobile-bottom-item" aria-label="Messages"><i data-lucide="message-circle"></i><span>Messages</span></button>`;
+            }
             if (item.id === 'notifications') {
-                return `<button type="button" onclick="document.querySelector('[data-cv-main-notification-toggle]')?.click()" class="cv-mobile-bottom-item" aria-label="Notifications"><i data-lucide="bell"></i><span>Alerts</span></button>`;
+                return `<button type="button" onclick="cvTriggerMainNotifications()" class="cv-mobile-bottom-item" aria-label="Notifications"><i data-lucide="bell"></i><span>Alerts</span></button>`;
             }
             if (item.id === 'menu') {
                 return `<button type="button" onclick="setTab('menu')" class="cv-mobile-bottom-item ${state.tab === 'menu' ? 'is-active' : ''}" aria-label="Menu"><i data-lucide="menu"></i><span>Menu</span></button>`;
