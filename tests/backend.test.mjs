@@ -197,9 +197,9 @@ check('video typed', withMedia.media_items[1].type === 'video', withMedia.media_
 check('cover set from first media', !!withMedia.cover_image_url);
 
 console.log('\n5) Oversize file rejected');
-r = await call(fd([['action','cv_create_post'],['content','big'],['post_media[]', new FakeFile('huge.mp4','video/mp4', 40*1024*1024)]]));
+r = await call(fd([['action','cv_create_post'],['content','big'],['post_media[]', new FakeFile('huge.mp4','video/mp4', 60*1024*1024)]]));
 check('rejected', r.success === false);
-check('mentions 25MB limit', /25MB/.test(r.data), r.data);
+check('mentions 50MB limit', /50MB/.test(r.data), r.data);
 
 console.log('\n6) Feed');
 r = await call({ action: 'cv_get_posts' });
@@ -337,8 +337,8 @@ uploadStatus = 500; uploadBody = null;
 r = await call(fd([['action','cv_stage_post_media'],['post_media[]', new FakeFile('b.jpg','image/jpeg',10)]]));
 check('generic message on 500', r.success === false && /Upload failed/.test(r.data), r.data);
 uploadStatus = 200; uploadBody = null;
-r = await call(fd([['action','cv_create_post'],['content','big'],['post_media[]', new FakeFile('huge.mp4','video/mp4', 40*1024*1024)]]));
-check('oversize rejected before upload', r.success === false && /25MB/.test(r.data), r.data);
+r = await call(fd([['action','cv_create_post'],['content','big'],['post_media[]', new FakeFile('huge.mp4','video/mp4', 60*1024*1024)]]));
+check('oversize rejected before upload', r.success === false && /50MB/.test(r.data), r.data);
 
 console.log('\n17) Non-cv request passes through');
 const t = transportFactory({ url:'https://example.com/thing' }, { url:'https://example.com/thing', data:{} });
