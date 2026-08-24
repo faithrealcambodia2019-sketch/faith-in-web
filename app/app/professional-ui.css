@@ -635,6 +635,180 @@ html body #cv-root :where(input:not([type="file"]), textarea, select):focus {
   }
 }
 
+/* --------------------------------------------------------------------------
+   Open editorial mode — hierarchy through space, type, and tone instead of
+   outlined boxes. Faith In should feel like a calm community publication,
+   not a dashboard made from stacked cards.
+   -------------------------------------------------------------------------- */
+
+html body #cv-root .cv-react-primary-nav {
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+}
+
+html body #cv-root .cv-react-primary-nav .cv-top-nav-tile {
+  min-height: 38px !important;
+  height: 38px !important;
+  border-radius: 8px !important;
+}
+
+html body #cv-root .cv-react-primary-nav .cv-top-nav-tile.is-active {
+  color: var(--fi-modern-brand) !important;
+  background: #f0f2ff !important;
+  box-shadow: none !important;
+}
+
+html body #cv-root .cv-react-social-search {
+  border: 0 !important;
+  background: #f1f3f6 !important;
+  box-shadow: inset 0 0 0 1px transparent !important;
+}
+
+html body #cv-root .cv-react-social-search:focus-within {
+  border: 0 !important;
+  background: #fff !important;
+  box-shadow: inset 0 0 0 1px rgba(55, 88, 249, 0.55), 0 0 0 3px rgba(55, 88, 249, 0.08) !important;
+}
+
+html body #cv-root :where(.cv-feed-left-card, .cv-feed-side-card, .cv-feed-composer-card, .cv-feed-card) {
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+html body #cv-root .cv-community-quick-action--secondary {
+  border: 0 !important;
+  background: rgba(255, 255, 255, 0.72) !important;
+  box-shadow: none !important;
+}
+
+html body #cv-root .cv-community-quick-action--primary {
+  border: 0 !important;
+  box-shadow: 0 7px 16px rgba(55, 88, 249, 0.16) !important;
+}
+
+html body #cv-root .cv-react-profile-metrics {
+  grid-template-columns: 1fr 1px 1fr !important;
+  gap: 12px !important;
+}
+
+html body #cv-root .cv-react-profile-metrics::before {
+  grid-column: 2 !important;
+  grid-row: 1 !important;
+  width: 1px !important;
+  height: 32px !important;
+  align-self: center !important;
+  background: #e1e4ea !important;
+  content: "" !important;
+}
+
+html body #cv-root .cv-react-profile-metrics button {
+  min-height: 46px !important;
+  padding: 5px 2px !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+}
+
+html body #cv-root .cv-react-profile-metrics button:first-child { grid-column: 1 !important; }
+html body #cv-root .cv-react-profile-metrics button:last-child { grid-column: 3 !important; }
+
+html body #cv-root .cv-feed-left-sidebar .cv-feed-shortcut.is-active {
+  border: 0 !important;
+  background: rgba(55, 88, 249, 0.08) !important;
+}
+
+html body #cv-root .cv-react-story-card {
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+html body #cv-root .cv-react-story-card:hover {
+  border: 0 !important;
+  box-shadow: 0 8px 18px rgba(21, 27, 43, 0.08) !important;
+}
+
+html body #cv-root .cv-react-fb-composer {
+  border: 0 !important;
+  background: #fff !important;
+  box-shadow: none !important;
+}
+
+html body #cv-root .cv-react-fb-composer .cv-feed-compose-actions {
+  border-top-color: #f0f1f4 !important;
+}
+
+html body #cv-root .cv-feed-toolbar hr {
+  background: #e3e6eb !important;
+  opacity: 0.8 !important;
+}
+
+html body #cv-root .cv-react-post-card,
+html body #cv-root .cv-react-post-card:hover {
+  border: 0 !important;
+  background: #fff !important;
+  box-shadow: none !important;
+}
+
+html body #cv-root .cv-react-post-card + .cv-react-post-card {
+  border-top: 8px solid var(--fi-modern-canvas) !important;
+}
+
+html body #cv-root .cv-linkedin-actions {
+  border-top-color: #f0f1f4 !important;
+}
+
+html body #cv-root .cv-comment-input-wrap {
+  border: 0 !important;
+  background: #f0f2f5 !important;
+  box-shadow: none !important;
+}
+
+html body #cv-root .cv-comment-input-wrap:focus-within {
+  border: 0 !important;
+  background: #fff !important;
+  box-shadow: inset 0 0 0 1px rgba(55, 88, 249, 0.45), 0 0 0 3px rgba(55, 88, 249, 0.07) !important;
+}
+
+html body #cv-root .cv-ui-rail-card {
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+html body #cv-root .cv-ui-verse-card {
+  padding: 5px 3px 22px !important;
+  border-bottom: 1px solid #e3e6eb !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+}
+
+html body #cv-root .cv-ui-contacts-card {
+  padding: 18px 3px 4px !important;
+}
+
+html body #cv-root .cv-ui-contact-row {
+  border: 0 !important;
+  border-radius: 8px !important;
+}
+
+html body #cv-root .cv-ui-contact-row + .cv-ui-contact-row {
+  border-top: 0 !important;
+}
+
+html body #cv-root .cv-ui-contact-message {
+  border: 0 !important;
+  background: #ecefff !important;
+}
+
+@media (max-width: 760px) {
+  html body #cv-root .cv-react-fb-composer,
+  html body #cv-root .cv-react-post-card {
+    border: 0 !important;
+    box-shadow: none !important;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html body #cv-root *,
   html body #cv-root *::before,
