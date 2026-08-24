@@ -901,6 +901,18 @@ html body #cv-root .cv-feed-profile-name {
   white-space: nowrap !important;
 }
 
+html body #cv-root .cv-feed-profile-role {
+  display: block !important;
+  width: 100% !important;
+  margin: 2px 0 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  text-align: left !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+  transform: none !important;
+}
+
 html body #cv-root .cv-react-profile-metrics {
   grid-column: 1 / -1 !important;
   display: grid !important;
