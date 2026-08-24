@@ -871,18 +871,24 @@ html body #cv-root .cv-feed-profile-main {
 html body #cv-root .cv-feed-profile-avatar {
   grid-column: 1 !important;
   grid-row: 1 !important;
+  position: relative !important;
+  inset: auto !important;
   width: 46px !important;
   height: 46px !important;
   margin: 0 !important;
   border: 2px solid #fff !important;
   box-shadow: 0 0 0 1px #dfe3e9 !important;
+  transform: none !important;
 }
 
 html body #cv-root .cv-feed-profile-copy {
   grid-column: 2 !important;
   grid-row: 1 !important;
   min-width: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
   text-align: left !important;
+  transform: none !important;
 }
 
 html body #cv-root .cv-feed-profile-name {
