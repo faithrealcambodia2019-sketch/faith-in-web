@@ -7780,7 +7780,10 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
 
             // Kill known theme/admin spacers that were leaving the 180px blank strip.
             document.querySelectorAll('#wpadminbar, header, footer, #masthead, #colophon, .site-header, .site-footer, .entry-header, .page-header, .wp-block-template-part, .wp-block-navigation').forEach(function (el) {
-                if (!el || el.contains(wrap) || el === wrap) { return; }
+                // Only remove chrome outside the application. Product-level
+                // headers and footers inside #cv-root are real interface
+                // content and must remain visible.
+                if (!el || el.contains(wrap) || wrap.contains(el) || el === wrap) { return; }
                 el.classList.add('cv-theme-top-spacer-hidden');
                 el.setAttribute('aria-hidden', 'true');
                 el.style.setProperty('display', 'none', 'important');
