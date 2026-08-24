@@ -728,6 +728,129 @@ html body #cv-root .cv-saved-feed-heading {
   }
 }
 
+/* Social media framing: single images are 1:1 or 3:4, videos adapt to
+   9:16, 16:9, 3:4, or 1:1, and galleries use a compact photo grid. */
+html body #cv-root .cv-react-post-card .cv-feed-media-grid {
+  display: grid !important;
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  gap: 3px !important;
+  overflow: hidden !important;
+  background: #e7ebf1 !important;
+}
+
+html body #cv-root .cv-react-post-card .cv-feed-media-item {
+  position: relative !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+  background: #e7ebf1 !important;
+}
+
+html body #cv-root .cv-react-post-card .cv-feed-media-item img {
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none !important;
+  max-height: none !important;
+  margin: 0 !important;
+  object-fit: cover !important;
+  object-position: center !important;
+}
+
+html body #cv-root .cv-react-post-card .cv-feed-media-grid.is-one {
+  display: block !important;
+  background: #fff !important;
+}
+
+html body #cv-root .cv-react-post-card .cv-feed-media-grid.is-one .cv-feed-media-item {
+  width: 100% !important;
+  aspect-ratio: 1 / 1 !important;
+  margin: 0 auto !important;
+}
+
+html body #cv-root .cv-react-post-card .cv-feed-media-grid.is-one.is-portrait .cv-feed-media-item {
+  width: min(100%, 540px) !important;
+  aspect-ratio: 3 / 4 !important;
+}
+
+html body #cv-root .cv-react-post-card .cv-feed-media-grid.is-two,
+html body #cv-root .cv-react-post-card .cv-feed-media-grid.is-four,
+html body #cv-root .cv-react-post-card .cv-feed-media-grid.is-many {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+}
+
+html body #cv-root .cv-react-post-card .cv-feed-media-grid.is-two .cv-feed-media-item,
+html body #cv-root .cv-react-post-card .cv-feed-media-grid.is-four .cv-feed-media-item,
+html body #cv-root .cv-react-post-card .cv-feed-media-grid.is-many .cv-feed-media-item {
+  aspect-ratio: 1 / 1 !important;
+}
+
+html body #cv-root .cv-react-post-card .cv-feed-media-grid.is-three {
+  grid-template-columns: 1.35fr 1fr !important;
+  grid-template-rows: repeat(2, minmax(0, 1fr)) !important;
+  aspect-ratio: 4 / 3 !important;
+}
+
+html body #cv-root .cv-react-post-card .cv-feed-media-grid.is-three .cv-feed-media-item:first-child {
+  grid-row: 1 / span 2 !important;
+}
+
+html body #cv-root .cv-react-post-card .cv-feed-media-grid.is-three .cv-feed-media-item {
+  aspect-ratio: auto !important;
+}
+
+html body #cv-root .cv-react-post-card .cv-feed-reel-wrap {
+  display: flex !important;
+  width: min(100%, 720px) !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  max-height: 720px !important;
+  margin: 0 auto !important;
+  padding: 0 !important;
+  align-items: center !important;
+  justify-content: center !important;
+  overflow: hidden !important;
+  background: #05070a !important;
+}
+
+html body #cv-root .cv-react-post-card .cv-feed-reel-wrap.is-video-reel {
+  width: min(100%, 405px) !important;
+  aspect-ratio: 9 / 16 !important;
+}
+
+html body #cv-root .cv-react-post-card .cv-feed-reel-wrap.is-video-portrait {
+  width: min(100%, 540px) !important;
+  aspect-ratio: 3 / 4 !important;
+}
+
+html body #cv-root .cv-react-post-card .cv-feed-reel-wrap.is-video-square {
+  aspect-ratio: 1 / 1 !important;
+}
+
+html body #cv-root .cv-react-post-card .cv-feed-reel-wrap.is-video-wide {
+  aspect-ratio: 16 / 9 !important;
+}
+
+html body #cv-root .cv-react-post-card .cv-feed-reel-wrap :is(video, iframe, .cv-feed-reel-video) {
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none !important;
+  max-height: none !important;
+  margin: 0 !important;
+  object-fit: contain !important;
+  background: #05070a !important;
+}
+
+@media (max-width: 560px) {
+  html body #cv-root .cv-react-post-card .cv-feed-media-grid { gap: 2px !important; }
+  html body #cv-root .cv-react-post-card .cv-feed-media-grid.is-one.is-portrait .cv-feed-media-item,
+  html body #cv-root .cv-react-post-card .cv-feed-reel-wrap.is-video-portrait,
+  html body #cv-root .cv-react-post-card .cv-feed-reel-wrap.is-video-reel { width: 100% !important; }
+}
+
 @media (min-width: 901px) and (max-width: 1180px) {
   html body #cv-root .cv-feed-layout--three-col {
     display: grid !important;
