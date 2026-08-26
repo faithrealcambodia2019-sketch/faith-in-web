@@ -33114,3 +33114,72 @@ body.cv-faith-in-platform #cv-root .cv-function-card svg {
 .curated-vault-premium-wrap .cv-job-modal-overlay {
     z-index: 2147483500 !important;
 }
+
+/* Blessings are calm, story-style moments that remain visible for 24 hours. */
+html body #cv-root .cv-blessing-expiry-badge {
+    position: absolute !important;
+    z-index: 3 !important;
+    top: 62px !important;
+    right: 10px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+    min-height: 23px !important;
+    padding: 4px 7px !important;
+    border: 1px solid rgba(255, 255, 255, .3) !important;
+    border-radius: 999px !important;
+    background: rgba(15, 23, 42, .5) !important;
+    color: #fff !important;
+    font-size: 10px !important;
+    font-weight: 850 !important;
+    line-height: 1 !important;
+    letter-spacing: .01em !important;
+    backdrop-filter: blur(8px) !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, .28) !important;
+}
+html body #cv-root .cv-blessing-expiry-badge i,
+html body #cv-root .cv-blessing-expiry-badge svg {
+    width: 11px !important;
+    height: 11px !important;
+    stroke-width: 2.5 !important;
+}
+html body #cv-root .cv-blessing-expiry-notice {
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+    margin: 0 0 14px !important;
+    padding: 12px 14px !important;
+    border: 1px solid rgba(37, 99, 235, .18) !important;
+    border-radius: 14px !important;
+    background: linear-gradient(135deg, rgba(239, 246, 255, .96), rgba(245, 243, 255, .9)) !important;
+    color: #1e3a5f !important;
+}
+html body #cv-root .cv-blessing-expiry-notice > i,
+html body #cv-root .cv-blessing-expiry-notice > svg {
+    width: 22px !important;
+    height: 22px !important;
+    flex: 0 0 auto !important;
+    color: #2563eb !important;
+}
+html body #cv-root .cv-blessing-expiry-notice span,
+html body #cv-root .cv-blessing-expiry-notice strong,
+html body #cv-root .cv-blessing-expiry-notice small {
+    display: block !important;
+}
+html body #cv-root .cv-blessing-expiry-notice strong {
+    color: #1e3a5f !important;
+    font-size: 13px !important;
+    font-weight: 850 !important;
+}
+html body #cv-root .cv-blessing-expiry-notice small {
+    margin-top: 2px !important;
+    color: #64748b !important;
+    font-size: 12px !important;
+    line-height: 1.4 !important;
+}
+@media (max-width: 640px) {
+    html body #cv-root .cv-blessing-expiry-notice {
+        align-items: flex-start !important;
+        border-radius: 12px !important;
+    }
+}

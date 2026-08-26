@@ -39,6 +39,7 @@
     var MAX_MEDIA_BYTES = 50 * 1024 * 1024; // Must stay in step with app/api/upload/route.ts.
     var MAX_MEDIA_FILES = 10;
     var FEED_PAGE_SIZE = 50;
+    var BLESSING_LIFETIME_MS = 24 * 60 * 60 * 1000;
 
     var bundlePromise = null;
 
@@ -204,6 +205,21 @@
         if (typeof value.toDate === 'function') return value.toDate();
         if (value instanceof Date) return value;
         return null;
+    }
+
+    function isBlessing(data) {
+        return text(data && data.type).toLowerCase() === 'blessing';
+    }
+
+    function blessingExpiresAt(data) {
+        if (!isBlessing(data)) return null;
+        var created = toDate(data && data.createdAt);
+        return created ? new Date(created.getTime() + BLESSING_LIFETIME_MS) : null;
+    }
+
+    function isExpiredBlessing(data, now) {
+        var expires = blessingExpiresAt(data);
+        return !!(expires && expires.getTime() <= (now || Date.now()));
     }
 
     function isoTime(value) {
@@ -441,6 +457,7 @@
     function shapePost(b, id, data, viewer) {
         var author = data.author || {};
         var created = toDate(data.createdAt);
+        var blessingExpiry = blessingExpiresAt(data);
         var reactions = data.reactions || {};
         var mine = viewer ? reactions[viewer.uid] : null;
         var media = Array.isArray(data.media_items) ? data.media_items : [];
@@ -457,6 +474,8 @@
             article_body: text(data.article_body),
             time: relativeTime(created),
             created_at: created ? created.toISOString() : '',
+            expires_at: blessingExpiry ? blessingExpiry.toISOString() : '',
+            expires_in_seconds: blessingExpiry ? Math.max(0, Math.ceil((blessingExpiry.getTime() - Date.now()) / 1000)) : null,
             author: {
                 id: author.appUserId || numericId(author.uid),
                 uid: author.uid || '',
@@ -613,7 +632,13 @@
                 snapshots.forEach(function (snap) {
                     snap.forEach(function (d) { byId[d.id] = d.data(); });
                 });
-                var items = Object.keys(byId).map(function (id) { return shapePost(b, id, byId[id], user); });
+                // Blessings are story-style content. Expiration only controls
+                // visibility: the Firestore record and its uploaded media stay
+                // untouched so this remains safe for production data.
+                var now = Date.now();
+                var items = Object.keys(byId)
+                    .filter(function (id) { return !isExpiredBlessing(byId[id], now); })
+                    .map(function (id) { return shapePost(b, id, byId[id], user); });
                 items.sort(function (a, c) { return String(c.created_at || '').localeCompare(String(a.created_at || '')); });
                 return { items: items };
             }

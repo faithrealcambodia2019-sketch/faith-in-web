@@ -215,6 +215,18 @@ r = await call({ action: 'cv_get_posts' });
 check('falls back without exposing index error', r.success === true, r);
 check('fallback preserves visible posts', r.data.items.length > 0, r.data);
 
+console.log('\n6c) Blessings expire safely after 24 hours');
+const blessingAuthor = { uid:'uid-abc', appUserId:1, name:'Hun Chet' };
+store['posts/blessing-recent'] = { authorUid:'uid-abc', author:blessingAuthor, type:'Blessing', content:'A recent blessing', visibility:'public', reactions:{}, createdAt:new Date(Date.now() - 60 * 60 * 1000) };
+store['posts/blessing-expired'] = { authorUid:'uid-abc', author:blessingAuthor, type:'Blessing', content:'An old blessing', visibility:'public', reactions:{}, createdAt:new Date(Date.now() - 25 * 60 * 60 * 1000) };
+store['posts/text-old'] = { authorUid:'uid-abc', author:blessingAuthor, type:'Text', content:'An old permanent post', visibility:'public', reactions:{}, createdAt:new Date(Date.now() - 30 * 60 * 60 * 1000) };
+r = await call({ action: 'cv_get_posts' });
+check('recent blessing remains visible', r.data.items.some(item => item.id === 'blessing-recent'), r.data.items);
+check('recent blessing includes expiry metadata', /T/.test(r.data.items.find(item => item.id === 'blessing-recent').expires_at), r.data.items);
+check('expired blessing is hidden from the feed response', !r.data.items.some(item => item.id === 'blessing-expired'), r.data.items);
+check('expired blessing record is retained', !!store['posts/blessing-expired']);
+check('ordinary old posts never expire', r.data.items.some(item => item.id === 'text-old'), r.data.items);
+
 console.log('\n7) Reactions');
 const pid = postIds()[0];
 r = await call({ action:'cv_like_post', post_id: pid, reaction: 'like' });

@@ -2,6 +2,9 @@
 (function($) {
     'use strict';
 
+    const CV_BLESSING_LIFETIME_MS = 24 * 60 * 60 * 1000;
+    let cvBlessingExpiryTimer = null;
+
     // State management
     let state = {
         tab: 'home',
@@ -5042,6 +5045,49 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
         return !!(post && String(post.type || '').toLowerCase() === 'blessing');
     }
 
+    function cvBlessingExpiryTime(post) {
+        if (!cvIsBlessingPost(post)) return 0;
+        const explicitExpiry = Date.parse(String(post.expires_at || post.expiresAt || ''));
+        if (Number.isFinite(explicitExpiry)) return explicitExpiry;
+        const created = Date.parse(String(post.created_at || post.createdAt || post.timestamp || post.date || ''));
+        return Number.isFinite(created) ? created + CV_BLESSING_LIFETIME_MS : 0;
+    }
+
+    function cvIsActiveBlessingPost(post, now = Date.now()) {
+        if (!cvIsBlessingPost(post)) return false;
+        const expires = cvBlessingExpiryTime(post);
+        // Older imported records without a usable timestamp are preserved.
+        // New and Firestore-backed Blessings always include an expiry.
+        return !expires || expires > now;
+    }
+
+    function cvBlessingRemainingLabel(post) {
+        const expires = cvBlessingExpiryTime(post);
+        if (!expires) return 'Available for 24 hours';
+        const minutes = Math.max(1, Math.ceil((expires - Date.now()) / 60000));
+        if (minutes >= 60) return `Expires in ${Math.ceil(minutes / 60)}h`;
+        return `Expires in ${minutes}m`;
+    }
+
+    function cvScheduleBlessingExpiryRefresh() {
+        if (cvBlessingExpiryTimer) {
+            window.clearTimeout(cvBlessingExpiryTimer);
+            cvBlessingExpiryTimer = null;
+        }
+        const expiries = (Array.isArray(state.posts) ? state.posts : [])
+            .filter(cvIsActiveBlessingPost)
+            .map(cvBlessingExpiryTime)
+            .filter(time => time > Date.now());
+        if (!expiries.length) return;
+        const delay = Math.max(250, Math.min(2147483647, Math.min(...expiries) - Date.now() + 100));
+        cvBlessingExpiryTimer = window.setTimeout(function() {
+            cvBlessingExpiryTimer = null;
+            const activeStory = (state.posts || []).find(post => String(post.id || '') === String(state.activeBlessingStoryId || ''));
+            if (activeStory && !cvIsActiveBlessingPost(activeStory)) state.activeBlessingStoryId = null;
+            if (state.tab === 'home') render();
+        }, delay);
+    }
+
     function cvVisibleFeedPosts(posts) {
         const visible = (Array.isArray(posts) ? posts : []).filter(post => !cvIsBlessingPost(post));
         if (!state.savedPostsOnly) return visible;
@@ -5115,7 +5161,7 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
     function cvGetRecentBlessingStories(limit = 6) {
         const posts = Array.isArray(state.posts) ? state.posts : [];
         return posts
-            .filter(cvIsBlessingPost)
+            .filter(cvIsActiveBlessingPost)
             .slice(0, Math.max(1, limit));
     }
 
@@ -5175,7 +5221,7 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
         const activeId = String(state.activeBlessingStoryId || '');
         if (!activeId) return '';
         const posts = Array.isArray(state.posts) ? state.posts : [];
-        const post = posts.find(item => String(item.id || '') === activeId && String(item.type || '').toLowerCase() === 'blessing');
+        const post = posts.find(item => String(item.id || '') === activeId && cvIsActiveBlessingPost(item));
         if (!post) return '';
         const author = post.author || {};
         const authorName = author.name || 'Faith In Member';
@@ -5194,7 +5240,7 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
                     <header class="cv-blessing-story-viewer-head">
                         <button type="button" class="cv-blessing-story-author" onclick="event.stopPropagation(); cvOpenAuthorProfile('${post.id}')" aria-label="Open ${escapeAttr(authorName)} profile">
                             <span class="cv-blessing-story-author-avatar">${renderProfileAvatar({ name: authorName, avatar_url: author.avatar || author.avatar_url || '' }, 'w-full h-full', 'text-[10px]')}</span>
-                            <span><strong>${escapeHtml(authorName)}</strong><small>${escapeHtml(post.time || 'Just now')}</small></span>
+                            <span><strong>${escapeHtml(authorName)}</strong><small>${escapeHtml(post.time || 'Just now')} · ${escapeHtml(cvBlessingRemainingLabel(post))}</small></span>
                         </button>
                         <button type="button" class="cv-blessing-story-close" onclick="cvCloseBlessingStory()" aria-label="Close blessing"><i data-lucide="x"></i></button>
                     </header>
@@ -5280,6 +5326,7 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
                 ${imageUrl ? `<img class="cv-react-story-photo" src="${escapeAttr(imageUrl)}" alt="${escapeAttr(authorName)} blessing photo" loading="lazy" />` : `<span class="cv-react-story-gradient" style="${escapeAttr(cvBlessingBgStyle(cvGetBlessingBgColor(post)))}"></span>`}
                 <span class="cv-react-story-overlay" aria-hidden="true"></span>
                 <span class="cv-react-story-avatar">${renderProfileAvatar({ name: authorName, avatar_url: author.avatar || author.avatar_url || '' }, 'w-full h-full', 'text-[10px]')}</span>
+                <span class="cv-blessing-expiry-badge"><i data-lucide="clock-3"></i>${escapeHtml(cvBlessingRemainingLabel(post).replace('Expires in ', ''))}</span>
                 ${!imageUrl ? `<span class="cv-react-story-text-preview">${escapeHtml(text)}</span>` : ''}
                 <strong>${escapeHtml(authorName)}</strong>
             </button>`;
@@ -5296,7 +5343,7 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
                 <div class="cv-react-stories" aria-label="Recent blessings">
                     <button type="button" class="cv-react-story-card cv-react-create-story cv-react-create-blessing" onclick="cvOpenFeedCreate('blessing')" aria-label="Add blessing">
                         <span class="cv-react-story-create-media">${renderProfileAvatar(current, 'w-full h-full', 'text-sm')}</span>
-                        <span class="cv-react-story-create-footer">${cvRenderBlessingIcon("cv-blessing-svg-icon--create")}<strong>Add Blessing</strong></span>
+                        <span class="cv-react-story-create-footer">${cvRenderBlessingIcon("cv-blessing-svg-icon--create")}<strong>Add Blessing</strong><em><span><i data-lucide="clock-3"></i>24 hours</span></em></span>
                     </button>
                     ${storyCards}
                 </div>
@@ -6633,6 +6680,10 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
                         ` : ''}
 
                         ${isBlessingComposer ? `
+                            <div class="cv-blessing-expiry-notice" role="note">
+                                <i data-lucide="clock-3" aria-hidden="true"></i>
+                                <span><strong>Visible for 24 hours</strong><small>Your Blessing will leave the story row automatically after one day.</small></span>
+                            </div>
                             <div class="cv-blessing-style-panel" aria-label="Blessing background color">
                                 <div class="cv-blessing-style-panel__copy">
                                     <strong>Background color</strong>
@@ -7972,6 +8023,7 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
         cvInitSmoothVideos();
         cvInitBibleStudioAfterRender();
         cvInitBlessingStoryAudio();
+        cvScheduleBlessingExpiryRefresh();
 
         // Set textarea value after render without re-rendering on every keystroke.
         const contentTextarea = document.getElementById('post-content-textarea');
