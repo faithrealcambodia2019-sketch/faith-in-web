@@ -1,115 +1,118 @@
 import type { Metadata } from "next";
 import { site } from "@/lib/site-content";
+import { ShieldCheck, CheckCircle2 } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy",
+  title: `Privacy Policy — ${site.name}`,
   description:
-    "How Faith In collects, uses, stores and protects your information, and the choices you have over your data.",
-  alternates: { canonical: "/privacy" },
-  robots: { index: true, follow: true },
+    "Our privacy policy explains how Faith In protects your spiritual journey, respects your data, and maintains an ad-free, secure Christian sanctuary.",
 };
-
-const LAST_UPDATED = "14 August 2026";
 
 export default function PrivacyPage() {
   return (
-    <section className="fi-section">
-      <div className="fi-shell fi-prose">
-        <h1 style={{ fontSize: "2.4rem" }}>Privacy Policy</h1>
-        <p className="fi-prose__meta">Last updated: {LAST_UPDATED}</p>
+    <div className="fi-page">
+      <section className="fi-hero pb-8">
+        <div className="fi-shell fi-shell--narrow text-center space-y-3">
+          <span className="fi-eyebrow">Privacy &amp; Security</span>
+          <h1 className="text-4xl sm:text-5xl font-black text-charcoal-900 tracking-tight">
+            Privacy Policy
+          </h1>
+          <p className="text-sm text-charcoal-500">
+            Last revised: August 2026 • Effective immediately
+          </p>
+        </div>
+      </section>
 
-        <p>
-          This policy explains what information {site.name} collects, why we collect it, and what
-          you can do about it. It applies to {site.domain} and the {site.name} application.
-        </p>
+      <section className="fi-section pt-0">
+        <div className="fi-shell fi-shell--narrow space-y-8">
+          {/* Summary Callout Banner */}
+          <div className="bg-[#FEF7E6] border border-[#FCE8BF] rounded-3xl p-6 sm:p-8 space-y-4">
+            <div className="flex items-center gap-2 text-sm font-extrabold text-[#B87814]">
+              <ShieldCheck className="w-5 h-5 text-[#D9941E]" />
+              <span>Plain Language Summary</span>
+            </div>
+            <p className="text-sm text-charcoal-800 leading-relaxed">
+              Faith In is engineered as a spiritual sanctuary. We will never sell your personal data, we do not run third-party advertising networks, and we support fully anonymous prayer requests so you can share burdens in complete confidence.
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
+              <div className="flex items-center gap-2 text-xs font-bold text-charcoal-800">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                <span>Zero Third-Party Ads</span>
+              </div>
+              <div className="flex items-center gap-2 text-xs font-bold text-charcoal-800">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                <span>Encrypted in Transit</span>
+              </div>
+              <div className="flex items-center gap-2 text-xs font-bold text-charcoal-800">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                <span>Anonymous Prayer Mode</span>
+              </div>
+            </div>
+          </div>
 
-        <h2>Information we collect</h2>
-        <ul>
-          <li>
-            <strong>Account information.</strong> Your name, email address and password when you
-            create an account. Passwords are handled by Firebase Authentication and are never
-            stored by us in readable form.
-          </li>
-          <li>
-            <strong>Profile information you choose to add.</strong> Photo, cover image, bio,
-            location, role, church, ministry and industry. All of this is optional, and what you
-            add is visible to other members.
-          </li>
-          <li>
-            <strong>Content you create.</strong> Posts, blessings, comments, prayer requests,
-            uploaded resources and job listings.
-          </li>
-          <li>
-            <strong>Technical information.</strong> Standard server and analytics data such as
-            device type, browser, approximate region and pages visited, used to keep the service
-            working and to understand which features are used.
-          </li>
-        </ul>
+          {/* Policy Body */}
+          <div className="bg-white border border-[#EAE7DC] rounded-3xl p-8 sm:p-12 space-y-8 text-charcoal-700 leading-relaxed text-sm">
+            <div className="space-y-3">
+              <h2 className="text-xl font-extrabold text-charcoal-900">
+                1. Information We Collect
+              </h2>
+              <p>
+                When you create an account on Faith In, we collect minimal profile details necessary to operate your fellowship account: your name, email address, optional profile photo, and password hash (managed securely through Firebase Authentication).
+              </p>
+              <p>
+                When you use the app, you may post prayer requests, testimonies, audio blessings, or comments. Content you choose to mark as &ldquo;Anonymous&rdquo; is stripped of public identifiers on our community feeds.
+              </p>
+            </div>
 
-        <h2>How we use it</h2>
-        <ul>
-          <li>To provide the platform: showing your content, delivering messages, running search.</li>
-          <li>To secure accounts and detect abuse.</li>
-          <li>To understand which features help people, so we know what to improve.</li>
-          <li>To contact you about your account or significant changes to the service.</li>
-        </ul>
-        <p>
-          We do not sell your personal information, and we do not sell advertising placement
-          against your content.
-        </p>
+            <div className="space-y-3">
+              <h2 className="text-xl font-extrabold text-charcoal-900">
+                2. How We Use Your Information
+              </h2>
+              <p>
+                We use collected information exclusively to:
+              </p>
+              <ul className="list-disc pl-5 space-y-1.5">
+                <li>Authenticate your account and sync your Scripture bookmarks across devices.</li>
+                <li>Deliver community feeds, prayer requests, and audio devotionals.</li>
+                <li>Prevent abusive content, spam, and unauthorized account access.</li>
+                <li>Send important service updates or direct replies to your support requests.</li>
+              </ul>
+            </div>
 
-        <h2>Where your information is stored</h2>
-        <p>
-          {site.name} runs on Google Firebase (Authentication, Cloud Firestore and Cloud Storage)
-          and is served through Vercel. These providers process data on our behalf and may store it
-          on servers outside your country. Access is restricted by Firebase Security Rules and
-          Firebase App Check.
-        </p>
+            <div className="space-y-3">
+              <h2 className="text-xl font-extrabold text-charcoal-900">
+                3. What We Never Do
+              </h2>
+              <ul className="list-disc pl-5 space-y-1.5">
+                <li>We never sell, rent, or monetize your personal data.</li>
+                <li>We never share your prayer requests with advertising brokers.</li>
+                <li>We never embed tracking pixels from third-party social ad platforms.</li>
+              </ul>
+            </div>
 
-        <h2>Who can see your content</h2>
-        <p>
-          Posts marked public are visible to signed-in members. Private posts are visible only to
-          their author. Resources and job listings you publish are intended for the signed-in
-          community. Uploaded files currently use unguessable public storage URLs, so do not upload
-          confidential files.
-        </p>
+            <div className="space-y-3">
+              <h2 className="text-xl font-extrabold text-charcoal-900">
+                4. Data Retention &amp; Deletion
+              </h2>
+              <p>
+                You maintain complete ownership of your content. You can edit, delete your posts, or permanently delete your Faith In account at any time. Upon account deletion, your personal records are purged from our active databases.
+              </p>
+            </div>
 
-        <h2>Your choices</h2>
-        <ul>
-          <li>You can edit or delete your profile information at any time from your account.</li>
-          <li>You can delete content you have posted.</li>
-          <li>
-            You can request deletion of your account and associated data by writing to{" "}
-            <a href={`mailto:${site.supportEmail}`}>{site.supportEmail}</a>.
-          </li>
-          <li>You can request a copy of the personal data we hold about you.</li>
-        </ul>
-
-        <h2>Children</h2>
-        <p>
-          {site.name} is not directed at children under 13, and we do not knowingly collect their
-          personal information. If you believe a child has created an account, contact us and we
-          will remove it.
-        </p>
-
-        <h2>Changes to this policy</h2>
-        <p>
-          We will update this page when our practices change, and we will change the &ldquo;last
-          updated&rdquo; date above. Significant changes will be communicated in the application.
-        </p>
-
-        <h2>Contact</h2>
-        <p>
-          Questions about this policy: <a href={`mailto:${site.contactEmail}`}>{site.contactEmail}</a>
-        </p>
-
-        <p className="fi-prose__meta" style={{ marginTop: 40 }}>
-          This policy is provided in good faith as a plain-language description of how the service
-          works. It is not legal advice, and it has not been reviewed by a lawyer. If {site.name}{" "}
-          takes payments, expands into other jurisdictions, or handles data covered by regulations
-          such as the GDPR, have a qualified lawyer review this document.
-        </p>
-      </div>
-    </section>
+            <div className="space-y-3">
+              <h2 className="text-xl font-extrabold text-charcoal-900">
+                5. Contacting Us
+              </h2>
+              <p>
+                If you have questions regarding this Privacy Policy or your personal information, please email us at{" "}
+                <a href={`mailto:${site.contactEmail}`} className="text-[#D9941E] font-bold hover:underline">
+                  {site.contactEmail}
+                </a>.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
   );
 }

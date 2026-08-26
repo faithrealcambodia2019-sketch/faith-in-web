@@ -1,145 +1,118 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { site } from "@/lib/site-content";
+import { EmailContactForm } from "@/components/marketing/EmailContactForm";
+import {
+  Users,
+  ArrowRight,
+  BookOpen,
+  Radio,
+} from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "For Churches & Ministries",
+  title: `For Churches & Ministries — ${site.name}`,
   description:
-    "Publish sermons and studies to a searchable library, post ministry job openings, and reach your members between Sundays — without competing with advertising for reach. Free for churches.",
-  keywords: [
-    "church platform Cambodia",
-    "Christian ministry resources Khmer",
-    "church sermon library",
-    "Christian jobs Cambodia",
-    "ministry job board",
-  ],
-  alternates: { canonical: "/for-churches" },
-  openGraph: {
-    title: `For Churches & Ministries | ${site.name}`,
-    description:
-      "Reach your members between Sundays: a searchable sermon library, a ministry jobs board, and verified leader profiles.",
-    url: "/for-churches",
-  },
+    "Equip your church with modern digital discipleship tools, sermon media templates, coordinated prayer chains, and bilingual Scripture study tools.",
 };
-
-const problems = [
-  {
-    title: "Your announcements reach a fraction of your members",
-    body: "A church Facebook page shows a post to a slice of the people who already follow it, and ranks it against advertising. Faith In does not sell placement above your announcements.",
-  },
-  {
-    title: "Last month's sermon is effectively gone",
-    body: "Material posted to a feed or a group chat scrolls away within days. The resource library keeps sermons, lessons and studies categorised and searchable for as long as you want them.",
-  },
-  {
-    title: "Openings travel by word of mouth",
-    body: "Ministry roles get filled through whoever happens to hear. A jobs board puts them in front of people who are actually looking, with location, type and how to apply.",
-  },
-  {
-    title: "Good Khmer material never leaves one Drive folder",
-    body: "Churches build teaching material and it stays with the person who made it. Publishing to the library means other congregations can use what you have already written.",
-  },
-];
-
-const steps = [
-  {
-    n: "1",
-    title: "Create a leader account",
-    body: "Sign up free and complete your profile with your church and ministry. Leaders can request a verification badge so members recognise the account.",
-  },
-  {
-    n: "2",
-    title: "Publish what you already have",
-    body: "Upload existing sermons, lessons, slides and studies to the library with contributor credit. This is usually an afternoon of work for a year of material.",
-  },
-  {
-    n: "3",
-    title: "Bring your members in",
-    body: "Share your Faith In link where your congregation already is — Telegram, Facebook, Messenger, the notice sheet. Members join free and find your material by searching.",
-  },
-  {
-    n: "4",
-    title: "Keep posting between Sundays",
-    body: "Verses, blessings, prayer requests, announcements and job openings. The point is that midweek contact stops depending on one platform's reach.",
-  },
-];
 
 export default function ForChurchesPage() {
   return (
-    <>
-      <section className="fi-hero" style={{ paddingBottom: 40 }}>
+    <div className="fi-page">
+      {/* Hero */}
+      <section className="fi-hero pb-12">
+        <div className="fi-shell text-center max-w-3xl mx-auto space-y-4">
+          <span className="fi-eyebrow">Church Partnerships • សម្រាប់ក្រុមជំនុំ</span>
+          <h1 className="text-4xl sm:text-5xl font-black text-charcoal-900 tracking-tight leading-tight">
+            Digital discipleship tools for <span className="fi-hero-highlight">local churches.</span>
+          </h1>
+          <p className="text-lg text-charcoal-600 leading-relaxed">
+            Empower your congregation throughout the week. Connect youth, families, and diaspora members through bilingual Scripture study, shared prayer chains, and uplifting media.
+          </p>
+
+          <div className="pt-4 flex flex-wrap items-center justify-center gap-3">
+            <a href="#partner-form" className="fi-btn fi-btn--primary">
+              <span>Partner Your Church</span>
+              <ArrowRight className="w-4 h-4" />
+            </a>
+            <Link href="/contact" className="fi-btn fi-btn--secondary">
+              <span>Schedule a Call</span>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Solutions Grid */}
+      <section className="fi-section fi-section--subtle">
         <div className="fi-shell">
-          <div className="fi-head fi-head--left" style={{ margin: 0, maxWidth: "36em" }}>
-            <span className="fi-eyebrow">For churches &amp; ministries · Free</span>
-            <h1>
-              Reach your people <span className="fi-hl">between Sundays</span>
-            </h1>
+          <div className="fi-head">
+            <span className="fi-eyebrow">Ministry Toolkit • ឧបករណ៍បម្រើការ</span>
+            <h2>How Faith In equips your congregation</h2>
             <p>
-              Faith In gives your church a searchable home for its teaching material, a place to
-              post ministry roles, and a way to stay in contact with members that does not depend
-              on a social network deciding who sees you.
+              Tools built to strengthen personal spiritual habits and foster authentic pastoral care beyond Sunday mornings.
             </p>
-            <div className="fi-hero__cta">
-              <Link href={site.appPath} className="fi-btn fi-btn--primary fi-btn--lg">
-                Get your church started
-              </Link>
-              <Link href="/contact" className="fi-btn fi-btn--ghost fi-btn--lg">
-                Talk to us first
-              </Link>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {/* Tool 1 */}
+            <div className="fi-card space-y-4">
+              <div className="w-12 h-12 rounded-2xl bg-[#FEF7E6] border border-[#FCE8BF] text-[#B87814] flex items-center justify-center shadow-xs">
+                <Users className="w-6 h-6" />
+              </div>
+              <h3 className="text-xl font-extrabold text-charcoal-900">
+                Congregation Prayer Chains
+              </h3>
+              <p className="text-sm text-charcoal-600 leading-relaxed">
+                Mobilize intercession for sick members, missionary families, and community outreach with private or moderated prayer boards.
+              </p>
+            </div>
+
+            {/* Tool 2 */}
+            <div className="fi-card space-y-4">
+              <div className="w-12 h-12 rounded-2xl bg-[#EFF6FF] border border-[#DBEAFE] text-[#2563EB] flex items-center justify-center shadow-xs">
+                <BookOpen className="w-6 h-6" />
+              </div>
+              <h3 className="text-xl font-extrabold text-charcoal-900">
+                Bilingual Youth Bible Study
+              </h3>
+              <p className="text-sm text-charcoal-600 leading-relaxed">
+                Bridge language gaps between first-generation parents and diaspora youth with aligned Khmer and English parallel Scriptures.
+              </p>
+            </div>
+
+            {/* Tool 3 */}
+            <div className="fi-card space-y-4">
+              <div className="w-12 h-12 rounded-2xl bg-[#ECFDF5] border border-[#D1FAE5] text-[#059669] flex items-center justify-center shadow-xs">
+                <Radio className="w-6 h-6" />
+              </div>
+              <h3 className="text-xl font-extrabold text-charcoal-900">
+                Sermon Audio &amp; Devotionals
+              </h3>
+              <p className="text-sm text-charcoal-600 leading-relaxed">
+                Share short audio devotionals, pastor reflections, and weekly announcements with members directly through their mobile web app.
+              </p>
             </div>
           </div>
         </div>
       </section>
 
-      <section className="fi-section fi-section--tint">
+      {/* Partner Inquiry Form Section */}
+      <section id="partner-form" className="fi-section">
         <div className="fi-shell">
-          <div className="fi-head">
-            <h2>What this actually solves</h2>
-            <p>Four problems most churches recognise immediately.</p>
-          </div>
-          <div className="fi-grid">
-            {problems.map((problem) => (
-              <article key={problem.title} className="fi-card">
-                <h3>{problem.title}</h3>
-                <p>{problem.body}</p>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
+          <div className="max-w-2xl mx-auto bg-white border border-[#EAE7DC] rounded-3xl p-6 sm:p-10 shadow-lg space-y-6">
+            <div className="text-center space-y-2">
+              <span className="fi-eyebrow">Get In Touch</span>
+              <h2 className="text-2xl sm:text-3xl font-extrabold text-charcoal-900">
+                Connect your church with Faith In
+              </h2>
+              <p className="text-sm text-charcoal-600">
+                Tell us about your ministry and prepare an email for the Faith In team.
+              </p>
+            </div>
 
-      <section className="fi-section">
-        <div className="fi-shell">
-          <div className="fi-head">
-            <h2>Getting started</h2>
-            <p>There is no onboarding call, no contract and no cost.</p>
-          </div>
-          <div className="fi-grid">
-            {steps.map((step) => (
-              <article key={step.n} className="fi-card">
-                <span className="fi-card__km">Step {step.n}</span>
-                <h3>{step.title}</h3>
-                <p>{step.body}</p>
-              </article>
-            ))}
+            <EmailContactForm destination={site.contactEmail} variant="church" />
           </div>
         </div>
       </section>
-
-      <section className="fi-section fi-section--tint">
-        <div className="fi-shell">
-          <div className="fi-cta">
-            <h2>Put your church&rsquo;s teaching somewhere it lasts</h2>
-            <p>
-              Free to join, free to publish, free for your members. If you would rather ask
-              questions first, the contact page reaches a person.
-            </p>
-            <Link href={site.appPath} className="fi-btn fi-btn--lg">
-              Create a church account
-            </Link>
-          </div>
-        </div>
-      </section>
-    </>
+    </div>
   );
 }
