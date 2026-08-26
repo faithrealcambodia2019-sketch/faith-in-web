@@ -1,0 +1,36 @@
+/* ==========================================================================
+   Faith In - design system token layer
+   ==========================================================================
+   Source of truth for the member application's palette.
+
+   The legacy visual layers (production-ui, dashboard-blue, professional-ui,
+   header-modern, experience-ui, reference-feed-ui) already read their colours
+   from custom properties - chiefly the --rf-* set. Rather than override
+   thousands of !important declarations, this file redefines the variables
+   those rules consume. Every existing selector keeps working and simply
+   resolves to the Faith In palette.
+
+   Imported last in app/app/layout.tsx so these definitions win the cascade.
+
+   Tokens are RGB triplets so they compose with alpha:
+       color: rgb(var(--ink));
+       background: rgb(var(--brand) / .12);
+
+   Dark mode follows the .dark class already used by both the legacy layer
+   and tailwind.config.cjs (darkMode: class).
+   ========================================================================== */
+
+/* --- light ---------------------------------------------------------------- */
+#cv-root { --canvas: 244 245 247; --surface: 255 255 255; --raised: 248 249 251; --line: 226 230 236; --ink: 17 24 39; --muted: 100 111 128; --faint: 148 158 172; --brand: 47 91 234; --brand-strong: 30 64 175; --brand-soft: 233 239 254; --gold: 191 143 43; --rose: 225 76 96; }
+
+/* --- dark ----------------------------------------------------------------- */
+.dark #cv-root { --canvas: 8 12 22; --surface: 17 24 39; --raised: 24 32 49; --line: 39 50 71; --ink: 232 237 245; --muted: 154 165 183; --faint: 116 128 148; --brand: 122 155 255; --brand-strong: 158 182 255; --brand-soft: 29 42 79; --gold: 226 184 92; --rose: 247 122 139; }
+
+/* --- legacy alias layer ---------------------------------------------------
+   --rf-* is consumed throughout reference-feed-ui.css and its siblings.
+   Re-pointing it here migrates the whole feed surface in one place.
+   -------------------------------------------------------------------------- */
+#cv-root, .dark #cv-root { --rf-canvas: rgb(var(--canvas)); --rf-surface: rgb(var(--surface)); --rf-ink: rgb(var(--ink)); --rf-copy: rgb(var(--ink) / .82); --rf-muted: rgb(var(--muted)); --rf-line: rgb(var(--line)); --rf-line-soft: rgb(var(--line) / .55); --rf-brand: rgb(var(--brand)); --rf-brand-strong: rgb(var(--brand-strong)); --rf-brand-soft: rgb(var(--brand-soft)); --rf-radius: 14px; --rf-shadow: 0 1px 2px rgb(16 24 40 / .04); }
+
+/* A lifted card reads as a smudge against a near-black canvas. */
+.dark #cv-root { --rf-shadow: none; }
