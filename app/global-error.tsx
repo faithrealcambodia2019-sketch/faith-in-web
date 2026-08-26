@@ -1,84 +1,40 @@
 "use client";
 
-import { useEffect } from "react";
-import Link from "next/link";
+import { AlertCircle, RefreshCw } from "lucide-react";
 
 export default function GlobalError({
-  error,
-  retry,
+  reset,
 }: {
   error: Error & { digest?: string };
-  retry: () => void;
+  reset: () => void;
 }) {
-  useEffect(() => {
-    console.error("[Faith In] Global error", error.digest ?? "client-render-error");
-  }, [error]);
-
   return (
     <html lang="en">
-      <body style={{ margin: 0, background: "#f5f8f5", color: "#173326", fontFamily: "system-ui, sans-serif" }}>
-        <main
-          style={{
-            minHeight: "100vh",
-            display: "grid",
-            placeItems: "center",
-            padding: "24px",
-            boxSizing: "border-box",
-          }}
-        >
-          <section
-            aria-labelledby="global-error-title"
-            style={{
-              width: "min(100%, 520px)",
-              padding: "32px",
-              border: "1px solid #d7e4da",
-              borderRadius: "20px",
-              background: "#fff",
-              boxShadow: "0 18px 48px rgba(23, 51, 38, 0.1)",
-              textAlign: "center",
-            }}
-          >
-            <title>Something went wrong | Faith In</title>
-            <p style={{ margin: "0 0 8px", color: "#557263", fontWeight: 700 }}>Something went wrong</p>
-            <h1 id="global-error-title" style={{ margin: "0 0 12px", fontSize: "clamp(1.8rem, 5vw, 2.5rem)" }}>
-              We couldn&rsquo;t open Faith In.
+      <body className="min-h-screen flex items-center justify-center bg-[#FCFCFA] text-[#0D1017] p-4 font-sans antialiased">
+        <div className="max-w-md w-full bg-white border border-[#EAE7DC] rounded-3xl p-8 text-center shadow-lg space-y-6">
+          <div className="w-14 h-14 rounded-2xl bg-amber-50 border border-amber-200 text-amber-600 flex items-center justify-center mx-auto">
+            <AlertCircle className="w-7 h-7" />
+          </div>
+
+          <div className="space-y-2">
+            <h1 className="text-2xl font-extrabold text-[#0D1017]">
+              Application Error
             </h1>
-            <p style={{ margin: "0 0 24px", color: "#557263", lineHeight: 1.6 }}>
-              Your account and content are safe. Please try again, or return to the homepage.
+            <p className="text-sm text-[#445166]">
+              A critical error occurred while loading this page. Please try refreshing.
             </p>
-            <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "12px" }}>
-              <button
-                type="button"
-                onClick={retry}
-                style={{
-                  border: 0,
-                  borderRadius: "999px",
-                  padding: "12px 20px",
-                  background: "#266640",
-                  color: "#fff",
-                  cursor: "pointer",
-                  font: "inherit",
-                  fontWeight: 700,
-                }}
-              >
-                Try again
-              </button>
-              <Link
-                href="/"
-                style={{
-                  border: "1px solid #b9cdbf",
-                  borderRadius: "999px",
-                  padding: "11px 20px",
-                  color: "#266640",
-                  fontWeight: 700,
-                  textDecoration: "none",
-                }}
-              >
-                Go home
-              </Link>
-            </div>
-          </section>
-        </main>
+          </div>
+
+          <div className="pt-2 flex justify-center">
+            <button
+              onClick={() => reset()}
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#D9941E] text-[#0D1017] font-bold text-sm hover:bg-[#EBB94F] transition-all shadow-md"
+            >
+              <RefreshCw className="w-4 h-4" />
+              <span>Reload Application</span>
+            </button>
+          </div>
+        </div>
       </body>
     </html>
   );

@@ -1,22 +1,18 @@
 import "../marketing.css";
-import { SiteFooter } from "@/components/marketing/SiteFooter";
 import { SiteHeader } from "@/components/marketing/SiteHeader";
+import { SiteFooter } from "@/components/marketing/SiteFooter";
+import { StructuredData } from "@/components/marketing/StructuredData";
 
-/**
- * Layout for the public, server-rendered marketing pages.
- *
- * Everything is nested inside `.fi` rather than being a direct child of <body>,
- * so the legacy application stylesheets (which suppress `body > header` and
- * `body > footer`) cannot affect these pages even if their CSS is ever loaded.
- */
-export default function MarketingLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+export default function MarketingLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
   return (
-    <div className="fi">
-      <a href="#main" className="fi-skip-link">
-        Skip to content
-      </a>
+    <div className="flex min-h-screen flex-col bg-[#FCFCFA] text-[#0D1017]">
+      <StructuredData />
       <SiteHeader />
-      <main id="main">{children}</main>
+      <main className="flex-1">{children}</main>
       <SiteFooter />
     </div>
   );
