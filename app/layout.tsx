@@ -1,27 +1,20 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Koh_Santepheap, Poppins } from "next/font/google";
+import { Inter, Kantumruy_Pro } from "next/font/google";
 import "./globals.css";
 import { siteConfig } from "@/lib/runtime-config";
 import { site } from "@/lib/site-content";
 
-const khmerFont = Koh_Santepheap({
-  variable: "--font-koh-santepheap",
-  subsets: ["khmer"],
-  weight: ["400", "700", "900"],
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-sans",
   display: "swap",
 });
 
-const brandFont = Poppins({
-  variable: "--font-poppins",
-  subsets: ["latin"],
-  weight: ["700", "800"],
+const kantumruy = Kantumruy_Pro({
+  subsets: ["khmer", "latin"],
+  variable: "--font-khmer",
   display: "swap",
-});
-
-const bodyFont = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
-  display: "swap",
+  weight: ["400", "500", "600", "700"],
 });
 
 export const metadata: Metadata = {
@@ -32,79 +25,73 @@ export const metadata: Metadata = {
   },
   description: site.description,
   applicationName: site.name,
-  keywords: [
-    "Khmer Bible",
-    "ព្រះគម្ពីរខ្មែរ",
-    "Christian community Cambodia",
-    "Khmer Christian resources",
-    "Bible study Khmer English",
-    "Christian jobs Cambodia",
-    "sermon preparation Khmer",
-    "Christian social network",
-    "prayer requests",
-  ],
-  authors: [{ name: site.legalName, url: site.origin }],
-  creator: site.legalName,
+  authors: [{ name: site.name, url: site.origin }],
+  creator: site.name,
   publisher: site.legalName,
-  alternates: {
-    canonical: "/",
+  keywords: [
+    "Faith In",
+    "Khmer Bible",
+    "Khmer Christian",
+    "ព្រះគម្ពីរ",
+    "ព្រះគម្ពីរបរិសុទ្ធ",
+    "Christian Community Cambodia",
+    "Bilingual Bible study",
+    "Prayer wall",
+    "Audio blessings",
+    "Cambodian diaspora church",
+  ],
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
   },
   openGraph: {
     type: "website",
+    locale: "en_US",
+    alternateLocale: ["km_KH"],
+    url: site.origin,
     siteName: site.name,
     title: `${site.name} — ${site.tagline}`,
     description: site.shortDescription,
-    url: site.origin,
-    locale: "en_US",
-    alternateLocale: ["km_KH"],
   },
   twitter: {
     card: "summary_large_image",
     title: `${site.name} — ${site.tagline}`,
     description: site.shortDescription,
   },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      "max-image-preview": "large",
-      "max-snippet": -1,
-      "max-video-preview": -1,
-    },
-  },
   icons: {
     icon: [
-      { url: "/assets/images/favicon.ico" },
-      { url: "/assets/images/favicon.svg", type: "image/svg+xml" },
       { url: "/assets/images/favicon-32x32.png", sizes: "32x32", type: "image/png" },
-      { url: "/assets/images/favicon-192x192.png", sizes: "192x192", type: "image/png" },
+      { url: "/assets/images/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/assets/images/favicon.svg", type: "image/svg+xml" },
     ],
-    apple: [{ url: "/assets/images/favicon-180x180.png", sizes: "180x180" }],
+    apple: [
+      { url: "/assets/images/favicon-180x180.png", sizes: "180x180", type: "image/png" },
+    ],
   },
-  category: "religion",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: site.name,
+  },
 };
 
 export const viewport: Viewport = {
-  themeColor: "#4f46e5",
+  themeColor: "#D9941E",
   width: "device-width",
   initialScale: 1,
+  maximumScale: 5,
 };
 
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
   return (
-    <html lang="en">
-      {/*
-        `cv-faith-in-platform` is kept on <body> because ~146 rules in the legacy
-        application stylesheets are scoped to it. Marketing pages never load those
-        stylesheets, and all marketing markup is nested inside `.fi` rather than
-        being a direct child of <body>, so the legacy `body > header/footer`
-        suppression rules cannot affect it.
-      */}
-      <body
-        className={`cv-faith-in-platform ${bodyFont.variable} ${khmerFont.variable} ${brandFont.variable}`}
-      >
+    <html lang="en" className={`${inter.variable} ${kantumruy.variable}`}>
+      <body className="font-sans antialiased min-h-screen flex flex-col bg-[#FCFCFA] text-[#0D1017]">
         {children}
       </body>
     </html>

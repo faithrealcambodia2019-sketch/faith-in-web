@@ -1,30 +1,22 @@
 import type { MetadataRoute } from "next";
 import { site } from "@/lib/site-content";
 
-type Entry = {
-  path: string;
-  priority: number;
-  changeFrequency: MetadataRoute.Sitemap[number]["changeFrequency"];
-};
-
-const entries: Entry[] = [
-  { path: "/", priority: 1, changeFrequency: "weekly" },
-  { path: "/bible-study", priority: 0.9, changeFrequency: "monthly" },
-  { path: "/features", priority: 0.8, changeFrequency: "monthly" },
-  { path: "/for-churches", priority: 0.8, changeFrequency: "monthly" },
-  { path: "/about", priority: 0.6, changeFrequency: "yearly" },
-  { path: "/contact", priority: 0.5, changeFrequency: "yearly" },
-  { path: "/privacy", priority: 0.3, changeFrequency: "yearly" },
-  { path: "/terms", priority: 0.3, changeFrequency: "yearly" },
-];
-
 export default function sitemap(): MetadataRoute.Sitemap {
-  const lastModified = new Date();
+  const routes = [
+    { url: `${site.origin}/`, changeFrequency: "daily" as const, priority: 1.0 },
+    { url: `${site.origin}/features`, changeFrequency: "weekly" as const, priority: 0.8 },
+    { url: `${site.origin}/bible-study`, changeFrequency: "weekly" as const, priority: 0.9 },
+    { url: `${site.origin}/for-churches`, changeFrequency: "weekly" as const, priority: 0.8 },
+    { url: `${site.origin}/about`, changeFrequency: "monthly" as const, priority: 0.7 },
+    { url: `${site.origin}/contact`, changeFrequency: "monthly" as const, priority: 0.6 },
+    { url: `${site.origin}/privacy`, changeFrequency: "yearly" as const, priority: 0.3 },
+    { url: `${site.origin}/terms`, changeFrequency: "yearly" as const, priority: 0.3 },
+  ];
 
-  return entries.map((entry) => ({
-    url: `${site.origin}${entry.path === "/" ? "" : entry.path}`,
-    lastModified,
-    changeFrequency: entry.changeFrequency,
-    priority: entry.priority,
+  return routes.map((r) => ({
+    url: r.url,
+    lastModified: new Date(),
+    changeFrequency: r.changeFrequency,
+    priority: r.priority,
   }));
 }

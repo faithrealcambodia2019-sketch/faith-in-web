@@ -1,76 +1,65 @@
-import { faqs, site } from "@/lib/site-content";
+import { site, features } from "@/lib/site-content";
 
-/**
- * JSON-LD structured data.
- *
- * Organization + WebSite give search engines the brand entity and a sitelinks
- * search box; SoftwareApplication describes the product; FAQPage makes the
- * homepage eligible for expanded FAQ results.
- */
 export function StructuredData() {
-  const graph = {
+  const organizationSchema = {
     "@context": "https://schema.org",
-    "@graph": [
-      {
-        "@type": "Organization",
-        "@id": `${site.origin}/#organization`,
-        name: site.name,
-        legalName: site.legalName,
-        url: site.origin,
-        description: site.description,
-        logo: {
-          "@type": "ImageObject",
-          url: `${site.origin}/assets/images/faith-in-logo.png`,
-        },
-        areaServed: [
-          { "@type": "Country", name: "Cambodia" },
-          { "@type": "Place", name: "Worldwide" },
-        ],
-        knowsLanguage: ["en", "km"],
-        email: site.contactEmail,
-      },
-      {
-        "@type": "WebSite",
-        "@id": `${site.origin}/#website`,
-        url: site.origin,
-        name: site.name,
-        description: site.shortDescription,
-        publisher: { "@id": `${site.origin}/#organization` },
-        inLanguage: ["en", "km"],
-      },
-      {
-        "@type": "SoftwareApplication",
-        "@id": `${site.origin}/#application`,
-        name: site.name,
-        applicationCategory: "SocialNetworkingApplication",
-        operatingSystem: "Web",
-        url: site.origin,
-        description: site.description,
-        inLanguage: ["en", "km"],
-        publisher: { "@id": `${site.origin}/#organization` },
-        offers: {
-          "@type": "Offer",
-          price: "0",
-          priceCurrency: "USD",
-        },
-      },
-      {
-        "@type": "FAQPage",
-        "@id": `${site.origin}/#faq`,
-        mainEntity: faqs.map((faq) => ({
-          "@type": "Question",
-          name: faq.question,
-          acceptedAnswer: { "@type": "Answer", text: faq.answer },
-        })),
-      },
+    "@type": "Organization",
+    name: site.name,
+    legalName: site.legalName,
+    url: site.origin,
+    logo: `${site.origin}/assets/images/faith-in-logo.png`,
+    description: site.description,
+    email: site.contactEmail,
+    sameAs: [
+      site.social.telegram,
+      site.social.facebook,
+      site.social.youtube,
     ],
   };
 
+  const websiteSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: site.name,
+    url: site.origin,
+    description: site.description,
+    inLanguage: ["en", "km"],
+  };
+
+  const applicationSchema = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: site.name,
+    applicationCategory: "LifestyleApplication",
+    operatingSystem: "Any modern web browser",
+    offers: {
+      "@type": "Offer",
+      price: "0",
+      priceCurrency: "USD",
+    },
+    featureList: features.map((f) => f.title).join(", "),
+  };
+
   return (
-    <script
-      type="application/ld+json"
-      // JSON.stringify output is not user-controlled and contains no closing tags.
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(graph) }}
-    />
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(organizationSchema),
+        }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(websiteSchema),
+        }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(applicationSchema),
+        }}
+      />
+    </>
   );
 }
