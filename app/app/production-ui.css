@@ -1252,6 +1252,9 @@ html body #cv-root .cv-ui-verse-kh {
 
 html body #cv-root .cv-ui-contact-row {
   min-height: 60px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
   border-radius: 12px !important;
   padding: 8px !important;
 }
@@ -1267,14 +1270,17 @@ html body #cv-root .cv-ui-contact-avatar {
 }
 
 html body #cv-root .cv-ui-contact-message {
-  min-height: 28px !important;
+  width: 34px !important;
+  height: 34px !important;
+  min-width: 34px !important;
+  min-height: 34px !important;
   display: inline-flex !important;
+  justify-content: center !important;
   align-items: center !important;
-  gap: 5px !important;
-  margin-top: 5px !important;
-  padding: 0 10px !important;
+  margin: 0 0 0 auto !important;
+  padding: 0 !important;
   border: 1px solid #dedcff !important;
-  border-radius: 9px !important;
+  border-radius: 999px !important;
   background: #f8f7ff !important;
   color: #4f46e5 !important;
   font-size: 10px !important;
@@ -1287,8 +1293,17 @@ html body #cv-root .cv-ui-contact-message:hover {
 }
 
 html body #cv-root .cv-ui-contact-message svg {
-  width: 13px !important;
-  height: 13px !important;
+  width: 16px !important;
+  height: 16px !important;
+}
+
+html body #cv-root .cv-ui-contact-message span {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  overflow: hidden !important;
+  clip: rect(0 0 0 0) !important;
+  white-space: nowrap !important;
 }
 
 html body #cv-root .cv-react-post-card .cv-linkedin-actions {

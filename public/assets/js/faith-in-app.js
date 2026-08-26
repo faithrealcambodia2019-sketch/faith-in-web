@@ -4967,12 +4967,22 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
     function cvGetSuggestedConnections(limit = 3) {
         const currentId = cvSocialCurrentUserId();
         const seen = new Set();
+        const seenProfiles = new Set();
         const items = [];
+        const normalizeIdentity = value => String(value || '').trim().toLowerCase().replace(/\s+/g, ' ');
+        const currentUser = state.currentUser || {};
+        const currentName = normalizeIdentity(currentUser.name || state.profileName || state.postAuthorName);
+        const currentHandle = normalizeIdentity(currentUser.handle || currentUser.username).replace(/^@/, '');
         const add = user => {
             if (!user || !user.id) return;
             const id = parseInt(user.id || 0, 10);
-            if (!id || id === currentId || seen.has(id) || user.is_self) return;
+            const name = normalizeIdentity(user.name || user.display_name || user.username);
+            const handle = normalizeIdentity(user.handle || user.username).replace(/^@/, '');
+            const profileKey = name ? `name:${name}` : (handle ? `handle:${handle}` : `id:${id}`);
+            const isCurrentProfile = (currentHandle && handle === currentHandle) || (currentName && name === currentName);
+            if (!id || id === currentId || seen.has(id) || seenProfiles.has(profileKey) || user.is_self || isCurrentProfile) return;
             seen.add(id);
+            seenProfiles.add(profileKey);
             const subtitle = user.subtitle || user.role || user.ministry || user.church || user.handle || 'Christian creator';
             items.push({
                 id,
@@ -5311,13 +5321,14 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
 
     function cvRenderStoriesCarousel() {
         const current = state.currentUser || { name: state.postAuthorName || 'You' };
-        const blessings = cvGetRecentBlessingStories(6);
+        const blessings = cvGetRecentBlessingStories(4);
         const prompts = [
             { title: 'Share testimony', text: 'Tell what God has done.' },
             { title: 'Add photo', text: 'Post a worship, church, or ministry moment.' },
-            { title: 'Encourage others', text: 'Write a verse or blessing.' }
+            { title: 'Encourage others', text: 'Write a verse or blessing.' },
+            { title: 'Share a prayer', text: 'Invite the community to pray with you.' }
         ];
-        const storyCards = blessings.length ? blessings.map((post, index) => {
+        const blessingCards = blessings.map((post, index) => {
             const author = post.author || {};
             const authorName = author.name || 'Faith In Member';
             const imageUrl = cvGetBlessingStoryImage(post);
@@ -5330,7 +5341,9 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
                 ${!imageUrl ? `<span class="cv-react-story-text-preview">${escapeHtml(text)}</span>` : ''}
                 <strong>${escapeHtml(authorName)}</strong>
             </button>`;
-        }).join('') : prompts.map((item, index) => `
+        }).join('');
+        const promptCount = Math.max(0, 4 - blessings.length);
+        const promptCards = prompts.slice(0, promptCount).map((item, index) => `
             <button type="button" class="cv-react-story-card cv-blessing-story-card cv-blessing-story-prompt cv-react-story-card--${index + 2}" onclick="cvOpenFeedCreate('blessing')" aria-label="${escapeAttr(item.title)}">
                 <span class="cv-react-story-gradient" style="${escapeAttr(cvBlessingBgStyle(CV_BLESSING_COLOR_PALETTE[(index + 1) % CV_BLESSING_COLOR_PALETTE.length].key))}"></span>
                 <span class="cv-react-story-avatar cv-react-story-avatar--icon">${cvRenderBlessingIcon("cv-blessing-svg-icon--story-avatar")}</span>
@@ -5338,6 +5351,7 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
                 <strong>${escapeHtml(item.title)}</strong>
             </button>
         `).join('');
+        const storyCards = blessingCards + promptCards;
         return `
             <section class="cv-blessings-module" aria-label="Blessings">
                 <div class="cv-react-stories" aria-label="Recent blessings">
@@ -5417,8 +5431,8 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
                                     <div class="cv-ui-contact-body">
                                         <button type="button" class="cv-ui-contact-name cv-plain-button" ${id > 0 ? `onclick="cvOpenUserProfile(${id})"` : `onclick="cvComingSoon('Contacts')"`}>${escapeHtml(user.name || 'Faith In Member')}</button>
                                         <span class="cv-ui-contact-headline">${escapeHtml(renderContactHeadline(user))}</span>
-                                        <button type="button" class="cv-ui-contact-message" ${id > 0 ? `onclick="cvOpenFaithInChat(${escapeAttr(messagePayload)})"` : `onclick="cvComingSoon('Messaging')"`} aria-label="Message ${escapeAttr(user.name || 'member')}"><i data-lucide="message-square"></i><span>Message</span></button>
                                     </div>
+                                    <button type="button" class="cv-ui-contact-message" ${id > 0 ? `onclick="cvOpenFaithInChat(${escapeAttr(messagePayload)})"` : `onclick="cvComingSoon('Messaging')"`} aria-label="Message ${escapeAttr(user.name || 'member')}" title="Message ${escapeAttr(user.name || 'member')}"><i data-lucide="message-circle"></i><span>Message</span></button>
                                 </article>
                             `;
                         }).join('')}
@@ -5660,6 +5674,21 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
         grid.classList.toggle('is-square', !(width > 0 && height / width >= 1.15));
     };
 
+    window.cvHandleFeedImageError = image => {
+        if (!image || !image.closest) return;
+        const item = image.closest('.cv-feed-media-item');
+        const grid = image.closest('.cv-feed-media-grid');
+        if (item) item.remove();
+        if (!grid) return;
+        const remaining = grid.querySelectorAll('.cv-feed-media-item').length;
+        if (!remaining) {
+            grid.remove();
+            return;
+        }
+        grid.classList.remove('is-one', 'is-two', 'is-three', 'is-four', 'is-many', 'is-portrait', 'is-square');
+        grid.classList.add(remaining === 1 ? 'is-one' : (remaining === 2 ? 'is-two' : (remaining === 3 ? 'is-three' : (remaining === 4 ? 'is-four' : 'is-many'))));
+    };
+
     window.cvClassifyFeedVideo = (video) => {
         if (!video || !video.closest) return;
         const wrap = video.closest('.cv-feed-reel-wrap');
@@ -5696,7 +5725,7 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
         }
         const count = items.length;
         const cls = count === 1 ? 'is-one is-square' : (count === 2 ? 'is-two' : (count === 3 ? 'is-three' : (count === 4 ? 'is-four' : 'is-many')));
-        return `<div class="cv-feed-media-grid ${cls} mt-4">${items.slice(0, 10).map((item, idx) => `<div class="cv-feed-media-item" data-media-index="${idx}"><img src="${safeImageUrl(item.local_url || item.url || item.drive_url, '')}" alt="Post image ${idx + 1}" loading="eager" decoding="async" fetchpriority="high" ${count === 1 ? 'onload="cvClassifyFeedImage(this)"' : ''} />${dl(item, 'image ' + (idx + 1))}${idx === 9 && count > 10 ? `<span class="cv-feed-media-more">+${count - 10}</span>` : ''}</div>`).join('')}</div>`;
+        return `<div class="cv-feed-media-grid ${cls} mt-4">${items.slice(0, 10).map((item, idx) => `<div class="cv-feed-media-item" data-media-index="${idx}"><img src="${safeImageUrl(item.local_url || item.url || item.drive_url || item.preview_url, '')}" alt="Shared by ${escapeAttr((post.author && post.author.name) || 'a Faith In member')}" loading="lazy" decoding="async" ${idx === 0 ? 'fetchpriority="high"' : ''} onerror="cvHandleFeedImageError(this)" ${count === 1 ? 'onload="cvClassifyFeedImage(this)"' : ''} />${dl(item, 'image ' + (idx + 1))}${idx === 9 && count > 10 ? `<span class="cv-feed-media-more">+${count - 10}</span>` : ''}</div>`).join('')}</div>`;
     }
 
 
