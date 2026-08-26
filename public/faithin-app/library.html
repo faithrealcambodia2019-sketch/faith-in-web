@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0b1120" media="(prefers-color-scheme: dark)">
+<meta name="description" content="Books, sermons, podcasts and study plans in the Faith In library.">
+<title>Faith In — Library</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="assets/faithin-tailwind.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Lora:ital,wght@0,500;0,600;1,500&family=Noto+Serif+Khmer:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="assets/faithin.css">
+</head>
+
+<body class="font-sans min-h-screen pb-16 lg:pb-0" data-page="library" data-search="Search resources, books, sermons…">
+
+<main id="main" class="max-w-[1200px] mx-auto px-3 sm:px-4 py-5 grid gap-5 lg:grid-cols-[232px_minmax(0,1fr)] xl:grid-cols-[232px_minmax(0,1fr)_312px] items-start">
+
+  <!-- ───── LEFT RAIL ───── -->
+  <aside class="hidden lg:block lg:sticky lg:top-[72px] space-y-4">
+    <section class="card p-2">
+      <h2 class="px-3 py-2 text-[15px] font-bold">My Library</h2>
+      <nav class="space-y-0.5">
+        <a href="#" class="side-link is-active"><i class="fa-solid fa-compass"></i>Discover</a>
+        <a href="#" class="side-link"><i class="fa-solid fa-bookmark"></i>Saved Items</a>
+        <a href="#" class="side-link"><i class="fa-solid fa-clock-rotate-left"></i>Reading History</a>
+        <a href="#" class="side-link"><i class="fa-solid fa-list-ul"></i>My Playlists</a>
+      </nav>
+    </section>
+
+    <section class="card p-2">
+      <h2 class="px-3 py-2 text-[15px] font-bold">Browse Formats</h2>
+      <nav class="space-y-0.5">
+        <a href="#" class="side-link"><i class="fa-solid fa-book text-amber-500"></i>Books &amp; Articles</a>
+        <a href="#" class="side-link"><i class="fa-solid fa-video text-rose"></i>Sermons &amp; Videos</a>
+        <a href="#" class="side-link"><i class="fa-solid fa-headphones text-violet-500"></i>Podcasts &amp; Audio</a>
+      </nav>
+
+      <div class="my-2 border-t border-line"></div>
+
+      <h2 class="px-3 py-2 text-[15px] font-bold">Categories</h2>
+      <nav class="space-y-0.5" data-categories>
+        <a href="#" class="side-link">Theology</a>
+        <a href="#" class="side-link">Christian Living</a>
+        <a href="#" class="side-link">Apologetics</a>
+        <a href="#" class="side-link">Marriage &amp; Family</a>
+        <a href="#" class="side-link">Leadership</a>
+        <a href="#" class="side-link">Daily Devotionals</a>
+        <a href="#" class="side-link hidden" data-more-cat>Missions</a>
+        <a href="#" class="side-link hidden" data-more-cat>Church History</a>
+        <a href="#" class="side-link hidden" data-more-cat>Prayer &amp; Fasting</a>
+        <button class="side-link w-full !text-brand" id="show-more-cats">Show more <i class="fa-solid fa-chevron-down text-[10px] ml-auto"></i></button>
+      </nav>
+    </section>
+  </aside>
+
+  <!-- ───── CENTER ───── -->
+  <section class="space-y-5 min-w-0">
+
+    <!-- featured -->
+    <article class="rounded-card overflow-hidden relative bg-[#0d1526] text-white">
+      <div class="absolute inset-0 opacity-25 bg-[radial-gradient(circle_at_75%_25%,#3b82f6,transparent_55%)]"></div>
+      <div class="absolute right-6 top-1/2 -translate-y-1/2 hidden sm:block text-[110px] font-serif font-bold text-white/[0.05] leading-none select-none">Study</div>
+      <div class="relative p-6 sm:p-8 md:max-w-[62%]">
+        <span class="inline-block text-[10.5px] font-bold uppercase tracking-widest bg-brand text-white dark:text-[#0b1120] px-2.5 py-1 rounded-md">Featured study</span>
+        <h2 class="font-serif font-semibold text-[28px] sm:text-[34px] leading-[1.15] mt-3.5">The Sermon<br>on the Mount</h2>
+        <p class="text-[14px] text-white/70 leading-relaxed mt-3 max-w-[46ch]">Dive deep into Jesus' most famous sermon. Discover what it truly means to live as a citizen of the Kingdom of Heaven in today's world.</p>
+        <div class="flex flex-wrap gap-2.5 mt-6">
+          <button class="btn bg-white text-[#0d1526] hover:bg-white/90"><i class="fa-solid fa-play text-[12px]"></i>Start Series</button>
+          <button class="btn border border-white/35 text-white hover:bg-white/10" data-save><i class="fa-regular fa-bookmark"></i>Save</button>
+        </div>
+      </div>
+    </article>
+
+    <!-- jump back in -->
+    <section>
+      <div class="flex items-center justify-between mb-3">
+        <h3 class="text-[17px] font-bold">Jump back in</h3>
+        <a href="#" class="text-[13.5px] font-semibold text-muted hover:text-ink">See all history</a>
+      </div>
+      <div class="grid gap-3 sm:grid-cols-2">
+
+        <a href="#" class="card p-3 flex gap-3.5 items-center hover:shadow-lift transition group">
+          <span class="book-cover w-[58px] h-[82px] shrink-0 grid place-items-center text-center px-1.5 bg-[linear-gradient(150deg,#1e3a8a,#172554)]">
+            <span class="font-serif font-semibold text-white text-[10.5px] leading-tight">Knowing God</span>
+          </span>
+          <span class="min-w-0 flex-1">
+            <span class="flex items-center gap-1.5 text-[10.5px] font-bold uppercase tracking-wider text-muted"><i class="fa-solid fa-book text-[10px]"></i>E-book</span>
+            <span class="block text-[14.5px] font-semibold truncate mt-1 group-hover:text-brand transition">Knowing God</span>
+            <span class="block text-[12.5px] text-muted truncate">J.I. Packer</span>
+            <span class="block h-1.5 rounded-full bg-raised overflow-hidden mt-2.5"><span class="block h-full w-[45%] rounded-full bg-brand"></span></span>
+            <span class="block text-[11px] text-muted text-right mt-1">45% complete</span>
+          </span>
+        </a>
+
+        <a href="#" class="card p-3 flex gap-3.5 items-center hover:shadow-lift transition group">
+          <span class="w-[58px] h-[58px] shrink-0 rounded-xl grid place-items-center relative bg-violet-500/15 text-violet-500">
+            <i class="fa-solid fa-microphone-lines text-[22px]"></i>
+            <span class="absolute bottom-1 right-1 text-[9px] font-semibold bg-black/70 text-white px-1 rounded">12:45</span>
+          </span>
+          <span class="min-w-0 flex-1">
+            <span class="flex items-center gap-1.5 text-[10.5px] font-bold uppercase tracking-wider text-muted"><i class="fa-solid fa-headphones text-[10px]"></i>Podcast</span>
+            <span class="block text-[14.5px] font-semibold truncate mt-1 group-hover:text-brand transition">Ep 42: Finding Peace</span>
+            <span class="block text-[12.5px] text-muted truncate">Daily Grace Podcast</span>
+            <span class="block h-1.5 rounded-full bg-raised overflow-hidden mt-2.5"><span class="block h-full w-[78%] rounded-full bg-brand"></span></span>
+            <span class="block text-[11px] text-muted text-right mt-1">78% played</span>
+          </span>
+        </a>
+      </div>
+    </section>
+
+    <!-- recommended shelf -->
+    <section class="card p-4">
+      <div class="flex items-start justify-between mb-4 gap-3">
+        <div>
+          <h3 class="text-[15.5px] font-bold">Recommended for you</h3>
+          <p class="text-[12.5px] text-muted mt-0.5">Based on your interest in Apologetics</p>
+        </div>
+        <div class="flex gap-1.5 shrink-0">
+          <button class="icon-btn border border-line" data-rail-prev="#shelf" aria-label="Scroll left"><i class="fa-solid fa-chevron-left text-[12px]"></i></button>
+          <button class="icon-btn border border-line" data-rail-next="#shelf" aria-label="Scroll right"><i class="fa-solid fa-chevron-right text-[12px]"></i></button>
+        </div>
+      </div>
+
+      <div id="shelf" class="flex gap-5 overflow-x-auto no-scrollbar pb-2 snap-x">
+
+        <a href="#" class="w-[132px] shrink-0 snap-start group">
+          <span class="book-cover block h-[196px] p-3 text-center flex flex-col bg-[linear-gradient(150deg,#991b1b,#5f1414)] group-hover:-translate-y-1 transition-transform">
+            <span class="text-white/70 text-[9.5px] uppercase tracking-widest mt-1">C.S. Lewis</span>
+            <span class="text-white font-serif font-semibold text-[16px] leading-tight my-auto">Mere Christianity</span>
+          </span>
+          <span class="block text-[13.5px] font-semibold mt-2.5 leading-tight group-hover:text-brand transition">Mere Christianity</span>
+          <span class="block text-[12px] text-muted mt-0.5">C.S. Lewis</span>
+          <span class="flex items-center gap-0.5 text-[10px] text-gold mt-1">
+            <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i>
+            <span class="text-faint ml-1 text-[11px]">4.8</span>
+          </span>
+        </a>
+
+        <a href="#" class="w-[132px] shrink-0 snap-start group">
+          <span class="book-cover block h-[196px] p-3 text-center flex flex-col bg-[linear-gradient(150deg,#1d4ed8,#172554)] group-hover:-translate-y-1 transition-transform">
+            <span class="text-white/70 text-[9.5px] uppercase tracking-widest mt-1">Timothy Keller</span>
+            <span class="text-white font-serif font-semibold text-[15px] leading-tight my-auto">The Reason for God</span>
+          </span>
+          <span class="block text-[13.5px] font-semibold mt-2.5 leading-tight group-hover:text-brand transition">The Reason for God</span>
+          <span class="block text-[12px] text-muted mt-0.5">Timothy Keller</span>
+          <span class="flex items-center gap-0.5 text-[10px] text-gold mt-1">
+            <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+            <span class="text-faint ml-1 text-[11px]">4.9</span>
+          </span>
+        </a>
+
+        <a href="#" class="w-[132px] shrink-0 snap-start group">
+          <span class="book-cover block h-[196px] p-3 text-center flex flex-col bg-[linear-gradient(150deg,#166534,#052e16)] group-hover:-translate-y-1 transition-transform">
+            <span class="text-white/70 text-[9.5px] uppercase tracking-widest mt-1">John Mark Comer</span>
+            <span class="text-white font-serif font-semibold text-[14px] leading-tight my-auto">The Ruthless Elimination of Hurry</span>
+          </span>
+          <span class="block text-[13.5px] font-semibold mt-2.5 leading-tight group-hover:text-brand transition">The Ruthless Elimination…</span>
+          <span class="block text-[12px] text-muted mt-0.5">John Mark Comer</span>
+          <span class="flex items-center gap-0.5 text-[10px] text-gold mt-1">
+            <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-regular fa-star"></i>
+            <span class="text-faint ml-1 text-[11px]">4.2</span>
+          </span>
+        </a>
+
+        <a href="#" class="w-[132px] shrink-0 snap-start group">
+          <span class="book-cover block h-[196px] p-3 text-center flex flex-col bg-[linear-gradient(150deg,#44403c,#1c1917)] group-hover:-translate-y-1 transition-transform">
+            <span class="text-white/70 text-[9.5px] uppercase tracking-widest mt-1">D. Bonhoeffer</span>
+            <span class="text-white font-serif font-semibold text-[15px] leading-tight my-auto">The Cost of Discipleship</span>
+          </span>
+          <span class="block text-[13.5px] font-semibold mt-2.5 leading-tight group-hover:text-brand transition">The Cost of Discipleship</span>
+          <span class="block text-[12px] text-muted mt-0.5">Dietrich Bonhoeffer</span>
+          <span class="flex items-center gap-0.5 text-[10px] text-gold mt-1">
+            <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i>
+            <span class="text-faint ml-1 text-[11px]">4.7</span>
+          </span>
+        </a>
+
+        <a href="#" class="w-[132px] shrink-0 snap-start group">
+          <span class="book-cover block h-[196px] p-3 text-center flex flex-col bg-[linear-gradient(150deg,#7c2d12,#431407)] group-hover:-translate-y-1 transition-transform">
+            <span class="text-white/70 text-[9.5px] uppercase tracking-widest mt-1">A.W. Tozer</span>
+            <span class="text-white font-serif font-semibold text-[15px] leading-tight my-auto">The Pursuit of God</span>
+          </span>
+          <span class="block text-[13.5px] font-semibold mt-2.5 leading-tight group-hover:text-brand transition">The Pursuit of God</span>
+          <span class="block text-[12px] text-muted mt-0.5">A.W. Tozer</span>
+          <span class="flex items-center gap-0.5 text-[10px] text-gold mt-1">
+            <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i>
+            <span class="text-faint ml-1 text-[11px]">4.6</span>
+          </span>
+        </a>
+      </div>
+    </section>
+
+    <!-- trending media -->
+    <section class="card p-4">
+      <div class="flex items-center justify-between pb-3 mb-3 border-b border-line">
+        <h3 class="text-[15.5px] font-bold">Trending Sermons &amp; Video</h3>
+        <a href="#" class="text-[13.5px] font-semibold text-muted hover:text-ink">Explore</a>
+      </div>
+
+      <div class="space-y-1">
+        <a href="#" class="flex gap-3.5 p-2 -mx-2 rounded-xl row-hover group">
+          <span class="w-[116px] h-[66px] shrink-0 rounded-lg relative overflow-hidden media-plate grid place-items-center">
+            <i class="fa-solid fa-circle-play text-[22px] opacity-80 group-hover:scale-110 transition"></i>
+            <span class="absolute bottom-1 right-1 text-[9.5px] font-semibold bg-black/75 text-white px-1 rounded">45:20</span>
+          </span>
+          <span class="min-w-0 flex-1">
+            <span class="block text-[14.5px] font-semibold leading-snug group-hover:text-brand transition">Overcoming Anxiety through Faith</span>
+            <span class="block text-[12.5px] text-muted mt-1">Pastor Michael Thomas · Sunday Service</span>
+            <span class="block text-[12px] text-faint mt-0.5 truncate">A practical, biblical look at dealing with worry in a fast-paced world.</span>
+          </span>
+          <button class="icon-btn shrink-0" data-save aria-label="Save"><i class="fa-regular fa-bookmark"></i></button>
+        </a>
+
+        <a href="#" class="flex gap-3.5 p-2 -mx-2 rounded-xl row-hover group">
+          <span class="w-[116px] h-[66px] shrink-0 rounded-lg relative overflow-hidden media-plate grid place-items-center">
+            <i class="fa-solid fa-circle-play text-[22px] opacity-80 group-hover:scale-110 transition"></i>
+            <span class="absolute bottom-1 right-1 text-[9.5px] font-semibold bg-black/75 text-white px-1 rounded">28:15</span>
+          </span>
+          <span class="min-w-0 flex-1">
+            <span class="block text-[14.5px] font-semibold leading-snug group-hover:text-brand transition">Romans 8: The Golden Chapter</span>
+            <span class="block text-[12.5px] text-muted mt-1">Bible Project · Study series</span>
+            <span class="block text-[12px] text-faint mt-0.5 truncate">An in-depth visual breakdown of Paul's letter to the Romans, chapter 8.</span>
+          </span>
+          <button class="icon-btn shrink-0" data-save aria-label="Save"><i class="fa-regular fa-bookmark"></i></button>
+        </a>
+
+        <a href="#" class="flex gap-3.5 p-2 -mx-2 rounded-xl row-hover group">
+          <span class="w-[116px] h-[66px] shrink-0 rounded-lg relative overflow-hidden media-plate grid place-items-center">
+            <i class="fa-solid fa-headphones text-[20px] opacity-80 group-hover:scale-110 transition"></i>
+          </span>
+          <span class="min-w-0 flex-1">
+            <span class="block text-[14.5px] font-semibold leading-snug group-hover:text-brand transition">Morning Worship Playlist</span>
+            <span class="block text-[12.5px] text-muted mt-1">Curated by Faith In · 15 songs</span>
+            <span class="block text-[12px] text-faint mt-0.5 truncate">Start the day with these uplifting contemporary worship songs.</span>
+          </span>
+          <button class="icon-btn shrink-0" data-save aria-label="Save"><i class="fa-regular fa-bookmark"></i></button>
+        </a>
+      </div>
+    </section>
+  </section>
+
+  <!-- ───── RIGHT RAIL ───── -->
+  <aside class="hidden xl:block xl:sticky xl:top-[72px] space-y-4">
+
+    <section class="card p-4">
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="font-serif font-semibold text-[15px] flex items-center gap-2"><i class="fa-solid fa-sun text-gold text-[13px]"></i>Verse of the Day</h2>
+        <button class="icon-btn w-8 h-8" aria-label="Share verse"><i class="fa-solid fa-share-nodes text-[13px]"></i></button>
+      </div>
+      <blockquote class="border-l-[3px] border-gold pl-3.5 py-1">
+        <p class="font-serif italic text-[15px] leading-relaxed">"Your word is a lamp for my feet, a light on my path."</p>
+      </blockquote>
+      <div class="flex items-center justify-between mt-3.5 pt-3 border-t border-line">
+        <a href="#" class="text-[13px] font-semibold text-brand hover:underline">Read Chapter</a>
+        <span class="text-[11px] font-bold uppercase tracking-wide text-muted">Psalm 119:105</span>
+      </div>
+    </section>
+
+    <section class="card p-4">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-[15px] font-bold">Authors to Follow</h2>
+        <i class="fa-solid fa-circle-info text-faint text-[12px]"></i>
+      </div>
+      <ul class="space-y-3.5">
+        <li class="flex items-start gap-3">
+          <span class="avatar w-11 h-11 text-[13px]" style="background:linear-gradient(135deg,#6366f1,#4338ca)">JP</span>
+          <div class="min-w-0 flex-1">
+            <a href="#" class="block text-[14px] font-semibold truncate hover:text-brand hover:underline">John Piper</a>
+            <p class="text-[12px] text-muted truncate">Theologian, Pastor, Author</p>
+            <button class="btn btn-neutral !py-1 !px-3 !text-[12.5px] mt-2" data-follow="Following"><i class="fa-solid fa-plus text-[10px]"></i>Follow</button>
+          </div>
+        </li>
+        <li class="flex items-start gap-3">
+          <span class="avatar w-11 h-11 text-[13px]" style="background:linear-gradient(135deg,#0ea5e9,#0369a1)">PT</span>
+          <div class="min-w-0 flex-1">
+            <a href="#" class="block text-[14px] font-semibold truncate hover:text-brand hover:underline">Paul Tripp</a>
+            <p class="text-[12px] text-muted truncate">Author, Speaker</p>
+            <button class="btn btn-neutral !py-1 !px-3 !text-[12.5px] mt-2" data-follow="Following"><i class="fa-solid fa-plus text-[10px]"></i>Follow</button>
+          </div>
+        </li>
+      </ul>
+      <button class="w-full mt-4 pt-3 border-t border-line text-[13.5px] font-semibold text-muted hover:text-ink transition">View all recommendations</button>
+    </section>
+
+    <footer class="px-2 pb-4 text-center space-y-2">
+      <p class="text-[11.5px] text-muted">
+        <a href="#" class="hover:text-brand hover:underline">About</a> ·
+        <a href="#" class="hover:text-brand hover:underline">Accessibility</a> ·
+        <a href="#" class="hover:text-brand hover:underline">Help Center</a> ·
+        <a href="#" class="hover:text-brand hover:underline">Privacy &amp; Terms</a>
+      </p>
+      <p class="text-[11.5px] text-faint">Faith In Corporation © 2026</p>
+    </footer>
+  </aside>
+</main>
+
+<script src="assets/faithin.js"></script>
+<script>
+  document.getElementById('show-more-cats').addEventListener('click', function () {
+    const hidden = document.querySelectorAll('[data-more-cat].hidden');
+    if (hidden.length) {
+      hidden.forEach(el => el.classList.remove('hidden'));
+      this.innerHTML = 'Show less <i class="fa-solid fa-chevron-up text-[10px] ml-auto"></i>';
+    } else {
+      document.querySelectorAll('[data-more-cat]').forEach(el => el.classList.add('hidden'));
+      this.innerHTML = 'Show more <i class="fa-solid fa-chevron-down text-[10px] ml-auto"></i>';
+    }
+  });
+</script>
+</body>
+</html>
