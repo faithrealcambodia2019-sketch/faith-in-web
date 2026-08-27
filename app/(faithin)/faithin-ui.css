@@ -1,0 +1,128 @@
+/* ==========================================================================
+   Faith In — member application design system
+   ==========================================================================
+   Tokens and component primitives for the signed-in experience. Scoped to
+   .fi-root so the marketing pages (which use the --fi-gold / --fi-ink-* 
+   variables in app/globals.css) are unaffected.
+
+   Tokens are RGB triplets so they compose with alpha in Tailwind:
+       class="bg-surface text-ink/90 ring-brand/20"
+   ========================================================================== */
+
+.fi-root {
+  --fim-canvas: 244 245 247;
+  --fim-surface: 255 255 255;
+  --fim-raised: 248 249 251;
+  --fim-line: 226 230 236;
+  --fim-ink: 17 24 39;
+  --fim-muted: 100 111 128;
+  --fim-faint: 148 158 172;
+  --fim-brand: 47 91 234;
+  --fim-brand-strong: 30 64 175;
+  --fim-brand-soft: 233 239 254;
+  --fim-accent-gold: 191 143 43;
+  --fim-accent-rose: 225 76 96;
+
+  background: rgb(var(--fim-canvas));
+  color: rgb(var(--fim-ink));
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+.dark .fi-root {
+  --fim-canvas: 8 12 22;
+  --fim-surface: 17 24 39;
+  --fim-raised: 24 32 49;
+  --fim-line: 39 50 71;
+  --fim-ink: 232 237 245;
+  --fim-muted: 154 165 183;
+  --fim-faint: 116 128 148;
+  --fim-brand: 122 155 255;
+  --fim-brand-strong: 158 182 255;
+  --fim-brand-soft: 29 42 79;
+  --fim-accent-gold: 226 184 92;
+  --fim-accent-rose: 247 122 139;
+}
+
+/* --- surfaces ------------------------------------------------------------ */
+.fi-root .card {
+  background: rgb(var(--fim-surface));
+  border: 1px solid rgb(var(--fim-line));
+  border-radius: 14px;
+  box-shadow: 0 1px 2px rgb(16 24 40 / 0.04);
+}
+.dark .fi-root .card { box-shadow: none; }
+
+/* --- buttons ------------------------------------------------------------- */
+.fi-root .btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+  font-weight: 600; font-size: 14px; border-radius: 999px; padding: 8px 16px;
+  transition: background .15s ease, color .15s ease, border-color .15s ease;
+}
+.fi-root .btn-primary { background: rgb(var(--fim-brand)); color: #fff; }
+.fi-root .btn-primary:hover { background: rgb(var(--fim-brand-strong)); }
+.fi-root .btn-primary:disabled { background: rgb(var(--fim-line)); color: rgb(var(--fim-faint)); cursor: not-allowed; }
+.fi-root .btn-outline { border: 1.5px solid rgb(var(--fim-brand)); color: rgb(var(--fim-brand)); }
+.fi-root .btn-outline:hover { background: rgb(var(--fim-brand-soft)); }
+.fi-root .btn-ghost { color: rgb(var(--fim-muted)); }
+.fi-root .btn-ghost:hover { background: rgb(var(--fim-raised)); color: rgb(var(--fim-ink)); }
+
+.fi-root .icon-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 38px; height: 38px; border-radius: 999px; color: rgb(var(--fim-muted));
+  transition: background .15s ease, color .15s ease;
+}
+.fi-root .icon-btn:hover { background: rgb(var(--fim-raised)); color: rgb(var(--fim-ink)); }
+
+/* --- navigation ---------------------------------------------------------- */
+.fi-root .nav-item {
+  display: flex; align-items: center; gap: 12px; padding: 11px 14px;
+  border-radius: 10px; font-size: 14.5px; font-weight: 500; color: rgb(var(--fim-ink));
+  transition: background .15s ease, color .15s ease;
+}
+.fi-root .nav-item:hover { background: rgb(var(--fim-surface)); }
+.fi-root .nav-item[aria-current="page"] {
+  background: rgb(var(--fim-brand)); color: #fff; font-weight: 600;
+}
+
+/* --- form fields --------------------------------------------------------- */
+.fi-root .field {
+  width: 100%; background: rgb(var(--fim-raised));
+  border: 1px solid rgb(var(--fim-line)); border-radius: 10px;
+  padding: 10px 12px; font-size: 14px; color: rgb(var(--fim-ink));
+  transition: border-color .15s ease, background .15s ease;
+}
+.fi-root .field::placeholder { color: rgb(var(--fim-faint)); }
+.fi-root .field:focus {
+  background: rgb(var(--fim-surface)); border-color: rgb(var(--fim-brand)); outline: none;
+}
+
+/* --- avatar -------------------------------------------------------------- */
+.fi-root .avatar {
+  display: inline-flex; align-items: center; justify-content: center; flex: none;
+  border-radius: 999px; font-weight: 600; color: #fff; user-select: none;
+  background: linear-gradient(135deg, #2f5bea, #1e40af);
+}
+
+/* --- focus --------------------------------------------------------------- */
+.fi-root a:focus-visible,
+.fi-root button:focus-visible,
+.fi-root input:focus-visible,
+.fi-root textarea:focus-visible {
+  outline: 2px solid rgb(var(--fim-brand)); outline-offset: 2px; border-radius: 8px;
+}
+
+/* --- loading skeleton ---------------------------------------------------- */
+.fi-root .skeleton {
+  background: linear-gradient(90deg,
+    rgb(var(--fim-line) / .5) 25%, rgb(var(--fim-line) / .9) 37%, rgb(var(--fim-line) / .5) 63%);
+  background-size: 400% 100%;
+  animation: fi-shimmer 1.4s ease infinite;
+}
+@keyframes fi-shimmer { 0% { background-position: 100% 0 } 100% { background-position: 0 0 } }
+
+@media (prefers-reduced-motion: reduce) {
+  .fi-root *, .fi-root *::before, .fi-root *::after {
+    animation-duration: .01ms !important; transition-duration: .01ms !important;
+  }
+}
