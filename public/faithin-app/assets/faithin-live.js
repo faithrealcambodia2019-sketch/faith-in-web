@@ -252,7 +252,8 @@
     const composer = $('#modal-prayer');
     if (composer) {
       const submit = $$('button', composer).find(button => /request prayer/i.test(button.textContent));
-      if (submit) {
+      if (submit && !submit.dataset.fiWired) {
+        submit.dataset.fiWired = '1';
         submit.removeAttribute('data-toast');
         submit.addEventListener('click', async () => {
           if (!requireUser()) return;
@@ -271,6 +272,12 @@
       }
     }
     if (!list) return;
+    if (!session) {
+      list.innerHTML = '';
+      const count = $('[data-prayer-count]');
+      if (count) count.textContent = 'Sign in to see real prayer requests.';
+      return;
+    }
     try {
       const result = await api.request('cv_get_prayers');
       const items = (result.items || []).slice(0, 3);
@@ -394,11 +401,11 @@
   document.addEventListener('click', event => { if (event.target.closest('[data-open-auth]')) window.FI.openAuth(); });
   markActiveSideLink();
   loadVerseOfTheDay();
+  document.addEventListener('fi:session', () => { if (page === 'home') loadPrayerWall(); });
   wireArticleComposer();
   $$('form[role="search"], #main form').forEach(form => form.querySelector('[data-toast]')?.removeAttribute('data-toast'));
   api.session().then(user => {
     applySession(user);
-    if (page === 'home') loadPrayerWall();
     if (!user?.logged_in) { signedOutState(); return; }
     refreshNotifications();
     if (page === 'jobs') loadJobs();
