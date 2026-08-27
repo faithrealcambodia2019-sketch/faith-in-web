@@ -105,6 +105,29 @@
         });
     }
 
+    /** Prevent a slow profile document from blocking the entire interface. */
+    function within(promise, milliseconds, timeoutMessage) {
+        return new Promise(function (resolve, reject) {
+            var settled = false;
+            var timer = setTimeout(function () {
+                if (settled) return;
+                settled = true;
+                reject(new Error(timeoutMessage || 'Faith In took too long to respond. Please try again.'));
+            }, milliseconds);
+            Promise.resolve(promise).then(function (value) {
+                if (settled) return;
+                settled = true;
+                if (typeof clearTimeout === 'function') clearTimeout(timer);
+                resolve(value);
+            }, function (error) {
+                if (settled) return;
+                settled = true;
+                if (typeof clearTimeout === 'function') clearTimeout(timer);
+                reject(error);
+            });
+        });
+    }
+
     // ---------------------------------------------------------------------
     // Helpers
     // ---------------------------------------------------------------------
@@ -521,7 +544,11 @@
     actions.cv_get_session = function (b, params) {
         return currentUser(b).then(function (user) {
             if (!user) return { logged_in: false };
-            return loadProfile(b, user);
+            // Authentication is authoritative. A temporarily slow profile read
+            // should not leave every page waiting forever; use the provider's
+            // real identity until Firestore is available again.
+            return within(loadProfile(b, user), 4500)
+                .catch(function () { return profileFor(user, {}); });
         });
     };
 

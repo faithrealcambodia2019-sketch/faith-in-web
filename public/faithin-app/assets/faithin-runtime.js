@@ -30,7 +30,12 @@ window.FIData = {
     if (typeof window.cvDataRequest !== 'function') {
       return Promise.reject(new Error('Faith In is still connecting. Please refresh and try again.'));
     }
-    return window.cvDataRequest(action, params || {}, files || {}, onProgress || null);
+    const uploads = files && Object.values(files).some(list => list && list.length);
+    const wait = action === 'cv_get_session' ? 12000 : (uploads ? 120000 : 20000);
+    const operation = window.cvDataRequest(action, params || {}, files || {}, onProgress || null);
+    let timer;
+    const deadline = new Promise((_, reject) => { timer = setTimeout(() => reject(new Error('Faith In took too long to respond. Please try again.')), wait); });
+    return Promise.race([operation, deadline]).finally(() => clearTimeout(timer));
   },
   session() { return this.request('cv_get_session'); },
   initials(name) {
