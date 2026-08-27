@@ -1,355 +1,281 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+
+<html class="scroll-smooth" lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#0b1120" media="(prefers-color-scheme: dark)">
-<meta name="description" content="Faith In — a place for believers to share blessings, testimonies and prayer.">
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
+<meta content="#ffffff" media="(prefers-color-scheme: light)" name="theme-color"/>
+<meta content="#0b1120" media="(prefers-color-scheme: dark)" name="theme-color"/>
+<meta content="Faith In — a place for believers to share blessings, testimonies and prayer." name="description"/>
 <title>Faith In — Home</title>
-
-<link rel="stylesheet" href="/faithin-app/assets/faithin-fonts.css">
-<link rel="stylesheet" href="/faithin-app/assets/faithin-icons.css">
-<link rel="stylesheet" href="/faithin-app/assets/faithin-tw.css">
-<link rel="stylesheet" href="/faithin-app/assets/faithin.css">
+<link href="/faithin-app/assets/faithin-fonts.css" rel="stylesheet"/>
+<link href="/faithin-app/assets/faithin-icons.css" rel="stylesheet"/>
+<link href="/faithin-app/assets/faithin-tw.css" rel="stylesheet"/>
+<link href="/faithin-app/assets/faithin.css" rel="stylesheet"/>
 </head>
-
 <body class="font-sans min-h-screen pb-16 lg:pb-0" data-page="home" data-search="Search Faith In">
-
-<main id="main" class="max-w-[1200px] mx-auto px-3 sm:px-4 py-5 grid gap-5 lg:grid-cols-[232px_minmax(0,1fr)] xl:grid-cols-[232px_minmax(0,600px)_312px] items-start">
-
-  <!-- ───── LEFT RAIL ───── -->
-  <aside class="hidden lg:block sticky top-[72px] space-y-4">
-    <section class="card overflow-hidden">
-      <div class="h-[62px] bg-[linear-gradient(120deg,#2f5bea,#5b7cf5_45%,#1e3a8a)]"></div>
-      <div class="px-4 pb-4 -mt-8 flex flex-col items-center text-center">
-        <span class="avatar w-16 h-16 text-[20px] ring-4 ring-surface" style="background:linear-gradient(135deg,#2f5bea,#1e40af)">HC</span>
-        <a href="#" class="mt-2.5 font-bold text-[15px] hover:underline">Hun Chet</a>
-        <p class="text-[12.5px] text-muted mt-0.5">Faith In member · Phnom Penh</p>
-      </div>
-      <div class="border-t border-line grid grid-cols-2 divide-x divide-line">
-        <a href="#" class="px-3 py-3 hover:bg-raised transition text-center">
-          <span class="block text-[11.5px] text-muted leading-tight">Profile viewers</span>
-          <span class="block text-[17px] font-bold text-brand mt-1">0</span>
-        </a>
-        <a href="#" class="px-3 py-3 hover:bg-raised transition text-center">
-          <span class="block text-[11.5px] text-muted leading-tight">Post impressions</span>
-          <span class="block text-[17px] font-bold text-brand mt-1">480</span>
-        </a>
-      </div>
-    </section>
-
-    <nav class="space-y-1" aria-label="Sections">
-      <a href="#" class="nav-item is-active" aria-current="page"><i class="fa-solid fa-house"></i>Home Feed</a>
-      <a href="#" class="nav-item"><i class="fa-solid fa-user text-blue-500"></i>Profile</a>
-      <a href="#" class="nav-item"><i class="fa-solid fa-hands-praying text-rose"></i>Prayer Wall
-        <span class="ml-auto text-[11px] font-bold text-rose bg-rose/10 px-1.5 py-0.5 rounded-full">12</span></a>
-      <a href="#" class="nav-item"><i class="fa-solid fa-briefcase text-emerald-600"></i>Find Jobs</a>
-      <a href="#" class="nav-item"><i class="fa-solid fa-globe text-indigo-500"></i>Find Users</a>
-      <a href="#" class="nav-item"><i class="fa-solid fa-book-open text-amber-500"></i>Library</a>
-      <a href="#" class="nav-item"><i class="fa-solid fa-table-cells-large text-violet-500"></i>Social Studio</a>
-    </nav>
-
-    <section class="card p-4">
-      <p class="text-[12px] font-semibold text-muted uppercase tracking-wide">Today's reading plan</p>
-      <p class="text-[14px] font-semibold mt-1.5">Psalms 23 — 25</p>
-      <div class="mt-2.5 h-1.5 rounded-full bg-raised overflow-hidden">
-        <div class="h-full w-[62%] rounded-full bg-brand"></div>
-      </div>
-      <p class="text-[12px] text-muted mt-2">Day 18 of 30 · 62% complete</p>
-    </section>
-  </aside>
-
-  <!-- ───── CENTER ───── -->
-  <section id="feed" class="space-y-4 min-w-0">
-
-    <!-- blessings rail -->
-    <div class="relative group/rail">
-      <div class="flex gap-3 overflow-x-auto no-scrollbar pb-1 snap-x" data-rail>
-        <button class="snap-start shrink-0 w-[112px] h-[172px] rounded-card overflow-hidden card text-left hover:shadow-lift transition group" data-modal-open="modal-blessing">
-          <div class="h-[108px] bg-[linear-gradient(160deg,#e6ecfb,#c9d7f7)] dark:bg-[linear-gradient(160deg,#1d2a4f,#111827)] grid place-items-center">
-            <span class="avatar w-11 h-11 text-[13px] opacity-90" style="background:linear-gradient(135deg,#2f5bea,#1e40af)">HC</span>
-          </div>
-          <div class="relative h-[64px] grid place-items-end pb-3">
-            <span class="absolute -top-4 left-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-brand text-white dark:text-[#0b1120] grid place-items-center ring-4 ring-surface group-hover:scale-110 transition">
-              <i class="fa-solid fa-plus text-[13px]"></i>
-            </span>
-            <span class="text-[12.5px] font-semibold">Add Blessing</span>
-          </div>
-        </button>
-
-        <button class="snap-start shrink-0 w-[112px] h-[172px] rounded-card overflow-hidden relative text-left hover:shadow-lift transition" style="background:linear-gradient(180deg,#4f46e5,#1e1b4b)" data-story="ព្រះទ្រង់ល្អ|Hun Chet">
-          <span class="absolute top-2.5 left-2.5 avatar w-9 h-9 text-[11px] ring-[3px] ring-white/90" style="background:#2f5bea">HC</span>
-          <span class="absolute inset-x-3 top-1/2 -translate-y-1/2 text-center text-white font-khmer text-[15px] leading-snug">ព្រះទ្រង់ល្អ</span>
-          <span class="absolute bottom-2.5 left-3 right-3 text-[11.5px] font-semibold text-white truncate">Hun Chet</span>
-        </button>
-
-        <button class="snap-start shrink-0 w-[112px] h-[172px] rounded-card overflow-hidden relative text-left hover:shadow-lift transition" style="background:linear-gradient(180deg,#0f766e,#052e2b)" data-story="Be still and know|Sophea Lim">
-          <span class="absolute top-2.5 left-2.5 avatar w-9 h-9 text-[11px] ring-[3px] ring-white/90" style="background:#0f766e">SL</span>
-          <span class="absolute inset-x-3 top-1/2 -translate-y-1/2 text-center text-white font-serif italic text-[14px] leading-snug">Be still and know</span>
-          <span class="absolute bottom-2.5 left-3 right-3 text-[11.5px] font-semibold text-white truncate">Sophea Lim</span>
-        </button>
-
-        <button class="snap-start shrink-0 w-[112px] h-[172px] rounded-card overflow-hidden relative text-left hover:shadow-lift transition" style="background:linear-gradient(180deg,#b45309,#451a03)" data-story="ព្រះគុណគ្រប់គ្រាន់|Dara Nou">
-          <span class="absolute top-2.5 left-2.5 avatar w-9 h-9 text-[11px] ring-[3px] ring-white/90" style="background:#b45309">DN</span>
-          <span class="absolute inset-x-3 top-1/2 -translate-y-1/2 text-center text-white font-khmer text-[14px] leading-snug">ព្រះគុណគ្រប់គ្រាន់</span>
-          <span class="absolute bottom-2.5 left-3 right-3 text-[11.5px] font-semibold text-white truncate">Dara Nou</span>
-        </button>
-
-        <button class="snap-start shrink-0 w-[112px] h-[172px] rounded-card overflow-hidden relative text-left hover:shadow-lift transition" style="background:linear-gradient(180deg,#7c3aed,#2e1065)" data-story="Grace upon grace|Bible Verse">
-          <span class="absolute top-2.5 left-2.5 avatar w-9 h-9 text-[11px] ring-[3px] ring-white/90" style="background:#7c3aed">BV</span>
-          <span class="absolute inset-x-3 top-1/2 -translate-y-1/2 text-center text-white font-serif italic text-[14px] leading-snug">Grace upon grace</span>
-          <span class="absolute bottom-2.5 left-3 right-3 text-[11.5px] font-semibold text-white truncate">Bible Verse</span>
-        </button>
-      </div>
-      <button class="hidden md:grid place-items-center absolute right-0 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-surface border border-line shadow-lift opacity-0 group-hover/rail:opacity-100 transition" data-rail-next aria-label="Scroll blessings">
-        <i class="fa-solid fa-chevron-right text-[12px]"></i>
-      </button>
-    </div>
-
-    <!-- composer -->
-    <section class="card p-3.5">
-      <div class="flex items-center gap-3">
-        <span class="avatar w-11 h-11 text-[14px]" style="background:linear-gradient(135deg,#2f5bea,#1e40af)">HC</span>
-        <button class="flex-1 text-left rounded-pill bg-raised hover:bg-line/60 border border-line px-4 py-2.5 text-[14px] text-muted transition" data-modal-open="modal-blessing">
+<main class="max-w-[1200px] mx-auto px-3 sm:px-4 py-5 grid gap-5 lg:grid-cols-[232px_minmax(0,1fr)] xl:grid-cols-[232px_minmax(0,600px)_312px] items-start" id="main">
+<!-- ───── LEFT RAIL ───── -->
+<aside class="hidden lg:block sticky top-[72px] space-y-4">
+<section class="card overflow-hidden">
+<div class="h-[62px] bg-[linear-gradient(120deg,#2f5bea,#5b7cf5_45%,#1e3a8a)]"></div>
+<div class="px-4 pb-4 -mt-8 flex flex-col items-center text-center">
+<span class="avatar w-16 h-16 text-[20px] ring-4 ring-surface" style="background:linear-gradient(135deg,#2f5bea,#1e40af)">HC</span>
+<a class="mt-2.5 font-bold text-[15px] hover:underline" href="/faithin-app/profile.html">Hun Chet</a>
+<p class="text-[12.5px] text-muted mt-0.5">Faith In member · Phnom Penh</p>
+</div>
+<div class="border-t border-line grid grid-cols-2 divide-x divide-line">
+<a class="px-3 py-3 hover:bg-raised transition text-center" href="/faithin-app/profile.html">
+<span class="block text-[11.5px] text-muted leading-tight">Profile viewers</span>
+<span class="block text-[17px] font-bold text-brand mt-1">0</span>
+</a>
+<a class="px-3 py-3 hover:bg-raised transition text-center" href="/faithin-app/profile.html">
+<span class="block text-[11.5px] text-muted leading-tight">Post impressions</span>
+<span class="block text-[17px] font-bold text-brand mt-1">0</span>
+</a>
+</div>
+</section>
+<nav aria-label="Sections" class="space-y-1">
+<a aria-current="page" class="nav-item is-active" href="/faithin-app/index.html"><i class="fa-solid fa-house"></i>Home Feed</a>
+<a class="nav-item" href="/faithin-app/profile.html"><i class="fa-solid fa-user text-blue-500"></i>Profile</a>
+<a class="nav-item" href="/faithin-app/index.html#prayer-wall"><i class="fa-solid fa-hands-praying text-rose"></i>Prayer Wall
+        <span class="ml-auto hidden text-[11px] font-bold text-rose bg-rose/10 px-1.5 py-0.5 rounded-full" data-prayer-badge="">0</span></a>
+<a class="nav-item" href="/faithin-app/jobs.html"><i class="fa-solid fa-briefcase text-emerald-600"></i>Find Jobs</a>
+<a class="nav-item" href="/faithin-app/network.html"><i class="fa-solid fa-globe text-indigo-500"></i>Find Users</a>
+<a class="nav-item" href="/faithin-app/library.html"><i class="fa-solid fa-book-open text-amber-500"></i>Library</a>
+<a class="nav-item" href="/bible-study"><i class="fa-solid fa-table-cells-large text-violet-500"></i>Social Studio</a>
+</nav>
+</aside>
+<!-- ───── CENTER ───── -->
+<section class="space-y-4 min-w-0" id="feed">
+<!-- blessings rail -->
+<div class="relative group/rail">
+<div class="flex gap-3 overflow-x-auto no-scrollbar pb-1 snap-x" data-rail="">
+<button class="snap-start shrink-0 w-[112px] h-[172px] rounded-card overflow-hidden card text-left hover:shadow-lift transition group" data-modal-open="modal-blessing">
+<div class="h-[108px] bg-[linear-gradient(160deg,#e6ecfb,#c9d7f7)] dark:bg-[linear-gradient(160deg,#1d2a4f,#111827)] grid place-items-center">
+<span class="avatar w-11 h-11 text-[13px] opacity-90" style="background:linear-gradient(135deg,#2f5bea,#1e40af)">HC</span>
+</div>
+<div class="relative h-[64px] grid place-items-end pb-3">
+<span class="absolute -top-4 left-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-brand text-white dark:text-[#0b1120] grid place-items-center ring-4 ring-surface group-hover:scale-110 transition">
+<i class="fa-solid fa-plus text-[13px]"></i>
+</span>
+<span class="text-[12.5px] font-semibold">Add Blessing</span>
+</div>
+</button>
+</div>
+<button aria-label="Scroll blessings" class="hidden md:grid place-items-center absolute right-0 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-surface border border-line shadow-lift opacity-0 group-hover/rail:opacity-100 transition" data-rail-next="">
+<i class="fa-solid fa-chevron-right text-[12px]"></i>
+</button>
+</div>
+<!-- composer -->
+<section class="card p-3.5">
+<div class="flex items-center gap-3">
+<span class="avatar w-11 h-11 text-[14px]" style="background:linear-gradient(135deg,#2f5bea,#1e40af)">HC</span>
+<button class="flex-1 text-left rounded-pill bg-raised hover:bg-line/60 border border-line px-4 py-2.5 text-[14px] text-muted transition" data-modal-open="modal-blessing">
           Share a blessing, testimony, or encouragement…
         </button>
-      </div>
-      <div class="mt-2.5 pt-2.5 border-t border-line flex items-center gap-1">
-        <button class="action-btn !text-[12.5px] sm:!text-[14px]" data-modal-open="modal-blessing"><i class="fa-solid fa-hands-praying text-brand"></i>Blessing</button>
-        <button class="action-btn !text-[12.5px] sm:!text-[14px]" data-modal-open="modal-photo"><i class="fa-regular fa-image text-emerald-500"></i>Photo</button>
-        <button class="action-btn !text-[12.5px] sm:!text-[14px]" data-modal-open="modal-prayer"><i class="fa-regular fa-heart text-rose"></i>Prayer</button>
-        <button class="action-btn !text-[12.5px] sm:!text-[14px]" data-modal-open="modal-article"><i class="fa-regular fa-file-lines text-violet-500"></i>Article</button>
-      </div>
-    </section>
-
-    <!-- sort -->
-    <div class="flex items-center gap-3">
-      <div class="h-px flex-1 bg-line"></div>
-      <div class="relative" data-menu-root>
-        <button class="flex items-center gap-1.5 text-[12.5px] text-muted hover:text-ink transition" data-menu-btn aria-haspopup="menu" aria-expanded="false">
-          Sort by <span class="font-semibold text-ink" data-sort-label>Top</span><i class="fa-solid fa-chevron-down text-[9px]"></i>
-        </button>
-        <div class="absolute right-0 mt-2 w-40 card shadow-pop p-1.5 hidden animate-pop-in z-20" data-menu role="menu">
-          <button class="side-link w-full" data-sort="Top" role="menuitem"><i class="fa-solid fa-fire"></i>Top</button>
-          <button class="side-link w-full" data-sort="Recent" role="menuitem"><i class="fa-regular fa-clock"></i>Recent</button>
-          <button class="side-link w-full" data-sort="Following" role="menuitem"><i class="fa-solid fa-user-check"></i>Following</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- posts get injected here -->
-    <div id="posts" class="space-y-4"></div>
-
-    <div class="py-6 text-center">
-      <button class="btn btn-outline" id="load-more"><i class="fa-solid fa-arrow-down text-[12px]"></i> Load more posts</button>
-    </div>
-  </section>
-
-  <!-- ───── RIGHT RAIL ───── -->
-  <aside class="hidden xl:block sticky top-[72px] space-y-4">
-
-    <section class="card overflow-hidden">
-      <div class="px-4 pt-4 flex items-center justify-between">
-        <h2 class="font-serif font-semibold text-[15px]">Verse of the Day</h2>
-        <span class="text-[10.5px] font-bold uppercase tracking-wider text-gold bg-gold/10 px-2 py-1 rounded-full">Daily</span>
-      </div>
-      <blockquote class="px-4 py-3.5 mt-2 border-l-[3px] border-gold ml-4 space-y-3">
-        <p class="font-khmer text-[13.5px] leading-[1.9] text-ink/90">
+</div>
+<div class="mt-2.5 pt-2.5 border-t border-line flex items-center gap-1">
+<button class="action-btn !text-[12.5px] sm:!text-[14px]" data-modal-open="modal-blessing"><i class="fa-solid fa-hands-praying text-brand"></i>Blessing</button>
+<button class="action-btn !text-[12.5px] sm:!text-[14px]" data-modal-open="modal-photo"><i class="fa-regular fa-image text-emerald-500"></i>Photo</button>
+<button class="action-btn !text-[12.5px] sm:!text-[14px]" data-modal-open="modal-prayer"><i class="fa-regular fa-heart text-rose"></i>Prayer</button>
+<button class="action-btn !text-[12.5px] sm:!text-[14px]" data-modal-open="modal-article"><i class="fa-regular fa-file-lines text-violet-500"></i>Article</button>
+</div>
+</section>
+<!-- sort -->
+<div class="flex items-center gap-3">
+<div class="h-px flex-1 bg-line"></div>
+<div class="relative" data-menu-root="">
+<button aria-expanded="false" aria-haspopup="menu" class="flex items-center gap-1.5 text-[12.5px] text-muted hover:text-ink transition" data-menu-btn="">
+          Sort by <span class="font-semibold text-ink" data-sort-label="">Top</span><i class="fa-solid fa-chevron-down text-[9px]"></i>
+</button>
+<div class="absolute right-0 mt-2 w-40 card shadow-pop p-1.5 hidden animate-pop-in z-20" data-menu="" role="menu">
+<button class="side-link w-full" data-sort="Top" role="menuitem"><i class="fa-solid fa-fire"></i>Top</button>
+<button class="side-link w-full" data-sort="Recent" role="menuitem"><i class="fa-regular fa-clock"></i>Recent</button>
+<button class="side-link w-full" data-sort="Following" role="menuitem"><i class="fa-solid fa-user-check"></i>Following</button>
+</div>
+</div>
+</div>
+<!-- posts get injected here -->
+<div class="space-y-4" id="posts"></div>
+<div class="py-6 text-center">
+<button class="btn btn-outline" id="load-more"><i class="fa-solid fa-arrow-down text-[12px]"></i> Load more posts</button>
+</div>
+</section>
+<!-- ───── RIGHT RAIL ───── -->
+<aside class="hidden xl:block sticky top-[72px] space-y-4">
+<section class="card overflow-hidden">
+<div class="px-4 pt-4 flex items-center justify-between">
+<h2 class="font-serif font-semibold text-[15px]">Verse of the Day</h2>
+<span class="text-[10.5px] font-bold uppercase tracking-wider text-gold bg-gold/10 px-2 py-1 rounded-full">Daily</span>
+</div>
+<blockquote class="px-4 py-3.5 mt-2 border-l-[3px] border-gold ml-4 space-y-3" id="votd">
+<p class="font-khmer text-[13.5px] leading-[1.9] text-ink/90">
           «ដ្បិតព្រះទ្រង់ស្រឡាញ់មនុស្សលោក ដល់ម៉្លេះបានជាទ្រង់ប្រទានព្រះរាជបុត្រាទ្រង់តែ១ ដើម្បីឲ្យអ្នកណាដែលជឿដល់ព្រះរាជបុត្រានោះ មិនត្រូវវិនាសឡើយ គឺឲ្យមានជីវិតអស់កល្បជានិច្ចវិញ»
         </p>
-        <p class="font-serif italic text-[14px] leading-relaxed text-ink">
+<p class="font-serif italic text-[14px] leading-relaxed text-ink">
           "For God so loved the world, that he gave his only begotten Son."
         </p>
-      </blockquote>
-      <div class="px-4 pb-3 text-right text-[11px] font-bold uppercase tracking-wide text-muted">យ៉ូហាន ៣:១៦ · John 3:16</div>
-      <div class="border-t border-line grid grid-cols-3 divide-x divide-line text-[12.5px] font-semibold text-muted">
-        <button class="py-2.5 hover:bg-raised hover:text-ink transition" data-copy-verse><i class="fa-regular fa-copy mr-1.5"></i>Copy</button>
-        <button class="py-2.5 hover:bg-raised hover:text-ink transition"><i class="fa-solid fa-share-nodes mr-1.5"></i>Share</button>
-        <button class="py-2.5 hover:bg-raised hover:text-ink transition"><i class="fa-regular fa-bookmark mr-1.5"></i>Save</button>
-      </div>
-    </section>
-
-    <section class="card p-4">
-      <div class="flex items-center justify-between mb-3">
-        <h2 class="font-semibold text-[15px]">Contacts</h2>
-        <div class="flex text-muted">
-          <button class="icon-btn w-8 h-8" aria-label="Search contacts"><i class="fa-solid fa-magnifying-glass text-[13px]"></i></button>
-          <button class="icon-btn w-8 h-8" aria-label="Contact options"><i class="fa-solid fa-ellipsis text-[13px]"></i></button>
-        </div>
-      </div>
-      <ul class="space-y-1" id="contacts"></ul>
-      <button class="w-full mt-3 py-2 text-[13px] font-semibold text-muted hover:text-ink hover:bg-raised rounded-lg transition">Show all contacts <i class="fa-solid fa-arrow-right text-[11px] ml-1"></i></button>
-    </section>
-
-    <section class="card p-4">
-      <h2 class="font-semibold text-[15px] mb-1">Prayer Wall</h2>
-      <p class="text-[12.5px] text-muted mb-3">12 requests waiting for prayer today.</p>
-      <div class="space-y-2.5">
-        <div class="rounded-xl bg-raised border border-line p-3">
-          <p class="text-[13px] leading-snug">"Please pray for my mother's surgery this Friday."</p>
-          <div class="mt-2 flex items-center justify-between">
-            <span class="text-[11.5px] text-muted">Anonymous · 2h</span>
-            <button class="text-[12px] font-semibold text-brand hover:underline" data-pray>🙏 Pray</button>
-          </div>
-        </div>
-        <div class="rounded-xl bg-raised border border-line p-3">
-          <p class="text-[13px] leading-snug">"Wisdom for a big decision about work."</p>
-          <div class="mt-2 flex items-center justify-between">
-            <span class="text-[11.5px] text-muted">Dara Nou · 5h</span>
-            <button class="text-[12px] font-semibold text-brand hover:underline" data-pray>🙏 Pray</button>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <footer class="px-2 pb-4 text-center space-y-2">
-      <p class="text-[11.5px] text-muted leading-relaxed">
-        <a href="#" class="hover:text-brand hover:underline">About</a> ·
-        <a href="#" class="hover:text-brand hover:underline">Accessibility</a> ·
-        <a href="#" class="hover:text-brand hover:underline">Help Center</a> ·
-        <a href="#" class="hover:text-brand hover:underline">Privacy &amp; Terms</a>
-      </p>
-      <p class="text-[11.5px] text-faint">Faith In Corporation © 2026</p>
-    </footer>
-  </aside>
+</blockquote>
+<div class="px-4 pb-3 text-right text-[11px] font-bold uppercase tracking-wide text-muted" data-votd-ref="">យ៉ូហាន ៣:១៦ · John 3:16</div>
+<div class="border-t border-line grid grid-cols-3 divide-x divide-line text-[12.5px] font-semibold text-muted">
+<button class="py-2.5 hover:bg-raised hover:text-ink transition" data-copy-verse=""><i class="fa-regular fa-copy mr-1.5"></i>Copy</button>
+<button class="py-2.5 hover:bg-raised hover:text-ink transition"><i class="fa-solid fa-share-nodes mr-1.5"></i>Share</button>
+<button class="py-2.5 hover:bg-raised hover:text-ink transition"><i class="fa-regular fa-bookmark mr-1.5"></i>Save</button>
+</div>
+</section>
+<section class="card p-4">
+<div class="flex items-center justify-between mb-3">
+<h2 class="font-semibold text-[15px]">Contacts</h2>
+<div class="flex text-muted">
+<button aria-label="Search contacts" class="icon-btn w-8 h-8"><i class="fa-solid fa-magnifying-glass text-[13px]"></i></button>
+<button aria-label="Contact options" class="icon-btn w-8 h-8"><i class="fa-solid fa-ellipsis text-[13px]"></i></button>
+</div>
+</div>
+<ul class="space-y-1" id="contacts"></ul>
+<button class="w-full mt-3 py-2 text-[13px] font-semibold text-muted hover:text-ink hover:bg-raised rounded-lg transition">Show all contacts <i class="fa-solid fa-arrow-right text-[11px] ml-1"></i></button>
+</section>
+<section class="card p-4" id="prayer-wall">
+<h2 class="font-semibold text-[15px] mb-1">Prayer Wall</h2>
+<p class="text-[12.5px] text-muted mb-3" data-prayer-count="">Requests from the community.</p>
+<div class="space-y-2.5" id="prayer-wall-list"><p class="p-6 text-center text-[13.5px] text-muted" data-placeholder="">Loading…</p></div>
+</section>
+<footer class="px-2 pb-4 text-center space-y-2">
+<p class="text-[11.5px] text-muted leading-relaxed">
+<a class="hover:text-brand hover:underline" href="/about">About</a> 
+         ·
+        <a class="hover:text-brand hover:underline" href="/contact">Help Center</a> ·
+        <a class="hover:text-brand hover:underline" href="/privacy">Privacy</a> · <a class="hover:text-brand hover:underline" href="/terms">Terms</a>
+</p>
+<p class="text-[11.5px] text-faint">Faith In Corporation © 2026</p>
+</footer>
+</aside>
 </main>
-
 <!-- ══════════════ MODALS ══════════════ -->
-<div id="backdrop" class="fixed inset-0 z-[100] hidden items-center justify-center p-4 bg-[#0b1120]/60 backdrop-blur-sm">
-
-  <!-- blessing -->
-  <div id="modal-blessing" class="modal hidden w-full max-w-[560px] card shadow-pop animate-pop-in" role="dialog" aria-modal="true" aria-labelledby="t-blessing">
-    <div class="flex items-center justify-between px-5 py-3.5 border-b border-line">
-      <h2 id="t-blessing" class="text-[17px] font-bold">Share a Blessing</h2>
-      <button class="icon-btn" data-close aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
-    </div>
-    <div class="p-5">
-      <div class="flex items-center gap-3 mb-4">
-        <span class="avatar w-11 h-11 text-[14px]" style="background:linear-gradient(135deg,#2f5bea,#1e40af)">HC</span>
-        <div>
-          <p class="font-semibold text-[15px] leading-tight">Hun Chet</p>
-          <button class="mt-1 inline-flex items-center gap-1.5 text-[11.5px] font-semibold border border-line rounded-pill px-2.5 py-1 text-muted hover:bg-raised transition">
-            <i class="fa-solid fa-earth-americas text-[10px]"></i> Anyone <i class="fa-solid fa-chevron-down text-[9px]"></i>
-          </button>
-        </div>
-      </div>
-      <textarea id="blessing-text" rows="5" maxlength="600"
-        class="w-full resize-none bg-transparent text-[15.5px] leading-relaxed placeholder:text-faint outline-none"
-        placeholder="What has God done in your life recently? Share your testimony…"></textarea>
-      <div class="mt-2 flex flex-wrap gap-2">
-        <button class="text-[12px] font-medium px-2.5 py-1 rounded-pill bg-raised border border-line text-muted hover:text-ink transition" data-chip>#testimony</button>
-        <button class="text-[12px] font-medium px-2.5 py-1 rounded-pill bg-raised border border-line text-muted hover:text-ink transition" data-chip>#gratitude</button>
-        <button class="text-[12px] font-medium px-2.5 py-1 rounded-pill bg-raised border border-line text-muted hover:text-ink transition" data-chip>#answeredprayer</button>
-      </div>
-    </div>
-    <div class="flex items-center justify-between px-5 py-3 border-t border-line">
-      <div class="flex gap-1 text-muted">
-        <button class="icon-btn" aria-label="Add image"><i class="fa-regular fa-image"></i></button>
-        <button class="icon-btn" aria-label="Add verse"><i class="fa-solid fa-book-bible"></i></button>
-        <button class="icon-btn" aria-label="Add emoji"><i class="fa-regular fa-face-smile"></i></button>
-      </div>
-      <div class="flex items-center gap-3">
-        <span class="text-[12px] text-faint tabular-nums" id="blessing-count">0/600</span>
-        <button class="btn btn-primary" id="blessing-post" disabled>Post</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- photo -->
-  <div id="modal-photo" class="modal hidden w-full max-w-[560px] card shadow-pop animate-pop-in" role="dialog" aria-modal="true" aria-labelledby="t-photo">
-    <div class="flex items-center justify-between px-5 py-3.5 border-b border-line">
-      <h2 id="t-photo" class="text-[17px] font-bold">Add a photo</h2>
-      <button class="icon-btn" data-close aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
-    </div>
-    <div class="p-5">
-      <label id="dropzone" class="flex flex-col items-center justify-center h-[240px] rounded-xl border-2 border-dashed border-line bg-raised hover:border-brand hover:bg-brand-soft/40 transition cursor-pointer text-center px-6">
-        <i class="fa-regular fa-images text-3xl text-faint mb-3"></i>
-        <p class="font-semibold text-[15px]">Select images to share</p>
-        <p class="text-[13px] text-muted mt-1">or drag and drop them here · JPG, PNG up to 10MB</p>
-        <input type="file" accept="image/*" multiple class="hidden" id="file-input">
-      </label>
-      <div id="preview" class="grid grid-cols-4 gap-2 mt-3 hidden"></div>
-    </div>
-    <div class="flex justify-end gap-2 px-5 py-3 border-t border-line">
-      <button class="btn btn-ghost" data-close>Cancel</button>
-      <button class="btn btn-primary">Done</button>
-    </div>
-  </div>
-
-  <!-- prayer -->
-  <div id="modal-prayer" class="modal hidden w-full max-w-[560px] card shadow-pop animate-pop-in overflow-hidden" role="dialog" aria-modal="true" aria-labelledby="t-prayer">
-    <div class="h-1 bg-rose"></div>
-    <div class="flex items-center justify-between px-5 py-3.5 border-b border-line">
-      <h2 id="t-prayer" class="text-[17px] font-bold flex items-center gap-2"><i class="fa-solid fa-hands-praying text-rose"></i>Submit Prayer Request</h2>
-      <button class="icon-btn" data-close aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
-    </div>
-    <div class="p-5 space-y-3.5">
-      <input type="text" class="field font-semibold" placeholder="Title — e.g. Healing for a family member">
-      <textarea rows="4" class="field resize-none leading-relaxed" placeholder="How can the Faith In community pray for you?"></textarea>
-      <div class="flex flex-wrap gap-2">
-        <button class="text-[12px] font-medium px-2.5 py-1 rounded-pill bg-raised border border-line text-muted hover:text-ink transition">Health</button>
-        <button class="text-[12px] font-medium px-2.5 py-1 rounded-pill bg-raised border border-line text-muted hover:text-ink transition">Family</button>
-        <button class="text-[12px] font-medium px-2.5 py-1 rounded-pill bg-raised border border-line text-muted hover:text-ink transition">Work</button>
-        <button class="text-[12px] font-medium px-2.5 py-1 rounded-pill bg-raised border border-line text-muted hover:text-ink transition">Guidance</button>
-      </div>
-      <label class="flex items-center gap-2.5 w-fit cursor-pointer text-[13.5px] text-muted hover:text-ink transition">
-        <input type="checkbox" class="w-4 h-4 accent-[rgb(var(--brand))] cursor-pointer">
+<div class="fixed inset-0 z-[100] hidden items-center justify-center p-4 bg-[#0b1120]/60 backdrop-blur-sm" id="backdrop">
+<!-- blessing -->
+<div aria-labelledby="t-blessing" aria-modal="true" class="modal hidden w-full max-w-[560px] card shadow-pop animate-pop-in" id="modal-blessing" role="dialog">
+<div class="flex items-center justify-between px-5 py-3.5 border-b border-line">
+<h2 class="text-[17px] font-bold" id="t-blessing">Share a Blessing</h2>
+<button aria-label="Close" class="icon-btn" data-close=""><i class="fa-solid fa-xmark"></i></button>
+</div>
+<div class="p-5">
+<div class="flex items-center gap-3 mb-4">
+<span class="avatar w-11 h-11 text-[14px]" style="background:linear-gradient(135deg,#2f5bea,#1e40af)">HC</span>
+<div>
+<p class="font-semibold text-[15px] leading-tight">Hun Chet</p>
+<button class="mt-1 inline-flex items-center gap-1.5 text-[11.5px] font-semibold border border-line rounded-pill px-2.5 py-1 text-muted hover:bg-raised transition">
+<i class="fa-solid fa-earth-americas text-[10px]"></i> Anyone <i class="fa-solid fa-chevron-down text-[9px]"></i>
+</button>
+</div>
+</div>
+<textarea class="w-full resize-none bg-transparent text-[15.5px] leading-relaxed placeholder:text-faint outline-none" id="blessing-text" maxlength="600" placeholder="What has God done in your life recently? Share your testimony…" rows="5"></textarea>
+<div class="mt-2 flex flex-wrap gap-2">
+<button class="text-[12px] font-medium px-2.5 py-1 rounded-pill bg-raised border border-line text-muted hover:text-ink transition" data-chip="">#testimony</button>
+<button class="text-[12px] font-medium px-2.5 py-1 rounded-pill bg-raised border border-line text-muted hover:text-ink transition" data-chip="">#gratitude</button>
+<button class="text-[12px] font-medium px-2.5 py-1 rounded-pill bg-raised border border-line text-muted hover:text-ink transition" data-chip="">#answeredprayer</button>
+</div>
+</div>
+<div class="flex items-center justify-between px-5 py-3 border-t border-line">
+<div class="flex gap-1 text-muted">
+<button aria-label="Add image" class="icon-btn"><i class="fa-regular fa-image"></i></button>
+<button aria-label="Add verse" class="icon-btn"><i class="fa-solid fa-book-bible"></i></button>
+<button aria-label="Add emoji" class="icon-btn"><i class="fa-regular fa-face-smile"></i></button>
+</div>
+<div class="flex items-center gap-3">
+<span class="text-[12px] text-faint tabular-nums" id="blessing-count">0/600</span>
+<button class="btn btn-primary" disabled="" id="blessing-post">Post</button>
+</div>
+</div>
+</div>
+<!-- photo -->
+<div aria-labelledby="t-photo" aria-modal="true" class="modal hidden w-full max-w-[560px] card shadow-pop animate-pop-in" id="modal-photo" role="dialog">
+<div class="flex items-center justify-between px-5 py-3.5 border-b border-line">
+<h2 class="text-[17px] font-bold" id="t-photo">Add a photo</h2>
+<button aria-label="Close" class="icon-btn" data-close=""><i class="fa-solid fa-xmark"></i></button>
+</div>
+<div class="p-5">
+<label class="flex flex-col items-center justify-center h-[240px] rounded-xl border-2 border-dashed border-line bg-raised hover:border-brand hover:bg-brand-soft/40 transition cursor-pointer text-center px-6" id="dropzone">
+<i class="fa-regular fa-images text-3xl text-faint mb-3"></i>
+<p class="font-semibold text-[15px]">Select images to share</p>
+<p class="text-[13px] text-muted mt-1">or drag and drop them here · JPG, PNG up to 10MB</p>
+<input accept="image/*" class="hidden" id="file-input" multiple="" type="file"/>
+</label>
+<div class="grid grid-cols-4 gap-2 mt-3 hidden" id="preview"></div>
+</div>
+<div class="flex justify-end gap-2 px-5 py-3 border-t border-line">
+<button class="btn btn-ghost" data-close="">Cancel</button>
+<button class="btn btn-primary">Done</button>
+</div>
+</div>
+<!-- prayer -->
+<div aria-labelledby="t-prayer" aria-modal="true" class="modal hidden w-full max-w-[560px] card shadow-pop animate-pop-in overflow-hidden" id="modal-prayer" role="dialog">
+<div class="h-1 bg-rose"></div>
+<div class="flex items-center justify-between px-5 py-3.5 border-b border-line">
+<h2 class="text-[17px] font-bold flex items-center gap-2" id="t-prayer"><i class="fa-solid fa-hands-praying text-rose"></i>Submit Prayer Request</h2>
+<button aria-label="Close" class="icon-btn" data-close=""><i class="fa-solid fa-xmark"></i></button>
+</div>
+<div class="p-5 space-y-3.5">
+<input class="field font-semibold" placeholder="Title — e.g. Healing for a family member" type="text"/>
+<textarea class="field resize-none leading-relaxed" placeholder="How can the Faith In community pray for you?" rows="4"></textarea>
+<div class="flex flex-wrap gap-2">
+<button class="text-[12px] font-medium px-2.5 py-1 rounded-pill bg-raised border border-line text-muted hover:text-ink transition">Health</button>
+<button class="text-[12px] font-medium px-2.5 py-1 rounded-pill bg-raised border border-line text-muted hover:text-ink transition">Family</button>
+<button class="text-[12px] font-medium px-2.5 py-1 rounded-pill bg-raised border border-line text-muted hover:text-ink transition">Work</button>
+<button class="text-[12px] font-medium px-2.5 py-1 rounded-pill bg-raised border border-line text-muted hover:text-ink transition">Guidance</button>
+</div>
+<label class="flex items-center gap-2.5 w-fit cursor-pointer text-[13.5px] text-muted hover:text-ink transition">
+<input class="w-4 h-4 accent-[rgb(var(--brand))] cursor-pointer" type="checkbox"/>
         Post this request anonymously
       </label>
-    </div>
-    <div class="flex justify-end px-5 py-3 border-t border-line">
-      <button class="btn btn-primary" data-toast="Prayer request shared with the community 🙏">Request Prayer</button>
-    </div>
-  </div>
-
-  <!-- article -->
-  <div id="modal-article" class="modal hidden w-full max-w-[820px] h-[82vh] card shadow-pop animate-pop-in flex flex-col overflow-hidden" role="dialog" aria-modal="true" aria-labelledby="t-article">
-    <div class="flex items-center justify-between px-4 py-2.5 border-b border-line bg-raised">
-      <div class="flex items-center gap-0.5 text-muted" id="editor-tools">
-        <button class="icon-btn w-9 h-9" data-cmd="bold" aria-label="Bold"><i class="fa-solid fa-bold text-[13px]"></i></button>
-        <button class="icon-btn w-9 h-9" data-cmd="italic" aria-label="Italic"><i class="fa-solid fa-italic text-[13px]"></i></button>
-        <button class="icon-btn w-9 h-9" data-cmd="underline" aria-label="Underline"><i class="fa-solid fa-underline text-[13px]"></i></button>
-        <span class="w-px h-5 bg-line mx-1.5"></span>
-        <button class="icon-btn w-9 h-9" data-cmd="insertUnorderedList" aria-label="Bulleted list"><i class="fa-solid fa-list-ul text-[13px]"></i></button>
-        <button class="icon-btn w-9 h-9" data-cmd="formatBlock" data-arg="blockquote" aria-label="Quote"><i class="fa-solid fa-quote-right text-[13px]"></i></button>
-        <button class="icon-btn w-9 h-9" data-cmd="formatBlock" data-arg="h2" aria-label="Heading"><i class="fa-solid fa-heading text-[13px]"></i></button>
-      </div>
-      <h2 id="t-article" class="sr-only">Write an article</h2>
-      <button class="icon-btn" data-close aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
-    </div>
-    <div class="flex-1 overflow-y-auto px-6 sm:px-10 py-8">
-      <input type="text" class="w-full bg-transparent font-serif font-semibold text-[30px] placeholder:text-faint/60 outline-none mb-3" placeholder="Headline">
-      <div id="article-body" contenteditable="true" role="textbox" aria-multiline="true"
-           class="min-h-[300px] text-[17px] leading-[1.75] text-ink/90 outline-none [&:empty]:before:content-[attr(data-ph)] [&:empty]:before:text-faint/70"
-           data-ph="Write your article here…"></div>
-    </div>
-    <div class="flex items-center justify-between px-5 py-3 border-t border-line bg-raised">
-      <span class="text-[12px] text-muted"><i class="fa-solid fa-cloud text-[11px] mr-1.5"></i>Saved as draft</span>
-      <button class="btn btn-primary" data-toast="Article published ✨">Publish</button>
-    </div>
-  </div>
-
-  <!-- story viewer -->
-  <div id="modal-story" class="modal hidden w-full max-w-[380px] animate-pop-in" role="dialog" aria-modal="true" aria-label="Blessing">
-    <div class="relative rounded-2xl overflow-hidden aspect-[9/16] shadow-pop" style="background:linear-gradient(180deg,#4f46e5,#1e1b4b)" id="story-canvas">
-      <div class="absolute top-3 inset-x-3 h-[3px] rounded-full bg-white/25 overflow-hidden">
-        <div class="h-full bg-white w-0" id="story-bar"></div>
-      </div>
-      <div class="absolute top-7 left-3 right-3 flex items-center gap-2.5">
-        <span class="avatar w-9 h-9 text-[11px] ring-2 ring-white/80" style="background:#2f5bea" id="story-initials">HC</span>
-        <span class="text-[13px] font-semibold text-white" id="story-name">Hun Chet</span>
-        <button class="ml-auto icon-btn text-white/90 hover:bg-white/15 hover:text-white" data-close aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
-      </div>
-      <p class="absolute inset-x-8 top-1/2 -translate-y-1/2 text-center text-white text-[22px] leading-snug font-khmer" id="story-text">ព្រះទ្រង់ល្អ</p>
-      <div class="absolute bottom-4 inset-x-4 flex items-center gap-2">
-        <input class="flex-1 rounded-pill bg-white/15 border border-white/25 px-4 py-2.5 text-[13.5px] text-white placeholder:text-white/60 outline-none focus:bg-white/25" placeholder="Send a word of encouragement…">
-        <button class="icon-btn text-white hover:bg-white/20" aria-label="Send"><i class="fa-regular fa-paper-plane"></i></button>
-      </div>
-    </div>
-  </div>
 </div>
-
+<div class="flex justify-end px-5 py-3 border-t border-line">
+<button class="btn btn-primary" data-toast="Prayer request shared with the community 🙏">Request Prayer</button>
+</div>
+</div>
+<!-- article -->
+<div aria-labelledby="t-article" aria-modal="true" class="modal hidden w-full max-w-[820px] h-[82vh] card shadow-pop animate-pop-in flex flex-col overflow-hidden" id="modal-article" role="dialog">
+<div class="flex items-center justify-between px-4 py-2.5 border-b border-line bg-raised">
+<div class="flex items-center gap-0.5 text-muted" id="editor-tools">
+<button aria-label="Bold" class="icon-btn w-9 h-9" data-cmd="bold"><i class="fa-solid fa-bold text-[13px]"></i></button>
+<button aria-label="Italic" class="icon-btn w-9 h-9" data-cmd="italic"><i class="fa-solid fa-italic text-[13px]"></i></button>
+<button aria-label="Underline" class="icon-btn w-9 h-9" data-cmd="underline"><i class="fa-solid fa-underline text-[13px]"></i></button>
+<span class="w-px h-5 bg-line mx-1.5"></span>
+<button aria-label="Bulleted list" class="icon-btn w-9 h-9" data-cmd="insertUnorderedList"><i class="fa-solid fa-list-ul text-[13px]"></i></button>
+<button aria-label="Quote" class="icon-btn w-9 h-9" data-arg="blockquote" data-cmd="formatBlock"><i class="fa-solid fa-quote-right text-[13px]"></i></button>
+<button aria-label="Heading" class="icon-btn w-9 h-9" data-arg="h2" data-cmd="formatBlock"><i class="fa-solid fa-heading text-[13px]"></i></button>
+</div>
+<h2 class="sr-only" id="t-article">Write an article</h2>
+<button aria-label="Close" class="icon-btn" data-close=""><i class="fa-solid fa-xmark"></i></button>
+</div>
+<div class="flex-1 overflow-y-auto px-6 sm:px-10 py-8">
+<input class="w-full bg-transparent font-serif font-semibold text-[30px] placeholder:text-faint/60 outline-none mb-3" placeholder="Headline" type="text"/>
+<div aria-multiline="true" class="min-h-[300px] text-[17px] leading-[1.75] text-ink/90 outline-none [&amp;:empty]:before:content-[attr(data-ph)] [&amp;:empty]:before:text-faint/70" contenteditable="true" data-ph="Write your article here…" id="article-body" role="textbox"></div>
+</div>
+<div class="flex items-center justify-between px-5 py-3 border-t border-line bg-raised">
+<span class="text-[12px] text-muted"><i class="fa-solid fa-cloud text-[11px] mr-1.5"></i>Saved as draft</span>
+<button class="btn btn-primary" data-toast="Article published ✨">Publish</button>
+</div>
+</div>
+<!-- story viewer -->
+<div aria-label="Blessing" aria-modal="true" class="modal hidden w-full max-w-[380px] animate-pop-in" id="modal-story" role="dialog">
+<div class="relative rounded-2xl overflow-hidden aspect-[9/16] shadow-pop" id="story-canvas" style="background:linear-gradient(180deg,#4f46e5,#1e1b4b)">
+<div class="absolute top-3 inset-x-3 h-[3px] rounded-full bg-white/25 overflow-hidden">
+<div class="h-full bg-white w-0" id="story-bar"></div>
+</div>
+<div class="absolute top-7 left-3 right-3 flex items-center gap-2.5">
+<span class="avatar w-9 h-9 text-[11px] ring-2 ring-white/80" id="story-initials" style="background:#2f5bea">HC</span>
+<span class="text-[13px] font-semibold text-white" id="story-name">Hun Chet</span>
+<button aria-label="Close" class="ml-auto icon-btn text-white/90 hover:bg-white/15 hover:text-white" data-close=""><i class="fa-solid fa-xmark"></i></button>
+</div>
+<p class="absolute inset-x-8 top-1/2 -translate-y-1/2 text-center text-white text-[22px] leading-snug font-khmer" id="story-text">ព្រះទ្រង់ល្អ</p>
+<div class="absolute bottom-4 inset-x-4 flex items-center gap-2">
+<input class="flex-1 rounded-pill bg-white/15 border border-white/25 px-4 py-2.5 text-[13.5px] text-white placeholder:text-white/60 outline-none focus:bg-white/25" placeholder="Send a word of encouragement…"/>
+<button aria-label="Send" class="icon-btn text-white hover:bg-white/20"><i class="fa-regular fa-paper-plane"></i></button>
+</div>
+</div>
+</div>
+</div>
 <script src="/faithin-app/assets/faithin-runtime.js"></script>
 <script src="/assets/js/faith-in-backend.js"></script>
 <script src="/faithin-app/assets/faithin.js"></script>
