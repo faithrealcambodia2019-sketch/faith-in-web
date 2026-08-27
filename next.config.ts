@@ -34,6 +34,18 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  async rewrites() {
+    return {
+      // Runs before filesystem routes, so "/" serves the Faith In UI shell
+      // instead of the marketing route. Remove this block to restore the
+      // marketing homepage at the root.
+      beforeFiles: [
+        { source: "/", destination: "/faithin-app/index.html" },
+      ],
+      afterFiles: [],
+      fallback: [],
+    };
+  },
   async headers() {
     return [
       {
