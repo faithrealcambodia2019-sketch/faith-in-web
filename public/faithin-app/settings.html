@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0b1120" media="(prefers-color-scheme: dark)">
+<meta name="description" content="Manage your Faith In account preferences, privacy and display settings.">
+<title>Faith In — Settings</title>
+
+<link rel="stylesheet" href="assets/faithin-fonts.css">
+<link rel="stylesheet" href="assets/faithin-icons.css">
+<link rel="stylesheet" href="assets/faithin-tw.css">
+<link rel="stylesheet" href="assets/faithin.css">
+</head>
+
+<body class="font-sans min-h-screen pb-16 lg:pb-0" data-page="settings" data-search="Search settings">
+
+<main id="main" class="max-w-[1200px] mx-auto px-3 sm:px-4 py-5 grid gap-5 lg:grid-cols-[288px_minmax(0,1fr)] items-start">
+
+  <!-- ───── LEFT RAIL ───── -->
+  <aside class="lg:sticky lg:top-[72px]">
+    <section class="card overflow-hidden">
+      <div class="flex items-center gap-3 px-4 py-3.5 bg-raised border-b border-line">
+        <span class="avatar w-11 h-11 text-[13px]" style="background:linear-gradient(135deg,#2f5bea,#1e40af)">HC</span>
+        <div class="min-w-0">
+          <h1 class="text-[15.5px] font-bold leading-tight">Settings</h1>
+          <p class="text-[12px] text-muted mt-0.5">Manage your account</p>
+        </div>
+      </div>
+      <nav class="p-2 space-y-0.5">
+        <a href="#" class="side-link is-active"><i class="fa-solid fa-user-gear"></i>Account preferences</a>
+        <a href="#" class="side-link"><i class="fa-solid fa-shield-halved"></i>Sign in &amp; security</a>
+        <a href="#" class="side-link"><i class="fa-solid fa-eye"></i>Visibility</a>
+        <a href="#" class="side-link"><i class="fa-solid fa-comment-dots"></i>Communications</a>
+        <a href="#" class="side-link"><i class="fa-solid fa-database"></i>Data privacy</a>
+        <a href="#" class="side-link"><i class="fa-solid fa-rectangle-ad"></i>Advertising data</a>
+      </nav>
+    </section>
+  </aside>
+
+  <!-- ───── CONTENT ───── -->
+  <div class="space-y-5 min-w-0">
+    <h2 class="text-[22px] font-bold px-1">Account preferences</h2>
+
+    <!-- profile information -->
+    <section class="card overflow-hidden">
+      <h3 class="px-5 py-3.5 text-[15px] font-bold bg-raised border-b border-line">Profile information</h3>
+
+      <a href="profile.html" class="settings-row group">
+        <div class="min-w-0">
+          <h4 class="text-[14.5px] font-semibold group-hover:text-brand transition">Name, location, and industry</h4>
+          <p class="text-[13px] text-muted mt-1">Hun Chet · Christian Creator · Phnom Penh</p>
+        </div>
+        <span class="icon-btn shrink-0"><i class="fa-solid fa-arrow-right text-[13px]"></i></span>
+      </a>
+
+      <a href="#" class="settings-row group">
+        <div class="min-w-0">
+          <h4 class="text-[14.5px] font-semibold group-hover:text-brand transition">Personal demographic information</h4>
+          <p class="text-[13px] text-muted mt-1">Add or manage your personal demographic information.</p>
+        </div>
+        <span class="icon-btn shrink-0"><i class="fa-solid fa-arrow-right text-[13px]"></i></span>
+      </a>
+
+      <a href="#" class="settings-row group">
+        <div class="min-w-0">
+          <h4 class="text-[14.5px] font-semibold group-hover:text-brand transition">Verifications</h4>
+          <p class="text-[13px] text-muted mt-1">Add verified credentials to your profile to build trust.</p>
+        </div>
+        <span class="icon-btn shrink-0"><i class="fa-solid fa-arrow-right text-[13px]"></i></span>
+      </a>
+    </section>
+
+    <!-- display -->
+    <section class="card overflow-hidden">
+      <h3 class="px-5 py-3.5 text-[15px] font-bold bg-raised border-b border-line">Display</h3>
+
+      <div class="settings-row flex-col sm:flex-row sm:items-center">
+        <div class="min-w-0">
+          <h4 class="text-[14.5px] font-semibold">Dark mode</h4>
+          <p class="text-[13px] text-muted mt-1">Choose how your Faith In experience looks on this device.</p>
+        </div>
+        <div class="segmented shrink-0" id="theme-picker" role="group" aria-label="Theme">
+          <button data-theme-mode="system" class="is-on">System</button>
+          <button data-theme-mode="light">Light</button>
+          <button data-theme-mode="dark">Dark</button>
+        </div>
+      </div>
+
+      <div class="settings-row">
+        <div class="min-w-0">
+          <h4 class="text-[14.5px] font-semibold">Larger text</h4>
+          <p class="text-[13px] text-muted mt-1">Increase the base text size across Faith In.</p>
+        </div>
+        <label class="switch shrink-0 mt-1">
+          <input type="checkbox" aria-label="Larger text"><span></span>
+        </label>
+      </div>
+    </section>
+
+    <!-- general preferences -->
+    <section class="card overflow-hidden">
+      <h3 class="px-5 py-3.5 text-[15px] font-bold bg-raised border-b border-line">General preferences</h3>
+
+      <div class="settings-row">
+        <div class="min-w-0">
+          <h4 class="text-[14.5px] font-semibold">Language</h4>
+          <p class="text-[13px] text-muted mt-1">Select the language you use on Faith In.</p>
+          <p class="text-[13px] font-semibold mt-1">English</p>
+        </div>
+        <button class="btn btn-ghost !text-brand shrink-0" data-toast="Language picker">Change</button>
+      </div>
+
+      <div class="settings-row">
+        <div class="min-w-0">
+          <h4 class="text-[14.5px] font-semibold">Content language</h4>
+          <p class="text-[13px] text-muted mt-1">Select the languages you'd like to see content in.</p>
+          <p class="text-[13px] font-semibold mt-1">English · ភាសាខ្មែរ</p>
+        </div>
+        <button class="btn btn-ghost !text-brand shrink-0" data-toast="Content language picker">Change</button>
+      </div>
+
+      <div class="settings-row">
+        <div class="min-w-0">
+          <h4 class="text-[14.5px] font-semibold">Autoplay videos</h4>
+          <p class="text-[13px] text-muted mt-1">Choose if you want videos to play automatically in your feed.</p>
+        </div>
+        <label class="switch shrink-0 mt-1">
+          <input type="checkbox" checked aria-label="Autoplay videos"><span></span>
+        </label>
+      </div>
+
+      <div class="settings-row">
+        <div class="min-w-0">
+          <h4 class="text-[14.5px] font-semibold">Sound effects</h4>
+          <p class="text-[13px] text-muted mt-1">Play sounds for incoming messages and notifications.</p>
+        </div>
+        <label class="switch shrink-0 mt-1">
+          <input type="checkbox" aria-label="Sound effects"><span></span>
+        </label>
+      </div>
+
+      <div class="settings-row">
+        <div class="min-w-0">
+          <h4 class="text-[14.5px] font-semibold">Daily verse notification</h4>
+          <p class="text-[13px] text-muted mt-1">Receive the Verse of the Day each morning at 6:00.</p>
+        </div>
+        <label class="switch shrink-0 mt-1">
+          <input type="checkbox" checked aria-label="Daily verse notification"><span></span>
+        </label>
+      </div>
+    </section>
+
+    <!-- syncing -->
+    <section class="card overflow-hidden">
+      <h3 class="px-5 py-3.5 text-[15px] font-bold bg-raised border-b border-line">Syncing options</h3>
+
+      <div class="settings-row">
+        <div class="min-w-0">
+          <h4 class="text-[14.5px] font-semibold">Sync calendar</h4>
+          <p class="text-[13px] text-muted mt-1">Connect Google or Outlook to arrange meetings and services.</p>
+        </div>
+        <button class="btn btn-outline shrink-0" data-toast="Calendar sync started">Sync</button>
+      </div>
+
+      <div class="settings-row">
+        <div class="min-w-0">
+          <h4 class="text-[14.5px] font-semibold">Sync contacts</h4>
+          <p class="text-[13px] text-muted mt-1">Find people you already know from your address book.</p>
+        </div>
+        <button class="btn btn-outline shrink-0" data-toast="Contact sync started">Sync</button>
+      </div>
+    </section>
+
+    <!-- account management -->
+    <section class="card overflow-hidden">
+      <h3 class="px-5 py-3.5 text-[15px] font-bold bg-raised border-b border-line">Account management</h3>
+
+      <a href="#" class="settings-row group">
+        <div class="min-w-0">
+          <h4 class="text-[14.5px] font-semibold group-hover:text-brand transition">Hibernate account</h4>
+          <p class="text-[13px] text-muted mt-1">Temporarily hide your profile and activity.</p>
+        </div>
+        <span class="icon-btn shrink-0"><i class="fa-solid fa-arrow-right text-[13px]"></i></span>
+      </a>
+
+      <a href="#" class="settings-row danger group">
+        <div class="min-w-0">
+          <h4 class="text-[14.5px] font-semibold text-rose">Close account</h4>
+          <p class="text-[13px] text-muted mt-1">Learn about your options, and close your account if you wish.</p>
+        </div>
+        <span class="icon-btn shrink-0 group-hover:text-rose"><i class="fa-solid fa-arrow-right text-[13px]"></i></span>
+      </a>
+    </section>
+
+    <footer class="px-2 py-4 text-center space-y-2">
+      <p class="text-[11.5px] text-muted">
+        <a href="#" class="hover:text-brand hover:underline">About</a> ·
+        <a href="#" class="hover:text-brand hover:underline">Accessibility</a> ·
+        <a href="#" class="hover:text-brand hover:underline">Help Center</a> ·
+        <a href="#" class="hover:text-brand hover:underline">Privacy &amp; Terms</a>
+      </p>
+      <p class="text-[11.5px] text-faint">Faith In Corporation © 2026</p>
+    </footer>
+  </div>
+</main>
+
+<script src="assets/faithin.js"></script>
+<script>
+  /* The theme picker drives the real theme via the shared FI.setTheme(). */
+  const picker = document.getElementById('theme-picker');
+  function paintPicker(mode) {
+    picker.querySelectorAll('button').forEach(b => b.classList.toggle('is-on', b.dataset.themeMode === mode));
+  }
+  picker.addEventListener('click', e => {
+    const b = e.target.closest('[data-theme-mode]');
+    if (!b) return;
+    FI.setTheme(b.dataset.themeMode);
+    FI.toast('Display set to ' + b.textContent.toLowerCase());
+  });
+  // stay in sync when the header moon/sun button is used
+  document.addEventListener('fi:theme', e => paintPicker(e.detail.mode));
+  paintPicker(FI.getTheme());
+</script>
+</body>
+</html>
