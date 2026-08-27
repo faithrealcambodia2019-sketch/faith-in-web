@@ -1,190 +1,81 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+
+<html class="scroll-smooth" lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#0b1120" media="(prefers-color-scheme: dark)">
-<meta name="description" content="Your Faith In notifications — reactions, comments, connections and alerts.">
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
+<meta content="#ffffff" media="(prefers-color-scheme: light)" name="theme-color"/>
+<meta content="#0b1120" media="(prefers-color-scheme: dark)" name="theme-color"/>
+<meta content="Your Faith In notifications — reactions, comments, connections and alerts." name="description"/>
 <title>Faith In — Notifications</title>
-
-<link rel="stylesheet" href="/faithin-app/assets/faithin-fonts.css">
-<link rel="stylesheet" href="/faithin-app/assets/faithin-icons.css">
-<link rel="stylesheet" href="/faithin-app/assets/faithin-tw.css">
-<link rel="stylesheet" href="/faithin-app/assets/faithin.css">
+<link href="/faithin-app/assets/faithin-fonts.css" rel="stylesheet"/>
+<link href="/faithin-app/assets/faithin-icons.css" rel="stylesheet"/>
+<link href="/faithin-app/assets/faithin-tw.css" rel="stylesheet"/>
+<link href="/faithin-app/assets/faithin.css" rel="stylesheet"/>
 </head>
-
 <body class="font-sans min-h-screen pb-16 lg:pb-0" data-page="notifications" data-search="Search Faith In">
-
-<main id="main" class="max-w-[1200px] mx-auto px-3 sm:px-4 py-5 grid gap-5 lg:grid-cols-[232px_minmax(0,1fr)] xl:grid-cols-[232px_minmax(0,1fr)_312px] items-start">
-
-  <!-- ───── LEFT RAIL ───── -->
-  <aside class="hidden lg:block lg:sticky lg:top-[72px] space-y-4">
-    <section class="card overflow-hidden">
-      <h2 class="px-4 py-3.5 text-[15.5px] font-bold leading-snug border-b border-line">Manage your<br>Notifications</h2>
-      <nav class="p-2 space-y-0.5">
-        <a href="#" class="side-link is-active">All notifications</a>
-        <a href="#" class="side-link">My posts</a>
-        <a href="#" class="side-link">Mentions</a>
-        <a href="#" class="side-link">Connections</a>
-      </nav>
-      <div class="px-4 py-3 border-t border-line text-center">
-        <a href="#" class="text-[13px] font-semibold text-brand hover:underline">View settings</a>
-      </div>
-    </section>
-
-    <section class="card p-4">
-      <p class="text-[12.5px] text-muted leading-relaxed text-center">
+<main class="max-w-[1200px] mx-auto px-3 sm:px-4 py-5 grid gap-5 lg:grid-cols-[232px_minmax(0,1fr)] xl:grid-cols-[232px_minmax(0,1fr)_312px] items-start" id="main">
+<!-- ───── LEFT RAIL ───── -->
+<aside class="hidden lg:block lg:sticky lg:top-[72px] space-y-4">
+<section class="card overflow-hidden">
+<h2 class="px-4 py-3.5 text-[15.5px] font-bold leading-snug border-b border-line">Manage your<br/>Notifications</h2>
+<nav class="p-2 space-y-0.5">
+<a class="side-link is-active" href="/faithin-app/notifications.html">All notifications</a>
+<a class="side-link" href="/faithin-app/notifications.html?filter=post">My posts</a>
+<a class="side-link" href="/faithin-app/notifications.html?filter=mention">Mentions</a>
+<a class="side-link" href="/faithin-app/notifications.html?filter=follow">Connections</a>
+</nav>
+<div class="px-4 py-3 border-t border-line text-center">
+<a class="text-[13px] font-semibold text-brand hover:underline" href="/faithin-app/settings.html">View settings</a>
+</div>
+</section>
+<section class="card p-4">
+<p class="text-[12.5px] text-muted leading-relaxed text-center">
         Improve your notification experience by updating your preferences in
-        <a href="#" class="font-semibold text-brand hover:underline">Settings</a>.
+        <a class="font-semibold text-brand hover:underline" href="/faithin-app/settings.html">Settings</a>.
       </p>
-    </section>
-  </aside>
-
-  <!-- ───── CENTER ───── -->
-  <section class="card overflow-hidden min-w-0">
-
-    <div class="flex items-center gap-2 p-3 border-b border-line overflow-x-auto no-scrollbar" data-chip-group>
-      <button class="chip is-on">All</button>
-      <button class="chip">Jobs</button>
-      <button class="chip">My posts</button>
-      <button class="chip">Mentions</button>
-      <button class="chip">Connections</button>
-    </div>
-
-    <div class="divide-y divide-line">
-
-      <!-- unread · reaction -->
-      <article class="notif-unread p-4 flex gap-3.5 relative group cursor-pointer">
-        <span class="relative shrink-0">
-          <span class="avatar w-12 h-12 text-[13px]" style="background:linear-gradient(135deg,#6366f1,#4338ca)">SJ</span>
-          <span class="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-brand text-white dark:text-[#0b1120] grid place-items-center ring-2 ring-surface text-[10px]"><i class="fa-solid fa-hands-praying"></i></span>
-        </span>
-        <div class="min-w-0 flex-1 pr-12">
-          <p class="text-[14px] leading-snug">
-            <span class="font-semibold">Sarah Jenkins</span> and 5 others said Amen to your post:
-            <span class="text-muted italic">"Thankful for another Sunday serving at church…"</span>
-          </p>
-          <p class="text-[12px] font-medium text-brand mt-1.5">2h</p>
-        </div>
-        <div class="absolute right-3 top-4 flex flex-col items-center gap-2">
-          <span class="w-2.5 h-2.5 rounded-full bg-brand"></span>
-          <button class="icon-btn w-8 h-8 opacity-0 group-hover:opacity-100 transition" aria-label="Options"><i class="fa-solid fa-ellipsis text-[13px]"></i></button>
-        </div>
-      </article>
-
-      <!-- unread · comment -->
-      <article class="notif-unread p-4 flex gap-3.5 relative group cursor-pointer">
-        <span class="relative shrink-0">
-          <span class="avatar w-12 h-12 text-[13px]" style="background:linear-gradient(135deg,#0ea5e9,#0369a1)">PT</span>
-          <span class="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-emerald-500 text-white grid place-items-center ring-2 ring-surface text-[10px]"><i class="fa-solid fa-comment"></i></span>
-        </span>
-        <div class="min-w-0 flex-1 pr-12">
-          <p class="text-[14px] leading-snug">
-            <span class="font-semibold">Pastor Paul Tripp</span> commented on your article:
-            <span class="text-muted italic">"Finding Peace in the Storm"</span>
-          </p>
-          <p class="mt-2 rounded-xl bg-surface border border-line px-3 py-2 text-[13px] text-muted leading-relaxed">
-            “This is a wonderfully profound piece, Hun. Thank you for sharing these insights, they are very timely.”
-          </p>
-          <p class="text-[12px] font-medium text-brand mt-1.5">5h</p>
-        </div>
-        <div class="absolute right-3 top-4 flex flex-col items-center gap-2">
-          <span class="w-2.5 h-2.5 rounded-full bg-brand"></span>
-          <button class="icon-btn w-8 h-8 opacity-0 group-hover:opacity-100 transition" aria-label="Options"><i class="fa-solid fa-ellipsis text-[13px]"></i></button>
-        </div>
-      </article>
-
-      <!-- connection -->
-      <article class="p-4 flex gap-3.5 relative group cursor-pointer row-hover">
-        <span class="relative shrink-0">
-          <span class="avatar w-12 h-12 text-[13px]" style="background:linear-gradient(135deg,#f59e0b,#b45309)">DK</span>
-          <span class="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-brand-strong text-white grid place-items-center ring-2 ring-surface text-[10px]"><i class="fa-solid fa-user-check"></i></span>
-        </span>
-        <div class="min-w-0 flex-1 pr-10">
-          <p class="text-[14px] leading-snug"><span class="font-semibold">Daniel Kim</span> accepted your connection request.</p>
-          <button class="btn btn-outline !py-1 !px-4 !text-[13px] mt-2"><i class="fa-regular fa-paper-plane text-[11px]"></i>Message</button>
-          <p class="text-[12px] text-muted mt-1.5">1d</p>
-        </div>
-        <button class="icon-btn absolute right-3 top-4 opacity-0 group-hover:opacity-100 transition" aria-label="Options"><i class="fa-solid fa-ellipsis text-[13px]"></i></button>
-      </article>
-
-      <!-- job alert -->
-      <article class="p-4 flex gap-3.5 relative group cursor-pointer row-hover">
-        <span class="relative shrink-0">
-          <span class="avatar avatar-sq w-12 h-12 text-[11px]" style="background:linear-gradient(135deg,#10b981,#047857)">IJM</span>
-          <span class="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-muted text-white grid place-items-center ring-2 ring-surface text-[10px]"><i class="fa-solid fa-briefcase"></i></span>
-        </span>
-        <div class="min-w-0 flex-1 pr-10">
-          <p class="text-[14px] leading-snug">
-            Job alert: 3 new roles match your alert for <span class="font-semibold">"Worship Leader"</span> in <span class="font-semibold">Los Angeles, CA</span>.
-          </p>
-          <p class="text-[12px] text-muted mt-1.5">1d</p>
-        </div>
-        <button class="icon-btn absolute right-3 top-4 opacity-0 group-hover:opacity-100 transition" aria-label="Options"><i class="fa-solid fa-ellipsis text-[13px]"></i></button>
-      </article>
-
-      <!-- group -->
-      <article class="p-4 flex gap-3.5 relative group cursor-pointer row-hover">
-        <span class="relative shrink-0">
-          <span class="avatar avatar-sq w-12 h-12 text-[11px]" style="background:linear-gradient(135deg,#1e293b,#0f172a)">BS</span>
-          <span class="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-amber-500 text-white grid place-items-center ring-2 ring-surface text-[10px]"><i class="fa-solid fa-users"></i></span>
-        </span>
-        <div class="min-w-0 flex-1 pr-10">
-          <p class="text-[14px] leading-snug"><span class="font-semibold">Daily Bible Study Network</span>: new trending discussion in the group.</p>
-          <p class="text-[13px] text-muted mt-1 truncate">"Thoughts on Romans 8 and the assurance of salvation?"</p>
-          <p class="text-[12px] text-muted mt-1.5">2d</p>
-        </div>
-        <button class="icon-btn absolute right-3 top-4 opacity-0 group-hover:opacity-100 transition" aria-label="Options"><i class="fa-solid fa-ellipsis text-[13px]"></i></button>
-      </article>
-
-      <!-- trending -->
-      <article class="p-4 flex gap-3.5 relative group cursor-pointer row-hover">
-        <span class="w-12 h-12 rounded-full grid place-items-center shrink-0 bg-violet-500/12 text-violet-500"><i class="fa-solid fa-chart-line text-[18px]"></i></span>
-        <div class="min-w-0 flex-1 pr-10">
-          <p class="text-[14px] leading-snug">
-            Trending globally: <span class="font-semibold">#GlobalMissions2026</span> is seeing high engagement from Christian leaders.
-          </p>
-          <p class="text-[12px] text-muted mt-1.5">3d</p>
-        </div>
-        <button class="icon-btn absolute right-3 top-4 opacity-0 group-hover:opacity-100 transition" aria-label="Options"><i class="fa-solid fa-ellipsis text-[13px]"></i></button>
-      </article>
-    </div>
-
-    <button class="w-full py-3 border-t border-line text-[13.5px] font-semibold text-brand hover:bg-raised transition">
+</section>
+</aside>
+<!-- ───── CENTER ───── -->
+<section class="card overflow-hidden min-w-0">
+<div class="flex items-center gap-2 p-3 border-b border-line overflow-x-auto no-scrollbar" data-chip-group="">
+<button class="chip is-on">All</button>
+<button class="chip">Jobs</button>
+<button class="chip">My posts</button>
+<button class="chip">Mentions</button>
+<button class="chip">Connections</button>
+</div>
+<div class="divide-y divide-line"><p class="p-6 text-center text-[13.5px] text-muted" data-placeholder="">Loading…</p></div>
+<button class="w-full py-3 border-t border-line text-[13.5px] font-semibold text-brand hover:bg-raised transition">
       Show earlier notifications <i class="fa-solid fa-arrow-down text-[11px] ml-1"></i>
-    </button>
-  </section>
-
-  <!-- ───── RIGHT RAIL ───── -->
-  <aside class="hidden xl:block xl:sticky xl:top-[72px] space-y-4">
-
-    <section class="card overflow-hidden">
-      <div class="px-4 pt-4 flex items-center justify-between">
-        <h2 class="font-serif font-semibold text-[15px]">Verse of the Day</h2>
-        <span class="text-[10.5px] font-bold uppercase tracking-wider text-gold bg-gold/10 px-2 py-1 rounded-full">Daily</span>
-      </div>
-      <blockquote class="px-4 py-3.5 mt-2 border-l-[3px] border-gold ml-4 space-y-3">
-        <p class="font-khmer text-[13.5px] leading-[1.9] text-ink/90">
+</button>
+</section>
+<!-- ───── RIGHT RAIL ───── -->
+<aside class="hidden xl:block xl:sticky xl:top-[72px] space-y-4">
+<section class="card overflow-hidden">
+<div class="px-4 pt-4 flex items-center justify-between">
+<h2 class="font-serif font-semibold text-[15px]">Verse of the Day</h2>
+<span class="text-[10.5px] font-bold uppercase tracking-wider text-gold bg-gold/10 px-2 py-1 rounded-full">Daily</span>
+</div>
+<blockquote class="px-4 py-3.5 mt-2 border-l-[3px] border-gold ml-4 space-y-3" id="votd">
+<p class="font-khmer text-[13.5px] leading-[1.9] text-ink/90">
           «ដ្បិតព្រះទ្រង់ស្រឡាញ់មនុស្សលោក ដល់ម៉្លេះបានជាទ្រង់ប្រទានព្រះរាជបុត្រាទ្រង់តែ១ ដើម្បីឲ្យអ្នកណាដែលជឿដល់ព្រះរាជបុត្រានោះ មិនត្រូវវិនាសឡើយ គឺឲ្យមានជីវិតអស់កល្បជានិច្ចវិញ»
         </p>
-        <p class="font-serif italic text-[14px] leading-relaxed">"For God so loved the world, that he gave his only begotten Son."</p>
-      </blockquote>
-      <div class="px-4 pb-3 text-right text-[11px] font-bold uppercase tracking-wide text-muted">យ៉ូហាន ៣:១៦ · John 3:16</div>
-    </section>
-
-    <footer class="px-2 pb-4 text-center space-y-2">
-      <p class="text-[11.5px] text-muted">
-        <a href="#" class="hover:text-brand hover:underline">About</a> ·
-        <a href="#" class="hover:text-brand hover:underline">Accessibility</a> ·
-        <a href="#" class="hover:text-brand hover:underline">Help Center</a> ·
-        <a href="#" class="hover:text-brand hover:underline">Privacy &amp; Terms</a>
-      </p>
-      <p class="text-[11.5px] text-faint">Faith In Corporation © 2026</p>
-    </footer>
-  </aside>
+<p class="font-serif italic text-[14px] leading-relaxed">"For God so loved the world, that he gave his only begotten Son."</p>
+</blockquote>
+<div class="px-4 pb-3 text-right text-[11px] font-bold uppercase tracking-wide text-muted" data-votd-ref="">យ៉ូហាន ៣:១៦ · John 3:16</div>
+</section>
+<footer class="px-2 pb-4 text-center space-y-2">
+<p class="text-[11.5px] text-muted">
+<a class="hover:text-brand hover:underline" href="/about">About</a> 
+         ·
+        <a class="hover:text-brand hover:underline" href="/contact">Help Center</a> ·
+        <a class="hover:text-brand hover:underline" href="/privacy">Privacy</a> · <a class="hover:text-brand hover:underline" href="/terms">Terms</a>
+</p>
+<p class="text-[11.5px] text-faint">Faith In Corporation © 2026</p>
+</footer>
+</aside>
 </main>
-
 <script src="/faithin-app/assets/faithin-runtime.js"></script>
 <script src="/assets/js/faith-in-backend.js"></script>
 <script src="/faithin-app/assets/faithin.js"></script>

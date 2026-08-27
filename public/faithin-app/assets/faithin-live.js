@@ -79,7 +79,7 @@
     $$('.avatar').filter(node => node.textContent.trim() === 'HC').forEach(node => { if (!node.closest('[data-post-id],[data-user-uid]')) node.textContent = api.initials(displayName); });
     $$('a').forEach(link => {
       const label = link.textContent.trim().replace(/\s+\d+$/, '');
-      const routes = { 'Home Feed': '/faithin-app/index.html', 'Profile': '/faithin-app/profile.html', 'Prayer Wall': '/faithin-app/index.html#prayer', 'Find Jobs': '/faithin-app/jobs.html', 'Find Users': '/faithin-app/network.html', 'Library': '/faithin-app/library.html', 'Social Studio': '/bible-study' };
+      const routes = { 'Home Feed': '/faithin-app/index.html', 'Profile': '/faithin-app/profile.html', 'Prayer Wall': '/faithin-app/index.html#prayer-wall', 'Find Jobs': '/faithin-app/jobs.html', 'Find Users': '/faithin-app/network.html', 'Library': '/faithin-app/library.html', 'Social Studio': '/bible-study' };
       if (routes[label]) link.href = routes[label];
     });
     document.dispatchEvent(new CustomEvent('fi:session', { detail: { user: session } }));
@@ -112,8 +112,13 @@
       try {
         const result = await api.request('cv_get_jobs');
         const query = String(term || '').toLowerCase();
-        const items = (result.items || []).filter(job => !query || [job.title, job.organization, job.location, job.description].some(value => String(value || '').toLowerCase().includes(query)));
-        holder.innerHTML = items.length ? items.map(job => `<article class="p-4 flex gap-3.5 row-hover relative" data-job-id="${esc(job.id)}"><span class="avatar avatar-sq w-14 h-14 text-[12px] shrink-0">${esc(api.initials(job.organization))}</span><div class="min-w-0 flex-1 pr-10"><a class="text-[15.5px] font-semibold text-brand" href="${esc(job.apply_url || (job.contact_email ? `mailto:${job.contact_email}` : '#'))}">${esc(job.title)}</a><p class="text-[14px] font-medium mt-0.5">${esc(job.organization)}</p><p class="text-[13px] text-muted mt-0.5">${esc(job.location || 'Location flexible')} · ${esc(job.job_type || 'Ministry role')}</p><p class="text-[13px] text-muted mt-2 line-clamp-2">${esc(job.description || '')}</p><p class="text-[12px] text-faint mt-2">${esc(job.time || '')}</p></div>${job.can_delete ? '<button class="icon-btn absolute top-3 right-3" data-job-delete><i class="fa-regular fa-trash-can"></i></button>' : '<button class="icon-btn absolute top-3 right-3" data-job-save><i class="fa-regular fa-bookmark"></i></button>'}</article>`).join('') : emptyState('No matching ministry roles yet.');
+        let items = (result.items || []).filter(job => !query || [job.title, job.organization, job.location, job.description].some(value => String(value || '').toLowerCase().includes(query)));
+        if (new URLSearchParams(location.search).get('view') === 'saved') {
+          const saved = await api.request('cv_get_bookmarks').catch(() => ({ items: [] }));
+          const ids = new Set((saved.items || []).filter(row => row.object_type === 'job').map(row => row.object_id));
+          items = items.filter(job => ids.has(job.id));
+        }
+        holder.innerHTML = items.length ? items.map(job => `<article class="p-4 flex gap-3.5 row-hover relative" data-job-id="${esc(job.id)}"><span class="avatar avatar-sq w-14 h-14 text-[12px] shrink-0">${esc(api.initials(job.organization))}</span><div class="min-w-0 flex-1 pr-10"><a class="text-[15.5px] font-semibold text-brand" href="${esc(job.apply_url || (job.contact_email ? `mailto:${job.contact_email}` : '#'))}">${esc(job.title)}</a><p class="text-[14px] font-medium mt-0.5">${esc(job.organization)}</p><p class="text-[13px] text-muted mt-0.5">${esc(job.location || 'Location flexible')} · ${esc(job.job_type || 'Ministry role')}</p><p class="text-[13px] text-muted mt-2 line-clamp-2">${esc(job.description || '')}</p><p class="text-[12px] text-faint mt-2">${esc(job.time || '')}</p></div>${job.can_delete ? '<button class="icon-btn absolute top-3 right-3" data-job-delete><i class="fa-regular fa-trash-can"></i></button>' : '<button class="icon-btn absolute top-3 right-3" data-job-save><i class="fa-regular fa-bookmark"></i></button>'}</article>`).join('') : emptyState(new URLSearchParams(location.search).get('view') === 'saved' ? 'You have not saved any roles yet.' : 'No matching ministry roles yet.');
       } catch (error) { holder.innerHTML = emptyState(error.message); }
     };
     const form = heading.closest('#main').querySelector('form');
@@ -135,8 +140,22 @@
   async function loadLibrary() {
     const shelf = $('#shelf'); if (!shelf) return;
     try {
-      const result = await api.request('cv_get_resources'), items = result.items || [];
-      shelf.innerHTML = items.length ? items.map(resource => `<article class="w-[154px] shrink-0 snap-start group" data-resource-id="${esc(resource.id)}"><a href="${esc(resource.open_url || '#')}" target="_blank" rel="noopener" class="block"><span class="book-cover block h-[196px] overflow-hidden bg-[linear-gradient(150deg,#1d4ed8,#172554)]">${resource.thumbnail_url ? `<img class="w-full h-full object-cover" src="${esc(resource.thumbnail_url)}" alt="">` : `<span class="h-full p-3 flex items-center justify-center text-center text-white font-serif font-semibold">${esc(resource.title)}</span>`}</span><span class="block text-[13.5px] font-semibold mt-2.5 leading-tight">${esc(resource.title)}</span><span class="block text-[12px] text-muted mt-0.5">${esc(resource.author || resource.category)}</span></a><button class="text-[12px] font-semibold text-brand mt-2" data-resource-download><i class="fa-solid fa-download mr-1"></i>${Number(resource.download_count || 0)} downloads</button></article>`).join('') : emptyState('No community resources have been published yet.');
+      const result = await api.request('cv_get_resources');
+      let items = result.items || [];
+      const view = new URLSearchParams(location.search).get('view');
+      const format = new URLSearchParams(location.search).get('format');
+      const category = new URLSearchParams(location.search).get('category');
+      if (format) items = items.filter(resource => String(resource.format || '').toLowerCase() === format.toLowerCase());
+      if (category) {
+        const wanted = category.replace(/and/gi, '&').replace(/[^a-z]/gi, '').toLowerCase();
+        items = items.filter(resource => String(resource.category || '').replace(/[^a-z]/gi, '').toLowerCase() === wanted);
+      }
+      if (view === 'saved') {
+        const saved = await api.request('cv_get_bookmarks').catch(() => ({ items: [] }));
+        const ids = new Set((saved.items || []).filter(row => row.object_type === 'resource').map(row => row.object_id));
+        items = items.filter(resource => ids.has(resource.id));
+      }
+      shelf.innerHTML = items.length ? items.map(resource => `<article class="w-[154px] shrink-0 snap-start group" data-resource-id="${esc(resource.id)}">${resource.open_url ? `<a href="${esc(resource.open_url)}" target="_blank" rel="noopener" class="block">` : '<button type="button" class="block w-full text-left" data-resource-download>'}<span class="book-cover block h-[196px] overflow-hidden bg-[linear-gradient(150deg,#1d4ed8,#172554)]">${resource.thumbnail_url ? `<img class="w-full h-full object-cover" src="${esc(resource.thumbnail_url)}" alt="">` : `<span class="h-full p-3 flex items-center justify-center text-center text-white font-serif font-semibold">${esc(resource.title)}</span>`}</span><span class="block text-[13.5px] font-semibold mt-2.5 leading-tight">${esc(resource.title)}</span><span class="block text-[12px] text-muted mt-0.5">${esc(resource.author || resource.category)}</span>${resource.open_url ? '</a>' : '</button>'}<button class="text-[12px] font-semibold text-brand mt-2" data-resource-download><i class="fa-solid fa-download mr-1"></i>${Number(resource.download_count || 0)} downloads</button></article>`).join('') : emptyState(view || format || category ? 'Nothing in this shelf yet.' : 'No community resources have been published yet.');
     } catch (error) { shelf.innerHTML = emptyState(error.message); }
     const section = shelf.closest('section'), header = section?.firstElementChild;
     if (header && !header.querySelector('[data-publish-resource]')) { const button = document.createElement('button'); button.className = 'btn btn-primary !py-2'; button.dataset.publishResource = ''; button.innerHTML = '<i class="fa-solid fa-plus"></i>Publish resource'; header.appendChild(button); button.onclick = () => { if (requireUser()) openResourceEditor(loadLibrary); }; }
@@ -181,7 +200,12 @@
   async function loadNotifications() {
     const center = $('#main > section.card'); const holder = center?.querySelector('.divide-y'); if (!holder) return;
     try {
-      const result = await api.request('cv_social_get_notifications'), items = result.items || [];
+      const result = await api.request('cv_social_get_notifications');
+      const wanted = new URLSearchParams(location.search).get('filter');
+      const groups = { post: ['reaction', 'comment', 'new_post'], mention: ['reply', 'message'], follow: ['follow'] };
+      const items = wanted && groups[wanted]
+        ? (result.items || []).filter(item => groups[wanted].includes(item.type))
+        : (result.items || []);
       holder.innerHTML = items.length ? items.map(item => { const actor = item.actor || {}; const labels = { reaction: 'reacted to your post', comment: 'commented on your post', follow: 'followed you', message: 'sent you a message', reply: 'replied to you', new_post: 'shared a new post' }; return `<article class="${item.is_read ? '' : 'notif-unread'} p-4 flex gap-3.5 relative" data-notification-id="${esc(item.id)}">${avatarMarkup(actor, 'avatar w-12 h-12 text-[13px] object-cover')}<div class="min-w-0 flex-1"><p class="text-[14px]"><strong>${esc(actor.name || 'A member')}</strong> ${esc(labels[item.type] || 'sent an update')}</p><p class="text-[12px] ${item.is_read ? 'text-muted' : 'text-brand'} mt-1.5">${esc(item.created_at ? new Date(item.created_at).toLocaleString() : '')}</p></div>${item.is_read ? '' : '<span class="w-2.5 h-2.5 rounded-full bg-brand"></span>'}</article>`; }).join('') : emptyState('You are all caught up.');
       holder.onclick = async event => { const row = event.target.closest('[data-notification-id]'); if (!row) return; await api.request('cv_social_mark_notifications_read', { id: row.dataset.notificationId }); row.classList.remove('notif-unread'); row.querySelector('.bg-brand')?.remove(); };
       const early = center.querySelector(':scope > button'); if (early) { early.textContent = 'Mark all as read'; early.onclick = async () => { await api.request('cv_social_mark_notifications_read', {}); toast('Notifications marked as read'); loadNotifications(); }; }
@@ -222,9 +246,143 @@
     if (protectedAction && !requireUser()) event.preventDefault();
   });
 
+  /* ---- Prayer Wall (index) ------------------------------------------- */
+  async function loadPrayerWall() {
+    const list = $('#prayer-wall-list');
+    const composer = $('#modal-prayer');
+    if (composer) {
+      const submit = $$('button', composer).find(button => /request prayer/i.test(button.textContent));
+      if (submit && !submit.dataset.fiWired) {
+        submit.dataset.fiWired = '1';
+        submit.removeAttribute('data-toast');
+        submit.addEventListener('click', async () => {
+          if (!requireUser()) return;
+          const title = $('input[type="text"]', composer);
+          const body = $('textarea', composer);
+          const content = [title?.value.trim(), body?.value.trim()].filter(Boolean).join(' — ');
+          if (!content) return toast('Write your prayer request first.');
+          try {
+            await api.request('cv_create_prayer', { content });
+            if (title) title.value = ''; if (body) body.value = '';
+            $('[data-close]', composer)?.click();
+            toast('Prayer request shared with the community');
+            loadPrayerWall();
+          } catch (error) { toast(error.message); }
+        });
+      }
+    }
+    if (!list) return;
+    if (!session) {
+      list.innerHTML = '';
+      const count = $('[data-prayer-count]');
+      if (count) count.textContent = 'Sign in to see real prayer requests.';
+      return;
+    }
+    try {
+      const result = await api.request('cv_get_prayers');
+      const items = (result.items || []).slice(0, 3);
+      const badge = $('[data-prayer-badge]');
+      if (badge) { const total = (result.items || []).length; badge.textContent = total > 99 ? '99+' : total; badge.classList.toggle('hidden', !total); }
+      const count = $('[data-prayer-count]');
+      if (count) count.textContent = items.length
+        ? `${result.items.length} request${result.items.length === 1 ? '' : 's'} waiting for prayer.`
+        : 'No prayer requests yet — be the first to share one.';
+      list.innerHTML = items.length ? items.map(prayer => `<div class="rounded-xl bg-raised border border-line p-3" data-prayer-id="${esc(prayer.id)}"><p class="text-[13px] leading-snug">${esc(prayer.content)}</p><div class="mt-2 flex items-center justify-between"><span class="text-[11.5px] text-muted">${esc(prayer.author)} · ${esc(prayer.time || '')}</span><span class="text-[12px] font-semibold text-brand">${Number(prayer.prayed_count || 0)} praying</span></div></div>`).join('')
+        : '<p class="text-[13px] text-muted">No prayer requests yet.</p>';
+    } catch (error) {
+      list.innerHTML = `<p class="text-[13px] text-muted">${esc(error.message)}</p>`;
+    }
+  }
+
+  /* ---- Verse of the Day ----------------------------------------------- */
+  const VOTD_REFERENCES = [
+    'John 3:16', 'Psalm 23:1-3', 'Proverbs 3:5-6', 'Isaiah 40:31', 'Romans 8:28',
+    'Philippians 4:6-7', 'Joshua 1:9', 'Psalm 119:105', 'Matthew 11:28-30',
+    '2 Corinthians 5:17', 'Jeremiah 29:11', 'Psalm 46:10', 'Hebrews 11:1',
+    '1 Corinthians 13:4-7', 'Galatians 5:22-23', 'Ephesians 2:8-9',
+    'Psalm 27:1', 'Romans 12:2', 'James 1:2-4', 'Isaiah 41:10',
+    'Matthew 6:33', 'Psalm 51:10', 'John 14:6', 'Colossians 3:23',
+    '1 Peter 5:7', 'Psalm 121:1-2', 'Micah 6:8', 'Lamentations 3:22-23',
+    '2 Timothy 1:7', 'Revelation 21:4', 'Deuteronomy 31:6'
+  ];
+
+  async function loadVerseOfTheDay() {
+    const quote = $('#votd');
+    if (!quote) return;
+    const day = Math.floor(Date.now() / 86400000);
+    const reference = VOTD_REFERENCES[day % VOTD_REFERENCES.length];
+    try {
+      const response = await fetch(`https://bible-api.com/${encodeURIComponent(reference)}`);
+      if (!response.ok) throw new Error('Verse unavailable');
+      const data = await response.json();
+      const body = String(data.text || '').replace(/\s+/g, ' ').trim();
+      if (!body) throw new Error('Verse unavailable');
+      const english = $$('p', quote).find(node => !node.classList.contains('font-khmer'));
+      if (english) english.textContent = `“${body}”`;
+      $$('p.font-khmer', quote).forEach(node => node.remove());
+      const card = quote.closest('section') || quote.parentElement;
+      let cite = card?.querySelector('[data-votd-ref]');
+      if (!cite) {
+        cite = document.createElement('p');
+        cite.dataset.votdRef = '';
+        cite.className = 'text-[12px] font-semibold text-gold mt-2';
+        quote.appendChild(cite);
+      }
+      cite.textContent = data.reference || reference;
+      const link = card?.querySelector('a[href="/bible-study"]');
+      if (link) link.href = `/bible-study?passage=${encodeURIComponent(data.reference || reference)}`;
+    } catch (_) { /* leave the shipped verse in place */ }
+  }
+
+  /* ---- Article composer (index) --------------------------------------- */
+  function wireArticleComposer() {
+    const modal = $('#modal-article');
+    if (!modal) return;
+    const publish = $$('button', modal).find(button => /^publish$/i.test(button.textContent.trim()));
+    if (!publish) return;
+    publish.removeAttribute('data-toast');
+    publish.addEventListener('click', async () => {
+      if (!requireUser()) return;
+      const headline = $('input[type="text"]', modal);
+      const body = $('[aria-multiline="true"]', modal);
+      const title = headline?.value.trim() || '';
+      const content = (body?.innerText || '').trim();
+      if (!title && !content) return toast('Write a headline or some text first.');
+      publish.disabled = true;
+      try {
+        await api.request('cv_create_post', { title, content });
+        if (headline) headline.value = '';
+        if (body) body.innerHTML = '';
+        $('[data-close]', modal)?.click();
+        toast('Article published');
+        if (typeof window.FIHome?.reload === 'function') window.FIHome.reload();
+      } catch (error) { toast(error.message); }
+      finally { publish.disabled = false; }
+    });
+  }
+
+  /* ---- Anything still unbacked stops pretending -------------------------- */
+  function disableUnbackedControls() {
+    $$('[data-toast]').forEach(button => {
+      button.removeAttribute('data-toast');
+      button.disabled = true;
+      button.title = 'Not available yet';
+      button.classList.add('opacity-60', 'cursor-not-allowed');
+    });
+  }
+
   window.FILive = { api, get user() { return session; }, requireUser, avatarMarkup, openMessenger };
   mountAuth();
   const page = document.body.dataset.page;
+
+  function markActiveSideLink() {
+    const here = location.pathname + location.search;
+    $$('#main a.side-link').forEach(link => {
+      const active = link.getAttribute('href') === here;
+      link.classList.toggle('is-active', active);
+      if (active) link.setAttribute('aria-current', 'page'); else link.removeAttribute('aria-current');
+    });
+  }
   function signedOutState() {
     const targets = {
       jobs: $$('#main h2').find(node => /recommended for you/i.test(node.textContent))?.closest('section')?.querySelector('.divide-y'),
@@ -241,6 +399,11 @@
     }
   }
   document.addEventListener('click', event => { if (event.target.closest('[data-open-auth]')) window.FI.openAuth(); });
+  markActiveSideLink();
+  loadVerseOfTheDay();
+  document.addEventListener('fi:session', () => { if (page === 'home') loadPrayerWall(); });
+  wireArticleComposer();
+  $$('form[role="search"], #main form').forEach(form => form.querySelector('[data-toast]')?.removeAttribute('data-toast'));
   api.session().then(user => {
     applySession(user);
     if (!user?.logged_in) { signedOutState(); return; }
@@ -251,5 +414,6 @@
     if (page === 'notifications') loadNotifications();
     if (page === 'profile') loadProfile(user);
     if (page === 'settings') loadSettings(user);
-  }).catch(() => { applySession(null); signedOutState(); });
+  }).catch(() => { applySession(null); signedOutState(); })
+    .finally(() => setTimeout(disableUnbackedControls, 400));
 })();

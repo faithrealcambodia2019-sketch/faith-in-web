@@ -77,7 +77,7 @@
             <i class="fa-solid fa-moon dark:hidden"></i><i class="fa-solid fa-sun hidden dark:inline"></i>
           </button>
           <button class="icon-btn hidden sm:inline-flex" aria-label="Apps"><i class="fa-solid fa-table-cells"></i></button>
-          <a href="#" class="icon-btn" aria-label="Messages"><i class="fa-regular fa-comment-dots"></i></a>
+          <a href="/faithin-app/network.html?message=inbox" class="icon-btn" aria-label="Messages"><i class="fa-regular fa-comment-dots"></i></a>
           <a href="/faithin-app/notifications.html" class="icon-btn relative ${bellActive ? '!bg-brand !text-white dark:!text-[#0b1120]' : ''}" aria-label="Notifications, 3 unread"${bellActive ? ' aria-current="page"' : ''}>
             <i class="fa-${bellActive ? 'solid' : 'regular'} fa-bell"></i>
             <span class="absolute top-1.5 right-1.5 min-w-[16px] h-4 px-1 rounded-full bg-rose text-white text-[10px] font-bold grid place-items-center ring-2 ring-surface">3</span>
@@ -97,10 +97,10 @@
                 </div>
               </div>
               <a href="/faithin-app/profile.html" class="side-link${page === 'profile' ? ' is-active' : ''}" role="menuitem"><i class="fa-regular fa-user"></i>View profile</a>
-              <a href="#" class="side-link" role="menuitem"><i class="fa-solid fa-bookmark"></i>Saved items</a>
+              <a href="/faithin-app/library.html?view=saved" class="side-link" role="menuitem"><i class="fa-solid fa-bookmark"></i>Saved items</a>
               <a href="/faithin-app/settings.html" class="side-link${page === 'settings' ? ' is-active' : ''}" role="menuitem"><i class="fa-solid fa-gear"></i>Settings</a>
               <div class="my-1.5 border-t border-line"></div>
-              <a href="#" class="side-link" role="menuitem"><i class="fa-solid fa-arrow-right-from-bracket"></i>Sign out</a>
+              <a href="/faithin-app/index.html" class="side-link" role="menuitem"><i class="fa-solid fa-arrow-right-from-bracket"></i>Sign out</a>
             </div>
           </div>
         </div>
