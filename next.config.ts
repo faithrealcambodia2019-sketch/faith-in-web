@@ -36,12 +36,10 @@ const nextConfig: NextConfig = {
   },
   async rewrites() {
     return {
-      // Runs before filesystem routes, so the apex domain opens the real
-      // authenticated community rather than the static HTML design prototype
-      // under /faithin-app. Rewriting (instead of redirecting) keeps the
-      // canonical faithin.co URL visible while /app remains directly usable.
+      // Runs before filesystem routes, so the apex domain serves the new
+      // Faith In interface while keeping the canonical faithin.co URL visible.
       beforeFiles: [
-        { source: "/", destination: "/app" },
+        { source: "/", destination: "/faithin-app/index.html" },
       ],
       afterFiles: [],
       fallback: [],
