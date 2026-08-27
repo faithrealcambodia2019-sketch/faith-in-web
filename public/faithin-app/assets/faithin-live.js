@@ -77,6 +77,13 @@
     $$('a, h1').filter(node => node.textContent.trim() === 'Hun Chet').forEach(node => { node.textContent = displayName; });
     $$('p').filter(node => /Faith In member\s*·\s*Phnom Penh/i.test(node.textContent)).forEach(node => { node.textContent = session ? ['Faith In member', session.location].filter(Boolean).join(' · ') : 'Sign in to join the community'; });
     $$('.avatar').filter(node => node.textContent.trim() === 'HC').forEach(node => { if (!node.closest('[data-post-id],[data-user-uid]')) node.textContent = api.initials(displayName); });
+    $$('[data-current-user-avatar]').forEach(el => {
+      const holder = document.createElement('span');
+      holder.innerHTML = avatarMarkup(session || { name: displayName }, `${el.className} object-cover`);
+      const next = holder.firstElementChild;
+      next.dataset.currentUserAvatar = '';
+      el.replaceWith(next);
+    });
     $$('a').forEach(link => {
       const label = link.textContent.trim().replace(/\s+\d+$/, '');
       const routes = { 'Home Feed': '/home', 'Profile': '/profile', 'Prayer Wall': '/home#prayer-wall', 'Find Jobs': '/jobs', 'Find Users': '/network', 'Library': '/library', 'Social Studio': '/bible-study' };

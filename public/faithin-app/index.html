@@ -20,7 +20,7 @@
 <section class="card overflow-hidden">
 <div class="h-[62px] bg-[linear-gradient(120deg,#2f5bea,#5b7cf5_45%,#1e3a8a)]"></div>
 <div class="px-4 pb-4 -mt-8 flex flex-col items-center text-center">
-<span class="avatar w-16 h-16 text-[20px] ring-4 ring-surface" style="background:linear-gradient(135deg,#2f5bea,#1e40af)">HC</span>
+<span class="avatar w-16 h-16 text-[20px] ring-4 ring-surface" data-current-user-avatar style="background:linear-gradient(135deg,#2f5bea,#1e40af)">HC</span>
 <a class="mt-2.5 font-bold text-[15px] hover:underline" href="/profile">Hun Chet</a>
 <p class="text-[12.5px] text-muted mt-0.5">Faith In member · Phnom Penh</p>
 </div>
@@ -53,7 +53,7 @@
 <div class="flex gap-3 overflow-x-auto no-scrollbar pb-1 snap-x" data-rail="">
 <button class="snap-start shrink-0 w-[112px] h-[172px] rounded-card overflow-hidden card text-left hover:shadow-lift transition group" data-modal-open="modal-blessing">
 <div class="h-[108px] bg-[linear-gradient(160deg,#e6ecfb,#c9d7f7)] dark:bg-[linear-gradient(160deg,#1d2a4f,#111827)] grid place-items-center">
-<span class="avatar w-11 h-11 text-[13px] opacity-90" style="background:linear-gradient(135deg,#2f5bea,#1e40af)">HC</span>
+<span class="avatar w-11 h-11 text-[13px] opacity-90" data-current-user-avatar style="background:linear-gradient(135deg,#2f5bea,#1e40af)">HC</span>
 </div>
 <div class="relative h-[64px] grid place-items-end pb-3">
 <span class="absolute -top-4 left-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-brand text-white dark:text-[#0b1120] grid place-items-center ring-4 ring-surface group-hover:scale-110 transition">
@@ -70,7 +70,7 @@
 <!-- composer -->
 <section class="card p-3.5">
 <div class="flex items-center gap-3">
-<span class="avatar w-11 h-11 text-[14px]" style="background:linear-gradient(135deg,#2f5bea,#1e40af)">HC</span>
+<span class="avatar w-11 h-11 text-[14px]" data-current-user-avatar style="background:linear-gradient(135deg,#2f5bea,#1e40af)">HC</span>
 <button class="flex-1 text-left rounded-pill bg-raised hover:bg-line/60 border border-line px-4 py-2.5 text-[14px] text-muted transition" data-modal-open="modal-blessing">
           Share a blessing, testimony, or encouragement…
         </button>
@@ -161,7 +161,7 @@
 </div>
 <div class="p-5">
 <div class="flex items-center gap-3 mb-4">
-<span class="avatar w-11 h-11 text-[14px]" style="background:linear-gradient(135deg,#2f5bea,#1e40af)">HC</span>
+<span class="avatar w-11 h-11 text-[14px]" data-current-user-avatar style="background:linear-gradient(135deg,#2f5bea,#1e40af)">HC</span>
 <div>
 <p class="font-semibold text-[15px] leading-tight">Hun Chet</p>
 <button class="mt-1 inline-flex items-center gap-1.5 text-[11.5px] font-semibold border border-line rounded-pill px-2.5 py-1 text-muted hover:bg-raised transition">
@@ -170,6 +170,10 @@
 </div>
 </div>
 <textarea class="w-full resize-none bg-transparent text-[15.5px] leading-relaxed placeholder:text-faint outline-none" id="blessing-text" maxlength="600" placeholder="What has God done in your life recently? Share your testimony…" rows="5"></textarea>
+<div class="hidden mt-3 relative overflow-hidden rounded-xl border border-line bg-raised" id="blessing-image-preview-wrap">
+<img class="w-full max-h-[300px] object-cover" id="blessing-image-preview" alt="Blessing image preview"/>
+<button aria-label="Remove blessing image" class="icon-btn absolute top-2 right-2 bg-surface/90 shadow-lift" id="blessing-image-remove" type="button"><i class="fa-solid fa-xmark"></i></button>
+</div>
 <div class="mt-2 flex flex-wrap gap-2">
 <button class="text-[12px] font-medium px-2.5 py-1 rounded-pill bg-raised border border-line text-muted hover:text-ink transition" data-chip="">#testimony</button>
 <button class="text-[12px] font-medium px-2.5 py-1 rounded-pill bg-raised border border-line text-muted hover:text-ink transition" data-chip="">#gratitude</button>
@@ -178,7 +182,7 @@
 </div>
 <div class="flex items-center justify-between px-5 py-3 border-t border-line">
 <div class="flex gap-1 text-muted">
-<button aria-label="Add image" class="icon-btn"><i class="fa-regular fa-image"></i></button>
+<label aria-label="Add image" class="icon-btn cursor-pointer" title="Add image"><i class="fa-regular fa-image"></i><input accept="image/*" class="hidden" id="blessing-image-input" type="file"/></label>
 <button aria-label="Add verse" class="icon-btn"><i class="fa-solid fa-book-bible"></i></button>
 <button aria-label="Add emoji" class="icon-btn"><i class="fa-regular fa-face-smile"></i></button>
 </div>

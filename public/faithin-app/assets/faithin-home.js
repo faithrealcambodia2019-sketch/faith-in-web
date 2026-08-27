@@ -27,7 +27,8 @@
   function postHTML(post) {
     const author = post.author || { name: post.author_name || 'Faith In Member', uid: post.author_uid || '' };
     const name = author.name || author.displayName || 'Faith In Member';
-    const avatar = author.avatar_url || author.avatar || '';
+    const current = window.FILive.user;
+    const avatar = author.uid && author.uid === current?.uid ? (current.avatar_url || current.avatar || current.photo_url || author.avatar_url || author.avatar || '') : (author.avatar_url || author.avatar || '');
     const reacted = !!(post.user_reaction || post.current_user_reaction);
     const owner = !!post.can_delete;
     const body = post.content || post.excerpt || post.article_excerpt || '';
@@ -43,7 +44,7 @@
       ${mediaHTML(post)}
       <div class="px-4 py-2 flex items-center justify-between text-[12px] text-muted border-b border-line"><span class="flex items-center gap-1.5"><span class="w-[18px] h-[18px] rounded-full bg-brand text-white grid place-items-center text-[9px]"><i class="fa-solid fa-hands-praying"></i></span><span data-likecount>${Number(post.reaction_count || 0)}</span></span><span class="flex gap-3"><button data-comment-toggle>${Number(post.comment_count || 0)} comments</button><span>${Number(post.share_count || 0)} shares</span></span></div>
       <div class="flex items-center gap-1 px-2 py-1"><button class="action-btn ${reacted ? '!text-brand' : ''}" data-live-like><i class="fa-${reacted ? 'solid' : 'regular'} fa-hands-praying"></i>Amen</button><button class="action-btn" data-comment-toggle><i class="fa-regular fa-comment"></i>Comment</button><button class="action-btn" data-live-share><i class="fa-solid fa-share-nodes"></i>Share</button><button class="action-btn" data-live-save><i class="fa-regular fa-bookmark"></i><span class="hidden sm:inline">Save</span></button></div>
-      <div class="hidden border-t border-line p-3.5" data-comments><div class="space-y-2 mb-3" data-comment-list></div><form class="flex items-center gap-2.5" data-comment-form><span class="avatar w-9 h-9 text-[11px]">${esc(api.initials(window.FILive.user?.name || 'Me'))}</span><input name="content" class="field !rounded-pill" placeholder="Write a thoughtful comment…" required><button class="icon-btn text-brand"><i class="fa-solid fa-paper-plane"></i></button></form></div>
+      <div class="hidden border-t border-line p-3.5" data-comments><div class="space-y-2 mb-3" data-comment-list></div><form class="flex items-center gap-2.5" data-comment-form>${window.FILive.avatarMarkup(current || { name: 'Me' }, 'avatar w-9 h-9 text-[11px] object-cover')}<input name="content" class="field !rounded-pill" placeholder="Write a thoughtful comment…" required><button class="icon-btn text-brand"><i class="fa-solid fa-paper-plane"></i></button></form></div>
     </article>`;
   }
 
@@ -60,8 +61,19 @@
   function renderBlessings(items) {
     const rail = $('[data-rail]'); if (!rail) return;
     const blessings = items.filter(post => post.type === 'blessing').slice(0, 8);
-    const add = `<button class="snap-start shrink-0 w-[112px] h-[172px] rounded-card overflow-hidden card text-left" data-modal-open="modal-blessing"><div class="h-[108px] bg-brand-soft grid place-items-center"><span class="avatar w-11 h-11">${esc(api.initials(window.FILive.user?.name || 'Me'))}</span></div><div class="h-[64px] grid place-items-center text-[12.5px] font-semibold">+ Add Blessing</div></button>`;
-    rail.innerHTML = add + blessings.map((post, index) => { const author = post.author || {}; const colors = ['#3730a3','#065f46','#92400e','#6b21a8','#1e40af']; return `<button class="snap-start shrink-0 w-[112px] h-[172px] rounded-card overflow-hidden relative text-left text-white" style="background:linear-gradient(180deg,${colors[index % colors.length]},#111827)" data-blessing-post="${esc(post.id)}"><span class="absolute top-2.5 left-2.5 avatar w-9 h-9 text-[11px] ring-[3px] ring-white/80">${esc(api.initials(author.name))}</span><span class="absolute inset-x-3 top-1/2 -translate-y-1/2 text-center font-serif italic text-[13px] line-clamp-4">${esc(post.content || 'Shared a blessing')}</span><span class="absolute bottom-2.5 left-3 right-3 text-[11.5px] font-semibold truncate">${esc(author.name || 'Faith In Member')}</span></button>`; }).join('');
+    const current = window.FILive.user || { name: 'Me' };
+    const currentPhoto = current.avatar_url || current.avatar || current.photo_url || '';
+    const addVisual = currentPhoto ? `<img class="w-full h-full object-cover" src="${esc(currentPhoto)}" alt="${esc(current.name || 'Your profile')}">` : window.FILive.avatarMarkup(current, 'avatar w-14 h-14 text-[15px] object-cover');
+    const add = `<button class="snap-start shrink-0 w-[112px] h-[172px] rounded-card overflow-hidden card text-left" data-modal-open="modal-blessing"><div class="h-[108px] bg-brand-soft grid place-items-center overflow-hidden">${addVisual}</div><div class="h-[64px] grid place-items-center text-[12.5px] font-semibold">+ Add Blessing</div></button>`;
+    rail.innerHTML = add + blessings.map((post, index) => {
+      const author = post.author || {};
+      const colors = ['#3730a3','#065f46','#92400e','#6b21a8','#1e40af'];
+      const media = Array.isArray(post.media_items) ? post.media_items.find(item => item.type === 'image') : null;
+      const blessingImage = media?.url || media?.preview_url || post.cover_image_url || '';
+      const authorPhoto = author.uid === current.uid ? currentPhoto : (author.avatar_url || author.avatar || '');
+      const avatar = authorPhoto ? `<img class="absolute top-2.5 left-2.5 avatar w-9 h-9 object-cover ring-[3px] ring-white/80" src="${esc(authorPhoto)}" alt="${esc(author.name || 'Faith In member')}">` : `<span class="absolute top-2.5 left-2.5 avatar w-9 h-9 text-[11px] ring-[3px] ring-white/80">${esc(api.initials(author.name))}</span>`;
+      return `<button class="snap-start shrink-0 w-[112px] h-[172px] rounded-card overflow-hidden relative text-left text-white" style="background:linear-gradient(180deg,${colors[index % colors.length]},#111827)" data-blessing-post="${esc(post.id)}">${blessingImage ? `<img class="absolute inset-0 w-full h-full object-cover" src="${esc(blessingImage)}" alt="Blessing image"><span class="absolute inset-0" style="background:linear-gradient(180deg,rgba(0,0,0,.2),rgba(0,0,0,.35) 48%,rgba(0,0,0,.78))"></span>` : ''}${avatar}<span class="absolute inset-x-3 top-1/2 -translate-y-1/2 text-center font-serif italic text-[13px] line-clamp-4">${esc(post.content || 'Shared a blessing')}</span><span class="absolute bottom-2.5 left-3 right-3 text-[11.5px] font-semibold truncate">${esc(author.name || 'Faith In Member')}</span></button>`;
+    }).join('');
   }
 
   async function loadMembers() {
@@ -84,9 +96,15 @@
   }
 
   const ta = $('#blessing-text'), postBtn = $('#blessing-post'), count = $('#blessing-count');
-  ta?.addEventListener('input', () => { count.textContent = `${ta.value.length}/600`; postBtn.disabled = !ta.value.trim(); });
+  const blessingImageInput = $('#blessing-image-input'), blessingPreviewWrap = $('#blessing-image-preview-wrap'), blessingPreview = $('#blessing-image-preview');
+  let blessingImageFile = null;
+  function updateBlessingButton() { if (postBtn) postBtn.disabled = !ta?.value.trim() && !blessingImageFile; }
+  function clearBlessingImage() { blessingImageFile = null; if (blessingImageInput) blessingImageInput.value = ''; blessingPreviewWrap?.classList.add('hidden'); if (blessingPreview) blessingPreview.removeAttribute('src'); updateBlessingButton(); }
+  ta?.addEventListener('input', () => { count.textContent = `${ta.value.length}/600`; updateBlessingButton(); });
+  blessingImageInput?.addEventListener('change', () => { const file = blessingImageInput.files?.[0]; if (!file) return clearBlessingImage(); blessingImageFile = file; blessingPreview.src = URL.createObjectURL(file); blessingPreviewWrap.classList.remove('hidden'); updateBlessingButton(); });
+  $('#blessing-image-remove')?.addEventListener('click', clearBlessingImage);
   $$('[data-chip]').forEach(chip => chip.addEventListener('click', () => { ta.value = `${ta.value.trim()} ${chip.textContent} `.trimStart(); ta.dispatchEvent(new Event('input')); ta.focus(); }));
-  postBtn?.addEventListener('click', async () => { if (!needUser()) return; busy(postBtn, true, 'Posting'); try { await api.request('cv_create_post', { content: ta.value.trim(), type: 'blessing', visibility: 'public' }); ta.value = ''; closeModal(); toast('Your blessing is live 🕊️'); await loadPosts(); } catch (error) { toast(error.message); } finally { busy(postBtn, false, 'Post'); ta.dispatchEvent(new Event('input')); } });
+  postBtn?.addEventListener('click', async () => { if (!needUser()) return; busy(postBtn, true, blessingImageFile ? 'Uploading' : 'Posting'); try { const files = blessingImageFile ? { 'post_media[]': [blessingImageFile] } : {}; await api.request('cv_create_post', { content: ta.value.trim(), type: 'blessing', visibility: 'public' }, files); ta.value = ''; clearBlessingImage(); closeModal(); toast('Your blessing is live 🕊️'); await loadPosts(); } catch (error) { toast(error.message); } finally { busy(postBtn, false, 'Post'); ta.dispatchEvent(new Event('input')); } });
 
   const fileInput = $('#file-input'), preview = $('#preview'), dropzone = $('#dropzone'); let selectedFiles = [];
   function showFiles(files) { selectedFiles = [...files].slice(0, 10); preview.innerHTML = ''; preview.classList.toggle('hidden', !selectedFiles.length); selectedFiles.forEach(file => { const image = document.createElement('img'); image.className = 'w-full aspect-square object-cover rounded-lg border border-line'; image.src = URL.createObjectURL(file); preview.appendChild(image); }); }
