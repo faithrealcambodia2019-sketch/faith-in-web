@@ -20,7 +20,7 @@
   const search = document.body.dataset.search || 'Search Faith In';
 
   const NAV = [
-    { id: 'home',    href: '/',              icon: 'fa-house',       label: 'Home' },
+    { id: 'home',    href: '/home',          icon: 'fa-house',       label: 'Home' },
     { id: 'library', href: '/library',        icon: 'fa-book-open',   label: 'Library' },
     { id: 'network', href: '/network',        icon: 'fa-user-group',  label: 'Network' },
     { id: 'jobs',    href: '/jobs',           icon: 'fa-briefcase',   label: 'Jobs' }
@@ -57,7 +57,7 @@
     header.innerHTML = `
       <div class="max-w-[1200px] mx-auto h-[56px] px-3 sm:px-4 flex items-center gap-3">
 
-        <a href="/" class="flex items-center gap-1.5 shrink-0 text-brand" aria-label="Faith In home">
+        <a href="/home" class="flex items-center gap-1.5 shrink-0 text-brand" aria-label="Faith In home">
           <span class="text-[22px] font-extrabold tracking-tight leading-none">FaithIn</span>
           <i class="fa-solid fa-globe text-[15px]"></i>
         </a>
@@ -100,7 +100,7 @@
               <a href="/library?view=saved" class="side-link" role="menuitem"><i class="fa-solid fa-bookmark"></i>Saved items</a>
               <a href="/settings" class="side-link${page === 'settings' ? ' is-active' : ''}" role="menuitem"><i class="fa-solid fa-gear"></i>Settings</a>
               <div class="my-1.5 border-t border-line"></div>
-              <a href="/" class="side-link" role="menuitem"><i class="fa-solid fa-arrow-right-from-bracket"></i>Sign out</a>
+              <a href="/home" class="side-link" role="menuitem"><i class="fa-solid fa-arrow-right-from-bracket"></i>Sign out</a>
             </div>
           </div>
         </div>
@@ -118,9 +118,9 @@
     tabs.setAttribute('aria-label', 'Mobile');
     tabs.innerHTML = `
       <div class="grid grid-cols-5 h-14">
-        <a href="/" class="top-link min-w-0"${page === 'home' ? ' aria-current="page"' : ''}><i class="fa-solid fa-house"></i>Home</a>
+        <a href="/home" class="top-link min-w-0"${page === 'home' ? ' aria-current="page"' : ''}><i class="fa-solid fa-house"></i>Home</a>
         <a href="/network" class="top-link min-w-0"${page === 'network' ? ' aria-current="page"' : ''}><i class="fa-solid fa-user-group"></i>Network</a>
-        <button class="grid place-items-center" data-modal-open="modal-blessing" data-fallback="/" aria-label="Add blessing">
+        <button class="grid place-items-center" data-modal-open="modal-blessing" data-fallback="/home" aria-label="Add blessing">
           <span class="w-11 h-11 rounded-full bg-brand text-white dark:text-[#0b1120] grid place-items-center shadow-lift"><i class="fa-solid fa-plus"></i></span>
         </button>
         <a href="/jobs" class="top-link min-w-0"${page === 'jobs' ? ' aria-current="page"' : ''}><i class="fa-solid fa-briefcase"></i>Jobs</a>

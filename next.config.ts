@@ -32,7 +32,7 @@ const nextConfig: NextConfig = {
         destination: "https://faithin.co/:path*",
         permanent: true,
       },
-      { source: "/faithin-app/index.html", destination: "/", permanent: true },
+      { source: "/faithin-app/index.html", destination: "/home", permanent: true },
       { source: "/faithin-app/jobs.html", destination: "/jobs", permanent: true },
       { source: "/faithin-app/library.html", destination: "/library", permanent: true },
       { source: "/faithin-app/network.html", destination: "/network", permanent: true },
@@ -47,6 +47,7 @@ const nextConfig: NextConfig = {
       // Faith In interface while keeping the canonical faithin.co URL visible.
       beforeFiles: [
         { source: "/", destination: "/faithin-app/index.html" },
+        { source: "/home", destination: "/faithin-app/index.html" },
         { source: "/jobs", destination: "/faithin-app/jobs.html" },
         { source: "/library", destination: "/faithin-app/library.html" },
         { source: "/network", destination: "/faithin-app/network.html" },
