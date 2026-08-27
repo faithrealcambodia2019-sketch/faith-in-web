@@ -20,10 +20,10 @@
   const search = document.body.dataset.search || 'Search Faith In';
 
   const NAV = [
-    { id: 'home',    href: '/faithin-app/index.html',   icon: 'fa-house',       label: 'Home' },
-    { id: 'library', href: '/faithin-app/library.html', icon: 'fa-book-open',   label: 'Library' },
-    { id: 'network', href: '/faithin-app/network.html', icon: 'fa-user-group',  label: 'Network' },
-    { id: 'jobs',    href: '/faithin-app/jobs.html',    icon: 'fa-briefcase',   label: 'Jobs' }
+    { id: 'home',    href: '/',              icon: 'fa-house',       label: 'Home' },
+    { id: 'library', href: '/library',        icon: 'fa-book-open',   label: 'Library' },
+    { id: 'network', href: '/network',        icon: 'fa-user-group',  label: 'Network' },
+    { id: 'jobs',    href: '/jobs',           icon: 'fa-briefcase',   label: 'Jobs' }
   ];
 
   /* ── theme ──────────────────────────────────────────────────────────────────
@@ -57,7 +57,7 @@
     header.innerHTML = `
       <div class="max-w-[1200px] mx-auto h-[56px] px-3 sm:px-4 flex items-center gap-3">
 
-        <a href="/faithin-app/index.html" class="flex items-center gap-1.5 shrink-0 text-brand" aria-label="Faith In home">
+        <a href="/" class="flex items-center gap-1.5 shrink-0 text-brand" aria-label="Faith In home">
           <span class="text-[22px] font-extrabold tracking-tight leading-none">FaithIn</span>
           <i class="fa-solid fa-globe text-[15px]"></i>
         </a>
@@ -77,8 +77,8 @@
             <i class="fa-solid fa-moon dark:hidden"></i><i class="fa-solid fa-sun hidden dark:inline"></i>
           </button>
           <button class="icon-btn hidden sm:inline-flex" aria-label="Apps"><i class="fa-solid fa-table-cells"></i></button>
-          <a href="/faithin-app/network.html?message=inbox" class="icon-btn" aria-label="Messages"><i class="fa-regular fa-comment-dots"></i></a>
-          <a href="/faithin-app/notifications.html" class="icon-btn relative ${bellActive ? '!bg-brand !text-white dark:!text-[#0b1120]' : ''}" aria-label="Notifications, 3 unread"${bellActive ? ' aria-current="page"' : ''}>
+          <a href="/network?message=inbox" class="icon-btn" aria-label="Messages"><i class="fa-regular fa-comment-dots"></i></a>
+          <a href="/notifications" class="icon-btn relative ${bellActive ? '!bg-brand !text-white dark:!text-[#0b1120]' : ''}" aria-label="Notifications, 3 unread"${bellActive ? ' aria-current="page"' : ''}>
             <i class="fa-${bellActive ? 'solid' : 'regular'} fa-bell"></i>
             <span class="absolute top-1.5 right-1.5 min-w-[16px] h-4 px-1 rounded-full bg-rose text-white text-[10px] font-bold grid place-items-center ring-2 ring-surface">3</span>
           </a>
@@ -96,11 +96,11 @@
                   <p class="text-[12px] text-muted truncate">Faith In member</p>
                 </div>
               </div>
-              <a href="/faithin-app/profile.html" class="side-link${page === 'profile' ? ' is-active' : ''}" role="menuitem"><i class="fa-regular fa-user"></i>View profile</a>
-              <a href="/faithin-app/library.html?view=saved" class="side-link" role="menuitem"><i class="fa-solid fa-bookmark"></i>Saved items</a>
-              <a href="/faithin-app/settings.html" class="side-link${page === 'settings' ? ' is-active' : ''}" role="menuitem"><i class="fa-solid fa-gear"></i>Settings</a>
+              <a href="/profile" class="side-link${page === 'profile' ? ' is-active' : ''}" role="menuitem"><i class="fa-regular fa-user"></i>View profile</a>
+              <a href="/library?view=saved" class="side-link" role="menuitem"><i class="fa-solid fa-bookmark"></i>Saved items</a>
+              <a href="/settings" class="side-link${page === 'settings' ? ' is-active' : ''}" role="menuitem"><i class="fa-solid fa-gear"></i>Settings</a>
               <div class="my-1.5 border-t border-line"></div>
-              <a href="/faithin-app/index.html" class="side-link" role="menuitem"><i class="fa-solid fa-arrow-right-from-bracket"></i>Sign out</a>
+              <a href="/" class="side-link" role="menuitem"><i class="fa-solid fa-arrow-right-from-bracket"></i>Sign out</a>
             </div>
           </div>
         </div>
@@ -118,13 +118,13 @@
     tabs.setAttribute('aria-label', 'Mobile');
     tabs.innerHTML = `
       <div class="grid grid-cols-5 h-14">
-        <a href="/faithin-app/index.html" class="top-link min-w-0"${page === 'home' ? ' aria-current="page"' : ''}><i class="fa-solid fa-house"></i>Home</a>
-        <a href="/faithin-app/network.html" class="top-link min-w-0"${page === 'network' ? ' aria-current="page"' : ''}><i class="fa-solid fa-user-group"></i>Network</a>
-        <button class="grid place-items-center" data-modal-open="modal-blessing" data-fallback="/faithin-app/index.html" aria-label="Add blessing">
+        <a href="/" class="top-link min-w-0"${page === 'home' ? ' aria-current="page"' : ''}><i class="fa-solid fa-house"></i>Home</a>
+        <a href="/network" class="top-link min-w-0"${page === 'network' ? ' aria-current="page"' : ''}><i class="fa-solid fa-user-group"></i>Network</a>
+        <button class="grid place-items-center" data-modal-open="modal-blessing" data-fallback="/" aria-label="Add blessing">
           <span class="w-11 h-11 rounded-full bg-brand text-white dark:text-[#0b1120] grid place-items-center shadow-lift"><i class="fa-solid fa-plus"></i></span>
         </button>
-        <a href="/faithin-app/jobs.html" class="top-link min-w-0"${page === 'jobs' ? ' aria-current="page"' : ''}><i class="fa-solid fa-briefcase"></i>Jobs</a>
-        <a href="/faithin-app/library.html" class="top-link min-w-0"${page === 'library' ? ' aria-current="page"' : ''}><i class="fa-solid fa-book-open"></i>Library</a>
+        <a href="/jobs" class="top-link min-w-0"${page === 'jobs' ? ' aria-current="page"' : ''}><i class="fa-solid fa-briefcase"></i>Jobs</a>
+        <a href="/library" class="top-link min-w-0"${page === 'library' ? ' aria-current="page"' : ''}><i class="fa-solid fa-book-open"></i>Library</a>
       </div>`;
 
     const toasts = document.createElement('div');

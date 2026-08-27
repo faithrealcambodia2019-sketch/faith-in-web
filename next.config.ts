@@ -32,6 +32,13 @@ const nextConfig: NextConfig = {
         destination: "https://faithin.co/:path*",
         permanent: true,
       },
+      { source: "/faithin-app/index.html", destination: "/", permanent: true },
+      { source: "/faithin-app/jobs.html", destination: "/jobs", permanent: true },
+      { source: "/faithin-app/library.html", destination: "/library", permanent: true },
+      { source: "/faithin-app/network.html", destination: "/network", permanent: true },
+      { source: "/faithin-app/notifications.html", destination: "/notifications", permanent: true },
+      { source: "/faithin-app/profile.html", destination: "/profile", permanent: true },
+      { source: "/faithin-app/settings.html", destination: "/settings", permanent: true },
     ];
   },
   async rewrites() {
@@ -40,6 +47,12 @@ const nextConfig: NextConfig = {
       // Faith In interface while keeping the canonical faithin.co URL visible.
       beforeFiles: [
         { source: "/", destination: "/faithin-app/index.html" },
+        { source: "/jobs", destination: "/faithin-app/jobs.html" },
+        { source: "/library", destination: "/faithin-app/library.html" },
+        { source: "/network", destination: "/faithin-app/network.html" },
+        { source: "/notifications", destination: "/faithin-app/notifications.html" },
+        { source: "/profile", destination: "/faithin-app/profile.html" },
+        { source: "/settings", destination: "/faithin-app/settings.html" },
       ],
       afterFiles: [],
       fallback: [],

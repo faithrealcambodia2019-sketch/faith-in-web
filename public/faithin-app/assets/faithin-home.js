@@ -34,7 +34,7 @@
     return `<article class="card overflow-hidden animate-fade-up" data-post-id="${esc(post.id)}" data-author-uid="${esc(author.uid || '')}">
       <header class="flex items-start gap-3 p-4 pb-2.5">
         ${avatar ? `<img class="avatar w-11 h-11 object-cover" src="${esc(avatar)}" alt="${esc(name)}">` : `<span class="avatar w-11 h-11 text-[14px]">${esc(api.initials(name))}</span>`}
-        <div class="min-w-0 flex-1"><div class="flex items-center gap-2 flex-wrap"><a href="/faithin-app/profile.html?uid=${encodeURIComponent(author.uid || '')}" class="text-[14.5px] font-semibold hover:text-brand">${esc(name)}</a>${post.type && post.type !== 'post' ? `<span class="text-[10.5px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-brand-soft text-brand-strong">${esc(post.type)}</span>` : ''}</div><p class="text-[12px] text-muted mt-0.5">${esc(post.time || 'just now')} · ${esc(post.visibility || 'Public')}</p></div>
+        <div class="min-w-0 flex-1"><div class="flex items-center gap-2 flex-wrap"><a href="/profile?uid=${encodeURIComponent(author.uid || '')}" class="text-[14.5px] font-semibold hover:text-brand">${esc(name)}</a>${post.type && post.type !== 'post' ? `<span class="text-[10.5px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-brand-soft text-brand-strong">${esc(post.type)}</span>` : ''}</div><p class="text-[12px] text-muted mt-0.5">${esc(post.time || 'just now')} · ${esc(post.visibility || 'Public')}</p></div>
         ${!owner && author.uid ? `<button class="btn btn-outline !py-1 !px-3 !text-[13px]" data-live-follow><i class="fa-solid fa-plus text-[11px]"></i>Follow</button>` : ''}
         ${owner ? `<button class="icon-btn" data-live-delete aria-label="Delete post"><i class="fa-regular fa-trash-can"></i></button>` : ''}
       </header>
@@ -68,7 +68,7 @@
     const list = $('#contacts'); if (!list) return;
     try {
       const result = await api.request('cv_get_suggested_users');
-      list.innerHTML = (result.items || []).slice(0, 6).map(user => `<li class="flex items-start gap-3 p-2 rounded-xl hover:bg-raised" data-user-uid="${esc(user.uid)}">${window.FILive.avatarMarkup(user)}<span class="min-w-0 flex-1"><a href="/faithin-app/profile.html?uid=${encodeURIComponent(user.uid)}" class="block text-[13.5px] font-semibold truncate">${esc(user.name)}</a><span class="block text-[12px] text-muted truncate">${esc(user.role || user.church || user.location || 'Faith In member')}</span></span><button class="btn btn-ghost !px-3 !py-1 !text-[12.5px] border border-line" data-live-message>Message</button></li>`).join('') || '<li class="text-[13px] text-muted p-2">No other members yet.</li>';
+      list.innerHTML = (result.items || []).slice(0, 6).map(user => `<li class="flex items-start gap-3 p-2 rounded-xl hover:bg-raised" data-user-uid="${esc(user.uid)}">${window.FILive.avatarMarkup(user)}<span class="min-w-0 flex-1"><a href="/profile?uid=${encodeURIComponent(user.uid)}" class="block text-[13.5px] font-semibold truncate">${esc(user.name)}</a><span class="block text-[12px] text-muted truncate">${esc(user.role || user.church || user.location || 'Faith In member')}</span></span><button class="btn btn-ghost !px-3 !py-1 !text-[12.5px] border border-line" data-live-message>Message</button></li>`).join('') || '<li class="text-[13px] text-muted p-2">No other members yet.</li>';
     } catch (_) { list.innerHTML = '<li class="text-[13px] text-muted p-2">Sign in to see members.</li>'; }
   }
 
@@ -117,7 +117,7 @@
 
   document.addEventListener('click', async event => {
     const pray = event.target.closest('[data-live-pray]'); if (pray) { if (!needUser()) return; try { await api.request('cv_update_prayer', { prayer_id: pray.closest('[data-prayer-id]').dataset.prayerId }); await loadPrayers(); } catch (error) { toast(error.message); } }
-    const message = event.target.closest('[data-live-message]'); if (message) { if (!needUser()) return; location.href = `/faithin-app/network.html?message=${encodeURIComponent(message.closest('[data-user-uid]').dataset.userUid)}`; }
+    const message = event.target.closest('[data-live-message]'); if (message) { if (!needUser()) return; location.href = `/network?message=${encodeURIComponent(message.closest('[data-user-uid]').dataset.userUid)}`; }
   });
 
   $('[data-copy-verse]')?.addEventListener('click', async () => { try { await navigator.clipboard.writeText('For God so loved the world, that he gave his only begotten Son. — John 3:16'); toast('Verse copied'); } catch (_) { toast('Copy unavailable'); } });
