@@ -4,6 +4,12 @@
 
 The GitHub `main` branch deploys automatically to the Vercel project `faith-in`. Production uses `faithin.co`; `www.faithin.co` redirects permanently to the apex domain.
 
+The apex route is internally rewritten to `/app`, so visitors receive the
+Firebase-backed community without an extra redirect. The static files under
+`public/faithin-app/` are retained only as design references and must not be
+used as the production entry point because they contain placeholder data and
+do not load the application backend.
+
 Before publishing:
 
 1. Run `npm run lint`.

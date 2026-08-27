@@ -36,11 +36,12 @@ const nextConfig: NextConfig = {
   },
   async rewrites() {
     return {
-      // Runs before filesystem routes, so "/" serves the Faith In UI shell
-      // instead of the marketing route. Remove this block to restore the
-      // marketing homepage at the root.
+      // Runs before filesystem routes, so the apex domain opens the real
+      // authenticated community rather than the static HTML design prototype
+      // under /faithin-app. Rewriting (instead of redirecting) keeps the
+      // canonical faithin.co URL visible while /app remains directly usable.
       beforeFiles: [
-        { source: "/", destination: "/faithin-app/index.html" },
+        { source: "/", destination: "/app" },
       ],
       afterFiles: [],
       fallback: [],
