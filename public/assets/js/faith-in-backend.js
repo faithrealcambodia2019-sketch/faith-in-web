@@ -529,6 +529,31 @@
         return requireUser(b).then(function (user) { return loadProfile(b, user); });
     };
 
+    actions.cv_google_sign_in = function (b) {
+        var provider = new b.authMod.GoogleAuthProvider();
+        return b.authMod.signInWithPopup(b.auth, provider).then(function (credential) {
+            return loadProfile(b, credential.user);
+        });
+    };
+
+    actions.cv_email_sign_in = function (b, params) {
+        var email = emailAddress(params.email);
+        var password = String(params.password || '');
+        if (!email || !password) throw new Error('Enter your email and password.');
+        return b.authMod.signInWithEmailAndPassword(b.auth, email, password).then(function (credential) {
+            return loadProfile(b, credential.user);
+        });
+    };
+
+    actions.cv_email_sign_up = function (b, params) {
+        var email = emailAddress(params.email);
+        var password = String(params.password || '');
+        if (!email || password.length < 6) throw new Error('Enter a valid email and a password with at least 6 characters.');
+        return b.authMod.createUserWithEmailAndPassword(b.auth, email, password).then(function (credential) {
+            return loadProfile(b, credential.user);
+        });
+    };
+
     actions.cv_logout = function (b) {
         return b.authMod.signOut(b.auth).then(function () { return { logged_out: true }; });
     };
@@ -1916,11 +1941,11 @@
      * WordPress REST endpoints (Messenger and Notifications). Authentication
      * and authorization still flow through Firebase Auth and Firestore rules.
      */
-    window.cvDataRequest = function (action, params) {
+    window.cvDataRequest = function (action, params, files, onProgress) {
         return getBundle().then(function (b) {
             var handler = actions[text(action)];
             if (!handler) throw new Error('That Faith In function is not available.');
-            return handler(b, params || {}, {}, null);
+            return handler(b, params || {}, files || {}, onProgress || null);
         }).catch(function (error) {
             if (window.console && console.error) console.error('[Faith In] ' + action + ':', error);
             throw new Error(publicErrorMessage(error));
@@ -2042,7 +2067,7 @@
     // jQuery is loaded immediately before this file, but guard anyway.
     if (window.jQuery) {
         install(window.jQuery);
-    } else {
+    } else if (!(window.cv_ajax && window.cv_ajax.direct_data_mode)) {
         var waited = 0;
         var timer = setInterval(function () {
             if (window.jQuery) {
@@ -2051,7 +2076,7 @@
             } else if ((waited += 50) > 10000) {
                 clearInterval(timer);
                 if (window.console && console.error) {
-                    console.error('[Faith In] jQuery never loaded; the data backend is inactive.');
+                    console.error('[Faith In] jQuery never loaded; legacy form requests are inactive.');
                 }
             }
         }, 50);
