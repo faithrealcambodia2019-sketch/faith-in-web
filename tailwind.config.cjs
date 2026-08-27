@@ -9,6 +9,19 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        // Faith In member-app design tokens (see app/(faithin)/faithin-ui.css).
+        // Names are new; the marketing gold/charcoal/serene/sage scales below
+        // are untouched.
+        surface: "rgb(var(--fim-surface) / <alpha-value>)",
+        raised: "rgb(var(--fim-raised) / <alpha-value>)",
+        canvas: "rgb(var(--fim-canvas) / <alpha-value>)",
+        line: "rgb(var(--fim-line) / <alpha-value>)",
+        ink: "rgb(var(--fim-ink) / <alpha-value>)",
+        muted: "rgb(var(--fim-muted) / <alpha-value>)",
+        faint: "rgb(var(--fim-faint) / <alpha-value>)",
+        brand: "rgb(var(--fim-brand) / <alpha-value>)",
+        "brand-strong": "rgb(var(--fim-brand-strong) / <alpha-value>)",
+        "brand-soft": "rgb(var(--fim-brand-soft) / <alpha-value>)",
         gold: {
           50: "#FFFDF7",
           100: "#FEF7E6",
