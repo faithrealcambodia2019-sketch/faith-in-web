@@ -142,6 +142,19 @@
 
   mountChrome();
 
+  /* Warm clean page documents before navigation without blocking this page. */
+  const warmedPages = new Set();
+  function warmPage(link) {
+    if (!link || link.origin !== location.origin || warmedPages.has(link.pathname)) return;
+    if (!['/home','/jobs','/library','/network','/notifications','/profile','/settings'].includes(link.pathname)) return;
+    warmedPages.add(link.pathname);
+    const hint = document.createElement('link'); hint.rel = 'prefetch'; hint.href = link.pathname; hint.as = 'document'; document.head.appendChild(hint);
+  }
+  document.addEventListener('pointerover', event => { const anchor = event.target.closest('a[href]'); if (anchor) warmPage(anchor); }, { passive: true });
+  document.addEventListener('touchstart', event => { const anchor = event.target.closest('a[href]'); if (anchor) warmPage(anchor); }, { passive: true });
+  const idle = window.requestIdleCallback || (callback => setTimeout(callback, 800));
+  idle(() => NAV.filter(item => item.id !== page).forEach(item => warmPage(new URL(item.href, location.origin))));
+
   /* ── toasts ─────────────────────────────────────────────────────────────── */
   function toast(msg) {
     const el = document.createElement('div');
