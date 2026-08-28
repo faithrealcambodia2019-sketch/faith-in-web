@@ -77,7 +77,8 @@
 </div>
 <div class="mt-2.5 pt-2.5 border-t border-line flex items-center gap-1">
 <button class="action-btn !text-[12.5px] sm:!text-[14px]" data-modal-open="modal-blessing"><i class="fa-solid fa-hands-praying text-brand"></i>Blessing</button>
-<button class="action-btn !text-[12.5px] sm:!text-[14px]" data-modal-open="modal-photo"><i class="fa-regular fa-image text-emerald-500"></i>Photo</button>
+<button class="action-btn !text-[12.5px] sm:!text-[14px]" data-media-mode="image" data-modal-open="modal-photo"><i class="fa-regular fa-image text-emerald-500"></i>Photo</button>
+<button class="action-btn !text-[12.5px] sm:!text-[14px]" data-media-mode="video" data-modal-open="modal-photo"><i class="fa-solid fa-video text-rose"></i>Video</button>
 <button class="action-btn !text-[12.5px] sm:!text-[14px]" data-modal-open="modal-prayer"><i class="fa-regular fa-heart text-rose"></i>Prayer</button>
 <button class="action-btn !text-[12.5px] sm:!text-[14px]" data-modal-open="modal-article"><i class="fa-regular fa-file-lines text-violet-500"></i>Article</button>
 </div>
@@ -200,15 +201,15 @@
 <!-- photo -->
 <div aria-labelledby="t-photo" aria-modal="true" class="modal hidden w-full max-w-[560px] card shadow-pop animate-pop-in" id="modal-photo" role="dialog">
 <div class="flex items-center justify-between px-5 py-3.5 border-b border-line">
-<h2 class="text-[17px] font-bold" id="t-photo">Add a photo</h2>
+<h2 class="text-[17px] font-bold" id="t-photo">Add photos or video</h2>
 <button aria-label="Close" class="icon-btn" data-close=""><i class="fa-solid fa-xmark"></i></button>
 </div>
 <div class="p-5">
 <label class="flex flex-col items-center justify-center h-[240px] rounded-xl border-2 border-dashed border-line bg-raised hover:border-brand hover:bg-brand-soft/40 transition cursor-pointer text-center px-6" id="dropzone">
-<i class="fa-regular fa-images text-3xl text-faint mb-3"></i>
-<p class="font-semibold text-[15px]">Select images to share</p>
-<p class="text-[13px] text-muted mt-1">or drag and drop them here · JPG, PNG up to 10MB</p>
-<input accept="image/*" class="hidden" id="file-input" multiple="" type="file"/>
+<i class="fa-regular fa-images text-3xl text-faint mb-3" id="media-picker-icon"></i>
+<p class="font-semibold text-[15px]" id="media-picker-title">Select photos or a video to share</p>
+<p class="text-[13px] text-muted mt-1" id="media-picker-help">Up to 10 images or one video · maximum 250MB per file</p>
+<input accept="image/*,video/*,.mp4,.m4v,.mov,.qt,.webm,.ogv" class="hidden" id="file-input" multiple="" type="file"/>
 </label>
 <div class="grid grid-cols-4 gap-2 mt-3 hidden" id="preview"></div>
 </div>
@@ -289,6 +290,6 @@
 <script src="/assets/js/faith-in-backend.js?v=20260828-3"></script>
 <script src="/faithin-app/assets/faithin.js?v=20260828-3"></script>
 <script src="/faithin-app/assets/faithin-live.js?v=20260828-3"></script>
-<script src="/faithin-app/assets/faithin-home.js?v=20260828-3"></script>
+<script src="/faithin-app/assets/faithin-home.js?v=20260828-4"></script>
 </body>
 </html>

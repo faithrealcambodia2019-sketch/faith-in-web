@@ -19,7 +19,7 @@
     if (!items.length) return '';
     return `<div class="border-y border-line bg-raised grid gap-1 ${items.length > 1 ? 'grid-cols-2' : ''}">${items.slice(0, 4).map(item => {
       const url = esc(item.url || item.preview_url || item.local_url || '');
-      if (item.type === 'video') return `<video class="w-full max-h-[560px] object-cover bg-black" controls preload="metadata" src="${url}"></video>`;
+      if (item.type === 'video') return `<video class="fi-feed-video" controls playsinline preload="metadata" src="${url}"></video>`;
       if (item.type === 'audio') return `<div class="p-5"><audio class="w-full" controls src="${url}"></audio></div>`;
       return `<img class="w-full max-h-[620px] object-cover" src="${url}" alt="Shared media" loading="lazy" decoding="async">`;
     }).join('')}</div>`;
@@ -114,12 +114,53 @@
   $$('[data-chip]').forEach(chip => chip.addEventListener('click', () => { ta.value = `${ta.value.trim()} ${chip.textContent} `.trimStart(); ta.dispatchEvent(new Event('input')); ta.focus(); }));
   postBtn?.addEventListener('click', async () => { if (!needUser()) return; busy(postBtn, true, blessingImageFile ? 'Uploading' : 'Posting'); try { const files = blessingImageFile ? { 'post_media[]': [blessingImageFile] } : {}; await api.request('cv_create_post', { content: ta.value.trim(), type: 'blessing', visibility: 'public' }, files); ta.value = ''; clearBlessingImage(); closeModal(); toast('Your blessing is live 🕊️'); await loadPosts(); } catch (error) { toast(error.message); } finally { busy(postBtn, false, 'Post'); ta.dispatchEvent(new Event('input')); } });
 
-  const fileInput = $('#file-input'), preview = $('#preview'), dropzone = $('#dropzone'); let selectedFiles = [];
-  function showFiles(files) { selectedFiles = [...files].slice(0, 10); preview.innerHTML = ''; preview.classList.toggle('hidden', !selectedFiles.length); selectedFiles.forEach(file => { const image = document.createElement('img'); image.className = 'w-full aspect-square object-cover rounded-lg border border-line'; image.src = URL.createObjectURL(file); preview.appendChild(image); }); }
+  const fileInput = $('#file-input'), preview = $('#preview'), dropzone = $('#dropzone');
+  const mediaPickerTitle = $('#media-picker-title'), mediaPickerHelp = $('#media-picker-help'), mediaPickerIcon = $('#media-picker-icon');
+  let selectedFiles = [], mediaMode = 'image', previewUrls = [];
+  function isVideo(file) { return /^video\//i.test(file?.type || '') || /\.(mp4|m4v|mov|qt|webm|ogv)$/i.test(file?.name || ''); }
+  function clearPreviewUrls() { previewUrls.forEach(url => URL.revokeObjectURL(url)); previewUrls = []; }
+  function setMediaMode(mode) {
+    mediaMode = mode === 'video' ? 'video' : 'image';
+    if (!fileInput) return;
+    fileInput.value = '';
+    fileInput.accept = mediaMode === 'video' ? 'video/*,.mp4,.m4v,.mov,.qt,.webm,.ogv' : 'image/*';
+    fileInput.multiple = mediaMode !== 'video';
+    if (mediaPickerTitle) mediaPickerTitle.textContent = mediaMode === 'video' ? 'Select a video to share' : 'Select photos to share';
+    if (mediaPickerHelp) mediaPickerHelp.textContent = mediaMode === 'video' ? 'Portrait, square, or landscape · maximum 250MB' : 'JPG, PNG, GIF, WebP, or HEIC · up to 10 images';
+    if (mediaPickerIcon) mediaPickerIcon.className = mediaMode === 'video' ? 'fa-solid fa-video text-3xl text-rose mb-3' : 'fa-regular fa-images text-3xl text-faint mb-3';
+    showFiles([]);
+  }
+  function showFiles(files) {
+    const incoming = [...files];
+    const videoFiles = incoming.filter(isVideo);
+    const imageFiles = incoming.filter(file => !isVideo(file) && /^image\//i.test(file.type || ''));
+    if (videoFiles.length && imageFiles.length) { toast('Choose either photos or one video, not both.'); return; }
+    if (videoFiles.length > 1) { toast('Choose one video per post.'); return; }
+    const chosen = videoFiles.length ? videoFiles.slice(0, 1) : imageFiles.slice(0, 10);
+    const oversize = chosen.find(file => file.size > 250 * 1024 * 1024);
+    if (oversize) { toast(`${oversize.name} is larger than 250MB.`); return; }
+    mediaMode = videoFiles.length ? 'video' : mediaMode;
+    selectedFiles = chosen;
+    clearPreviewUrls();
+    preview.innerHTML = '';
+    preview.classList.toggle('hidden', !selectedFiles.length);
+    preview.classList.toggle('grid-cols-4', mediaMode !== 'video');
+    preview.classList.toggle('grid-cols-1', mediaMode === 'video');
+    selectedFiles.forEach(file => {
+      const url = URL.createObjectURL(file); previewUrls.push(url);
+      const element = document.createElement(isVideo(file) ? 'video' : 'img');
+      element.className = isVideo(file) ? 'fi-video-preview rounded-lg border border-line' : 'w-full aspect-square object-cover rounded-lg border border-line';
+      element.src = url;
+      if (isVideo(file)) { element.controls = true; element.playsInline = true; element.preload = 'metadata'; }
+      else element.alt = 'Selected image preview';
+      preview.appendChild(element);
+    });
+  }
+  $$('[data-media-mode]').forEach(button => button.addEventListener('click', () => setMediaMode(button.dataset.mediaMode)));
   fileInput?.addEventListener('change', () => showFiles(fileInput.files));
   ['dragover','dragleave','drop'].forEach(type => dropzone?.addEventListener(type, event => { event.preventDefault(); dropzone.classList.toggle('border-brand', type === 'dragover'); if (type === 'drop') showFiles(event.dataTransfer.files); }));
   const photoDone = $$('#modal-photo button').find(button => button.textContent.trim() === 'Done');
-  photoDone?.addEventListener('click', async () => { if (!needUser()) return; if (!selectedFiles.length) return toast('Choose at least one photo.'); busy(photoDone, true, 'Uploading'); try { await api.request('cv_create_post', { type: 'post', visibility: 'public' }, { 'post_media[]': selectedFiles }); closeModal(); toast('Photos shared'); showFiles([]); await loadPosts(); } catch (error) { toast(error.message); } finally { busy(photoDone, false, 'Done'); } });
+  photoDone?.addEventListener('click', async () => { if (!needUser()) return; if (!selectedFiles.length) return toast(mediaMode === 'video' ? 'Choose a video.' : 'Choose at least one photo.'); busy(photoDone, true, 'Uploading'); try { await api.request('cv_create_post', { type: mediaMode === 'video' ? 'video' : 'post', visibility: 'public' }, { 'post_media[]': selectedFiles }); closeModal(); toast(mediaMode === 'video' ? 'Video shared' : 'Photos shared'); showFiles([]); await loadPosts(); } catch (error) { toast(error.message); } finally { busy(photoDone, false, 'Done'); } });
 
   const prayerButton = $$('#modal-prayer button').find(button => /request prayer/i.test(button.textContent));
   prayerButton?.removeAttribute('data-toast');

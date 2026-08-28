@@ -354,3 +354,15 @@ html.dark .msg-bubble.is-mine{ color:#0b1120; }
 .msg-composer textarea::placeholder{ color: rgb(var(--faint)); }
 
 .msg-shell .msg-thread.hidden{ display:none; }
+
+/* Feed videos keep their original portrait, square, or landscape ratio. */
+.fi-feed-video,
+.fi-video-preview{
+  display:block;
+  width:100%;
+  height:auto;
+  max-height:min(76vh, 720px);
+  margin-inline:auto;
+  object-fit:contain;
+  background:#05070a;
+}
