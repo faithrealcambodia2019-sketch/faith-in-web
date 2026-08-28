@@ -84,7 +84,7 @@
 <p class="text-[13px] text-muted mt-1">Select the language you use on Faith In.</p>
 <p class="text-[13px] font-semibold mt-1">English</p>
 </div>
-<button class="btn btn-ghost !text-brand shrink-0" data-toast="Language picker">Change</button>
+<button class="btn btn-ghost !text-brand shrink-0">Change</button>
 </div>
 <div class="settings-row">
 <div class="min-w-0">
@@ -92,7 +92,7 @@
 <p class="text-[13px] text-muted mt-1">Select the languages you'd like to see content in.</p>
 <p class="text-[13px] font-semibold mt-1">English · ភាសាខ្មែរ</p>
 </div>
-<button class="btn btn-ghost !text-brand shrink-0" data-toast="Content language picker">Change</button>
+<button class="btn btn-ghost !text-brand shrink-0">Change</button>
 </div>
 <div class="settings-row">
 <div class="min-w-0">
@@ -122,24 +122,6 @@
 </label>
 </div>
 </section>
-<!-- syncing -->
-<section class="card overflow-hidden">
-<h3 class="px-5 py-3.5 text-[15px] font-bold bg-raised border-b border-line">Syncing options</h3>
-<div class="settings-row">
-<div class="min-w-0">
-<h4 class="text-[14.5px] font-semibold">Sync calendar</h4>
-<p class="text-[13px] text-muted mt-1">Connect Google or Outlook to arrange meetings and services.</p>
-</div>
-<button class="btn btn-outline shrink-0" data-toast="Calendar sync started">Sync</button>
-</div>
-<div class="settings-row">
-<div class="min-w-0">
-<h4 class="text-[14.5px] font-semibold">Sync contacts</h4>
-<p class="text-[13px] text-muted mt-1">Find people you already know from your address book.</p>
-</div>
-<button class="btn btn-outline shrink-0" data-toast="Contact sync started">Sync</button>
-</div>
-</section>
 <!-- account management -->
 <section class="card overflow-hidden">
 <h3 class="px-5 py-3.5 text-[15px] font-bold bg-raised border-b border-line">Account management</h3>
@@ -163,9 +145,9 @@
 </footer>
 </div>
 </main>
-<script src="/faithin-app/assets/faithin-runtime.js?v=20260828-1"></script>
-<script src="/assets/js/faith-in-backend.js?v=20260828-1"></script>
-<script src="/faithin-app/assets/faithin.js?v=20260828-1"></script>
+<script src="/faithin-app/assets/faithin-runtime.js?v=20260828-3"></script>
+<script src="/assets/js/faith-in-backend.js?v=20260828-3"></script>
+<script src="/faithin-app/assets/faithin.js?v=20260828-3"></script>
 <script>
   /* The theme picker drives the real theme via the shared FI.setTheme(). */
   const picker = document.getElementById('theme-picker');
@@ -182,6 +164,6 @@
   document.addEventListener('fi:theme', e => paintPicker(e.detail.mode));
   paintPicker(FI.getTheme());
 </script>
-<script src="/faithin-app/assets/faithin-live.js?v=20260828-1"></script>
+<script src="/faithin-app/assets/faithin-live.js?v=20260828-3"></script>
 </body>
 </html>

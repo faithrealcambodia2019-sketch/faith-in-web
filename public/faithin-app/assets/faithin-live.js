@@ -56,6 +56,8 @@
 
   function applySession(user) {
     session = user && user.logged_in ? user : null;
+    if (session?.settings?.theme) setTheme(session.settings.theme);
+    document.documentElement.style.fontSize = session?.settings?.larger_text ? '112.5%' : '';
     const name = session?.name || 'Sign in';
     const role = session?.role || (session ? 'Faith In member' : 'Join the community');
     const menu = $('[data-menu-root]');
@@ -114,27 +116,49 @@
   async function loadJobs() {
     const heading = $$('#main h2').find(node => /recommended for you/i.test(node.textContent));
     const holder = heading?.closest('section')?.querySelector('.divide-y'); if (!holder) return;
-    const render = async term => {
+    const form = heading.closest('#main').querySelector('form');
+    const inputs = $$('input', form);
+    const chipGroup = $('[data-chip-group]', form?.parentElement);
+    let jobs = [], savedIds = null;
+    const render = () => {
+      const query = String(inputs[0]?.value || '').trim().toLowerCase();
+      const locationQuery = String(inputs[1]?.value || '').trim().toLowerCase();
+      const filter = $('.chip.is-on', chipGroup)?.textContent.trim().toLowerCase() || 'all roles';
+      let items = jobs.filter(job => {
+        const textValues = [job.title, job.organization, job.location, job.description, job.job_type].map(value => String(value || '').toLowerCase());
+        const matchesQuery = !query || textValues.some(value => value.includes(query));
+        const matchesLocation = !locationQuery || String(job.location || '').toLowerCase().includes(locationQuery);
+        const matchesChip = filter === 'all roles'
+          || (filter === 'remote' && /remote/i.test(job.location || ''))
+          || (filter === 'full-time' && /full.?time/i.test(job.job_type || ''))
+          || (filter === 'pastoral' && /pastor/i.test(`${job.title || ''} ${job.description || ''}`))
+          || (filter === 'non-profit' && /non.?profit|ngo|charity/i.test(`${job.organization || ''} ${job.description || ''}`));
+        return matchesQuery && matchesLocation && matchesChip && (!savedIds || savedIds.has(job.id));
+      });
+      holder.innerHTML = items.length ? items.map(job => `<article class="p-4 flex gap-3.5 row-hover relative" data-job-id="${esc(job.id)}"><span class="avatar avatar-sq w-14 h-14 text-[12px] shrink-0">${esc(api.initials(job.organization))}</span><div class="min-w-0 flex-1 pr-10"><a class="text-[15.5px] font-semibold text-brand" href="${esc(job.apply_url || (job.contact_email ? `mailto:${job.contact_email}` : '#'))}">${esc(job.title)}</a><p class="text-[14px] font-medium mt-0.5">${esc(job.organization)}</p><p class="text-[13px] text-muted mt-0.5">${esc(job.location || 'Location flexible')} · ${esc(job.job_type || 'Ministry role')}</p><p class="text-[13px] text-muted mt-2 line-clamp-2">${esc(job.description || '')}</p><p class="text-[12px] text-faint mt-2">${esc(job.time || '')}</p></div>${job.can_delete ? '<button class="icon-btn absolute top-3 right-3" data-job-delete aria-label="Delete job"><i class="fa-regular fa-trash-can"></i></button>' : '<button class="icon-btn absolute top-3 right-3" data-job-save aria-label="Save job"><i class="fa-regular fa-bookmark"></i></button>'}</article>`).join('') : emptyState(savedIds ? 'You have not saved any matching roles yet.' : 'No matching ministry roles yet.');
+    };
+    const refresh = async () => {
       holder.innerHTML = emptyState('Loading ministry opportunities…');
       try {
-        const result = await api.request('cv_get_jobs');
-        const query = String(term || '').toLowerCase();
-        let items = (result.items || []).filter(job => !query || [job.title, job.organization, job.location, job.description].some(value => String(value || '').toLowerCase().includes(query)));
-        if (new URLSearchParams(location.search).get('view') === 'saved') {
-          const saved = await api.request('cv_get_bookmarks').catch(() => ({ items: [] }));
-          const ids = new Set((saved.items || []).filter(row => row.object_type === 'job').map(row => row.object_id));
-          items = items.filter(job => ids.has(job.id));
-        }
-        holder.innerHTML = items.length ? items.map(job => `<article class="p-4 flex gap-3.5 row-hover relative" data-job-id="${esc(job.id)}"><span class="avatar avatar-sq w-14 h-14 text-[12px] shrink-0">${esc(api.initials(job.organization))}</span><div class="min-w-0 flex-1 pr-10"><a class="text-[15.5px] font-semibold text-brand" href="${esc(job.apply_url || (job.contact_email ? `mailto:${job.contact_email}` : '#'))}">${esc(job.title)}</a><p class="text-[14px] font-medium mt-0.5">${esc(job.organization)}</p><p class="text-[13px] text-muted mt-0.5">${esc(job.location || 'Location flexible')} · ${esc(job.job_type || 'Ministry role')}</p><p class="text-[13px] text-muted mt-2 line-clamp-2">${esc(job.description || '')}</p><p class="text-[12px] text-faint mt-2">${esc(job.time || '')}</p></div>${job.can_delete ? '<button class="icon-btn absolute top-3 right-3" data-job-delete><i class="fa-regular fa-trash-can"></i></button>' : '<button class="icon-btn absolute top-3 right-3" data-job-save><i class="fa-regular fa-bookmark"></i></button>'}</article>`).join('') : emptyState(new URLSearchParams(location.search).get('view') === 'saved' ? 'You have not saved any roles yet.' : 'No matching ministry roles yet.');
+        const [result, bookmarks] = await Promise.all([
+          api.request('cv_get_jobs'),
+          new URLSearchParams(location.search).get('view') === 'saved' ? api.request('cv_get_bookmarks').catch(() => ({ items: [] })) : Promise.resolve(null)
+        ]);
+        jobs = result.items || [];
+        savedIds = bookmarks ? new Set((bookmarks.items || []).filter(row => row.object_type === 'job').map(row => row.object_id)) : null;
+        render();
       } catch (error) { holder.innerHTML = emptyState(error.message); }
     };
-    const form = heading.closest('#main').querySelector('form');
-    form?.addEventListener('submit', event => { event.preventDefault(); render($('input', form).value); });
+    form?.addEventListener('submit', event => { event.preventDefault(); render(); });
+    chipGroup?.addEventListener('click', event => { const chip = event.target.closest('.chip'); if (!chip) return; $$('.chip', chipGroup).forEach(item => item.classList.toggle('is-on', item === chip)); render(); });
+    document.addEventListener('fi:search', event => { if (inputs[0]) inputs[0].value = event.detail.query; render(); });
+    const showAll = heading.closest('section')?.querySelector(':scope > button');
+    if (showAll) showAll.addEventListener('click', () => { inputs.forEach(input => { input.value = ''; }); const first = $('.chip', chipGroup); if (first) first.click(); render(); });
     const postButton = $$('#main button').find(button => /post a job|start hiring/i.test(button.textContent));
-    if (postButton) { postButton.removeAttribute('data-toast'); postButton.addEventListener('click', () => { if (!requireUser()) return; openJobEditor(render); }); }
+    if (postButton) { postButton.removeAttribute('data-toast'); postButton.addEventListener('click', () => { if (!requireUser()) return; openJobEditor(refresh); }); }
     holder.addEventListener('click', async event => { const row = event.target.closest('[data-job-id]'); if (!row) return; if (event.target.closest('[data-job-delete]')) { await api.request('cv_delete_job', { job_id: row.dataset.jobId }); row.remove(); toast('Job removed'); } if (event.target.closest('[data-job-save]')) { await api.request('cv_toggle_bookmark', { object_id: row.dataset.jobId, object_type: 'job' }); toast('Job saved'); } });
     $$('#main aside section').filter(section => /top organizations hiring/i.test(section.textContent)).forEach(section => section.remove());
-    render();
+    refresh();
   }
 
   function openJobEditor(refresh) {
@@ -146,27 +170,39 @@
 
   async function loadLibrary() {
     const shelf = $('#shelf'); if (!shelf) return;
-    try {
-      const result = await api.request('cv_get_resources');
-      let items = result.items || [];
-      const view = new URLSearchParams(location.search).get('view');
-      const format = new URLSearchParams(location.search).get('format');
-      const category = new URLSearchParams(location.search).get('category');
+    let resources = [], savedIds = new Set(), searchQuery = '';
+    const view = new URLSearchParams(location.search).get('view');
+    const format = new URLSearchParams(location.search).get('format');
+    const category = new URLSearchParams(location.search).get('category');
+    const render = () => {
+      let items = resources.slice();
       if (format) items = items.filter(resource => String(resource.format || '').toLowerCase() === format.toLowerCase());
       if (category) {
         const wanted = category.replace(/and/gi, '&').replace(/[^a-z]/gi, '').toLowerCase();
         items = items.filter(resource => String(resource.category || '').replace(/[^a-z]/gi, '').toLowerCase() === wanted);
       }
-      if (view === 'saved') {
-        const saved = await api.request('cv_get_bookmarks').catch(() => ({ items: [] }));
-        const ids = new Set((saved.items || []).filter(row => row.object_type === 'resource').map(row => row.object_id));
-        items = items.filter(resource => ids.has(resource.id));
-      }
-      shelf.innerHTML = items.length ? items.map(resource => `<article class="w-[154px] shrink-0 snap-start group" data-resource-id="${esc(resource.id)}">${resource.open_url ? `<a href="${esc(resource.open_url)}" target="_blank" rel="noopener" class="block">` : '<button type="button" class="block w-full text-left" data-resource-download>'}<span class="book-cover block h-[196px] overflow-hidden bg-[linear-gradient(150deg,#1d4ed8,#172554)]">${resource.thumbnail_url ? `<img class="w-full h-full object-cover" src="${esc(resource.thumbnail_url)}" alt="">` : `<span class="h-full p-3 flex items-center justify-center text-center text-white font-serif font-semibold">${esc(resource.title)}</span>`}</span><span class="block text-[13.5px] font-semibold mt-2.5 leading-tight">${esc(resource.title)}</span><span class="block text-[12px] text-muted mt-0.5">${esc(resource.author || resource.category)}</span>${resource.open_url ? '</a>' : '</button>'}<button class="text-[12px] font-semibold text-brand mt-2" data-resource-download><i class="fa-solid fa-download mr-1"></i>${Number(resource.download_count || 0)} downloads</button></article>`).join('') : emptyState(view || format || category ? 'Nothing in this shelf yet.' : 'No community resources have been published yet.');
+      if (view === 'saved') items = items.filter(resource => savedIds.has(resource.id));
+      if (searchQuery) items = items.filter(resource => [resource.title, resource.author, resource.category, resource.description].some(value => String(value || '').toLowerCase().includes(searchQuery)));
+      shelf.innerHTML = items.length ? items.map(resource => `<article class="w-[154px] shrink-0 snap-start group relative" data-resource-id="${esc(resource.id)}">${resource.open_url ? `<a href="${esc(resource.open_url)}" target="_blank" rel="noopener" class="block">` : '<button type="button" class="block w-full text-left" data-resource-download>'}<span class="book-cover block h-[196px] overflow-hidden bg-[linear-gradient(150deg,#1d4ed8,#172554)]">${resource.thumbnail_url ? `<img class="w-full h-full object-cover" src="${esc(resource.thumbnail_url)}" alt="" loading="lazy" decoding="async">` : `<span class="h-full p-3 flex items-center justify-center text-center text-white font-serif font-semibold">${esc(resource.title)}</span>`}</span><span class="block text-[13.5px] font-semibold mt-2.5 leading-tight">${esc(resource.title)}</span><span class="block text-[12px] text-muted mt-0.5">${esc(resource.author || resource.category)}</span>${resource.open_url ? '</a>' : '</button>'}<div class="flex items-center justify-between gap-1 mt-2"><button class="text-[12px] font-semibold text-brand" data-resource-download><i class="fa-solid fa-download mr-1"></i>${Number(resource.download_count || 0)}</button><span class="flex">${resource.can_delete ? '<button class="icon-btn w-8 h-8 text-rose" data-resource-delete aria-label="Delete resource"><i class="fa-regular fa-trash-can"></i></button>' : ''}<button class="icon-btn w-8 h-8 ${savedIds.has(resource.id) ? '!text-brand' : ''}" data-resource-save aria-label="${savedIds.has(resource.id) ? 'Remove saved resource' : 'Save resource'}"><i class="fa-${savedIds.has(resource.id) ? 'solid' : 'regular'} fa-bookmark"></i></button></span></div></article>`).join('') : emptyState(view || format || category || searchQuery ? 'Nothing in this shelf yet.' : 'No community resources have been published yet.');
+    };
+    try {
+      const [result, saved] = await Promise.all([api.request('cv_get_resources'), api.request('cv_get_bookmarks').catch(() => ({ items: [] }))]);
+      resources = result.items || [];
+      savedIds = new Set((saved.items || []).filter(row => row.object_type === 'resource').map(row => row.object_id));
+      render();
     } catch (error) { shelf.innerHTML = emptyState(error.message); }
     const section = shelf.closest('section'), header = section?.firstElementChild;
     if (header && !header.querySelector('[data-publish-resource]')) { const button = document.createElement('button'); button.className = 'btn btn-primary !py-2'; button.dataset.publishResource = ''; button.innerHTML = '<i class="fa-solid fa-plus"></i>Publish resource'; header.appendChild(button); button.onclick = () => { if (requireUser()) openResourceEditor(loadLibrary); }; }
-    shelf.addEventListener('click', async event => { const button = event.target.closest('[data-resource-download]'); if (!button) return; event.preventDefault(); const row = button.closest('[data-resource-id]'); const result = await api.request('cv_download_resource', { resource_id: row.dataset.resourceId }); if (result.url) window.open(result.url, '_blank', 'noopener'); });
+    shelf.addEventListener('click', async event => {
+      const row = event.target.closest('[data-resource-id]'); if (!row) return;
+      const remove = event.target.closest('[data-resource-delete]');
+      if (remove) { event.preventDefault(); if (!confirm('Delete this resource?')) return; await api.request('cv_delete_resource', { resource_id: row.dataset.resourceId }); resources = resources.filter(resource => resource.id !== row.dataset.resourceId); render(); toast('Resource deleted'); return; }
+      const save = event.target.closest('[data-resource-save]');
+      if (save) { event.preventDefault(); const id = row.dataset.resourceId; await api.request('cv_toggle_bookmark', { object_id: id, object_type: 'resource' }); if (savedIds.has(id)) savedIds.delete(id); else savedIds.add(id); toast(savedIds.has(id) ? 'Resource saved' : 'Resource removed'); render(); return; }
+      const button = event.target.closest('[data-resource-download]'); if (!button) return; event.preventDefault(); const result = await api.request('cv_download_resource', { resource_id: row.dataset.resourceId }); if (result.url) window.open(result.url, '_blank', 'noopener');
+    });
+    document.addEventListener('fi:search', event => { searchQuery = event.detail.query.toLowerCase(); render(); });
+    $('[aria-label="Share verse"]')?.addEventListener('click', async () => { const textValue = `${$('#votd')?.innerText || ''} — ${$('[data-votd-ref]')?.textContent || ''}`.trim(); try { if (navigator.share) await navigator.share({ title: 'Verse of the Day', text: textValue, url: location.origin + '/bible-study' }); else { await navigator.clipboard.writeText(textValue); toast('Verse copied'); } } catch (_) {} });
     $$('#main section').filter(section => /jump back in|trending sermons|authors to follow/i.test(section.querySelector('h2,h3')?.textContent || '')).forEach(section => section.remove());
   }
 
@@ -180,15 +216,20 @@
   async function loadNetwork() {
     const heading = $$('#main h2').find(node => /people you may know/i.test(node.textContent)); const section = heading?.closest('section'); if (!section) return;
     const grid = $('.grid', section); if (!grid) return;
+    let users = [], query = '';
+    const render = () => {
+      const items = users.filter(user => !query || [user.name, user.role, user.bio, user.church, user.location, user.ministry].some(value => String(value || '').toLowerCase().includes(query)));
+      grid.innerHTML = items.length ? items.map(user => `<article class="card overflow-hidden flex flex-col relative" data-user-uid="${esc(user.uid)}"><div class="h-16 bg-[linear-gradient(110deg,#60a5fa,#4f46e5)]"></div><div class="px-3 pb-4 -mt-8 flex flex-col items-center text-center flex-1">${avatarMarkup(user, 'avatar w-16 h-16 text-[17px] ring-4 ring-surface object-cover')}<a href="/profile?uid=${encodeURIComponent(user.uid)}" class="mt-2 text-[14.5px] font-semibold">${esc(user.name)}</a><p class="text-[12.5px] text-muted mt-1 line-clamp-2">${esc(user.role || user.bio || user.church || 'Faith In member')}</p><p class="text-[11.5px] text-faint mt-2">${esc(user.location || user.ministry || '')}</p><button class="btn btn-outline w-full mt-3 !py-2" data-connect>${user.is_following ? 'Following' : '<i class="fa-solid fa-user-plus text-[11px]"></i>Connect'}</button><button class="btn btn-ghost w-full mt-1 !py-2" data-message>Message</button></div></article>`).join('') : emptyState(query ? 'No members match your search.' : 'No new member suggestions right now.');
+    };
     try {
-      const result = await api.request('cv_get_suggested_users'), items = result.items || [];
-      grid.innerHTML = items.length ? items.map(user => `<article class="card overflow-hidden flex flex-col relative" data-user-uid="${esc(user.uid)}"><div class="h-16 bg-[linear-gradient(110deg,#60a5fa,#4f46e5)]"></div><div class="px-3 pb-4 -mt-8 flex flex-col items-center text-center flex-1">${avatarMarkup(user, 'avatar w-16 h-16 text-[17px] ring-4 ring-surface object-cover')}<a href="/profile?uid=${encodeURIComponent(user.uid)}" class="mt-2 text-[14.5px] font-semibold">${esc(user.name)}</a><p class="text-[12.5px] text-muted mt-1 line-clamp-2">${esc(user.role || user.bio || user.church || 'Faith In member')}</p><p class="text-[11.5px] text-faint mt-2">${esc(user.location || user.ministry || '')}</p><button class="btn btn-outline w-full mt-3 !py-2" data-connect>${user.is_following ? 'Following' : '<i class="fa-solid fa-user-plus text-[11px]"></i>Connect'}</button><button class="btn btn-ghost w-full mt-1 !py-2" data-message>Message</button></div></article>`).join('') : emptyState('No new member suggestions right now.');
+      const result = await api.request('cv_get_suggested_users'); users = result.items || []; render();
     } catch (error) { grid.innerHTML = emptyState(error.message); }
     grid.addEventListener('click', async event => { const card = event.target.closest('[data-user-uid]'); if (!card) return; if (event.target.closest('[data-connect]')) { if (!requireUser()) return; const button = event.target.closest('[data-connect]'); await api.request(/following/i.test(button.textContent) ? 'cv_social_unfollow_user' : 'cv_social_follow_user', { target_uid: card.dataset.userUid }); button.textContent = /following/i.test(button.textContent) ? 'Connect' : 'Following'; } if (event.target.closest('[data-message]')) openMessenger(card.dataset.userUid); });
     Promise.all([api.request('cv_social_get_followers'), api.request('cv_social_get_following')]).then(results => { const counts = $$('.count', $('#main > aside')); if (counts[0]) counts[0].textContent = results[0].items?.length || 0; if (counts[1]) counts[1].textContent = results[1].items?.length || 0; counts.slice(2).forEach(node => node.textContent = '0'); }).catch(() => {});
     $('#main > aside section.text-center')?.remove();
     const requested = new URLSearchParams(location.search).get('message'); if (requested) openMessenger(requested);
     const headerMessage = $('a[aria-label="Messages"]'); if (headerMessage) headerMessage.href = '/network?message=inbox';
+    document.addEventListener('fi:search', event => { query = event.detail.query.toLowerCase(); render(); });
     $$('#main section').filter(item => /invitations|groups you might/i.test(item.querySelector('h2')?.textContent || '')).forEach(item => item.remove());
   }
 
@@ -206,40 +247,102 @@
 
   async function loadNotifications() {
     const center = $('#main > section.card'); const holder = center?.querySelector('.divide-y'); if (!holder) return;
+    let allItems = [], shown = 12, active = new URLSearchParams(location.search).get('filter') || 'all', searchQuery = '';
+    const groups = { all: null, jobs: ['job'], post: ['reaction', 'comment', 'new_post'], 'my posts': ['reaction', 'comment', 'new_post'], mention: ['reply', 'message'], mentions: ['reply', 'message'], follow: ['follow'], connections: ['follow'] };
+    const labels = { reaction: 'reacted to your post', comment: 'commented on your post', follow: 'followed you', message: 'sent you a message', reply: 'replied to you', new_post: 'shared a new post', job: 'shared a ministry opportunity' };
+    const earlier = center.querySelector(':scope > button');
+    const render = () => {
+      const types = groups[active] || null;
+      const filtered = allItems.filter(item => (!types || types.includes(item.type)) && (!searchQuery || `${item.actor?.name || ''} ${labels[item.type] || ''}`.toLowerCase().includes(searchQuery)));
+      const items = filtered.slice(0, shown);
+      holder.innerHTML = items.length ? items.map(item => { const actor = item.actor || {}; return `<article class="${item.is_read ? '' : 'notif-unread'} p-4 flex gap-3.5 relative" data-notification-id="${esc(item.id)}" data-notification-type="${esc(item.type || '')}">${avatarMarkup(actor, 'avatar w-12 h-12 text-[13px] object-cover')}<div class="min-w-0 flex-1"><p class="text-[14px]"><strong>${esc(actor.name || 'A member')}</strong> ${esc(labels[item.type] || 'sent an update')}</p><p class="text-[12px] ${item.is_read ? 'text-muted' : 'text-brand'} mt-1.5">${esc(item.created_at ? new Date(item.created_at).toLocaleString() : '')}</p></div>${item.is_read ? '' : '<span class="w-2.5 h-2.5 rounded-full bg-brand"></span>'}</article>`; }).join('') : emptyState('You are all caught up.');
+      if (earlier) { earlier.classList.toggle('hidden', shown >= filtered.length); earlier.innerHTML = 'Show earlier notifications <i class="fa-solid fa-arrow-down text-[11px] ml-1"></i>'; }
+    };
     try {
       const result = await api.request('cv_social_get_notifications');
-      const wanted = new URLSearchParams(location.search).get('filter');
-      const groups = { post: ['reaction', 'comment', 'new_post'], mention: ['reply', 'message'], follow: ['follow'] };
-      const items = wanted && groups[wanted]
-        ? (result.items || []).filter(item => groups[wanted].includes(item.type))
-        : (result.items || []);
-      holder.innerHTML = items.length ? items.map(item => { const actor = item.actor || {}; const labels = { reaction: 'reacted to your post', comment: 'commented on your post', follow: 'followed you', message: 'sent you a message', reply: 'replied to you', new_post: 'shared a new post' }; return `<article class="${item.is_read ? '' : 'notif-unread'} p-4 flex gap-3.5 relative" data-notification-id="${esc(item.id)}">${avatarMarkup(actor, 'avatar w-12 h-12 text-[13px] object-cover')}<div class="min-w-0 flex-1"><p class="text-[14px]"><strong>${esc(actor.name || 'A member')}</strong> ${esc(labels[item.type] || 'sent an update')}</p><p class="text-[12px] ${item.is_read ? 'text-muted' : 'text-brand'} mt-1.5">${esc(item.created_at ? new Date(item.created_at).toLocaleString() : '')}</p></div>${item.is_read ? '' : '<span class="w-2.5 h-2.5 rounded-full bg-brand"></span>'}</article>`; }).join('') : emptyState('You are all caught up.');
-      holder.onclick = async event => { const row = event.target.closest('[data-notification-id]'); if (!row) return; await api.request('cv_social_mark_notifications_read', { id: row.dataset.notificationId }); row.classList.remove('notif-unread'); row.querySelector('.bg-brand')?.remove(); };
-      const early = center.querySelector(':scope > button'); if (early) { early.textContent = 'Mark all as read'; early.onclick = async () => { await api.request('cv_social_mark_notifications_read', {}); toast('Notifications marked as read'); loadNotifications(); }; }
+      allItems = result.items || []; render();
+      holder.onclick = async event => { const row = event.target.closest('[data-notification-id]'); if (!row) return; await api.request('cv_social_mark_notifications_read', { id: row.dataset.notificationId }); const item = allItems.find(entry => entry.id === row.dataset.notificationId); if (item) item.is_read = true; render(); };
+      if (earlier) earlier.onclick = () => { shown += 12; render(); };
+      const chips = $('[data-chip-group]', center);
+      const activeLabel = { post: 'My posts', mention: 'Mentions', follow: 'Connections' }[active] || 'All';
+      $$('.chip', chips).forEach(chip => chip.classList.toggle('is-on', chip.textContent.trim() === activeLabel));
+      chips?.addEventListener('click', event => { const chip = event.target.closest('.chip'); if (!chip) return; active = chip.textContent.trim().toLowerCase(); shown = 12; render(); });
+      if (chips && !chips.querySelector('[data-mark-read]')) { const mark = document.createElement('button'); mark.className = 'ml-auto text-[12px] font-semibold text-brand whitespace-nowrap'; mark.dataset.markRead = ''; mark.textContent = 'Mark all read'; mark.onclick = async () => { await api.request('cv_social_mark_notifications_read', {}); allItems.forEach(item => { item.is_read = true; }); render(); toast('Notifications marked as read'); }; chips.appendChild(mark); }
+      document.addEventListener('fi:search', event => { searchQuery = event.detail.query.toLowerCase(); shown = 12; render(); });
     } catch (error) { holder.innerHTML = emptyState(error.message); }
+  }
+
+  function openProfileEditor(user, focusField) {
+    if (!requireUser()) return;
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 z-[240] bg-[#0b1120]/70 p-4 flex items-center justify-center overflow-y-auto';
+    modal.innerHTML = `<form class="card w-full max-w-2xl p-5 sm:p-6 space-y-4 my-auto"><div class="flex items-start justify-between gap-3"><div><h2 class="text-[20px] font-bold">Edit your Faith In profile</h2><p class="text-[13px] text-muted mt-1">These details are saved to Firebase and shown across Faith In.</p></div><button type="button" class="icon-btn" data-profile-close aria-label="Close"><i class="fa-solid fa-xmark"></i></button></div><div class="grid sm:grid-cols-2 gap-3"><label class="text-[13px] font-semibold sm:col-span-2">Display name<input class="field mt-1" name="display_name" value="${esc(user.name || '')}" required></label><label class="text-[13px] font-semibold">Role<input class="field mt-1" name="role" value="${esc(user.role || '')}"></label><label class="text-[13px] font-semibold">Location<input class="field mt-1" name="location" value="${esc(user.location || '')}"></label><label class="text-[13px] font-semibold">Industry<input class="field mt-1" name="industry" value="${esc(user.industry || '')}"></label><label class="text-[13px] font-semibold">Church<input class="field mt-1" name="church" value="${esc(user.church || '')}"></label><label class="text-[13px] font-semibold sm:col-span-2">Ministry<input class="field mt-1" name="ministry" value="${esc(user.ministry || '')}"></label><label class="text-[13px] font-semibold sm:col-span-2">About<textarea class="field mt-1 resize-y" name="bio" rows="4">${esc(user.bio || '')}</textarea></label><label class="text-[13px] font-semibold">Profile photo<input class="field mt-1" name="profile_image" type="file" accept="image/*"></label><label class="text-[13px] font-semibold">Cover photo<input class="field mt-1" name="profile_cover" type="file" accept="image/*"></label></div><div class="flex justify-end gap-2"><button type="button" class="btn btn-ghost" data-profile-close>Cancel</button><button class="btn btn-primary" data-profile-save>Save profile</button></div></form>`;
+    document.body.appendChild(modal);
+    $$('[data-profile-close]', modal).forEach(button => { button.onclick = () => modal.remove(); });
+    const form = $('form', modal);
+    if (focusField) form.elements[focusField]?.focus();
+    form.onsubmit = async event => {
+      event.preventDefault(); const save = $('[data-profile-save]', modal); save.disabled = true; save.textContent = 'Saving…';
+      const data = Object.fromEntries(new FormData(form));
+      const files = { profile_image: form.profile_image.files[0] ? [form.profile_image.files[0]] : [], profile_cover: form.profile_cover.files[0] ? [form.profile_cover.files[0]] : [] };
+      delete data.profile_image; delete data.profile_cover;
+      try { const updated = await api.request('cv_update_profile', data, files); applySession(updated.user || updated); modal.remove(); toast('Profile saved'); setTimeout(() => location.reload(), 350); }
+      catch (error) { toast(error.message); save.disabled = false; save.textContent = 'Save profile'; }
+    };
   }
 
   function loadProfile(user) {
     if (!user) return;
     const hero = $$('#main section').find(section => section.querySelector('h1'));
-    if (hero) { const h1 = $('h1', hero); h1.textContent = user.name; const details = $$('p', hero); if (details[0]) details[0].textContent = [user.role, user.ministry, user.church].filter(Boolean).join(' · ') || 'Faith In member'; if (details[1]) details[1].firstChild.textContent = `${user.location || ''} `; const avatar = $('.avatar', hero); if (avatar) { if (user.avatar_url) { const image = document.createElement('img'); image.className = avatar.className + ' object-cover'; image.src = user.avatar_url; image.alt = user.name; avatar.replaceWith(image); } else avatar.textContent = api.initials(user.name); } }
+    if (hero) { const h1 = $('h1', hero); h1.textContent = user.name; const details = $$('p', hero); if (details[0]) details[0].textContent = [user.role, user.ministry, user.church].filter(Boolean).join(' · ') || 'Faith In member'; if (details[1]) details[1].firstChild.textContent = `${user.location || ''} `; const avatar = $('.avatar', hero); if (avatar) { if (user.avatar_url) { const image = document.createElement('img'); image.className = avatar.className + ' object-cover'; image.src = user.avatar_url; image.alt = user.name; avatar.replaceWith(image); } else avatar.textContent = api.initials(user.name); } const cover = $('.media-plate', hero); if (cover && user.cover_url) { cover.style.backgroundImage = `url("${String(user.cover_url).replace(/["\\]/g, '')}")`; cover.style.backgroundSize = 'cover'; cover.style.backgroundPosition = 'center'; const label = $('span', cover); if (label) label.remove(); } }
     const about = $$('#main h2').find(node => node.textContent.trim() === 'About')?.closest('section'); if (about) { const paragraphs = $$('div.space-y-3 p', about); if (paragraphs[0]) paragraphs[0].textContent = user.bio || 'This member has not added a biography yet.'; paragraphs.slice(1).forEach(node => node.remove()); }
     const activity = $$('#main h2').find(node => node.textContent.trim() === 'Activity')?.closest('section');
-    if (activity) api.request('cv_get_posts').then(result => { const mine = (result.items || []).filter(post => (post.author || {}).uid === user.uid).slice(0, 6); const holder = $('.space-y-1', activity); if (holder) holder.innerHTML = mine.length ? mine.map(post => `<a href="/home?post=${encodeURIComponent(post.id)}" class="block p-3 -mx-2 rounded-xl row-hover border-b border-line"><span class="block text-[11.5px] text-muted">${esc(user.name)} posted · ${esc(post.time || '')}</span><span class="block text-[14px] mt-1 line-clamp-2">${esc(post.content || post.article_title || 'Shared media')}</span><span class="block text-[12px] text-muted mt-2">${Number(post.reaction_count || 0)} reactions · ${Number(post.comment_count || 0)} comments</span></a>`).join('') : emptyState('No activity yet.'); }).catch(() => {});
+    if (activity) api.request('cv_get_posts').then(result => {
+      const mine = (result.items || []).filter(post => (post.author || {}).uid === user.uid);
+      const holder = $('.space-y-1', activity);
+      const renderActivity = label => {
+        const wanted = String(label || 'Posts').toLowerCase();
+        const filtered = mine.filter(post => wanted === 'posts' || (wanted === 'videos' && (post.media_items || []).some(item => item.type === 'video')) || (wanted === 'articles' && String(post.type).toLowerCase() === 'article'));
+        if (holder) holder.innerHTML = wanted === 'comments' ? emptyState('Your comment history is shown with each post in Home.') : (filtered.slice(0, 12).length ? filtered.slice(0, 12).map(post => `<a href="/home?post=${encodeURIComponent(post.id)}" class="block p-3 -mx-2 rounded-xl row-hover border-b border-line"><span class="block text-[11.5px] text-muted">${esc(user.name)} posted · ${esc(post.time || '')}</span><span class="block text-[14px] mt-1 line-clamp-2">${esc(post.content || post.article_title || 'Shared media')}</span><span class="block text-[12px] text-muted mt-2">${Number(post.reaction_count || 0)} reactions · ${Number(post.comment_count || 0)} comments</span></a>`).join('') : emptyState(`No ${wanted} yet.`));
+      };
+      renderActivity('Posts');
+      $('[data-chip-group]', activity)?.addEventListener('click', event => { const chip = event.target.closest('.chip'); if (chip) renderActivity(chip.textContent.trim()); });
+    }).catch(() => {});
     $$('#main section').filter(item => /ministry experience|spiritual gifts|people also viewed/i.test(item.querySelector('h2')?.textContent || '')).forEach(item => item.remove());
     const services = $$('#main h2').find(node => /providing ministry services/i.test(node.textContent))?.closest('div.rounded-xl'); if (services) { if (user.ministry || user.role) { const line = $('p', services); if (line) line.textContent = [user.role, user.ministry, user.church].filter(Boolean).join(' · '); } else services.remove(); }
     Promise.all([api.request('cv_social_get_followers'), api.request('cv_social_get_following')]).then(results => { const connection = $$('a', hero).find(link => /connections/i.test(link.textContent)); if (connection) connection.textContent = `${results[1].items?.length || 0} following`; const follower = $$('a', activity).find(link => /followers/i.test(link.textContent)); if (follower) follower.textContent = `${results[0].items?.length || 0} followers`; }).catch(() => {});
+    $$('[aria-label="Edit profile"],[aria-label="Edit services"]', hero || document).forEach(button => { button.onclick = () => openProfileEditor(user, button.getAttribute('aria-label') === 'Edit services' ? 'ministry' : 'display_name'); });
+    $('[aria-label="Edit cover photo"]', hero || document)?.addEventListener('click', () => openProfileEditor(user, 'profile_cover'));
+    $('[aria-label="Edit about"]')?.addEventListener('click', () => openProfileEditor(user, 'bio'));
+    const openTo = $$('#main button').find(button => /^open to$/i.test(button.textContent.trim())); if (openTo) { openTo.removeAttribute('data-toast'); openTo.onclick = () => openProfileEditor(user, 'role'); }
+    const addSection = $$('#main button').find(button => /add profile section/i.test(button.textContent)); if (addSection) { addSection.removeAttribute('data-toast'); addSection.onclick = () => openProfileEditor(user, 'ministry'); }
+    const more = $$('#main button').find(button => /^more$/i.test(button.textContent.trim())); if (more) more.onclick = async () => { try { await navigator.clipboard.writeText(location.href); toast('Profile link copied'); } catch (_) { toast('Profile link: ' + location.href); } };
+    const detailsButton = $$('#main button').find(button => /show details/i.test(button.textContent)); if (detailsButton) detailsButton.onclick = () => { const line = detailsButton.previousElementSibling; line?.classList.toggle('line-clamp-1'); detailsButton.textContent = /show/i.test(detailsButton.textContent) ? 'Hide details' : 'Show details'; };
+    $('[aria-label="Edit activity"]')?.remove();
+    $('[aria-label="Edit profile language"]')?.addEventListener('click', () => { location.href = '/settings'; });
+    $('[aria-label="Edit public URL"]')?.addEventListener('click', async () => { try { await navigator.clipboard.writeText(location.href); toast('Public profile URL copied'); } catch (_) {} });
   }
 
   function loadSettings(user) {
     if (!user) return;
     const profileSummary = $$('#main h4').find(node => /name, location/i.test(node.textContent))?.parentElement?.querySelector('p'); if (profileSummary) profileSummary.textContent = [user.name, user.role, user.location].filter(Boolean).join(' · ');
-    const settings = user.settings || {};
-    if (settings.theme) setTheme(settings.theme);
-    const save = async () => { try { await api.request('cv_update_user_settings', { theme: document.documentElement.classList.contains('dark') ? 'dark' : 'light', lang: settings.lang || 'English', notifications: 1 }); } catch (_) {} };
-    $('#theme-picker')?.addEventListener('click', () => setTimeout(save));
-    $$('#main input[type="checkbox"]').forEach(input => input.addEventListener('change', save));
-    $$('#main button[data-toast]').forEach(button => { button.removeAttribute('data-toast'); button.disabled = true; button.title = 'This option is not connected yet'; });
+    let settings = Object.assign({ theme: 'system', lang: 'English', content_languages: ['English', 'ភាសាខ្មែរ'], autoplay_videos: true, sound_effects: false, daily_verse: true, larger_text: false }, user.settings || {});
+    const save = async changes => { try { const result = await api.request('cv_update_user_settings', changes); settings = result.settings || Object.assign(settings, changes); toast('Preference saved'); } catch (error) { toast(error.message); } };
+    $('#theme-picker')?.addEventListener('click', event => { const button = event.target.closest('[data-theme-mode]'); if (button) save({ theme: button.dataset.themeMode }); });
+    const toggles = { 'Larger text': 'larger_text', 'Autoplay videos': 'autoplay_videos', 'Sound effects': 'sound_effects', 'Daily verse notification': 'daily_verse' };
+    Object.entries(toggles).forEach(([label, key]) => { const input = $(`input[aria-label="${label}"]`); if (!input) return; input.checked = !!settings[key]; input.addEventListener('change', () => { if (key === 'larger_text') document.documentElement.style.fontSize = input.checked ? '112.5%' : ''; save({ [key]: input.checked }); }); });
+    const languageRows = $$('#main .settings-row').filter(row => /^(Language|Content language)$/i.test($('h4', row)?.textContent || ''));
+    const openPicker = (title, options, multiple, current, onSave) => {
+      const modal = document.createElement('div'); modal.className = 'fixed inset-0 z-[240] bg-[#0b1120]/70 p-4 flex items-center justify-center';
+      modal.innerHTML = `<form class="card w-full max-w-md p-5 space-y-4"><div class="flex justify-between"><h2 class="text-[20px] font-bold">${esc(title)}</h2><button type="button" class="icon-btn" data-picker-close><i class="fa-solid fa-xmark"></i></button></div><div class="space-y-2">${options.map(option => `<label class="settings-row !p-3 !rounded-xl border border-line"><span class="font-semibold text-[14px]">${esc(option)}</span><input ${multiple ? 'type="checkbox"' : 'type="radio" name="choice"'} value="${esc(option)}" ${current.includes(option) ? 'checked' : ''}></label>`).join('')}</div><button class="btn btn-primary w-full">Save</button></form>`;
+      document.body.appendChild(modal); $('[data-picker-close]', modal).onclick = () => modal.remove();
+      $('form', modal).onsubmit = event => { event.preventDefault(); const values = $$('input:checked', modal).map(input => input.value); if (!values.length) return toast('Choose at least one language'); onSave(multiple ? values : values[0]); modal.remove(); };
+    };
+    if (languageRows[0]) { const value = $$('p', languageRows[0])[1]; if (value) value.textContent = settings.lang; const button = $('button', languageRows[0]); button?.removeAttribute('data-toast'); if (button) button.onclick = () => openPicker('Faith In language', ['English', 'ភាសាខ្មែរ'], false, [settings.lang], lang => { if (value) value.textContent = lang; save({ lang }); }); }
+    if (languageRows[1]) { const value = $$('p', languageRows[1])[1]; if (value) value.textContent = settings.content_languages.join(' · '); const button = $('button', languageRows[1]); button?.removeAttribute('data-toast'); if (button) button.onclick = () => openPicker('Content languages', ['English', 'ភាសាខ្មែរ', 'ไทย', 'မြန်မာ', 'Tiếng Việt'], true, settings.content_languages, languages => { if (value) value.textContent = languages.join(' · '); save({ content_languages: languages }); }); }
+    // External calendar/contact OAuth is not configured. Remove those claims
+    // instead of presenting buttons that pretend to sync third-party data.
+    $$('#main section').find(section => /syncing options/i.test($('h3', section)?.textContent || ''))?.remove();
   }
 
   document.addEventListener('click', async event => {
@@ -368,16 +471,6 @@
     });
   }
 
-  /* ---- Anything still unbacked stops pretending -------------------------- */
-  function disableUnbackedControls() {
-    $$('[data-toast]').forEach(button => {
-      button.removeAttribute('data-toast');
-      button.disabled = true;
-      button.title = 'Not available yet';
-      button.classList.add('opacity-60', 'cursor-not-allowed');
-    });
-  }
-
   window.FILive = { api, get user() { return session; }, requireUser, avatarMarkup, openMessenger };
   mountAuth();
   const page = document.body.dataset.page;
@@ -421,6 +514,5 @@
     if (page === 'notifications') loadNotifications();
     if (page === 'profile') loadProfile(user);
     if (page === 'settings') loadSettings(user);
-  }).catch(() => { applySession(null); signedOutState(); })
-    .finally(() => setTimeout(disableUnbackedControls, 400));
+  }).catch(() => { applySession(null); signedOutState(); });
 })();

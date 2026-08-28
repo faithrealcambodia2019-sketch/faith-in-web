@@ -125,20 +125,20 @@
 <div class="px-4 pb-3 text-right text-[11px] font-bold uppercase tracking-wide text-muted" data-votd-ref="">យ៉ូហាន ៣:១៦ · John 3:16</div>
 <div class="border-t border-line grid grid-cols-3 divide-x divide-line text-[12.5px] font-semibold text-muted">
 <button class="py-2.5 hover:bg-raised hover:text-ink transition" data-copy-verse=""><i class="fa-regular fa-copy mr-1.5"></i>Copy</button>
-<button class="py-2.5 hover:bg-raised hover:text-ink transition"><i class="fa-solid fa-share-nodes mr-1.5"></i>Share</button>
-<button class="py-2.5 hover:bg-raised hover:text-ink transition"><i class="fa-regular fa-bookmark mr-1.5"></i>Save</button>
+<button class="py-2.5 hover:bg-raised hover:text-ink transition" data-share-verse><i class="fa-solid fa-share-nodes mr-1.5"></i>Share</button>
+<button class="py-2.5 hover:bg-raised hover:text-ink transition" data-save-verse><i class="fa-regular fa-bookmark mr-1.5"></i>Save</button>
 </div>
 </section>
 <section class="card p-4">
 <div class="flex items-center justify-between mb-3">
 <h2 class="font-semibold text-[15px]">Contacts</h2>
 <div class="flex text-muted">
-<button aria-label="Search contacts" class="icon-btn w-8 h-8"><i class="fa-solid fa-magnifying-glass text-[13px]"></i></button>
+<button aria-label="Search contacts" class="icon-btn w-8 h-8" data-search-contacts><i class="fa-solid fa-magnifying-glass text-[13px]"></i></button>
 <button aria-label="Contact options" class="icon-btn w-8 h-8"><i class="fa-solid fa-ellipsis text-[13px]"></i></button>
 </div>
 </div>
 <ul class="space-y-1" id="contacts"></ul>
-<button class="w-full mt-3 py-2 text-[13px] font-semibold text-muted hover:text-ink hover:bg-raised rounded-lg transition">Show all contacts <i class="fa-solid fa-arrow-right text-[11px] ml-1"></i></button>
+<button class="w-full mt-3 py-2 text-[13px] font-semibold text-muted hover:text-ink hover:bg-raised rounded-lg transition" data-show-contacts>Show all contacts <i class="fa-solid fa-arrow-right text-[11px] ml-1"></i></button>
 </section>
 <section class="card p-4" id="prayer-wall">
 <h2 class="font-semibold text-[15px] mb-1">Prayer Wall</h2>
@@ -188,8 +188,8 @@
 <div class="flex items-center justify-between px-5 py-3 border-t border-line">
 <div class="flex gap-1 text-muted">
 <label aria-label="Add image" class="icon-btn cursor-pointer" title="Add image"><i class="fa-regular fa-image"></i><input accept="image/*" class="hidden" id="blessing-image-input" type="file"/></label>
-<button aria-label="Add verse" class="icon-btn"><i class="fa-solid fa-book-bible"></i></button>
-<button aria-label="Add emoji" class="icon-btn"><i class="fa-regular fa-face-smile"></i></button>
+<button aria-label="Add verse" class="icon-btn" data-add-verse><i class="fa-solid fa-book-bible"></i></button>
+<button aria-label="Add emoji" class="icon-btn" data-add-emoji><i class="fa-regular fa-face-smile"></i></button>
 </div>
 <div class="flex items-center gap-3">
 <span class="text-[12px] text-faint tabular-nums" id="blessing-count">0/600</span>
@@ -228,10 +228,10 @@
 <input class="field font-semibold" placeholder="Title — e.g. Healing for a family member" type="text"/>
 <textarea class="field resize-none leading-relaxed" placeholder="How can the Faith In community pray for you?" rows="4"></textarea>
 <div class="flex flex-wrap gap-2">
-<button class="text-[12px] font-medium px-2.5 py-1 rounded-pill bg-raised border border-line text-muted hover:text-ink transition">Health</button>
-<button class="text-[12px] font-medium px-2.5 py-1 rounded-pill bg-raised border border-line text-muted hover:text-ink transition">Family</button>
-<button class="text-[12px] font-medium px-2.5 py-1 rounded-pill bg-raised border border-line text-muted hover:text-ink transition">Work</button>
-<button class="text-[12px] font-medium px-2.5 py-1 rounded-pill bg-raised border border-line text-muted hover:text-ink transition">Guidance</button>
+<button class="text-[12px] font-medium px-2.5 py-1 rounded-pill bg-raised border border-line text-muted hover:text-ink transition" data-prayer-category>Health</button>
+<button class="text-[12px] font-medium px-2.5 py-1 rounded-pill bg-raised border border-line text-muted hover:text-ink transition" data-prayer-category>Family</button>
+<button class="text-[12px] font-medium px-2.5 py-1 rounded-pill bg-raised border border-line text-muted hover:text-ink transition" data-prayer-category>Work</button>
+<button class="text-[12px] font-medium px-2.5 py-1 rounded-pill bg-raised border border-line text-muted hover:text-ink transition" data-prayer-category>Guidance</button>
 </div>
 <label class="flex items-center gap-2.5 w-fit cursor-pointer text-[13.5px] text-muted hover:text-ink transition">
 <input class="w-4 h-4 accent-[rgb(var(--brand))] cursor-pointer" type="checkbox"/>
@@ -239,7 +239,7 @@
       </label>
 </div>
 <div class="flex justify-end px-5 py-3 border-t border-line">
-<button class="btn btn-primary" data-toast="Prayer request shared with the community 🙏">Request Prayer</button>
+<button class="btn btn-primary">Request Prayer</button>
 </div>
 </div>
 <!-- article -->
@@ -263,7 +263,7 @@
 </div>
 <div class="flex items-center justify-between px-5 py-3 border-t border-line bg-raised">
 <span class="text-[12px] text-muted"><i class="fa-solid fa-cloud text-[11px] mr-1.5"></i>Saved as draft</span>
-<button class="btn btn-primary" data-toast="Article published ✨">Publish</button>
+<button class="btn btn-primary">Publish</button>
 </div>
 </div>
 <!-- story viewer -->
@@ -285,10 +285,10 @@
 </div>
 </div>
 </div>
-<script src="/faithin-app/assets/faithin-runtime.js?v=20260828-2"></script>
-<script src="/assets/js/faith-in-backend.js?v=20260828-2"></script>
-<script src="/faithin-app/assets/faithin.js?v=20260828-2"></script>
-<script src="/faithin-app/assets/faithin-live.js?v=20260828-2"></script>
-<script src="/faithin-app/assets/faithin-home.js?v=20260828-2"></script>
+<script src="/faithin-app/assets/faithin-runtime.js?v=20260828-3"></script>
+<script src="/assets/js/faith-in-backend.js?v=20260828-3"></script>
+<script src="/faithin-app/assets/faithin.js?v=20260828-3"></script>
+<script src="/faithin-app/assets/faithin-live.js?v=20260828-3"></script>
+<script src="/faithin-app/assets/faithin-home.js?v=20260828-3"></script>
 </body>
 </html>

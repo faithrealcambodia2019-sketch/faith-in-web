@@ -325,12 +325,20 @@ check('unfollow ok', r.data.following === false && !store['follows/uid-abc__uid-
 
 console.log('\n15) Bookmarks, settings, verification, notes');
 const bpid = postIds()[0];
+r = await call(fd([['action','cv_update_profile'],['display_name','Hun Updated'],['role','Creator'],['location','Phnom Penh'],['bio','Sharing faith online.'],['profile_image',new FakeFile('profile.jpg','image/jpeg',1024)]]));
+check('profile fields saved', r.success === true && store['users/uid-abc'].displayName === 'Hun Updated' && store['users/uid-abc'].bio === 'Sharing faith online.');
+check('profile photo uploaded', store['users/uid-abc'].photoURL === 'https://blob.example/profile.jpg');
+check('public profile updated', store['publicProfiles/uid-abc'].displayName === 'Hun Updated' && store['publicProfiles/uid-abc'].photoURL === 'https://blob.example/profile.jpg');
 r = await call({ action:'cv_toggle_bookmark', post_id: bpid });
 check('bookmark on', r.data.bookmarked === true && !!store['users/uid-abc/bookmarks/'+bpid]);
 r = await call({ action:'cv_toggle_bookmark', post_id: bpid });
 check('bookmark off', r.data.bookmarked === false && !store['users/uid-abc/bookmarks/'+bpid]);
 r = await call({ action:'cv_update_user_settings', theme:'dark', lang:'Khmer' });
 check('settings saved', r.data.settings.theme === 'dark' && store['users/uid-abc'].settings.lang === 'Khmer', r.data);
+r = await call({ action:'cv_update_user_settings', larger_text:1, autoplay_videos:0, content_languages:['English','ភាសាខ្មែរ'] });
+check('settings merge without erasing existing values', r.data.settings.theme === 'dark' && r.data.settings.lang === 'Khmer');
+check('boolean preferences saved', r.data.settings.larger_text === true && r.data.settings.autoplay_videos === false);
+check('content languages saved', r.data.settings.content_languages.length === 2);
 r = await call({ action:'cv_request_verification', note:'I pastor All Nations' });
 check('verification requested', r.data.request.status === 'pending');
 r = await call({ action:'cv_get_verification_status' });

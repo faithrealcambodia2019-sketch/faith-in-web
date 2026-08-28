@@ -240,6 +240,19 @@
     if (!p.classList.contains('hidden')) $('input', p).focus();
   });
 
+  function submitPageSearch(input) {
+    const query = input.value.trim();
+    document.dispatchEvent(new CustomEvent('fi:search', { detail: { query } }));
+  }
+  $$('#search, [data-search-panel] input[type="search"]').forEach(input => {
+    input.addEventListener('keydown', event => {
+      if (event.key !== 'Enter') return;
+      event.preventDefault();
+      submitPageSearch(input);
+    });
+  });
+  $('[aria-label="Apps"]')?.addEventListener('click', () => { location.href = '/bible-study'; });
+
   /* ── shared micro-interactions ──────────────────────────────────────────── */
   document.addEventListener('click', e => {
     // Follow / Connect / Join → confirmed state

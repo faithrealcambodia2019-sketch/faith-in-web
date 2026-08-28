@@ -1799,16 +1799,30 @@
 
     actions.cv_update_user_settings = function (b, params) {
         return requireUser(b).then(function (user) {
-            var settings = {
-                theme: text(params.theme) === 'dark' ? 'dark' : 'light',
-                lang: text(params.lang) || 'English',
-                notifications: String(params.notifications) !== '0'
-            };
-            return b.dbMod.updateDoc(b.dbMod.doc(b.db, 'users', user.uid), {
-                settings: settings,
-                updatedAt: b.dbMod.serverTimestamp()
-            }).then(function () {
-                return { saved: true, settings: settings };
+            var ref = b.dbMod.doc(b.db, 'users', user.uid);
+            return b.dbMod.getDoc(ref).then(function (snapshot) {
+                var current = snapshot.exists() ? (snapshot.data().settings || {}) : {};
+                var settings = Object.assign({}, current);
+                if (params.theme !== undefined) {
+                    var theme = text(params.theme).toLowerCase();
+                    settings.theme = ['system', 'light', 'dark'].indexOf(theme) !== -1 ? theme : 'system';
+                }
+                if (params.lang !== undefined) settings.lang = text(params.lang, 80) || 'English';
+                if (params.content_languages !== undefined) {
+                    var languages = Array.isArray(params.content_languages)
+                        ? params.content_languages
+                        : String(params.content_languages || '').split(',');
+                    settings.content_languages = languages.map(function (item) { return text(item, 80); }).filter(Boolean).slice(0, 8);
+                }
+                ['notifications', 'larger_text', 'autoplay_videos', 'sound_effects', 'daily_verse'].forEach(function (field) {
+                    if (params[field] !== undefined) settings[field] = String(params[field]) !== '0' && params[field] !== false;
+                });
+                return b.dbMod.updateDoc(ref, {
+                    settings: settings,
+                    updatedAt: b.dbMod.serverTimestamp()
+                }).then(function () {
+                    return { saved: true, settings: settings };
+                });
             });
         });
     };
