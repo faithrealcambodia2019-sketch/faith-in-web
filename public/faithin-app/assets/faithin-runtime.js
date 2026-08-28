@@ -72,7 +72,10 @@ window.cv_ajax = window.cv_ajax || {
       return Promise.reject(new Error('Faith In is still connecting. Please refresh and try again.'));
     }
     const uploads = files && Object.values(files).some(list => list && list.length);
-    const wait = action === 'cv_get_session' ? 8000 : (uploads ? 120000 : (readTtl[action] ? 12000 : 30000));
+    // Large videos and resource bundles upload directly to Blob and can take
+    // several minutes on mobile connections. Keep the request alive while
+    // progress is still being reported instead of failing after two minutes.
+    const wait = action === 'cv_get_session' ? 8000 : (uploads ? 20 * 60 * 1000 : (readTtl[action] ? 12000 : 30000));
     const operation = window.cvDataRequest(action, params || {}, files || {}, onProgress || null);
     let timer;
     const deadline = new Promise((_, reject) => { timer = setTimeout(() => reject(new Error('Faith In took too long to respond. Please try again.')), wait); });

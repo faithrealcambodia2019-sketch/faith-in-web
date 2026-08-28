@@ -11,7 +11,7 @@
 <link href="/faithin-app/assets/faithin-fonts.css" rel="stylesheet"/>
 <link href="/faithin-app/assets/faithin-icons.css" rel="stylesheet"/>
 <link href="/faithin-app/assets/faithin-tw.css" rel="stylesheet"/>
-<link href="/faithin-app/assets/faithin.css" rel="stylesheet"/>
+<link href="/faithin-app/assets/faithin.css?v=20260828-5" rel="stylesheet"/>
 </head>
 <body class="font-sans min-h-screen pb-16 lg:pb-0" data-page="home" data-search="Search Faith In">
 <main class="max-w-[1200px] mx-auto px-3 sm:px-4 py-5 grid gap-5 lg:grid-cols-[232px_minmax(0,1fr)] xl:grid-cols-[232px_minmax(0,600px)_312px] items-start" id="main">
@@ -176,9 +176,9 @@
 </div>
 </div>
 <textarea class="w-full resize-none bg-transparent text-[15.5px] leading-relaxed placeholder:text-faint outline-none" id="blessing-text" maxlength="600" placeholder="What has God done in your life recently? Share your testimony…" rows="5"></textarea>
-<div class="hidden mt-3 relative overflow-hidden rounded-xl border border-line bg-raised" id="blessing-image-preview-wrap">
-<img class="w-full max-h-[300px] object-cover" id="blessing-image-preview" alt="Blessing image preview"/>
-<button aria-label="Remove blessing image" class="icon-btn absolute top-2 right-2 bg-surface/90 shadow-lift" id="blessing-image-remove" type="button"><i class="fa-solid fa-xmark"></i></button>
+<div class="hidden mt-3 relative overflow-hidden rounded-xl border border-line bg-raised" id="blessing-media-preview-wrap">
+<div class="blessing-media-preview" id="blessing-media-preview"></div>
+<button aria-label="Remove Blessing media" class="icon-btn absolute top-2 right-2 bg-surface/90 shadow-lift" id="blessing-media-remove" type="button"><i class="fa-solid fa-xmark"></i></button>
 </div>
 <div class="mt-2 flex flex-wrap gap-2">
 <button class="text-[12px] font-medium px-2.5 py-1 rounded-pill bg-raised border border-line text-muted hover:text-ink transition" data-chip="">#testimony</button>
@@ -188,7 +188,8 @@
 </div>
 <div class="flex items-center justify-between px-5 py-3 border-t border-line">
 <div class="flex gap-1 text-muted">
-<label aria-label="Add image" class="icon-btn cursor-pointer" title="Add image"><i class="fa-regular fa-image"></i><input accept="image/*" class="hidden" id="blessing-image-input" type="file"/></label>
+<label aria-label="Add up to 10 images" class="blessing-media-tool cursor-pointer" title="Add images"><i class="fa-regular fa-images"></i><span>Images</span><input accept="image/*" class="hidden" id="blessing-image-input" multiple="" type="file"/></label>
+<label aria-label="Add a video" class="blessing-media-tool cursor-pointer" title="Add video"><i class="fa-solid fa-video"></i><span>Video</span><input accept="video/*,.mp4,.m4v,.mov,.qt,.webm,.ogv" class="hidden" id="blessing-video-input" type="file"/></label>
 <button aria-label="Add verse" class="icon-btn" data-add-verse><i class="fa-solid fa-book-bible"></i></button>
 <button aria-label="Add emoji" class="icon-btn" data-add-emoji><i class="fa-regular fa-face-smile"></i></button>
 </div>
@@ -286,10 +287,10 @@
 </div>
 </div>
 </div>
-<script src="/faithin-app/assets/faithin-runtime.js?v=20260828-3"></script>
+<script src="/faithin-app/assets/faithin-runtime.js?v=20260828-5"></script>
 <script src="/assets/js/faith-in-backend.js?v=20260828-3"></script>
 <script src="/faithin-app/assets/faithin.js?v=20260828-3"></script>
-<script src="/faithin-app/assets/faithin-live.js?v=20260828-3"></script>
-<script src="/faithin-app/assets/faithin-home.js?v=20260828-4"></script>
+<script src="/faithin-app/assets/faithin-live.js?v=20260828-5"></script>
+<script src="/faithin-app/assets/faithin-home.js?v=20260828-5"></script>
 </body>
 </html>

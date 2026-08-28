@@ -104,15 +104,42 @@
   }
 
   const ta = $('#blessing-text'), postBtn = $('#blessing-post'), count = $('#blessing-count');
-  const blessingImageInput = $('#blessing-image-input'), blessingPreviewWrap = $('#blessing-image-preview-wrap'), blessingPreview = $('#blessing-image-preview');
-  let blessingImageFile = null;
-  function updateBlessingButton() { if (postBtn) postBtn.disabled = !ta?.value.trim() && !blessingImageFile; }
-  function clearBlessingImage() { blessingImageFile = null; if (blessingImageInput) blessingImageInput.value = ''; blessingPreviewWrap?.classList.add('hidden'); if (blessingPreview) blessingPreview.removeAttribute('src'); updateBlessingButton(); }
+  const blessingImageInput = $('#blessing-image-input'), blessingVideoInput = $('#blessing-video-input');
+  const blessingPreviewWrap = $('#blessing-media-preview-wrap'), blessingPreview = $('#blessing-media-preview');
+  let blessingMediaFiles = [], blessingPreviewUrls = [];
+  function updateBlessingButton() { if (postBtn) postBtn.disabled = !ta?.value.trim() && !blessingMediaFiles.length; }
+  function clearBlessingMedia() {
+    blessingPreviewUrls.forEach(url => URL.revokeObjectURL(url)); blessingPreviewUrls = []; blessingMediaFiles = [];
+    if (blessingImageInput) blessingImageInput.value = '';
+    if (blessingVideoInput) blessingVideoInput.value = '';
+    blessingPreviewWrap?.classList.add('hidden');
+    if (blessingPreview) blessingPreview.innerHTML = '';
+    updateBlessingButton();
+  }
+  function selectBlessingMedia(files, mode) {
+    const chosen = [...files].slice(0, mode === 'video' ? 1 : 10);
+    if (!chosen.length) return clearBlessingMedia();
+    const oversize = chosen.find(file => file.size > 250 * 1024 * 1024);
+    if (oversize) return toast(`${oversize.name} is larger than 250MB.`);
+    clearBlessingMedia(); blessingMediaFiles = chosen;
+    blessingPreview.classList.toggle('is-video', mode === 'video');
+    blessingPreview.classList.toggle('is-gallery', mode !== 'video');
+    chosen.forEach(file => {
+      const url = URL.createObjectURL(file); blessingPreviewUrls.push(url);
+      const element = document.createElement(mode === 'video' ? 'video' : 'img');
+      element.src = url;
+      if (mode === 'video') { element.controls = true; element.playsInline = true; element.preload = 'metadata'; }
+      else element.alt = 'Blessing image preview';
+      blessingPreview.appendChild(element);
+    });
+    blessingPreviewWrap.classList.remove('hidden'); updateBlessingButton();
+  }
   ta?.addEventListener('input', () => { count.textContent = `${ta.value.length}/600`; updateBlessingButton(); });
-  blessingImageInput?.addEventListener('change', () => { const file = blessingImageInput.files?.[0]; if (!file) return clearBlessingImage(); blessingImageFile = file; blessingPreview.src = URL.createObjectURL(file); blessingPreviewWrap.classList.remove('hidden'); updateBlessingButton(); });
-  $('#blessing-image-remove')?.addEventListener('click', clearBlessingImage);
+  blessingImageInput?.addEventListener('change', () => selectBlessingMedia(blessingImageInput.files || [], 'image'));
+  blessingVideoInput?.addEventListener('change', () => selectBlessingMedia(blessingVideoInput.files || [], 'video'));
+  $('#blessing-media-remove')?.addEventListener('click', clearBlessingMedia);
   $$('[data-chip]').forEach(chip => chip.addEventListener('click', () => { ta.value = `${ta.value.trim()} ${chip.textContent} `.trimStart(); ta.dispatchEvent(new Event('input')); ta.focus(); }));
-  postBtn?.addEventListener('click', async () => { if (!needUser()) return; busy(postBtn, true, blessingImageFile ? 'Uploading' : 'Posting'); try { const files = blessingImageFile ? { 'post_media[]': [blessingImageFile] } : {}; await api.request('cv_create_post', { content: ta.value.trim(), type: 'blessing', visibility: 'public' }, files); ta.value = ''; clearBlessingImage(); closeModal(); toast('Your blessing is live 🕊️'); await loadPosts(); } catch (error) { toast(error.message); } finally { busy(postBtn, false, 'Post'); ta.dispatchEvent(new Event('input')); } });
+  postBtn?.addEventListener('click', async () => { if (!needUser()) return; busy(postBtn, true, blessingMediaFiles.length ? 'Uploading' : 'Posting'); try { const files = blessingMediaFiles.length ? { 'post_media[]': blessingMediaFiles } : {}; await api.request('cv_create_post', { content: ta.value.trim(), type: 'blessing', visibility: 'public' }, files); ta.value = ''; clearBlessingMedia(); closeModal(); toast('Your blessing is live 🕊️'); await loadPosts(); } catch (error) { toast(error.message); } finally { busy(postBtn, false, 'Post'); ta.dispatchEvent(new Event('input')); } });
 
   const fileInput = $('#file-input'), preview = $('#preview'), dropzone = $('#dropzone');
   const mediaPickerTitle = $('#media-picker-title'), mediaPickerHelp = $('#media-picker-help'), mediaPickerIcon = $('#media-picker-icon');

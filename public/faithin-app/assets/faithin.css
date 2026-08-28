@@ -366,3 +366,15 @@ html.dark .msg-bubble.is-mine{ color:#0b1120; }
   object-fit:contain;
   background:#05070a;
 }
+
+.blessing-media-tool{
+  display:inline-flex; align-items:center; gap:6px; min-height:36px; padding:7px 10px;
+  border:1px solid rgb(var(--line)); border-radius:10px; color:rgb(var(--muted));
+  font-size:12px; font-weight:650; transition:background .15s ease,color .15s ease,border-color .15s ease;
+}
+.blessing-media-tool:hover{ background:rgb(var(--raised)); color:rgb(var(--ink)); border-color:rgb(var(--brand) / .45); }
+.blessing-media-tool i{ color:rgb(var(--brand)); }
+.blessing-media-preview.is-gallery{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:3px; }
+.blessing-media-preview.is-gallery img{ width:100%; height:180px; object-fit:cover; background:rgb(var(--raised)); }
+.blessing-media-preview.is-gallery img:only-child{ grid-column:1 / -1; height:auto; max-height:420px; object-fit:contain; }
+.blessing-media-preview.is-video video{ display:block; width:100%; height:auto; max-height:min(70vh,560px); object-fit:contain; background:#05070a; }
