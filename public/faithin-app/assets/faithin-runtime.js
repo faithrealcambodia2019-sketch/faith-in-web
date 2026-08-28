@@ -91,6 +91,18 @@ window.cv_ajax = window.cv_ajax || {
       const fresh = cached && Date.now() - cached.savedAt < sessionTtl;
 
       if (fresh) {
+        if (action !== 'cv_get_session') return Promise.resolve(cached.value);
+        const epoch = cacheEpoch;
+        requestNetwork(action, values, files, onProgress, key)
+          .then(value => { if (epoch === cacheEpoch) writeRecord(key, value); })
+          .catch(() => {});
+        return Promise.resolve(cached.value);
+      }
+
+      // Real read data remains useful while it is refreshed. Rendering the
+      // last successful response immediately avoids an empty feed whenever a
+      // short TTL expires or Firestore is reconnecting.
+      if (ttl && action !== 'cv_get_session' && cached && Date.now() - cached.savedAt < 24 * 60 * 60 * 1000) {
         const epoch = cacheEpoch;
         requestNetwork(action, values, files, onProgress, key)
           .then(value => { if (epoch === cacheEpoch) writeRecord(key, value); })
