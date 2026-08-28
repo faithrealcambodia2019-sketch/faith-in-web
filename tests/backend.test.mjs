@@ -114,7 +114,7 @@ class FakeXHR {
   }
 }
 
-const USER = { uid: 'uid-abc', email: 'Hun@Faithin.co', displayName: 'Hun Chet', photoURL: '', providerData: [{providerId:'password'}], getIdToken: async () => 'fake-id-token' };
+const USER = { uid: 'uid-abc', email: 'Hun@Faithin.co', emailVerified: true, displayName: 'Hun Chet', photoURL: '', providerData: [{providerId:'password'}], getIdToken: async () => 'fake-id-token' };
 const authMod = { getAuth: () => ({ currentUser: USER }), onAuthStateChanged: (a,cb)=>{cb(USER); return ()=>{};}, signOut: async()=>{} };
 const appMod = { getApps: () => [], initializeApp: () => ({ name:'faith-in-auth' }) };
 

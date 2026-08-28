@@ -15,43 +15,167 @@
   function mountAuth() {
     const host = document.createElement('div');
     host.id = 'fi-auth';
-    host.className = 'hidden fixed inset-0 z-[250] bg-[#0b1120]/70 backdrop-blur-sm p-4 items-center justify-center';
-    host.innerHTML = `<section class="card w-full max-w-md p-6 shadow-pop" role="dialog" aria-modal="true" aria-labelledby="fi-auth-title">
-      <div class="flex items-start justify-between gap-4"><div><h2 id="fi-auth-title" class="text-[22px] font-bold">Welcome to Faith In</h2><p class="text-[13.5px] text-muted mt-1">Sign in to post, pray, message, and connect.</p></div><button class="icon-btn" data-auth-close aria-label="Close"><i class="fa-solid fa-xmark"></i></button></div>
-      <button class="btn btn-outline w-full mt-5 !py-3" data-auth-google><i class="fa-brands fa-google"></i>Continue with Google</button>
-      <div class="flex items-center gap-3 my-4 text-[11px] uppercase tracking-wider text-faint"><span class="h-px bg-line flex-1"></span>or<span class="h-px bg-line flex-1"></span></div>
-      <form data-auth-form class="space-y-3">
-        <input class="field" name="email" type="email" autocomplete="email" placeholder="Email address" required>
-        <input class="field" name="password" type="password" autocomplete="current-password" placeholder="Password" minlength="6" required>
-        <p class="hidden text-[12.5px] text-rose" data-auth-error></p>
-        <div class="grid grid-cols-2 gap-2"><button class="btn btn-primary !py-2.5" name="intent" value="signin">Sign in</button><button class="btn btn-outline !py-2.5" name="intent" value="signup">Create account</button></div>
-      </form>
-    </section>`;
+    host.className = 'fi-auth hidden';
+    host.innerHTML = `<div class="fi-auth__page" role="dialog" aria-modal="true" aria-labelledby="fi-auth-title">
+      <header class="fi-auth__brand"><span>FaithIn</span><i class="fa-solid fa-globe" aria-hidden="true"></i></header>
+      <main class="fi-auth__main">
+        <div class="fi-auth__intro"><h1>Welcome to your professional<br>faith community</h1><p>Connect with believers, discover ministry opportunities, and grow your professional network.</p></div>
+        <section class="fi-auth__card">
+          <button class="fi-auth__close" data-auth-close aria-label="Close sign in"><i class="fa-solid fa-xmark"></i></button>
+
+          <div data-auth-view="signin">
+            <h2 id="fi-auth-title">Sign in</h2>
+            <p class="fi-auth__subtitle">Stay updated on your professional world.</p>
+            <form data-auth-form="signin" class="fi-auth__form">
+              <label class="sr-only" for="fi-signin-email">Email address</label>
+              <input id="fi-signin-email" name="email" type="email" autocomplete="email" inputmode="email" placeholder="Email address" required>
+              <label class="fi-auth__password"><span class="sr-only">Password</span><input name="password" type="password" autocomplete="current-password" placeholder="Password" minlength="6" required><button type="button" data-password-toggle aria-label="Show password"><i class="fa-regular fa-eye"></i></button></label>
+              <div class="fi-auth__options"><label><input name="remember" type="checkbox" checked> Remember me</label><button type="button" data-auth-show="forgot">Forgot password?</button></div>
+              <p class="fi-auth__error" data-auth-error hidden role="alert"></p>
+              <button class="fi-auth__primary" name="intent" value="signin"><span>Sign in</span><i class="fi-auth__spinner" aria-hidden="true"></i></button>
+            </form>
+            <div class="fi-auth__divider"><span>or</span></div>
+            <button class="fi-auth__social" data-auth-google><span class="fi-auth__google" aria-hidden="true">G</span>Continue with Google</button>
+            <p class="fi-auth__switch">New to Faith In? <button data-auth-show="signup">Join now</button></p>
+          </div>
+
+          <div data-auth-view="signup" hidden>
+            <h2>Join Faith In</h2>
+            <p class="fi-auth__subtitle">Create your secure member account.</p>
+            <form data-auth-form="signup" class="fi-auth__form">
+              <div class="fi-auth__names"><label><span class="sr-only">First name</span><input name="first_name" autocomplete="given-name" placeholder="First name" required maxlength="60"></label><label><span class="sr-only">Last name</span><input name="last_name" autocomplete="family-name" placeholder="Last name" required maxlength="60"></label></div>
+              <label class="sr-only" for="fi-signup-email">Email address</label>
+              <input id="fi-signup-email" name="email" type="email" autocomplete="email" inputmode="email" placeholder="Email address" required>
+              <label class="fi-auth__password"><span class="sr-only">Password</span><input name="password" type="password" autocomplete="new-password" placeholder="Password (8+ characters)" minlength="8" required><button type="button" data-password-toggle aria-label="Show password"><i class="fa-regular fa-eye"></i></button></label>
+              <p class="fi-auth__terms">By clicking Agree &amp; Join, you agree to the Faith In <a href="/terms">Terms</a> and <a href="/privacy">Privacy Policy</a>.</p>
+              <p class="fi-auth__error" data-auth-error hidden role="alert"></p>
+              <button class="fi-auth__primary" name="intent" value="signup"><span>Agree &amp; Join</span><i class="fi-auth__spinner" aria-hidden="true"></i></button>
+            </form>
+            <div class="fi-auth__divider"><span>or</span></div>
+            <button class="fi-auth__social" data-auth-google><span class="fi-auth__google" aria-hidden="true">G</span>Continue with Google</button>
+            <p class="fi-auth__switch">Already on Faith In? <button data-auth-show="signin">Sign in</button></p>
+          </div>
+
+          <div data-auth-view="forgot" hidden>
+            <button class="fi-auth__back" data-auth-show="signin"><i class="fa-solid fa-arrow-left"></i> Back to sign in</button>
+            <h2>Reset your password</h2>
+            <p class="fi-auth__subtitle">Enter your email and we’ll send a secure reset link.</p>
+            <form data-auth-form="forgot" class="fi-auth__form">
+              <label class="sr-only" for="fi-forgot-email">Email address</label>
+              <input id="fi-forgot-email" name="email" type="email" autocomplete="email" inputmode="email" placeholder="Email address" required>
+              <p class="fi-auth__error" data-auth-error hidden role="alert"></p>
+              <p class="fi-auth__success" data-auth-success hidden role="status"></p>
+              <button class="fi-auth__primary"><span>Send reset link</span><i class="fi-auth__spinner" aria-hidden="true"></i></button>
+            </form>
+          </div>
+
+          <div data-auth-view="verify" hidden>
+            <div class="fi-auth__verify-icon"><i class="fa-regular fa-envelope"></i></div>
+            <h2>Verify your email</h2>
+            <p class="fi-auth__subtitle">We sent a verification link to <strong data-auth-email></strong>. Open it, then return here to sign in.</p>
+            <button class="fi-auth__primary" data-auth-show="signin"><span>Back to sign in</span></button>
+            <button class="fi-auth__text-button" data-auth-resend>Resend verification email</button>
+            <p class="fi-auth__success" data-auth-success hidden role="status"></p>
+          </div>
+        </section>
+      </main>
+      <footer class="fi-auth__footer"><span>FaithIn © 2026</span><a href="/privacy">Privacy</a><a href="/terms">Terms</a></footer>
+    </div>`;
     document.body.appendChild(host);
-    const close = () => { host.classList.add('hidden'); host.classList.remove('flex'); };
+    let verificationEmail = '';
+    const close = () => {
+      if (host.dataset.locked === 'true') return;
+      host.classList.add('hidden');
+    };
+    const setBusy = (button, busy) => {
+      if (!button) return;
+      button.disabled = busy;
+      button.classList.toggle('is-busy', busy);
+    };
+    const showView = name => {
+      $$('[data-auth-view]', host).forEach(view => { view.hidden = view.dataset.authView !== name; });
+      $$('[data-auth-error], [data-auth-success]', host).forEach(message => { message.hidden = true; message.textContent = ''; });
+      const input = $(`[data-auth-view="${name}"] input`, host);
+      window.setTimeout(() => input?.focus(), 0);
+    };
+    const showAuthError = (scope, error) => {
+      const el = $('[data-auth-error]', scope) || $('[data-auth-error]', host);
+      el.textContent = error.message || 'Sign-in failed. Please try again.';
+      el.hidden = false;
+    };
     host.addEventListener('click', async event => {
       if (event.target === host || event.target.closest('[data-auth-close]')) close();
+      const switcher = event.target.closest('[data-auth-show]');
+      if (switcher) { showView(switcher.dataset.authShow); return; }
+      const toggle = event.target.closest('[data-password-toggle]');
+      if (toggle) {
+        const input = toggle.closest('.fi-auth__password').querySelector('input');
+        const reveal = input.type === 'password';
+        input.type = reveal ? 'text' : 'password';
+        toggle.setAttribute('aria-label', reveal ? 'Hide password' : 'Show password');
+        toggle.innerHTML = `<i class="fa-regular fa-eye${reveal ? '-slash' : ''}"></i>`;
+        return;
+      }
       const google = event.target.closest('[data-auth-google]');
-      if (!google) return;
-      google.disabled = true;
-      try { session = await api.request('cv_google_sign_in'); applySession(session); close(); toast('Welcome to Faith In'); }
-      catch (error) { showAuthError(error); }
-      finally { google.disabled = false; }
+      if (google) {
+        setBusy(google, true);
+        try { session = await api.request('cv_google_sign_in'); applySession(session); window.location.reload(); }
+        catch (error) { showAuthError(google.closest('[data-auth-view]'), error); }
+        finally { setBusy(google, false); }
+        return;
+      }
+      const resend = event.target.closest('[data-auth-resend]');
+      if (resend) {
+        setBusy(resend, true);
+        const status = $('[data-auth-success]', resend.closest('[data-auth-view]'));
+        try { await api.request('cv_send_email_verification'); status.textContent = 'Verification email sent. Check your inbox and spam folder.'; status.hidden = false; }
+        catch (error) { status.textContent = error.message || 'Please wait before trying again.'; status.hidden = false; }
+        finally { setBusy(resend, false); }
+      }
     });
-    $('[data-auth-form]', host).addEventListener('submit', async event => {
+    $$('[data-auth-form]', host).forEach(form => form.addEventListener('submit', async event => {
       event.preventDefault();
-      const submitter = event.submitter;
-      const data = new FormData(event.currentTarget);
-      const action = submitter?.value === 'signup' ? 'cv_email_sign_up' : 'cv_email_sign_in';
-      submitter.disabled = true;
-      try { session = await api.request(action, { email: data.get('email'), password: data.get('password') }); applySession(session); close(); toast('Welcome to Faith In'); }
-      catch (error) { showAuthError(error); }
-      finally { submitter.disabled = false; }
-    });
-    function showAuthError(error) {
-      const el = $('[data-auth-error]', host); el.textContent = error.message || 'Sign-in failed.'; el.classList.remove('hidden');
-    }
-    window.FI.openAuth = () => { host.classList.remove('hidden'); host.classList.add('flex'); $('[name="email"]', host).focus(); };
+      const mode = form.dataset.authForm;
+      const data = new FormData(form);
+      const submitter = event.submitter || $('button[type="submit"], button:not([type])', form);
+      setBusy(submitter, true);
+      try {
+        if (mode === 'forgot') {
+          await api.request('cv_password_reset', { email: data.get('email') });
+          const success = $('[data-auth-success]', form);
+          success.textContent = 'If an account uses that email, a reset link is on the way.';
+          success.hidden = false;
+          $('[data-auth-error]', form).hidden = true;
+          return;
+        }
+        const action = mode === 'signup' ? 'cv_email_sign_up' : 'cv_email_sign_in';
+        const values = { email: data.get('email'), password: data.get('password'), remember: data.get('remember') === 'on' };
+        if (mode === 'signup') values.display_name = `${data.get('first_name') || ''} ${data.get('last_name') || ''}`.trim();
+        const result = await api.request(action, values);
+        if (result?.verification_required) {
+          verificationEmail = result.email || String(data.get('email') || '');
+          $('[data-auth-email]', host).textContent = verificationEmail;
+          showView('verify');
+          return;
+        }
+        session = result;
+        applySession(session);
+        window.location.reload();
+      } catch (error) { showAuthError(form, error); }
+      finally { setBusy(submitter, false); }
+    }));
+    window.FI.openAuth = options => {
+      const locked = !!options?.locked;
+      host.dataset.locked = String(locked);
+      host.classList.remove('hidden');
+      host.classList.toggle('is-locked', locked);
+      document.body.classList.toggle('fi-auth-locked', locked);
+      const main = $('#main');
+      if (main) { main.inert = locked; main.setAttribute('aria-hidden', String(locked)); }
+      showView(options?.verificationRequired ? 'verify' : 'signin');
+      if (options?.email) { verificationEmail = options.email; $('[data-auth-email]', host).textContent = verificationEmail; }
+      if (options?.verificationRequired) showView('verify');
+    };
   }
 
   function applySession(user) {
@@ -757,7 +881,15 @@
   $$('form[role="search"], #main form').forEach(form => form.querySelector('[data-toast]')?.removeAttribute('data-toast'));
   api.session().then(user => {
     applySession(user);
-    if (!user?.logged_in) { signedOutState(); return; }
+    if (!user?.logged_in) {
+      signedOutState();
+      window.FI.openAuth({
+        locked: true,
+        verificationRequired: !!user?.verification_required,
+        email: user?.email || ''
+      });
+      return;
+    }
     refreshNotifications();
     if (page === 'jobs') loadJobs();
     if (page === 'library') loadLibrary();
@@ -765,5 +897,9 @@
     if (page === 'notifications') loadNotifications();
     if (page === 'profile') loadProfile(user);
     if (page === 'settings') loadSettings(user);
-  }).catch(() => { applySession(null); signedOutState(); });
+  }).catch(() => {
+    applySession(null);
+    signedOutState();
+    window.FI.openAuth({ locked: true });
+  });
 })();

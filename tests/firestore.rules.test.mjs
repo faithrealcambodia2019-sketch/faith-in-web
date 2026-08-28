@@ -19,6 +19,14 @@ let environment;
 
 const now = () => Timestamp.now();
 
+function authenticated(uid, email = "", provider = email ? "password" : "github.com", verified = !!email) {
+  return environment.authenticatedContext(uid, {
+    email,
+    email_verified: verified,
+    firebase: { sign_in_provider: provider },
+  }).firestore();
+}
+
 function account(uid, email, extra = {}) {
   return {
     uid,
@@ -92,8 +100,8 @@ after(async () => {
 });
 
 test("account documents are private to their owner", async () => {
-  const alice = environment.authenticatedContext("alice", { email: "alice@example.com" }).firestore();
-  const bob = environment.authenticatedContext("bob", { email: "bob@example.com" }).firestore();
+  const alice = authenticated("alice", "alice@example.com");
+  const bob = authenticated("bob", "bob@example.com");
   const anonymous = environment.unauthenticatedContext().firestore();
 
   await assertSucceeds(getDoc(doc(alice, "users/alice")));
@@ -101,8 +109,16 @@ test("account documents are private to their owner", async () => {
   await assertFails(getDoc(doc(anonymous, "users/alice")));
 });
 
+test("unverified password accounts cannot access member data", async () => {
+  const unverified = authenticated("unverified", "unverified@example.com", "password", false);
+  await assertFails(getDoc(doc(unverified, "publicProfiles/alice")));
+  await assertFails(
+    setDoc(doc(unverified, "posts/unverified"), post("unverified")),
+  );
+});
+
 test("providers without a shared email can create only an email-empty account", async () => {
-  const github = environment.authenticatedContext("github-user").firestore();
+  const github = authenticated("github-user");
   await assertSucceeds(
     setDoc(doc(github, "users/github-user"), {
       ...account("github-user", ""),
@@ -116,8 +132,8 @@ test("providers without a shared email can create only an email-empty account", 
 });
 
 test("public profiles exclude email and cannot self-award verification", async () => {
-  const alice = environment.authenticatedContext("alice", { email: "alice@example.com" }).firestore();
-  const bob = environment.authenticatedContext("bob", { email: "bob@example.com" }).firestore();
+  const alice = authenticated("alice", "alice@example.com");
+  const bob = authenticated("bob", "bob@example.com");
 
   await assertSucceeds(setDoc(doc(alice, "publicProfiles/alice"), publicProfile("alice")));
   await assertSucceeds(getDoc(doc(bob, "publicProfiles/alice")));
@@ -136,8 +152,8 @@ test("public profiles exclude email and cannot self-award verification", async (
 });
 
 test("private posts are owner-only and ownership is immutable", async () => {
-  const alice = environment.authenticatedContext("alice", { email: "alice@example.com" }).firestore();
-  const bob = environment.authenticatedContext("bob", { email: "bob@example.com" }).firestore();
+  const alice = authenticated("alice", "alice@example.com");
+  const bob = authenticated("bob", "bob@example.com");
 
   await assertSucceeds(setDoc(doc(alice, "posts/public"), post("alice")));
   await assertSucceeds(setDoc(doc(alice, "posts/private"), post("alice", "private")));
@@ -149,7 +165,7 @@ test("private posts are owner-only and ownership is immutable", async () => {
 });
 
 test("engagement can only change the caller reaction or increment one counter", async () => {
-  const bob = environment.authenticatedContext("bob", { email: "bob@example.com" }).firestore();
+  const bob = authenticated("bob", "bob@example.com");
 
   await assertSucceeds(updateDoc(doc(bob, "posts/public"), { "reactions.bob": "support" }));
   await assertFails(updateDoc(doc(bob, "posts/public"), { "reactions.alice": "like" }));
@@ -158,7 +174,7 @@ test("engagement can only change the caller reaction or increment one counter", 
 });
 
 test("follow ids and outbound job links are validated", async () => {
-  const alice = environment.authenticatedContext("alice", { email: "alice@example.com" }).firestore();
+  const alice = authenticated("alice", "alice@example.com");
 
   const follow = { followerUid: "alice", targetUid: "bob", createdAt: now() };
   await assertFails(setDoc(doc(alice, "follows/wrong-id"), follow));
@@ -183,8 +199,8 @@ test("follow ids and outbound job links are validated", async () => {
 });
 
 test("comments support safe media and caller-scoped reactions", async () => {
-  const alice = environment.authenticatedContext("alice", { email: "alice@example.com" }).firestore();
-  const bob = environment.authenticatedContext("bob", { email: "bob@example.com" }).firestore();
+  const alice = authenticated("alice", "alice@example.com");
+  const bob = authenticated("bob", "bob@example.com");
 
   await assertSucceeds(setDoc(doc(alice, "posts/comments-test"), post("alice")));
   const comment = {
@@ -211,9 +227,9 @@ test("comments support safe media and caller-scoped reactions", async () => {
 });
 
 test("direct messages are private to their two participants", async () => {
-  const alice = environment.authenticatedContext("alice", { email: "alice@example.com" }).firestore();
-  const bob = environment.authenticatedContext("bob", { email: "bob@example.com" }).firestore();
-  const charlie = environment.authenticatedContext("charlie", { email: "charlie@example.com" }).firestore();
+  const alice = authenticated("alice", "alice@example.com");
+  const bob = authenticated("bob", "bob@example.com");
+  const charlie = authenticated("charlie", "charlie@example.com");
   const threadPath = "messageThreads/alice__bob";
   const profile = (uid, id) => ({ uid, id, name: uid === "alice" ? "Alice" : "Bob", avatar_url: "" });
 
@@ -254,9 +270,9 @@ test("direct messages are private to their two participants", async () => {
 });
 
 test("presence and typing can only be written for yourself", async () => {
-  const alice = environment.authenticatedContext("alice", { email: "alice@example.com" }).firestore();
-  const bob = environment.authenticatedContext("bob", { email: "bob@example.com" }).firestore();
-  const charlie = environment.authenticatedContext("charlie", { email: "charlie@example.com" }).firestore();
+  const alice = authenticated("alice", "alice@example.com");
+  const bob = authenticated("bob", "bob@example.com");
+  const charlie = authenticated("charlie", "charlie@example.com");
   const threadPath = "messageThreads/presence-alice__bob";
   const profile = (uid, id) => ({ uid, id, name: uid, avatar_url: "" });
 
@@ -306,9 +322,9 @@ test("presence and typing can only be written for yourself", async () => {
 });
 
 test("notifications can only be created by their actor and read by their recipient", async () => {
-  const alice = environment.authenticatedContext("alice", { email: "alice@example.com" }).firestore();
-  const bob = environment.authenticatedContext("bob", { email: "bob@example.com" }).firestore();
-  const charlie = environment.authenticatedContext("charlie", { email: "charlie@example.com" }).firestore();
+  const alice = authenticated("alice", "alice@example.com");
+  const bob = authenticated("bob", "bob@example.com");
+  const charlie = authenticated("charlie", "charlie@example.com");
   const notificationPath = "notifications/follow__profile-bob__alice";
   const notification = {
     recipientUid: "bob",

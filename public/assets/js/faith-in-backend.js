@@ -101,8 +101,33 @@
     function requireUser(b) {
         return currentUser(b).then(function (user) {
             if (!user) throw new Error('Please log in to continue.');
+            if (needsEmailVerification(user)) {
+                throw new Error('Please verify your email address before continuing.');
+            }
             return user;
         });
+    }
+
+    function usesPasswordProvider(user) {
+        return !!(user && Array.isArray(user.providerData) && user.providerData.some(function (provider) {
+            return provider && provider.providerId === 'password';
+        }));
+    }
+
+    function needsEmailVerification(user) {
+        return !!(user && usesPasswordProvider(user) && user.email && !user.emailVerified);
+    }
+
+    function safeContinueUrl() {
+        var origin = window.location && /^https?:$/.test(window.location.protocol)
+            ? window.location.origin
+            : 'https://faithin.co';
+        return origin + '/home';
+    }
+
+    function setAuthPersistence(b, remember) {
+        var persistence = remember ? b.authMod.browserLocalPersistence : b.authMod.browserSessionPersistence;
+        return b.authMod.setPersistence(b.auth, persistence);
     }
 
     /** Prevent a slow profile document from blocking the entire interface. */
@@ -169,6 +194,17 @@
         }
         var message = (raw && typeof raw === 'object') ? '' : text(raw, 500);
         if (code === 'permission-denied') return 'You do not have permission to complete that action.';
+        if (code === 'auth/invalid-credential' || code === 'auth/invalid-login-credentials'
+            || code === 'auth/user-not-found' || code === 'auth/wrong-password') {
+            return 'The email or password is incorrect.';
+        }
+        if (code === 'auth/email-already-in-use') return 'An account already uses that email address. Try signing in or resetting your password.';
+        if (code === 'auth/weak-password') return 'Use a stronger password with at least 8 characters.';
+        if (code === 'auth/invalid-email') return 'Enter a valid email address.';
+        if (code === 'auth/too-many-requests') return 'Too many attempts. Please wait a while, then try again or reset your password.';
+        if (code === 'auth/network-request-failed') return 'We could not reach the sign-in service. Check your connection and try again.';
+        if (code === 'auth/popup-closed-by-user' || code === 'auth/cancelled-popup-request') return 'The sign-in window was closed before completion.';
+        if (code === 'auth/popup-blocked') return 'Your browser blocked the sign-in window. Allow pop-ups for Faith In and try again.';
         if (code === 'unavailable' || code === 'deadline-exceeded') return 'Faith In could not reach the service. Please check your connection and try again.';
         if (isFirestoreIndexError(error)) return 'We could not prepare this content right now. Please try again shortly.';
         if (/https?:\/\/|firebase|firestore|googleapis| at |\bcode\s*:/i.test(message)) {
@@ -556,6 +592,13 @@
     actions.cv_get_session = function (b, params) {
         return currentUser(b).then(function (user) {
             if (!user) return { logged_in: false };
+            if (needsEmailVerification(user)) {
+                return {
+                    logged_in: false,
+                    verification_required: true,
+                    email: emailAddress(user.email)
+                };
+            }
             // Authentication is authoritative. A temporarily slow profile read
             // should not leave every page waiting forever; use the provider's
             // real identity until Firestore is available again.
@@ -570,27 +613,73 @@
 
     actions.cv_google_sign_in = function (b) {
         var provider = new b.authMod.GoogleAuthProvider();
-        return b.authMod.signInWithPopup(b.auth, provider).then(function (credential) {
-            return loadProfile(b, credential.user);
-        });
+        provider.setCustomParameters({ prompt: 'select_account' });
+        return setAuthPersistence(b, true)
+            .then(function () { return b.authMod.signInWithPopup(b.auth, provider); })
+            .then(function (credential) { return loadProfile(b, credential.user); });
     };
 
     actions.cv_email_sign_in = function (b, params) {
         var email = emailAddress(params.email);
         var password = String(params.password || '');
         if (!email || !password) throw new Error('Enter your email and password.');
-        return b.authMod.signInWithEmailAndPassword(b.auth, email, password).then(function (credential) {
-            return loadProfile(b, credential.user);
-        });
+        return setAuthPersistence(b, String(params.remember) === 'true')
+            .then(function () { return b.authMod.signInWithEmailAndPassword(b.auth, email, password); })
+            .then(function (credential) {
+                if (!needsEmailVerification(credential.user)) return loadProfile(b, credential.user);
+                return b.authMod.sendEmailVerification(credential.user, { url: safeContinueUrl() })
+                    .catch(function () {})
+                    .then(function () {
+                        return {
+                            logged_in: false,
+                            verification_required: true,
+                            email: email
+                        };
+                    });
+            });
     };
 
     actions.cv_email_sign_up = function (b, params) {
         var email = emailAddress(params.email);
         var password = String(params.password || '');
-        if (!email || password.length < 6) throw new Error('Enter a valid email and a password with at least 6 characters.');
-        return b.authMod.createUserWithEmailAndPassword(b.auth, email, password).then(function (credential) {
-            return loadProfile(b, credential.user);
+        var displayName = text(params.display_name, 120);
+        if (!displayName) throw new Error('Enter your first and last name.');
+        if (!email || password.length < 8) throw new Error('Enter a valid email and a password with at least 8 characters.');
+        return setAuthPersistence(b, String(params.remember) === 'true')
+            .then(function () { return b.authMod.createUserWithEmailAndPassword(b.auth, email, password); })
+            .then(function (credential) {
+                return b.authMod.updateProfile(credential.user, { displayName: displayName })
+                    .then(function () { return b.authMod.sendEmailVerification(credential.user, { url: safeContinueUrl() }); })
+                    .then(function () {
+                        return {
+                            logged_in: false,
+                            verification_required: true,
+                            email: email
+                        };
+                    });
+            });
+    };
+
+    actions.cv_send_email_verification = function (b) {
+        return currentUser(b).then(function (user) {
+            if (!user || !needsEmailVerification(user)) {
+                return { sent: true };
+            }
+            return b.authMod.sendEmailVerification(user, { url: safeContinueUrl() })
+                .then(function () { return { sent: true }; });
         });
+    };
+
+    actions.cv_password_reset = function (b, params) {
+        var email = emailAddress(params.email);
+        if (!email) throw new Error('Enter a valid email address.');
+        return b.authMod.sendPasswordResetEmail(b.auth, email, { url: safeContinueUrl() })
+            .catch(function (error) {
+                // Password recovery must not reveal whether an account exists.
+                if (error && (error.code === 'auth/user-not-found' || error.code === 'auth/invalid-email')) return;
+                throw error;
+            })
+            .then(function () { return { sent: true }; });
     };
 
     actions.cv_logout = function (b) {

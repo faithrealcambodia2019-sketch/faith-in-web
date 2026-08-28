@@ -9,6 +9,9 @@
 
 ## Authorization
 
+- The community application is gated behind Firebase Authentication. Password accounts must verify their email before Firestore, Storage, or authenticated server endpoints accept them; federated and phone providers rely on their provider-verified identity.
+- Password recovery always returns the same public response whether or not an account exists, reducing account-enumeration risk.
+- "Remember me" uses Firebase local persistence; leaving it unchecked limits the login to the current browser session.
 - A user can read and update only their own `users/{uid}` document.
 - Other signed-in members can read the email-free `publicProfiles/{uid}` projection used by the member directory.
 - Profile creates and updates use field allowlists; unknown or privileged fields are denied.

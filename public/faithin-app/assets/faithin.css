@@ -512,3 +512,112 @@ html.dark .msg-bubble.is-mine{ color:#0b1120; }
   width:132px; aspect-ratio:16 / 9; border-radius:8px; object-fit:cover;
   border:1px solid rgb(var(--line)); background:rgb(var(--raised));
 }
+
+/* --- secure authentication --------------------------------------------- */
+body.fi-auth-locked{ overflow:hidden; }
+.fi-auth{
+  position:fixed; inset:0; z-index:500; overflow:auto;
+  color:#111827; background:#f3f2ef;
+}
+.fi-auth.hidden{ display:none; }
+.fi-auth__page{ min-height:100dvh; display:flex; flex-direction:column; }
+.fi-auth__brand{
+  width:100%; max-width:1128px; margin:0 auto; padding:22px 24px;
+  display:flex; align-items:center; gap:7px; color:#2563eb;
+  font-size:30px; line-height:1; font-weight:800; letter-spacing:-.035em;
+}
+.fi-auth__brand i{ font-size:21px; }
+.fi-auth__main{
+  width:100%; max-width:1128px; margin:0 auto; padding:12px 24px 44px;
+  flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;
+}
+.fi-auth__intro{ max-width:760px; margin:0 auto 38px; text-align:center; }
+.fi-auth__intro h1{
+  color:#111827; font-family:Georgia,Cambria,"Times New Roman",serif;
+  font-size:clamp(34px,5vw,52px); line-height:1.04; font-weight:700; letter-spacing:-.025em;
+}
+.fi-auth__intro p{ margin-top:22px; color:#4b5563; font-size:clamp(17px,2vw,22px); line-height:1.55; }
+.fi-auth__card{
+  position:relative; width:100%; max-width:640px; padding:52px;
+  border:1px solid rgba(17,24,39,.05); border-radius:18px; background:#fff;
+  box-shadow:0 10px 28px rgba(15,23,42,.10),0 2px 5px rgba(15,23,42,.04);
+}
+.fi-auth__card h2{ font-size:31px; line-height:1.2; font-weight:800; letter-spacing:-.025em; }
+.fi-auth__subtitle{ margin-top:9px; color:#6b7280; font-size:18px; line-height:1.5; }
+.fi-auth__close{
+  position:absolute; right:18px; top:18px; width:36px; height:36px; border-radius:999px;
+  display:grid; place-items:center; color:#6b7280; background:transparent;
+}
+.fi-auth.is-locked .fi-auth__close{ display:none; }
+.fi-auth__close:hover{ color:#111827; background:#f3f4f6; }
+.fi-auth__form{ margin-top:31px; display:grid; gap:17px; }
+.fi-auth__form input:not([type="checkbox"]){
+  width:100%; height:58px; padding:0 18px; border:1px solid #667085; border-radius:7px;
+  color:#111827; background:#fff; font-size:18px; outline:none;
+  transition:border-color .15s ease, box-shadow .15s ease;
+}
+.fi-auth__form input:not([type="checkbox"])::placeholder{ color:#98a2b3; }
+.fi-auth__form input:not([type="checkbox"]):focus{ border-color:#2563eb; box-shadow:0 0 0 3px rgba(37,99,235,.14); }
+.fi-auth__password{ position:relative; display:block; }
+.fi-auth__password input{ padding-right:54px !important; }
+.fi-auth__password button{
+  position:absolute; right:0; top:0; width:52px; height:58px; display:grid; place-items:center;
+  color:#667085; background:transparent; font-size:18px;
+}
+.fi-auth__options{ display:flex; align-items:center; justify-content:space-between; gap:18px; color:#475467; font-size:16px; }
+.fi-auth__options label{ display:flex; align-items:center; gap:10px; cursor:pointer; }
+.fi-auth__options input{ width:18px; height:18px; accent-color:#2563eb; }
+.fi-auth__options button,.fi-auth__switch button,.fi-auth__terms a,.fi-auth__back,.fi-auth__text-button{ color:#2563eb; font-weight:700; }
+.fi-auth__options button:hover,.fi-auth__switch button:hover,.fi-auth__terms a:hover,.fi-auth__back:hover,.fi-auth__text-button:hover{ text-decoration:underline; }
+.fi-auth__primary,.fi-auth__social{
+  min-height:58px; width:100%; border-radius:999px; display:flex; align-items:center;
+  justify-content:center; gap:12px; font-size:19px; font-weight:750; transition:.15s ease;
+}
+.fi-auth__primary{ border:1px solid #2563eb; color:#fff; background:#2563eb; }
+.fi-auth__primary:hover{ border-color:#1d4ed8; background:#1d4ed8; }
+.fi-auth__primary:disabled,.fi-auth__social:disabled,.fi-auth__text-button:disabled{ opacity:.65; cursor:wait; }
+.fi-auth__spinner{
+  display:none; width:19px; height:19px; border:2px solid rgba(255,255,255,.35);
+  border-top-color:#fff; border-radius:999px; animation:fi-auth-spin .7s linear infinite;
+}
+.is-busy .fi-auth__spinner{ display:block; }
+@keyframes fi-auth-spin{ to{ transform:rotate(360deg); } }
+.fi-auth__divider{ margin:31px 0; display:flex; align-items:center; gap:18px; color:#667085; font-size:16px; }
+.fi-auth__divider::before,.fi-auth__divider::after{ content:""; height:1px; flex:1; background:#d0d5dd; }
+.fi-auth__social{ border:1px solid #667085; color:#475467; background:#fff; }
+.fi-auth__social:hover{ color:#111827; border-color:#344054; background:#f9fafb; }
+.fi-auth__google{ width:24px; height:24px; display:grid; place-items:center; color:#4285f4; font-weight:900; font-family:Arial,sans-serif; }
+.fi-auth__switch{ margin-top:35px; text-align:center; color:#475467; font-size:17px; }
+.fi-auth__names{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.fi-auth__terms{ color:#667085; font-size:13px; line-height:1.5; text-align:center; }
+.fi-auth__error,.fi-auth__success{ padding:11px 13px; border-radius:8px; font-size:14px; line-height:1.45; }
+.fi-auth__error{ color:#b42318; border:1px solid #fecdca; background:#fef3f2; }
+.fi-auth__success{ color:#067647; border:1px solid #abefc6; background:#ecfdf3; }
+.fi-auth__back{ margin-bottom:23px; display:inline-flex; align-items:center; gap:8px; font-size:14px; }
+.fi-auth__verify-icon{
+  width:56px; height:56px; margin-bottom:20px; border-radius:999px; display:grid; place-items:center;
+  color:#2563eb; background:#eff6ff; font-size:24px;
+}
+.fi-auth__text-button{ display:block; margin:20px auto 0; font-size:15px; }
+.fi-auth__footer{
+  width:100%; max-width:1128px; margin:0 auto; padding:21px 24px;
+  display:flex; justify-content:center; gap:22px; color:#667085; font-size:13px;
+}
+.fi-auth__footer a:hover{ color:#2563eb; text-decoration:underline; }
+@media (max-width:767px){
+  .fi-auth__brand{ padding:18px 20px; font-size:26px; }
+  .fi-auth__main{ padding:8px 14px 32px; justify-content:flex-start; }
+  .fi-auth__intro{ margin:18px auto 25px; }
+  .fi-auth__intro h1{ font-size:31px; }
+  .fi-auth__intro h1 br{ display:none; }
+  .fi-auth__intro p{ margin-top:13px; font-size:16px; }
+  .fi-auth__card{ padding:30px 22px; border-radius:14px; }
+  .fi-auth__card h2{ font-size:27px; }
+  .fi-auth__subtitle{ font-size:16px; }
+  .fi-auth__form{ margin-top:24px; }
+  .fi-auth__form input:not([type="checkbox"]){ height:54px; font-size:16px; }
+  .fi-auth__password button{ height:54px; }
+  .fi-auth__primary,.fi-auth__social{ min-height:54px; font-size:16px; }
+  .fi-auth__names{ grid-template-columns:1fr; }
+  .fi-auth__options{ font-size:14px; }
+}
