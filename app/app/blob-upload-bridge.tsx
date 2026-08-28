@@ -58,6 +58,7 @@ export default function BlobUploadBridge() {
           "x-faith-in-blob-token-request": "1",
         },
         contentType: file.type,
+        multipart: file.size > 100 * 1024 * 1024,
         onUploadProgress: ({ percentage }) => onProgress?.(percentage / 100),
       });
 

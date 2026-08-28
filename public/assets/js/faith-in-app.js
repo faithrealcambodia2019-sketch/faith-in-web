@@ -129,9 +129,12 @@
         profileFollowing: ((cv_ajax.auth && cv_ajax.auth.current_user && cv_ajax.auth.current_user.following) || []),
         isSavingProfile: false,
         resTitle: '',
+        resDescription: '',
         resFormat: 'pdf',
         resCategory: 'Bible Study',
         contributorName: '',
+        translatorName: '',
+        resourceLanguage: '',
         contributorRole: '',
         contributorChurch: '',
         contributorMinistry: '',
@@ -3629,10 +3632,12 @@ window.signOut = () => {
         formData.append('action', 'cv_upload_resource');
         formData.append('nonce', cv_ajax.nonce);
         formData.append('title', state.resTitle);
-        formData.append('description', 'Newly uploaded resource');
+        formData.append('description', state.resDescription || 'Shared with the Faith In community.');
         formData.append('category', state.resCategory);
         formData.append('format', state.resFormat);
         formData.append('contributor_name', state.contributorName);
+        formData.append('translator_name', state.translatorName);
+        formData.append('language', state.resourceLanguage);
         formData.append('contributor_role', state.contributorRole);
         formData.append('contributor_church', state.contributorChurch);
         formData.append('contributor_ministry', state.contributorMinistry);
@@ -3672,7 +3677,7 @@ window.signOut = () => {
                 const nextResources = returnedResource ? [returnedResource].concat((state.resources || []).filter(function(r) { return String(r.id) !== String(returnedResource.id); })) : state.resources;
                 setState({
                     resources: nextResources,
-                    resTitle: '', contributorName: '', contributorRole: '', contributorChurch: '', contributorMinistry: '',
+                    resTitle: '', resDescription: '', contributorName: '', translatorName: '', resourceLanguage: '', contributorRole: '', contributorChurch: '', contributorMinistry: '',
                     selectedFileName: '', selectedResourceFile: null, selectedThumbnailName: '', selectedThumbnailFile: null, thumbnailPreviewUrl: '',
                     exploreSort: 'Newest'
                 });
@@ -3835,9 +3840,25 @@ window.signOut = () => {
     window.cvPostingSetPostType = (type) => setState({ postType: type, createIntent: type === 'Blessing' ? 'blessing' : 'post' });
     window.updateFileName = (input) => {
         const file = input.files && input.files[0] ? input.files[0] : null;
+        if (file && file.size > 250 * 1024 * 1024) {
+            input.value = '';
+            state.selectedResourceFile = null;
+            state.selectedFileName = '';
+            window.showToast('That file is larger than 250MB. Please choose a smaller file.', 'error');
+            return;
+        }
         const name = file ? file.name : '';
         state.selectedResourceFile = file;
         state.selectedFileName = name;
+        if (file) {
+            const type = String(file.type || '').toLowerCase();
+            const ext = (String(file.name || '').split('.').pop() || '').toLowerCase();
+            if (type === 'application/pdf' || ext === 'pdf') state.resFormat = 'pdf';
+            else if (type.indexOf('video/') === 0 || ['mp4','mov','m4v','webm','ogv'].includes(ext)) state.resFormat = 'video';
+            else if (type.indexOf('audio/') === 0 || ['mp3','m4a','aac','wav','ogg','oga','opus'].includes(ext)) state.resFormat = 'audio';
+            else if (type.indexOf('image/') === 0 || ['jpg','jpeg','png','gif','webp','avif','heic','heif'].includes(ext)) state.resFormat = 'image';
+            else if (ext === 'zip') state.resFormat = 'zip';
+        }
         const display = document.getElementById('file-name-display');
         if (display) display.textContent = name || 'No file selected';
     };
@@ -3908,6 +3929,12 @@ window.signOut = () => {
         const files = Array.isArray(state.selectedPostMediaFiles) ? state.selectedPostMediaFiles : [];
         if (!files.length) {
             window.showToast('Choose a photo or Reel before retrying.', 'info');
+            return;
+        }
+        const oversizeFile = files.find(file => file && file.size > 250 * 1024 * 1024);
+        if (oversizeFile) {
+            input.value = '';
+            window.showToast('“' + (oversizeFile.name || 'That file') + '” is larger than 250MB. Please choose a smaller file.', 'error');
             return;
         }
         uploadPostMediaToServer(files, state.postMediaMode || 'gallery');
@@ -4239,9 +4266,12 @@ window.signOut = () => {
             if (!draft || typeof draft !== 'object') return null;
             return {
                 resTitle: String(draft.resTitle || '').slice(0, 300),
+                resDescription: String(draft.resDescription || '').slice(0, 2000),
                 resFormat: ['pdf', 'video', 'audio', 'image', 'zip'].includes(String(draft.resFormat || '').toLowerCase()) ? String(draft.resFormat).toLowerCase() : 'pdf',
                 resCategory: String(draft.resCategory || 'Bible Study').slice(0, 100),
                 contributorName: String(draft.contributorName || '').slice(0, 200),
+                translatorName: String(draft.translatorName || '').slice(0, 200),
+                resourceLanguage: String(draft.resourceLanguage || '').slice(0, 100),
                 contributorRole: String(draft.contributorRole || '').slice(0, 200),
                 contributorChurch: String(draft.contributorChurch || '').slice(0, 200),
                 contributorMinistry: String(draft.contributorMinistry || '').slice(0, 200)
@@ -4260,15 +4290,18 @@ window.signOut = () => {
     window.cvSaveResourceDraft = () => {
         const draft = {
             resTitle: state.resTitle,
+            resDescription: state.resDescription,
             resFormat: state.resFormat,
             resCategory: state.resCategory,
             contributorName: state.contributorName,
+            translatorName: state.translatorName,
+            resourceLanguage: state.resourceLanguage,
             contributorRole: state.contributorRole,
             contributorChurch: state.contributorChurch,
             contributorMinistry: state.contributorMinistry,
             savedAt: new Date().toISOString()
         };
-        const meaningfulValues = [draft.resTitle, draft.contributorName, draft.contributorRole, draft.contributorChurch, draft.contributorMinistry];
+        const meaningfulValues = [draft.resTitle, draft.resDescription, draft.contributorName, draft.translatorName, draft.contributorRole, draft.contributorChurch, draft.contributorMinistry];
         if (!meaningfulValues.some(value => String(value || '').trim())) {
             window.showToast('Add some resource details before saving a draft.', 'info');
             return;
@@ -5460,6 +5493,8 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
         const size = escapeHtml(r.size || 'Unknown size');
         const author = escapeHtml(r.author || 'Faith In Team');
         const authorTitle = escapeHtml(r.author_title || r.contributor_title || r.country || 'Global');
+        const translatedBy = escapeHtml(r.translated_by || '');
+        const resourceLanguage = escapeHtml(r.language || '');
         const description = escapeHtml(r.description || 'No description available for this resource.');
         const imageUrl = safeImageUrl(r.image_url || r.cover_image_url || r.thumbnail_url, '');
         const isApiBook = cvIsApiLibraryResource(r);
@@ -5520,6 +5555,11 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
                                 </div>
                             </div>
 
+                            ${(translatedBy || resourceLanguage) ? `<div class="cv-library-detail__credits">
+                                ${translatedBy ? `<span><strong>Translated by</strong> ${translatedBy}</span>` : ''}
+                                ${resourceLanguage ? `<span><strong>Language</strong> ${resourceLanguage}</span>` : ''}
+                            </div>` : ''}
+
                             <p class="cv-library-detail__description">${description}</p>
 
                             <div class="cv-library-detail__actions">
@@ -5554,7 +5594,9 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
             const category = String(r.category || '').toLowerCase();
             const description = String(r.description || '').toLowerCase();
             const format = String(r.format || r.type || '').toLowerCase();
-            const searchMatch = !q || title.includes(q) || author.includes(q) || category.includes(q) || description.includes(q) || format.includes(q);
+            const translator = String(r.translated_by || '').toLowerCase();
+            const language = String(r.language || '').toLowerCase();
+            const searchMatch = !q || title.includes(q) || author.includes(q) || translator.includes(q) || language.includes(q) || category.includes(q) || description.includes(q) || format.includes(q);
             const catMatch = activeCat === 'All' || category === activeCat.toLowerCase();
             return searchMatch && catMatch;
         });
@@ -5567,6 +5609,8 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
             const format = escapeHtml(formatRaw.toUpperCase());
             const author = escapeHtml(res.author || 'Faith In Team');
             const authorTitle = escapeHtml(res.author_title || res.contributor_title || res.country || 'Global');
+            const translator = escapeHtml(res.translated_by || '');
+            const language = escapeHtml(res.language || '');
             const views = escapeHtml(res.views || res.view_count || '0');
             const downloads = escapeHtml(res.downloads || res.download_count || '0');
             const imageUrl = safeImageUrl(res.image_url || res.cover_image_url || res.thumbnail_url, '');
@@ -5587,7 +5631,7 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
                             </div>
                             <div class="cv-library-card__author-copy">
                                 <p>${author} ${renderVerificationBadge(res, 'compact')}</p>
-                                <span>${authorTitle}</span>
+                                <span>${authorTitle}${translator ? ` • Translated by ${translator}` : ''}${language ? ` • ${language}` : ''}</span>
                             </div>
                         </div>
                         <div class="cv-library-card__footer">
@@ -6461,14 +6505,24 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
                                 />
                             </div>
 
+                            <div>
+                                <label class="block text-sm font-semibold text-[rgba(0,0,0,0.9)] mb-1">Description</label>
+                                <textarea
+                                    rows="4"
+                                    oninput="updatePostForm('resDescription', this.value)"
+                                    placeholder="What is this resource about, and who is it for?"
+                                    class="w-full px-3 py-2 text-sm text-[rgba(0,0,0,0.9)] bg-transparent border border-gray-400 rounded hover:bg-gray-50 focus:bg-transparent focus:border-[#0A66C2] focus:ring-1 focus:ring-[#0A66C2] outline-none transition-all placeholder:text-[rgba(0,0,0,0.6)] resize-y"
+                                >${escapeHtml(state.resDescription)}</textarea>
+                            </div>
+
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
-                                    <label class="block text-sm font-semibold text-[rgba(0,0,0,0.9)] mb-1">Name</label>
+                                    <label class="block text-sm font-semibold text-[rgba(0,0,0,0.9)] mb-1">Author / Creator</label>
                                     <input
                                         type="text"
                                         value="${escapeAttr(state.contributorName)}"
                                         oninput="updatePostForm('contributorName', this.value)"
-                                        placeholder="Your name"
+                                        placeholder="Author or creator name"
                                         class="w-full px-3 py-2 text-sm text-[rgba(0,0,0,0.9)] bg-transparent border border-gray-400 rounded hover:bg-gray-50 focus:bg-transparent focus:border-[#0A66C2] focus:ring-1 focus:ring-[#0A66C2] outline-none transition-all placeholder:text-[rgba(0,0,0,0.6)]"
                                     />
                                 </div>
@@ -6479,6 +6533,29 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
                                         value="${escapeAttr(state.contributorRole)}"
                                         oninput="updatePostForm('contributorRole', this.value)"
                                         placeholder="Pastor, teacher, leader..."
+                                        class="w-full px-3 py-2 text-sm text-[rgba(0,0,0,0.9)] bg-transparent border border-gray-400 rounded hover:bg-gray-50 focus:bg-transparent focus:border-[#0A66C2] focus:ring-1 focus:ring-[#0A66C2] outline-none transition-all placeholder:text-[rgba(0,0,0,0.6)]"
+                                    />
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label class="block text-sm font-semibold text-[rgba(0,0,0,0.9)] mb-1">Translated by <span class="font-normal text-[rgba(0,0,0,0.55)]">(Optional)</span></label>
+                                    <input
+                                        type="text"
+                                        value="${escapeAttr(state.translatorName)}"
+                                        oninput="updatePostForm('translatorName', this.value)"
+                                        placeholder="Translator name"
+                                        class="w-full px-3 py-2 text-sm text-[rgba(0,0,0,0.9)] bg-transparent border border-gray-400 rounded hover:bg-gray-50 focus:bg-transparent focus:border-[#0A66C2] focus:ring-1 focus:ring-[#0A66C2] outline-none transition-all placeholder:text-[rgba(0,0,0,0.6)]"
+                                    />
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-semibold text-[rgba(0,0,0,0.9)] mb-1">Language <span class="font-normal text-[rgba(0,0,0,0.55)]">(Optional)</span></label>
+                                    <input
+                                        type="text"
+                                        value="${escapeAttr(state.resourceLanguage)}"
+                                        oninput="updatePostForm('resourceLanguage', this.value)"
+                                        placeholder="Khmer, English, Thai…"
                                         class="w-full px-3 py-2 text-sm text-[rgba(0,0,0,0.9)] bg-transparent border border-gray-400 rounded hover:bg-gray-50 focus:bg-transparent focus:border-[#0A66C2] focus:ring-1 focus:ring-[#0A66C2] outline-none transition-all placeholder:text-[rgba(0,0,0,0.6)]"
                                     />
                                 </div>
@@ -6513,6 +6590,7 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
                                     <div class="relative">
                                         <select onchange="updatePostForm('resFormat', this.value)" class="w-full px-3 py-2 text-sm text-[rgba(0,0,0,0.9)] bg-transparent border border-gray-400 rounded hover:bg-gray-50 focus:bg-transparent focus:border-[#0A66C2] focus:ring-1 focus:ring-[#0A66C2] outline-none appearance-none transition-all">
                                             <option value="pdf" ${state.resFormat === 'pdf' ? 'selected' : ''}>PDF Tract</option>
+                                            <option value="image" ${state.resFormat === 'image' ? 'selected' : ''}>Image / Artwork</option>
                                             <option value="video" ${state.resFormat === 'video' ? 'selected' : ''}>Video Content</option>
                                             <option value="audio" ${state.resFormat === 'audio' ? 'selected' : ''}>Audio Lesson</option>
                                             <option value="zip" ${state.resFormat === 'zip' ? 'selected' : ''}>Lesson Bundle</option>
@@ -6570,7 +6648,7 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
                                         class="px-4 py-1.5 border border-[rgba(0,0,0,0.6)] text-[rgba(0,0,0,0.6)] text-sm font-semibold rounded-full group-hover:border-[#0A66C2] group-hover:text-[#0A66C2] transition-colors mb-3"
                                     >Select File</button>
                                     <h4 id="file-name-display" class="text-sm font-semibold text-[rgba(0,0,0,0.9)]">${state.selectedFileName || 'No file selected'}</h4>
-                                    <p class="text-xs text-[rgba(0,0,0,0.6)] mt-1">Max upload size: 50MB</p>
+                                    <p class="text-xs text-[rgba(0,0,0,0.6)] mt-1">PDF, image, audio, video, or ZIP • up to 250MB • stored in Vercel Blob</p>
                                 </div>
                             </div>
                         </form>
@@ -6614,8 +6692,8 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
             const mediaCount = (state.selectedPostMediaFiles || []).length;
             const hasMedia = mediaCount > 0;
             const isReel = state.postMediaMode === 'reel';
-            const mediaTitle = isReel ? 'Add a Reel' : (hasMedia ? (mediaCount + ' media selected') : 'Add an image');
-            const mediaHelp = isReel ? 'Publish one Reel video of any length. Supported files: MP4, MOV, M4V, WEBM, OGV.' : (hasMedia ? 'Upload up to 10 photos, or one Reel video of any length.' : 'Enhance your post with visual content.');
+            const mediaTitle = isReel ? 'Video selected' : (hasMedia ? (mediaCount + ' image' + (mediaCount > 1 ? 's' : '') + ' selected') : 'Add images or video');
+            const mediaHelp = isReel ? 'Publish one video up to 250MB. Supported files: MP4, MOV, M4V, WEBM, OGV.' : (hasMedia ? 'Upload up to 10 images, or switch to one video.' : 'Choose up to 10 images or one video. Files upload directly to Vercel storage.');
             const mediaLabel = hasMedia ? (isReel ? 'Reel selected' : state.selectedPostCoverName) : 'No media selected';
             const mediaReadyPercent = hasMedia ? Math.max(0, Math.min(100, parseInt(state.postMediaReadyPercent || 0, 10))) : 0;
             const mediaReady = !hasMedia || mediaReadyPercent >= 100;
@@ -6776,7 +6854,8 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
                         <div class="cv-posting-tools">
                             ${isBlessingComposer ? `
                                 <button type="button" class="cv-posting-tool cv-posting-tool--blessing is-active" onclick="cvPostingSetPostType('Blessing')" aria-label="Write blessing text">${cvRenderBlessingIcon("cv-blessing-svg-icon--tool")}<span>Text</span></button>
-                                <button type="button" class="cv-posting-tool cv-posting-tool--image ${hasMedia && !isReel ? 'is-active' : ''}" onclick="cvPostingOpenMedia('image')" aria-label="Add a photo"><i data-lucide="image" class="w-6 h-6"></i><span>Add photo</span></button>
+                                <button type="button" class="cv-posting-tool cv-posting-tool--image ${hasMedia && !isReel ? 'is-active' : ''}" onclick="cvPostingOpenMedia('image')" aria-label="Add up to 10 images"><i data-lucide="images" class="w-6 h-6"></i><span>Images</span></button>
+                                <button type="button" class="cv-posting-tool cv-posting-tool--reel ${isReel ? 'is-active' : ''}" onclick="cvPostingOpenMedia('reel')" aria-label="Add a blessing video"><i data-lucide="video" class="w-6 h-6"></i><span>Video</span></button>
                                 <button type="button" class="cv-posting-tool cv-posting-tool--music ${hasBlessingMusic ? 'is-active' : ''}" onclick="cvFocusBlessingMusicPanel()" aria-label="Choose Christian music"><i data-lucide="music-2" class="w-6 h-6"></i><span>Music</span></button>
                             ` : `
                                 <button type="button" class="cv-posting-tool cv-posting-tool--image ${hasMedia && !isReel ? 'is-active' : ''}" onclick="cvPostingOpenMedia('image')" aria-label="Add a photo"><i data-lucide="image" class="w-6 h-6"></i><span>Add a photo</span></button>
@@ -6826,6 +6905,7 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
                             <label class="text-xs font-bold uppercase tracking-wider mb-2 block opacity-70">Format</label>
                             <select onchange="updatePostForm('resFormat', this.value)" class="w-full border-2 rounded-xl p-4 text-base font-medium focus:outline-none focus:border-brand-vault transition-colors cursor-pointer ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'bg-slate-50 border-slate-200'}">
                                 <option value="pdf" ${state.resFormat === 'pdf' ? 'selected' : ''}>PDF Tract</option>
+                                <option value="image" ${state.resFormat === 'image' ? 'selected' : ''}>Image / Artwork</option>
                                 <option value="video" ${state.resFormat === 'video' ? 'selected' : ''}>Video</option>
                                 <option value="audio" ${state.resFormat === 'audio' ? 'selected' : ''}>Audio</option>
                                 <option value="zip" ${state.resFormat === 'zip' ? 'selected' : ''}>Bundle (ZIP)</option>
@@ -6867,7 +6947,7 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
                                 <i data-lucide="folder-open" class="w-5 h-5"></i> Select File
                             </button>
                             <span id="file-name-display" class="text-lg font-bold mb-1">${state.selectedFileName || 'No file selected'}</span>
-                            <span class="text-sm opacity-60 font-medium">Max upload size: 50MB</span>
+                            <span class="text-sm opacity-60 font-medium">Max upload size: 250MB</span>
                         </div>
                     </div>
                 </div>

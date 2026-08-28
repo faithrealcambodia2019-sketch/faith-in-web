@@ -36,7 +36,7 @@
     'use strict';
 
     var SDK = '10.14.1';
-    var MAX_MEDIA_BYTES = 50 * 1024 * 1024; // Must stay in step with app/api/upload/route.ts.
+    var MAX_MEDIA_BYTES = 250 * 1024 * 1024; // Must stay in step with app/api/upload/route.ts.
     var MAX_MEDIA_FILES = 10;
     var FEED_PAGE_SIZE = 50;
     var BLESSING_LIFETIME_MS = 24 * 60 * 60 * 1000;
@@ -411,7 +411,7 @@
         if (oversize) {
             return Promise.reject(new Error(
                 '"' + (oversize.name || 'file') + '" is ' + Math.ceil(oversize.size / 1048576) +
-                'MB. The limit is 50MB — please choose a smaller file.'
+                'MB. The limit is 250MB — please choose a smaller file.'
             ));
         }
 
@@ -1007,6 +1007,10 @@
             author_avatar: text(author.avatar_url),
             author_title: text(author.role),
             contributor_title: text(author.role),
+            translated_by: text(data.translated_by || data.translator_name),
+            language: text(data.language),
+            church: text(author.church),
+            ministry: text(author.ministry),
             country: text(data.country),
             file_url: httpsUrl(data.file_url),
             url: httpsUrl(data.file_url),
@@ -1069,6 +1073,8 @@
                             category: text(params.category || params.res_category || 'Bible Study'),
                             format: text(params.format || params.res_format || 'pdf'),
                             country: text(params.country),
+                            translated_by: text(params.translator_name || params.translated_by, 300),
+                            language: text(params.language, 100),
                             file_url: uploaded.length ? uploaded[0].url : '',
                             filename: uploaded.length ? uploaded[0].name : '',
                             thumbnail_url: thumbs.length ? thumbs[0].url : '',

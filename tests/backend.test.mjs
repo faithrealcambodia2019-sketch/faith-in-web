@@ -197,9 +197,9 @@ check('video typed', withMedia.media_items[1].type === 'video', withMedia.media_
 check('cover set from first media', !!withMedia.cover_image_url);
 
 console.log('\n5) Oversize file rejected');
-r = await call(fd([['action','cv_create_post'],['content','big'],['post_media[]', new FakeFile('huge.mp4','video/mp4', 60*1024*1024)]]));
+r = await call(fd([['action','cv_create_post'],['content','big'],['post_media[]', new FakeFile('huge.mp4','video/mp4', 260*1024*1024)]]));
 check('rejected', r.success === false);
-check('mentions 50MB limit', /50MB/.test(r.data), r.data);
+check('mentions 250MB limit', /250MB/.test(r.data), r.data);
 
 console.log('\n6) Feed');
 r = await call({ action: 'cv_get_posts' });
@@ -255,12 +255,13 @@ check('does not 501', r.success === false);
 check('friendly message', /still being built/.test(r.data), r.data);
 
 console.log('\n11) Resource library');
-r = await call(fd([['action','cv_upload_resource'],['title','Romans study guide'],['category','Bible Study'],['format','pdf'],
+r = await call(fd([['action','cv_upload_resource'],['title','Romans study guide'],['description','A practical study through Romans'],['category','Bible Study'],['format','pdf'],['contributor_name','Pastor Dara'],['translator_name','Sokha Kim'],['language','Khmer'],
   ['resource_file', new FakeFile('romans.pdf','application/pdf',5000)]]));
 check('publish ok', r.success === true, r);
 check('stored', Object.keys(store).some(k=>k.startsWith('resources/')));
 const rid = Object.keys(store).find(k=>k.startsWith('resources/')).slice(10);
 check('counters start at 0', store['resources/'+rid].download_count === 0 && store['resources/'+rid].view_count === 0);
+check('resource credits stored', store['resources/'+rid].author.name === 'Pastor Dara' && store['resources/'+rid].translated_by === 'Sokha Kim' && store['resources/'+rid].language === 'Khmer');
 r = await call(fd([['action','cv_upload_resource'],['title',''],['resource_file', new FakeFile('x.pdf','application/pdf',10)]]));
 check('title required', r.success === false && /title/.test(r.data), r.data);
 r = await call(fd([['action','cv_upload_resource'],['title','No file']]));
@@ -268,6 +269,7 @@ check('file required', r.success === false && /file/.test(r.data), r.data);
 r = await call({ action:'cv_get_resources' });
 check('library lists it', r.data.items.length === 1 && r.data.items[0].title === 'Romans study guide', r.data.items);
 check('shaped for renderer', 'download_url' in r.data.items[0] && 'can_delete' in r.data.items[0]);
+check('credits shaped for renderer', r.data.items[0].translated_by === 'Sokha Kim' && r.data.items[0].language === 'Khmer', r.data.items[0]);
 r = await call({ action:'cv_download_resource', resource_id: rid });
 check('download returns url', !!r.data.url);
 check('download counted', store['resources/'+rid].download_count === 1);
@@ -357,8 +359,8 @@ uploadStatus = 500; uploadBody = null;
 r = await call(fd([['action','cv_stage_post_media'],['post_media[]', new FakeFile('b.jpg','image/jpeg',10)]]));
 check('generic message on 500', r.success === false && /Upload failed/.test(r.data), r.data);
 uploadStatus = 200; uploadBody = null;
-r = await call(fd([['action','cv_create_post'],['content','big'],['post_media[]', new FakeFile('huge.mp4','video/mp4', 60*1024*1024)]]));
-check('oversize rejected before upload', r.success === false && /50MB/.test(r.data), r.data);
+r = await call(fd([['action','cv_create_post'],['content','big'],['post_media[]', new FakeFile('huge.mp4','video/mp4', 260*1024*1024)]]));
+check('oversize rejected before upload', r.success === false && /250MB/.test(r.data), r.data);
 
 console.log('\n17) Non-cv request passes through');
 const t = transportFactory({ url:'https://example.com/thing' }, { url:'https://example.com/thing', data:{} });

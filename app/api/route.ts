@@ -21,7 +21,7 @@ export const runtime = "nodejs";
 // Uploads must not be cached or statically optimised.
 export const dynamic = "force-dynamic";
 
-const MAX_BYTES = 50 * 1024 * 1024;
+const MAX_BYTES = 250 * 1024 * 1024;
 const MAX_FILES = 10;
 const MAX_REQUEST_BYTES = MAX_BYTES * MAX_FILES + 2 * 1024 * 1024;
 
@@ -44,6 +44,7 @@ const ALLOWED_TYPES = new Set([
   "audio/wav",
   "audio/x-wav",
   "audio/ogg",
+  "audio/opus",
   "audio/webm",
   "application/pdf",
   "application/zip",
@@ -99,7 +100,7 @@ async function verifiedContentType(file: File): Promise<string | null> {
     return declared === "application/zip" ? declared : null;
   }
   if (ascii(bytes, 0, 4) === "OggS") {
-    return declared === "audio/ogg" || declared === "video/ogg" ? declared : null;
+    return declared === "audio/ogg" || declared === "audio/opus" || declared === "video/ogg" ? declared : null;
   }
   if (startsWith(bytes, [0x1a, 0x45, 0xdf, 0xa3])) {
     return declared === "audio/webm" || declared === "video/webm" ? declared : null;
@@ -220,7 +221,7 @@ export async function POST(request: Request) {
       return NextResponse.json(
         {
           success: false,
-          data: `"${displayName(file.name)}" is ${Math.ceil(file.size / 1048576)}MB. The limit is 50MB — please choose a smaller file.`,
+          data: `"${displayName(file.name)}" is ${Math.ceil(file.size / 1048576)}MB. The limit is 250MB — please choose a smaller file.`,
         },
         { status: 413 },
       );

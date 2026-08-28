@@ -1852,3 +1852,25 @@ html body #cv-root .cv-react-post-card .cv-feed-reel-wrap :is(video, iframe, .cv
     display: none !important;
   }
 }
+html body #cv-root .cv-library-detail__credits {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 8px !important;
+  margin: -8px 0 18px !important;
+}
+
+html body #cv-root .cv-library-detail__credits span {
+  display: inline-flex !important;
+  gap: 5px !important;
+  padding: 6px 10px !important;
+  border: 1px solid #e1e5ec !important;
+  border-radius: 999px !important;
+  background: #f8fafc !important;
+  color: #526071 !important;
+  font-size: 12px !important;
+  line-height: 1.2 !important;
+}
+
+html body #cv-root .cv-library-detail__credits strong {
+  color: #273244 !important;
+}
