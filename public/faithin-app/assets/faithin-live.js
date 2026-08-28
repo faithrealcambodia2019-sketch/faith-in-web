@@ -100,12 +100,27 @@
     return false;
   }
 
+  /**
+   * Paints the two header badges.
+   *
+   * They used to share one number, so an unread message inflated the bell and
+   * the member had no way to tell the two apart. Each icon now carries its own
+   * count. On /messages the realtime thread listener owns the message badge,
+   * which is more current than this one poll, so it is left alone there.
+   */
   async function refreshNotifications() {
     if (!session) return;
     try {
       const counts = await api.request('cv_social_get_notification_count');
-      const badge = $('a[aria-label^="Notifications"] span');
-      if (badge) { const count = counts.total_unread_count || 0; badge.textContent = count > 99 ? '99+' : count; badge.classList.toggle('hidden', !count); }
+      const paint = (node, count) => {
+        if (!node) return;
+        node.textContent = count > 99 ? '99+' : count;
+        node.classList.toggle('hidden', !count);
+      };
+      paint($('a[aria-label^="Notifications"] span'), counts.unread_count || 0);
+      if (document.body.dataset.page !== 'messaging') {
+        paint($('a[aria-label^="Messages"] [data-msg-badge]'), counts.message_unread_count || 0);
+      }
     } catch (_) {}
   }
 
@@ -228,21 +243,25 @@
     Promise.all([api.request('cv_social_get_followers'), api.request('cv_social_get_following')]).then(results => { const counts = $$('.count', $('#main > aside')); if (counts[0]) counts[0].textContent = results[0].items?.length || 0; if (counts[1]) counts[1].textContent = results[1].items?.length || 0; counts.slice(2).forEach(node => node.textContent = '0'); }).catch(() => {});
     $('#main > aside section.text-center')?.remove();
     const requested = new URLSearchParams(location.search).get('message'); if (requested) openMessenger(requested);
-    const headerMessage = $('a[aria-label="Messages"]'); if (headerMessage) headerMessage.href = '/network?message=inbox';
     document.addEventListener('fi:search', event => { query = event.detail.query.toLowerCase(); render(); });
     $$('#main section').filter(item => /invitations|groups you might/i.test(item.querySelector('h2')?.textContent || '')).forEach(item => item.remove());
   }
 
-  async function openMessenger(uid) {
-    if (!requireUser()) return; let targetUid = uid === 'inbox' ? '' : uid;
-    const modal = document.createElement('div'); modal.className = 'fixed inset-0 z-[240] bg-[#0b1120]/70 p-4 flex items-center justify-center';
-    modal.innerHTML = `<section class="card w-full max-w-2xl h-[70vh] flex flex-col"><header class="p-4 border-b border-line flex justify-between"><div><h2 class="font-bold text-[18px]">Faith In Messages</h2><p class="text-[12px] text-muted">Private member conversations</p></div><button class="icon-btn" data-msg-close><i class="fa-solid fa-xmark"></i></button></header><div class="grid md:grid-cols-[220px_1fr] min-h-0 flex-1"><aside class="border-r border-line overflow-y-auto p-2" data-msg-threads></aside><div class="flex flex-col min-h-0"><div class="flex-1 overflow-y-auto p-4 space-y-2" data-msg-items>${emptyState(targetUid ? 'Loading conversation…' : 'Choose a conversation')}</div><form class="p-3 border-t border-line flex gap-2" data-msg-form><input class="field !rounded-pill" name="body" placeholder="Write a message…"><button class="icon-btn text-brand"><i class="fa-solid fa-paper-plane"></i></button></form></div></div></section>`;
-    document.body.appendChild(modal); $('[data-msg-close]', modal).onclick = () => modal.remove();
-    async function threads() { const result = await api.request('cv_social_get_message_threads'); $('[data-msg-threads]', modal).innerHTML = (result.items || []).map(thread => `<button class="w-full text-left p-2 rounded-lg hover:bg-raised" data-thread-id="${esc(thread.id)}"><strong class="text-[13px]">${esc(thread.other_user?.name || 'Member')}</strong><span class="block text-[11px] text-muted truncate">${esc(thread.last_message || '')}</span></button>`).join('') || '<p class="p-2 text-[12px] text-muted">No conversations yet. Message a member from Network.</p>'; }
-    async function openThread(id) { const result = await api.request('cv_social_get_message_thread', { thread_id: id }); targetUid = ''; modal.dataset.threadId = id; $('[data-msg-items]', modal).innerHTML = (result.items || []).map(message => `<div class="max-w-[80%] rounded-xl px-3 py-2 text-[13px] ${message.mine ? 'ml-auto bg-brand text-white' : 'bg-raised'}">${esc(message.body)}</div>`).join('') || emptyState('Start the conversation.'); }
-    $('[data-msg-threads]', modal).onclick = event => { const button = event.target.closest('[data-thread-id]'); if (button) openThread(button.dataset.threadId); };
-    $('[data-msg-form]', modal).onsubmit = async event => { event.preventDefault(); const input = $('[name="body"]', modal); if (!input.value.trim()) return; try { const params = { body: input.value.trim() }; if (modal.dataset.threadId) params.thread_id = modal.dataset.threadId; else if (targetUid) params.recipient_uid = targetUid; else return toast('Choose a conversation first.'); const sent = await api.request('cv_social_send_message', params); input.value = ''; await threads(); await openThread(sent.thread_id || modal.dataset.threadId); } catch (error) { toast(error.message); } };
-    await threads(); if (targetUid) $('[data-msg-items]', modal).innerHTML = emptyState('Write your first message below.');
+  /**
+   * Opens a conversation on the messaging screen.
+   *
+   * Messaging used to be a cramped modal built here. It is now a page of its
+   * own at /messages, with realtime updates, history and attachments, so this
+   * function survives only as the entry point other screens already call —
+   * the Message button on a member card, and the `?message=` link the header
+   * used to carry.
+   */
+  function openMessenger(uid) {
+    if (!requireUser()) return;
+    const target = uid && uid !== 'inbox' ? `/messages?to=${encodeURIComponent(uid)}` : '/messages';
+    // These screens are static documents under /public served through Next
+    // rewrites, not React routes, so there is no router to push to.
+    location.href = target;
   }
 
   async function loadNotifications() {

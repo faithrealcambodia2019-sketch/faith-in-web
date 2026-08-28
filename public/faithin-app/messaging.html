@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+
+<html class="scroll-smooth" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
+<meta content="#ffffff" media="(prefers-color-scheme: light)" name="theme-color"/>
+<meta content="#0b1120" media="(prefers-color-scheme: dark)" name="theme-color"/>
+<meta content="Private conversations with members of your Faith In community." name="description"/>
+<meta content="noindex, nofollow" name="robots"/>
+<title>Faith In — Messaging</title>
+<link href="/faithin-app/assets/faithin-fonts.css" rel="stylesheet"/>
+<link href="/faithin-app/assets/faithin-icons.css" rel="stylesheet"/>
+<link href="/faithin-app/assets/faithin-tw.css" rel="stylesheet"/>
+<link href="/faithin-app/assets/faithin.css" rel="stylesheet"/>
+</head>
+<body class="font-sans min-h-screen pb-16 lg:pb-0" data-page="messaging" data-search="Search messages">
+<main class="max-w-[1200px] mx-auto px-0 sm:px-4 py-0 sm:py-5" id="main">
+<div class="card overflow-hidden msg-shell">
+
+<!-- ───── INBOX ───── -->
+<aside class="w-full md:w-[336px] md:shrink-0 flex flex-col min-h-0 border-line md:border-r" data-pane="inbox">
+<header class="flex items-center justify-between gap-2 px-4 py-3.5 border-b border-line">
+<h1 class="text-[18px] font-bold">Messaging</h1>
+<div class="flex items-center gap-1">
+<button aria-label="Filter conversations" class="icon-btn" data-filter-unread title="Show unread only" type="button">
+<i class="fa-solid fa-filter text-[13px]"></i>
+</button>
+<button aria-label="Start a new conversation" class="icon-btn bg-brand-soft text-brand" data-new-message title="New message" type="button">
+<i class="fa-regular fa-pen-to-square text-[13px]"></i>
+</button>
+</div>
+</header>
+
+<div class="p-3 border-b border-line">
+<div class="relative">
+<i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-[13px] text-faint pointer-events-none"></i>
+<label class="sr-only" for="msg-search">Search conversations</label>
+<input class="field !pl-10 !rounded-pill" id="msg-search" placeholder="Search messages" type="search"/>
+</div>
+</div>
+
+<div class="flex-1 overflow-y-auto min-h-0" data-thread-list>
+<p class="p-8 text-center text-[13.5px] text-muted" data-placeholder>Loading conversations…</p>
+</div>
+</aside>
+
+<!-- ───── CONVERSATION ───── -->
+<section aria-label="Conversation" class="hidden md:flex flex-1 flex-col min-w-0 min-h-0" data-pane="conversation">
+
+<header class="h-[68px] shrink-0 px-3 sm:px-5 flex items-center justify-between gap-3 border-b border-line" data-conversation-header hidden>
+<div class="flex items-center gap-3 min-w-0">
+<button aria-label="Back to conversations" class="icon-btn md:hidden shrink-0" data-back type="button">
+<i class="fa-solid fa-arrow-left"></i>
+</button>
+<span class="relative shrink-0" data-partner-avatar></span>
+<div class="min-w-0">
+<h2 class="text-[15px] font-bold leading-tight truncate" data-partner-name>Conversation</h2>
+<p class="text-[12px] text-muted leading-tight mt-0.5" data-partner-status></p>
+</div>
+</div>
+<div class="flex items-center gap-1 shrink-0">
+<button aria-label="Voice call — coming soon" class="icon-btn opacity-40 cursor-not-allowed" data-call disabled title="Voice calling is not available yet" type="button">
+<i class="fa-solid fa-phone text-[13px]"></i>
+</button>
+<button aria-label="Video call — coming soon" class="icon-btn opacity-40 cursor-not-allowed" data-call disabled title="Video calling is not available yet" type="button">
+<i class="fa-solid fa-video text-[13px]"></i>
+</button>
+<span class="w-px h-6 bg-line mx-1"></span>
+<button aria-expanded="false" aria-label="Conversation details" class="icon-btn" data-info-toggle type="button">
+<i class="fa-solid fa-circle-info"></i>
+</button>
+</div>
+</header>
+
+<div class="flex-1 overflow-y-auto min-h-0 px-3 sm:px-5 py-4 flex flex-col gap-2.5 bg-canvas" data-messages>
+<div class="m-auto text-center px-6">
+<i class="fa-regular fa-comments text-3xl text-faint"></i>
+<p class="mt-3 text-[14px] text-muted">Choose a conversation, or start a new one.</p>
+</div>
+</div>
+
+<div class="shrink-0 px-3 sm:px-4 py-3 border-t border-line" data-composer hidden>
+<form class="msg-composer" data-message-form>
+<label class="sr-only" for="msg-input">Write a message</label>
+<textarea class="no-scrollbar" id="msg-input" name="body" placeholder="Write a message…" rows="1"></textarea>
+<input accept="image/png,image/jpeg,image/gif,image/webp" class="hidden" data-attach-input type="file"/>
+<button aria-label="Attach an image" class="icon-btn shrink-0" data-attach title="Attach an image" type="button">
+<i class="fa-regular fa-image"></i>
+</button>
+<button aria-label="Send message" class="icon-btn shrink-0 !bg-brand !text-white dark:!text-[#0b1120]" data-send type="submit">
+<i class="fa-solid fa-paper-plane text-[13px]"></i>
+</button>
+</form>
+<div class="hidden mt-2 flex items-center gap-2 text-[12px] text-muted" data-attach-preview>
+<i class="fa-regular fa-image text-brand"></i>
+<span class="truncate max-w-[220px]" data-attach-name></span>
+<button class="text-rose font-semibold" data-attach-clear type="button">Remove</button>
+</div>
+<p class="mt-2 text-center text-[11.5px] text-faint">Enter sends · Shift + Enter starts a new line</p>
+</div>
+</section>
+
+<!-- ───── DETAILS ───── -->
+<aside aria-label="Conversation details" class="hidden w-[272px] shrink-0 border-l border-line flex-col min-h-0 overflow-y-auto" data-pane="info">
+<div class="p-6 flex flex-col items-center text-center border-b border-line">
+<span class="relative" data-info-avatar></span>
+<h3 class="font-bold text-[17px] mt-4 leading-tight" data-info-name>Faith In Member</h3>
+<p class="text-[12.5px] text-muted mt-1" data-info-role>Faith In member</p>
+<div class="flex gap-2 mt-5">
+<a class="btn btn-neutral !py-1.5 !px-3.5 text-[13px]" data-info-profile href="/profile"><i class="fa-regular fa-user"></i>Profile</a>
+</div>
+</div>
+<div class="p-5">
+<h4 class="text-[13.5px] font-bold">Shared images</h4>
+<div class="grid grid-cols-3 gap-2 mt-3" data-info-media>
+<p class="col-span-3 text-[12.5px] text-muted">Images shared in this conversation appear here.</p>
+</div>
+</div>
+</aside>
+
+</div>
+</main>
+
+<!-- ───── NEW MESSAGE ───── -->
+<div class="hidden fixed inset-0 z-[240] bg-[#0b1120]/70 p-4 items-center justify-center" data-new-modal>
+<section aria-labelledby="msg-new-title" aria-modal="true" class="card w-full max-w-md shadow-pop flex flex-col max-h-[560px]" role="dialog">
+<header class="px-5 py-4 border-b border-line flex items-center justify-between">
+<h2 class="font-bold text-[17px]" id="msg-new-title">New message</h2>
+<button aria-label="Close" class="icon-btn" data-new-close type="button"><i class="fa-solid fa-xmark"></i></button>
+</header>
+<div class="p-3 border-b border-line">
+<label class="sr-only" for="msg-people">Search members</label>
+<input class="field" id="msg-people" placeholder="Search members by name…" type="search"/>
+</div>
+<div class="flex-1 overflow-y-auto p-2 min-h-[180px]" data-people-list>
+<p class="p-6 text-center text-[13px] text-muted">Type a name to find someone to message.</p>
+</div>
+</section>
+</div>
+
+<script src="/faithin-app/assets/faithin-runtime.js?v=20260828-4"></script>
+<script src="/assets/js/faith-in-backend.js?v=20260828-4"></script>
+<script src="/faithin-app/assets/faithin.js?v=20260828-4"></script>
+<script src="/faithin-app/assets/faithin-live.js?v=20260828-4"></script>
+<script src="/faithin-app/assets/faithin-messaging.js?v=20260828-4"></script>
+</body>
+</html>

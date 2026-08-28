@@ -399,9 +399,24 @@ service cloud.firestore {
                .affectedKeys().hasOnly([request.auth.uid]);
       }
 
+      // Presence and typing. A participant may only describe themselves, so
+      // nobody can fake the other member being present or typing, and the
+      // entry is limited to the two fields the interface reads. Freshness is
+      // judged by the reader against the entry's own timestamp, which is why
+      // going offline needs no write and no cleanup.
+      function validPresenceUpdate() {
+        return isParticipant()
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['presence'])
+          && request.resource.data.presence.diff(resource.data.get('presence', {}))
+               .affectedKeys().hasOnly([request.auth.uid])
+          && request.resource.data.presence[request.auth.uid].keys().hasOnly(['at', 'typing'])
+          && request.resource.data.presence[request.auth.uid].typing is bool
+          && request.resource.data.presence[request.auth.uid].at is timestamp;
+      }
+
       allow read: if isParticipant();
       allow create: if isSignedIn() && validThreadCreate();
-      allow update: if validSendUpdate() || validReadUpdate();
+      allow update: if validSendUpdate() || validReadUpdate() || validPresenceUpdate();
       allow delete: if false;
 
       match /messages/{messageId} {

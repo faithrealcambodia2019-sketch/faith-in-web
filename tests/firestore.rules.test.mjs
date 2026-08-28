@@ -253,6 +253,58 @@ test("direct messages are private to their two participants", async () => {
   );
 });
 
+test("presence and typing can only be written for yourself", async () => {
+  const alice = environment.authenticatedContext("alice", { email: "alice@example.com" }).firestore();
+  const bob = environment.authenticatedContext("bob", { email: "bob@example.com" }).firestore();
+  const charlie = environment.authenticatedContext("charlie", { email: "charlie@example.com" }).firestore();
+  const threadPath = "messageThreads/presence-alice__bob";
+  const profile = (uid, id) => ({ uid, id, name: uid, avatar_url: "" });
+
+  await assertSucceeds(
+    setDoc(doc(alice, threadPath), {
+      participants: ["alice", "bob"],
+      participantProfiles: { alice: profile("alice", 1), bob: profile("bob", 2) },
+      lastMessage: "Hello",
+      lastMessageAt: now(),
+      lastSenderUid: "alice",
+      readAt: {},
+      createdAt: now(),
+      updatedAt: now(),
+    }),
+  );
+
+  await assertSucceeds(
+    updateDoc(doc(bob, threadPath), { "presence.bob": { at: now(), typing: true } }),
+  );
+  await assertSucceeds(
+    updateDoc(doc(bob, threadPath), { "presence.bob": { at: now(), typing: false } }),
+  );
+
+  // Nobody may claim that another member is present or typing.
+  await assertFails(
+    updateDoc(doc(bob, threadPath), { "presence.alice": { at: now(), typing: true } }),
+  );
+  await assertFails(
+    updateDoc(doc(charlie, threadPath), { "presence.charlie": { at: now(), typing: true } }),
+  );
+
+  // The entry carries only the two fields the interface reads.
+  await assertFails(
+    updateDoc(doc(bob, threadPath), { "presence.bob": { at: now(), typing: true, role: "admin" } }),
+  );
+  await assertFails(
+    updateDoc(doc(bob, threadPath), { "presence.bob": { at: now(), typing: "yes" } }),
+  );
+
+  // Presence must not be a way to smuggle a change into the conversation.
+  await assertFails(
+    updateDoc(doc(bob, threadPath), {
+      "presence.bob": { at: now(), typing: true },
+      lastMessage: "Rewritten",
+    }),
+  );
+});
+
 test("notifications can only be created by their actor and read by their recipient", async () => {
   const alice = environment.authenticatedContext("alice", { email: "alice@example.com" }).firestore();
   const bob = environment.authenticatedContext("bob", { email: "bob@example.com" }).firestore();

@@ -250,6 +250,18 @@
         return date ? date.toISOString() : '';
     }
 
+    /**
+     * Parses a timestamp the interface sent back to us, such as a pagination
+     * cursor. `toDate` deliberately only understands Firestore values, so
+     * strings that came in over the wire are parsed — and validated — here.
+     */
+    function parseIsoDate(value) {
+        var raw = text(value);
+        if (!raw) return null;
+        var date = new Date(raw);
+        return isNaN(date.getTime()) ? null : date;
+    }
+
     function profileFor(user, doc) {
         var data = doc || {};
         var email = text(user.email || data.email);
@@ -1521,6 +1533,30 @@
         return last && (!read || last.getTime() > read.getTime()) ? 1 : 0;
     }
 
+    // How recently a member must have signalled presence to read as present.
+    var PRESENCE_ACTIVE_MS = 90 * 1000;
+    var TYPING_ACTIVE_MS = 8 * 1000;
+
+    /** The other participant's live state, judged against the local clock. */
+    function shapePresence(data, otherUid) {
+        var entry = ((data || {}).presence || {})[otherUid];
+        var at = toDate(entry && entry.at);
+        var age = at ? Date.now() - at.getTime() : Infinity;
+        return {
+            active: age < PRESENCE_ACTIVE_MS ? 1 : 0,
+            typing: entry && entry.typing && age < TYPING_ACTIVE_MS ? 1 : 0,
+            last_active_at: at ? at.toISOString() : ''
+        };
+    }
+
+    /** True when the member has read every message in the thread. */
+    function threadSeenByOther(data, uid, otherUid) {
+        if (!data || data.lastSenderUid !== uid) return 0;
+        var last = toDate(data.lastMessageAt);
+        var read = toDate((data.readAt || {})[otherUid]);
+        return last && read && read.getTime() >= last.getTime() ? 1 : 0;
+    }
+
     function shapeThread(doc, user) {
         var data = doc.data() || {};
         var participants = Array.isArray(data.participants) ? data.participants : [];
@@ -1532,7 +1568,10 @@
             last_message: text(data.lastMessage, 500),
             last_message_at: isoTime(data.lastMessageAt || data.updatedAt),
             updated_at: isoTime(data.updatedAt),
-            unread_count: threadUnread(data, user.uid)
+            unread_count: threadUnread(data, user.uid),
+            mine_last: data.lastSenderUid === user.uid ? 1 : 0,
+            seen: threadSeenByOther(data, user.uid, otherUid),
+            presence: shapePresence(data, otherUid)
         };
     }
 
@@ -1552,6 +1591,69 @@
         });
     };
 
+    /** Default and maximum number of messages returned for one page of a thread. */
+    var MESSAGE_PAGE_SIZE = 40;
+    var MESSAGE_PAGE_MAX = 200;
+
+    function shapeMessage(doc, user) {
+        var data = doc.data() || {};
+        return {
+            id: doc.id,
+            body: text(data.body, 4000),
+            attachment: data.attachment || null,
+            author_uid: text(data.authorUid),
+            mine: data.authorUid === user.uid,
+            created_at: isoTime(data.createdAt)
+        };
+    }
+
+    /**
+     * Newest-first page of a conversation, returned oldest-first for rendering.
+     *
+     * The original implementation asked for the *oldest* two hundred messages,
+     * so an active conversation eventually stopped showing anything recent.
+     * Ordering descending and reversing keeps the newest page on screen, and
+     * `before` walks backwards through the history as the member scrolls up.
+     * Both the filter and the sort use `createdAt`, so no composite index is
+     * required.
+     */
+    function messagePageQuery(b, threadId, params) {
+        var size = parseInt(params.limit || MESSAGE_PAGE_SIZE, 10);
+        if (!(size > 0)) size = MESSAGE_PAGE_SIZE;
+        size = Math.min(size, MESSAGE_PAGE_MAX);
+        var parts = [
+            b.dbMod.collection(b.db, 'messageThreads', threadId, 'messages'),
+            b.dbMod.orderBy('createdAt', 'desc')
+        ];
+        var before = parseIsoDate(params.before);
+        if (before) parts.push(b.dbMod.where('createdAt', '<', before));
+        // One extra row answers "is there more history?" without a second read.
+        parts.push(b.dbMod.limit(size + 1));
+        return { query: b.dbMod.query.apply(b.dbMod, parts), size: size };
+    }
+
+    function readThreadPage(b, user, threadId, threadData, params) {
+        var participants = Array.isArray(threadData.participants) ? threadData.participants : [];
+        var otherUid = participants.find(function (uid) { return uid !== user.uid; }) || '';
+        var other = (threadData.participantProfiles || {})[otherUid] || { uid: otherUid, id: numericId(otherUid), name: 'Faith In Member' };
+        var page = messagePageQuery(b, threadId, params);
+        return b.dbMod.getDocs(page.query).then(function (snapshot) {
+            var rows = [];
+            snapshot.forEach(function (doc) { rows.push(doc); });
+            var hasMore = rows.length > page.size;
+            if (hasMore) rows = rows.slice(0, page.size);
+            var items = rows.reverse().map(function (doc) { return shapeMessage(doc, user); });
+            return {
+                items: items,
+                has_more: hasMore ? 1 : 0,
+                oldest_at: items.length ? items[0].created_at : '',
+                other_user: compactProfile(other),
+                presence: shapePresence(threadData, otherUid),
+                thread_id: threadId
+            };
+        });
+    }
+
     actions.cv_social_get_message_thread = function (b, params) {
         var id = text(params.thread_id || params.id);
         if (!id) throw new Error('That conversation could not be found.');
@@ -1562,32 +1664,95 @@
                 var threadData = threadSnap.data() || {};
                 var participants = Array.isArray(threadData.participants) ? threadData.participants : [];
                 if (participants.indexOf(user.uid) === -1) throw new Error('You do not have permission to open that conversation.');
-                var otherUid = participants.find(function (uid) { return uid !== user.uid; }) || '';
-                var other = (threadData.participantProfiles || {})[otherUid] || { uid: otherUid, id: numericId(otherUid), name: 'Faith In Member' };
-                var messagesQuery = b.dbMod.query(
-                    b.dbMod.collection(b.db, 'messageThreads', id, 'messages'),
-                    b.dbMod.orderBy('createdAt', 'asc'),
-                    b.dbMod.limit(200)
-                );
-                return b.dbMod.getDocs(messagesQuery).then(function (snapshot) {
-                    var items = [];
-                    snapshot.forEach(function (doc) {
-                        var data = doc.data() || {};
-                        items.push({
-                            id: doc.id,
-                            body: text(data.body, 4000),
-                            attachment: data.attachment || null,
-                            mine: data.authorUid === user.uid,
-                            created_at: isoTime(data.createdAt)
-                        });
-                    });
-                    var readUpdate = {};
-                    readUpdate['readAt.' + user.uid] = b.dbMod.serverTimestamp();
-                    return b.dbMod.updateDoc(threadRef, readUpdate).catch(function () {}).then(function () {
-                        return { items: items, other_user: compactProfile(other), thread_id: id };
-                    });
+                return readThreadPage(b, user, id, threadData, params).then(function (result) {
+                    // Older pages are history; only opening the newest page
+                    // means the member has actually seen the latest message.
+                    if (text(params.before)) return result;
+                    return markThreadRead(b, user, threadRef).then(function () { return result; });
                 });
             });
+        });
+    };
+
+    /**
+     * Opens a conversation with a member without writing anything.
+     *
+     * Direct thread ids are derived from the two uids, so the conversation can
+     * be addressed before it exists. Returning `exists: 0` lets the interface
+     * show an empty conversation rather than creating an empty thread document
+     * that would then sit in both members' inboxes having never been used.
+     */
+    actions.cv_social_open_thread = function (b, params) {
+        return requireUser(b).then(function (user) {
+            var requestedThreadId = text(params.thread_id);
+            if (requestedThreadId) {
+                return b.dbMod.getDoc(b.dbMod.doc(b.db, 'messageThreads', requestedThreadId)).then(function (snap) {
+                    if (!snap.exists()) throw new Error('That conversation is no longer available.');
+                    var data = snap.data() || {};
+                    var participants = Array.isArray(data.participants) ? data.participants : [];
+                    if (participants.indexOf(user.uid) === -1) throw new Error('You do not have permission to open that conversation.');
+                    var otherUid = participants.find(function (uid) { return uid !== user.uid; }) || '';
+                    return {
+                        thread_id: requestedThreadId,
+                        exists: 1,
+                        other_user: compactProfile((data.participantProfiles || {})[otherUid] || { uid: otherUid })
+                    };
+                });
+            }
+            return resolveMemberUid(b, params.recipient_uid || params.recipient_id).then(function (recipientUid) {
+                if (!recipientUid || recipientUid === user.uid) throw new Error('Choose another member to message.');
+                var id = directThreadId(user.uid, recipientUid);
+                return Promise.all([
+                    getMemberDocument(b, recipientUid),
+                    b.dbMod.getDoc(b.dbMod.doc(b.db, 'messageThreads', id))
+                ]).then(function (resolved) {
+                    if (!resolved[0].exists()) throw new Error('That member could not be found.');
+                    return {
+                        thread_id: id,
+                        exists: resolved[1].exists() ? 1 : 0,
+                        other_user: compactProfile(shapeMember(recipientUid, resolved[0].data(), user, {}))
+                    };
+                });
+            });
+        });
+    };
+
+    function markThreadRead(b, user, threadRef) {
+        var readUpdate = {};
+        readUpdate['readAt.' + user.uid] = b.dbMod.serverTimestamp();
+        // A failed read receipt must never block reading the conversation.
+        return b.dbMod.updateDoc(threadRef, readUpdate).catch(function () {});
+    }
+
+    actions.cv_social_mark_thread_read = function (b, params) {
+        var id = text(params.thread_id || params.id);
+        if (!id) throw new Error('That conversation could not be found.');
+        return requireUser(b).then(function (user) {
+            return markThreadRead(b, user, b.dbMod.doc(b.db, 'messageThreads', id))
+                .then(function () { return { thread_id: id, read: 1 }; });
+        });
+    };
+
+    /**
+     * Records that the member is looking at, or typing in, a conversation.
+     *
+     * One map field carries both signals so a typing keystroke and a presence
+     * heartbeat cost the same single write. Callers are expected to throttle;
+     * see `faithin-messaging.js`. Freshness is judged by the reader against
+     * `PRESENCE_ACTIVE_MS` and `TYPING_ACTIVE_MS`, so a member who closes the
+     * tab simply goes stale and needs no cleanup write.
+     */
+    actions.cv_social_set_thread_presence = function (b, params) {
+        var id = text(params.thread_id);
+        if (!id) throw new Error('That conversation could not be found.');
+        var typing = params.typing === true || params.typing === 1 || params.typing === '1' || params.typing === 'true';
+        return requireUser(b).then(function (user) {
+            var update = {};
+            update['presence.' + user.uid] = { at: b.dbMod.serverTimestamp(), typing: typing };
+            return b.dbMod.updateDoc(b.dbMod.doc(b.db, 'messageThreads', id), update)
+                .then(function () { return { thread_id: id, typing: typing ? 1 : 0 }; })
+                // The thread may not exist yet, and presence is cosmetic.
+                .catch(function () { return { thread_id: id, typing: typing ? 1 : 0 }; });
         });
     };
 
@@ -1991,6 +2156,126 @@
             if (window.console && console.error) console.error('[Faith In] ' + action + ':', error);
             throw new Error(publicErrorMessage(error));
         });
+    };
+
+    // ---------------------------------------------------------------------
+    // Realtime streams
+    // ---------------------------------------------------------------------
+
+    /**
+     * Firestore listeners, exposed to the interface as named channels.
+     *
+     * Everything else in this file answers a single request. Messaging is the
+     * one screen where polling is visibly wrong: a reply that arrives seconds
+     * after it was sent reads as a broken conversation. These channels wrap
+     * `onSnapshot` so a subscriber is pushed a freshly shaped payload — the
+     * same shape the equivalent action returns — whenever Firestore reports a
+     * change, and nothing has to guess at a refresh interval.
+     *
+     * Each stream returns its own unsubscribe function.
+     */
+    var streams = {};
+
+    streams.message_threads = function (b, user, params, emit, fail) {
+        var threadsQuery = b.dbMod.query(
+            b.dbMod.collection(b.db, 'messageThreads'),
+            b.dbMod.where('participants', 'array-contains', user.uid),
+            b.dbMod.limit(100)
+        );
+        return b.dbMod.onSnapshot(threadsQuery, function (snapshot) {
+            var items = [];
+            snapshot.forEach(function (doc) { items.push(shapeThread(doc, user)); });
+            items.sort(function (a, c) { return String(c.updated_at || '').localeCompare(String(a.updated_at || '')); });
+            emit({ items: items, from_cache: snapshot.metadata.fromCache ? 1 : 0 });
+        }, fail);
+    };
+
+    streams.thread_messages = function (b, user, params, emit, fail) {
+        var id = text(params.thread_id);
+        if (!id) throw new Error('That conversation could not be found.');
+        var size = parseInt(params.limit || MESSAGE_PAGE_SIZE, 10);
+        if (!(size > 0)) size = MESSAGE_PAGE_SIZE;
+        size = Math.min(size, MESSAGE_PAGE_MAX);
+
+        // The two listeners answer different questions — what was said, and
+        // who is there — so each side is emitted as it arrives rather than
+        // held back waiting for the other.
+        var state = { items: null, has_more: 0, oldest_at: '', thread: null };
+        function publish() {
+            if (!state.items) return;
+            var threadData = state.thread || {};
+            var participants = Array.isArray(threadData.participants) ? threadData.participants : [];
+            var otherUid = participants.find(function (uid) { return uid !== user.uid; }) || '';
+            emit({
+                thread_id: id,
+                items: state.items,
+                has_more: state.has_more,
+                oldest_at: state.oldest_at,
+                other_user: state.thread ? compactProfile((threadData.participantProfiles || {})[otherUid] || { uid: otherUid }) : null,
+                presence: shapePresence(threadData, otherUid),
+                seen: threadSeenByOther(threadData, user.uid, otherUid)
+            });
+        }
+
+        var messagesQuery = b.dbMod.query(
+            b.dbMod.collection(b.db, 'messageThreads', id, 'messages'),
+            b.dbMod.orderBy('createdAt', 'desc'),
+            b.dbMod.limit(size + 1)
+        );
+        var stopMessages = b.dbMod.onSnapshot(messagesQuery, function (snapshot) {
+            var rows = [];
+            snapshot.forEach(function (doc) { rows.push(doc); });
+            state.has_more = rows.length > size ? 1 : 0;
+            if (state.has_more) rows = rows.slice(0, size);
+            state.items = rows.reverse().map(function (doc) { return shapeMessage(doc, user); });
+            state.oldest_at = state.items.length ? state.items[0].created_at : '';
+            publish();
+        }, fail);
+        var stopThread = b.dbMod.onSnapshot(b.dbMod.doc(b.db, 'messageThreads', id), function (snapshot) {
+            state.thread = snapshot.exists() ? (snapshot.data() || {}) : null;
+            publish();
+        }, fail);
+
+        return function () { stopMessages(); stopThread(); };
+    };
+
+    /**
+     * Subscribes to a named realtime channel.
+     *
+     * Returns an unsubscribe function immediately, before Firebase has
+     * finished loading, so a caller that navigates away during start-up still
+     * tears the listener down instead of leaking it.
+     */
+    window.cvDataSubscribe = function (channel, params, onData, onError) {
+        var stop = null;
+        var cancelled = false;
+
+        function fail(error) {
+            if (cancelled) return;
+            if (window.console && console.error) console.error('[Faith In] stream ' + channel + ':', error);
+            if (typeof onError === 'function') onError(new Error(publicErrorMessage(error)));
+        }
+
+        getBundle()
+            .then(function (b) {
+                return requireUser(b).then(function (user) {
+                    if (cancelled) return;
+                    var stream = streams[text(channel)];
+                    if (!stream) throw new Error('That Faith In function is not available.');
+                    stop = stream(b, user, params || {}, function (payload) {
+                        if (cancelled) return;
+                        try { onData(payload); }
+                        catch (error) { if (window.console && console.error) console.error('[Faith In] stream handler:', error); }
+                    }, fail);
+                    if (cancelled && typeof stop === 'function') { stop(); stop = null; }
+                });
+            })
+            .catch(fail);
+
+        return function () {
+            cancelled = true;
+            if (typeof stop === 'function') { try { stop(); } catch (e) { /* already detached */ } stop = null; }
+        };
     };
 
     // ---------------------------------------------------------------------

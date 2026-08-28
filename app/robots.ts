@@ -6,7 +6,8 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: "*",
       allow: "/",
-      disallow: ["/api/", "/app/"],
+      // /messages is a private inbox; there is nothing there to index.
+      disallow: ["/api/", "/app/", "/messages"],
     },
     sitemap: `${site.origin}/sitemap.xml`,
   };

@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "build:app-css": "tailwindcss -c tools/tailwind/faithin.config.cjs -i tools/tailwind/faithin.src.css -o public/faithin-app/assets/faithin-tw.css --minify",
     "start": "next start",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",

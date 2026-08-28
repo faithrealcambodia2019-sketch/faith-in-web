@@ -77,7 +77,10 @@
             <i class="fa-solid fa-moon dark:hidden"></i><i class="fa-solid fa-sun hidden dark:inline"></i>
           </button>
           <button class="icon-btn hidden sm:inline-flex" aria-label="Apps"><i class="fa-solid fa-table-cells"></i></button>
-          <a href="/network?message=inbox" class="icon-btn" aria-label="Messages"><i class="fa-regular fa-comment-dots"></i></a>
+          <a href="/messages" class="icon-btn relative${page === 'messaging' ? ' !bg-brand !text-white dark:!text-[#0b1120]' : ''}" aria-label="Messages"${page === 'messaging' ? ' aria-current="page"' : ''}>
+            <i class="fa-${page === 'messaging' ? 'solid' : 'regular'} fa-comment-dots"></i>
+            <span class="hidden absolute top-1.5 right-1.5 min-w-[16px] h-4 px-1 rounded-full bg-rose text-white text-[10px] font-bold grid place-items-center ring-2 ring-surface" data-msg-badge>0</span>
+          </a>
           <a href="/notifications" class="icon-btn relative ${bellActive ? '!bg-brand !text-white dark:!text-[#0b1120]' : ''}" aria-label="Notifications, 3 unread"${bellActive ? ' aria-current="page"' : ''}>
             <i class="fa-${bellActive ? 'solid' : 'regular'} fa-bell"></i>
             <span class="absolute top-1.5 right-1.5 min-w-[16px] h-4 px-1 rounded-full bg-rose text-white text-[10px] font-bold grid place-items-center ring-2 ring-surface">3</span>
@@ -146,7 +149,7 @@
   const warmedPages = new Set();
   function warmPage(link) {
     if (!link || link.origin !== location.origin || warmedPages.has(link.pathname)) return;
-    if (!['/home','/jobs','/library','/network','/notifications','/profile','/settings'].includes(link.pathname)) return;
+    if (!['/home','/jobs','/library','/network','/messages','/notifications','/profile','/settings'].includes(link.pathname)) return;
     warmedPages.add(link.pathname);
     const hint = document.createElement('link'); hint.rel = 'prefetch'; hint.href = link.pathname; hint.as = 'document'; document.head.appendChild(hint);
   }

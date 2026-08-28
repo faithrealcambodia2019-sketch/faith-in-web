@@ -11,7 +11,10 @@ const contentSecurityPolicy = [
   "img-src 'self' data: blob: https:",
   "font-src 'self' data: https:",
   "media-src 'self' blob: https:",
-  "connect-src 'self' https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com https://vercel.com https://*.blob.vercel-storage.com https://accounts.google.com https://bible-api.com",
+  // wss://*.googleapis.com covers the Firestore listen channel used by the
+  // realtime messaging screen when the SDK negotiates a socket rather than
+  // long polling.
+  "connect-src 'self' https://*.googleapis.com wss://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com https://vercel.com https://*.blob.vercel-storage.com https://accounts.google.com https://bible-api.com",
   "frame-src https://accounts.google.com https://*.firebaseapp.com",
   "worker-src 'self' blob:",
   "manifest-src 'self'",
@@ -35,6 +38,7 @@ const nextConfig: NextConfig = {
       { source: "/faithin-app/index.html", destination: "/home", permanent: true },
       { source: "/faithin-app/jobs.html", destination: "/jobs", permanent: true },
       { source: "/faithin-app/library.html", destination: "/library", permanent: true },
+      { source: "/faithin-app/messaging.html", destination: "/messages", permanent: true },
       { source: "/faithin-app/network.html", destination: "/network", permanent: true },
       { source: "/faithin-app/notifications.html", destination: "/notifications", permanent: true },
       { source: "/faithin-app/profile.html", destination: "/profile", permanent: true },
@@ -50,6 +54,7 @@ const nextConfig: NextConfig = {
         { source: "/home", destination: "/faithin-app/index.html" },
         { source: "/jobs", destination: "/faithin-app/jobs.html" },
         { source: "/library", destination: "/faithin-app/library.html" },
+        { source: "/messages", destination: "/faithin-app/messaging.html" },
         { source: "/network", destination: "/faithin-app/network.html" },
         { source: "/notifications", destination: "/faithin-app/notifications.html" },
         { source: "/profile", destination: "/faithin-app/profile.html" },
@@ -95,6 +100,10 @@ const nextConfig: NextConfig = {
           { key: "Cache-Control", value: "private, no-store, max-age=0" },
           { key: "X-Robots-Tag", value: "noindex, nofollow" },
         ],
+      },
+      {
+        source: "/messages",
+        headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }],
       },
       {
         source: "/api/:path*",
