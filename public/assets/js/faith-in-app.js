@@ -3505,7 +3505,7 @@ window.signOut = () => {
             return;
         }
         if (!state.postContent.trim() && state.postType !== 'Article' && !(postMediaFiles && postMediaFiles.length) && !(isBlessingPublish && hasBlessingMusicChoice)) {
-            window.showToast('Please write something, add photos / a Reel, or choose Blessing music.', 'info');
+            window.showToast('Please write something, add photos or a video, or choose Blessing music.', 'info');
             return;
         }
         if (!state.postContent.trim() && state.postType === 'Article') {
@@ -3928,7 +3928,7 @@ window.signOut = () => {
     window.cvPostingRetryMediaUpload = () => {
         const files = Array.isArray(state.selectedPostMediaFiles) ? state.selectedPostMediaFiles : [];
         if (!files.length) {
-            window.showToast('Choose a photo or Reel before retrying.', 'info');
+            window.showToast('Choose a photo or video before retrying.', 'info');
             return;
         }
         const oversizeFile = files.find(file => file && file.size > 250 * 1024 * 1024);
@@ -3970,17 +3970,17 @@ window.signOut = () => {
         const images = files.filter(file => isImageFile(file));
         if (videos.length && images.length) {
             input.value = '';
-            window.showToast('Choose either up to 10 photos or one Reel video, not both.', 'error');
+            window.showToast('Choose either up to 10 photos or one video, not both.', 'error');
             return;
         }
         if (videos.length > 1) {
             input.value = '';
-            window.showToast('Only one Reel video is allowed.', 'error');
+            window.showToast('Only one video is allowed per post.', 'error');
             return;
         }
         if (!videos.length && !images.length) {
             input.value = '';
-            window.showToast('Supported media: up to 10 images, or one Reel video in MP4, MOV, M4V, WEBM, or OGV format.', 'error');
+            window.showToast('Supported media: up to 10 images, or one video in MP4, MOV, M4V, WEBM, or OGV format.', 'error');
             return;
         }
         if (videos.length === 1) {
@@ -5069,12 +5069,16 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
             next.createIntent = 'blessing';
         } else if (kind === 'photo') {
             next.postType = 'Image';
+        } else if (kind === 'video') {
+            next.postType = 'Video';
         } else {
             next.postType = 'Text';
         }
         setState(next);
         if (kind === 'photo' && window.cvPostingOpenMedia) {
             window.cvPostingOpenMedia('image');
+        } else if (kind === 'video' && window.cvPostingOpenMedia) {
+            window.cvPostingOpenMedia('reel');
         }
     };
 
@@ -5409,6 +5413,7 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
                 <div class="cv-feed-composer-actions">
                     <button type="button" class="cv-feed-compose-action cv-feed-compose-action--live" onclick="cvOpenFeedCreate('blessing')">${cvRenderBlessingIcon("cv-blessing-svg-icon--compose")}<span>Add Blessing</span></button>
                     <button type="button" class="cv-feed-compose-action cv-feed-compose-action--text" onclick="cvOpenFeedCreate('photo')"><i data-lucide="image"></i><span>Photo</span></button>
+                    <button type="button" class="cv-feed-compose-action cv-feed-compose-action--video" onclick="cvOpenFeedCreate('video')" aria-label="Add a video"><i data-lucide="video"></i><span>Video</span></button>
                     <button type="button" class="cv-feed-compose-action cv-feed-compose-action--photo" onclick="setTab('prayer')"><i data-lucide="heart"></i><span>Prayer request</span></button>
                     <button type="button" class="cv-feed-compose-action cv-feed-compose-action--article" onclick="cvOpenFeedCreate('article')"><i data-lucide="file-text"></i><span>Article</span></button>
                 </div>
@@ -5740,6 +5745,9 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
         const width = Number(video.videoWidth || 0);
         const height = Number(video.videoHeight || 0);
         const ratio = width > 0 && height > 0 ? width / height : 1;
+        if (width > 0 && height > 0) {
+            wrap.style.setProperty('aspect-ratio', width + ' / ' + height, 'important');
+        }
         wrap.classList.remove('is-video-portrait', 'is-video-reel', 'is-video-square', 'is-video-wide');
         if (ratio <= 0.66) wrap.classList.add('is-video-reel');
         else if (ratio < 0.9) wrap.classList.add('is-video-portrait');
@@ -5760,12 +5768,12 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
             const mime = String(first.mime || '').trim().toLowerCase();
             if (!videoUrl && !previewUrl) return '';
             if (previewUrl && /drive\.google\.com\/file\/d\//i.test(previewUrl)) {
-                return `<div class="cv-feed-reel-wrap mt-4 is-ready is-drive-video is-video-wide"><iframe class="cv-feed-reel-video cv-feed-drive-video" src="${escapeAttr(previewUrl)}" allow="autoplay; fullscreen; encrypted-media; picture-in-picture" allowfullscreen loading="lazy"></iframe><span class="cv-reel-badge">Reel</span>${dl(first, 'Reel video')}</div>`;
+                return `<div class="cv-feed-reel-wrap mt-4 is-ready is-drive-video is-video-wide"><iframe class="cv-feed-reel-video cv-feed-drive-video" src="${escapeAttr(previewUrl)}" allow="autoplay; fullscreen; encrypted-media; picture-in-picture" allowfullscreen loading="lazy"></iframe><span class="cv-reel-badge">Video</span>${dl(first, 'video')}</div>`;
             }
             const ext = (videoUrl.split('?')[0].split('#')[0].match(/\.([a-z0-9]+)$/i) || [,''])[1].toLowerCase();
             const typeMap = { mp4: 'video/mp4', m4v: 'video/mp4', webm: 'video/webm', ogv: 'video/ogg', ogg: 'video/ogg', mov: 'video/quicktime', qt: 'video/quicktime' };
             const videoType = mime || typeMap[ext] || 'video/mp4';
-            return `<div class="cv-feed-reel-wrap mt-4 is-ready is-native-video is-video-square"><video src="${escapeAttr(videoUrl)}" class="cv-feed-reel-video" data-cv-smooth-video="1" controls playsinline webkit-playsinline preload="metadata" onloadedmetadata="cvClassifyFeedVideo(this)"><source src="${escapeAttr(videoUrl)}" type="${escapeAttr(videoType)}"></video><span class="cv-reel-badge">Reel</span>${dl(first, 'Reel video')}</div>`;
+            return `<div class="cv-feed-reel-wrap mt-4 is-ready is-native-video is-video-square"><video src="${escapeAttr(videoUrl)}" class="cv-feed-reel-video" data-cv-smooth-video="1" controls playsinline webkit-playsinline preload="metadata" onloadedmetadata="cvClassifyFeedVideo(this)"><source src="${escapeAttr(videoUrl)}" type="${escapeAttr(videoType)}"></video><span class="cv-reel-badge">Video</span>${dl(first, 'video')}</div>`;
         }
         const count = items.length;
         const cls = count === 1 ? 'is-one is-square' : (count === 2 ? 'is-two' : (count === 3 ? 'is-three' : (count === 4 ? 'is-four' : 'is-many')));
@@ -6694,7 +6702,7 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
             const isReel = state.postMediaMode === 'reel';
             const mediaTitle = isReel ? 'Video selected' : (hasMedia ? (mediaCount + ' image' + (mediaCount > 1 ? 's' : '') + ' selected') : 'Add images or video');
             const mediaHelp = isReel ? 'Publish one video up to 250MB. Supported files: MP4, MOV, M4V, WEBM, OGV.' : (hasMedia ? 'Upload up to 10 images, or switch to one video.' : 'Choose up to 10 images or one video. Files upload directly to Vercel storage.');
-            const mediaLabel = hasMedia ? (isReel ? 'Reel selected' : state.selectedPostCoverName) : 'No media selected';
+            const mediaLabel = hasMedia ? (isReel ? 'Video selected' : state.selectedPostCoverName) : 'No media selected';
             const mediaReadyPercent = hasMedia ? Math.max(0, Math.min(100, parseInt(state.postMediaReadyPercent || 0, 10))) : 0;
             const mediaReady = !hasMedia || mediaReadyPercent >= 100;
             const needsUploadedMedia = !!(state.selectedPostMediaFiles && state.selectedPostMediaFiles.length);
@@ -6822,7 +6830,7 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
                                     <div class="cv-posting-reel-preview">
                                         ${composerReelPreviewHtml}
                                         <div class="cv-posting-reel-play"><i data-lucide="play" class="w-7 h-7"></i></div>
-                                        <span>Reel Preview</span>
+                                        <span>Video Preview</span>
                                     </div>
                                 ` : `
                                     <div class="cv-posting-image-preview">
@@ -6840,7 +6848,7 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
                                     <div class="cv-media-ready__bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${mediaReadyPercent}"><span style="width:${mediaReadyPercent}%"></span></div>
                                     ${state.postMediaUploadError ? `<button type="button" class="cv-media-upload-retry" onclick="cvPostingRetryMediaUpload()"><i data-lucide="refresh-cw" class="w-4 h-4"></i><span>Retry upload</span></button>` : ''}
                                 </div>
-                                <label class="cv-modern-download-option cv-posting-download-option"><span class="cv-modern-download-option__icon"><i data-lucide="download" class="w-5 h-5"></i></span><span class="cv-modern-download-option__copy"><strong>Allow media download</strong><small>Other users can download your image or Reel to share on another platform.</small></span><input class="cv-modern-download-option__toggle" type="checkbox" ${state.postAllowDownload ? 'checked' : ''} onchange="updatePostForm('postAllowDownload', this.checked)" /></label>
+                                <label class="cv-modern-download-option cv-posting-download-option"><span class="cv-modern-download-option__icon"><i data-lucide="download" class="w-5 h-5"></i></span><span class="cv-modern-download-option__copy"><strong>Allow media download</strong><small>Other users can download your image or video to share on another platform.</small></span><input class="cv-modern-download-option__toggle" type="checkbox" ${state.postAllowDownload ? 'checked' : ''} onchange="updatePostForm('postAllowDownload', this.checked)" /></label>
                             </div>
                         ` : ''}
 
@@ -6859,7 +6867,7 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
                                 <button type="button" class="cv-posting-tool cv-posting-tool--music ${hasBlessingMusic ? 'is-active' : ''}" onclick="cvFocusBlessingMusicPanel()" aria-label="Choose Christian music"><i data-lucide="music-2" class="w-6 h-6"></i><span>Music</span></button>
                             ` : `
                                 <button type="button" class="cv-posting-tool cv-posting-tool--image ${hasMedia && !isReel ? 'is-active' : ''}" onclick="cvPostingOpenMedia('image')" aria-label="Add a photo"><i data-lucide="image" class="w-6 h-6"></i><span>Add a photo</span></button>
-                                <button type="button" class="cv-posting-tool cv-posting-tool--reel ${isReel ? 'is-active' : ''}" onclick="cvPostingOpenMedia('reel')" aria-label="Add a reel"><i data-lucide="clapperboard" class="w-6 h-6"></i><span>Add a reel</span></button>
+                                <button type="button" class="cv-posting-tool cv-posting-tool--reel ${isReel ? 'is-active' : ''}" onclick="cvPostingOpenMedia('reel')" aria-label="Add a video"><i data-lucide="video" class="w-6 h-6"></i><span>Add a video</span></button>
                                 <button type="button" class="cv-posting-tool cv-posting-tool--article ${isArticleComposer ? 'is-active' : ''}" onclick="cvPostingSetPostType('Article')" aria-label="Write article"><i data-lucide="file-text" class="w-6 h-6"></i><span>Write article</span></button>
                             `}
                         </div>

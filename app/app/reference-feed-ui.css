@@ -1092,7 +1092,7 @@ html body #cv-root .cv-react-fb-composer .cv-feed-compose-actions {
 
 html body #cv-root .cv-react-fb-composer .cv-feed-compose-action {
   min-height: 44px !important;
-  flex: 1 1 25% !important;
+  flex: 1 1 20% !important;
   gap: 8px !important;
   padding-inline: 8px !important;
   border-radius: 12px !important;
@@ -1106,6 +1106,7 @@ html body #cv-root .cv-react-fb-composer .cv-feed-compose-action:hover { backgro
 html body #cv-root .cv-react-fb-composer .cv-feed-compose-action svg { width: 20px !important; height: 20px !important; }
 html body #cv-root .cv-react-fb-composer .cv-feed-compose-action--live svg { color: #2457d6 !important; }
 html body #cv-root .cv-react-fb-composer .cv-feed-compose-action--text svg { color: #159467 !important; }
+html body #cv-root .cv-react-fb-composer .cv-feed-compose-action--video svg { color: #e04f67 !important; }
 html body #cv-root .cv-react-fb-composer .cv-feed-compose-action--photo svg { color: #d44768 !important; }
 html body #cv-root .cv-react-fb-composer .cv-feed-compose-action--article svg { color: #7c4dcc !important; }
 
