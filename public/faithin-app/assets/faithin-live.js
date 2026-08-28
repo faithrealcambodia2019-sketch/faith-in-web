@@ -183,9 +183,162 @@
     $('form', modal).onsubmit = async event => { event.preventDefault(); const data = Object.fromEntries(new FormData(event.currentTarget)); try { await api.request('cv_create_job', data); modal.remove(); toast('Job published'); refresh(); } catch (error) { toast(error.message); } };
   }
 
+  // ── Library media helpers: 16:9 sermon cards, audio cards, in-app player ──
+  function fiFmtTime(seconds) {
+    if (!isFinite(seconds) || seconds < 0) return '0:00';
+    const total = Math.floor(seconds), h = Math.floor(total / 3600), m = Math.floor((total % 3600) / 60), s = total % 60;
+    return h ? `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}` : `${m}:${String(s).padStart(2, '0')}`;
+  }
+
+  function fiMediaUrl(resource) {
+    return resource.file_url || resource.open_url || resource.url || resource.download_url || '';
+  }
+
+  function fiResourceMeta(resource) {
+    return `<span class="block text-[13.5px] font-semibold mt-2.5 leading-tight">${esc(resource.title)}</span>`
+      + `<span class="block text-[12px] text-muted mt-1">By ${esc(resource.author || 'Faith In member')}</span>`
+      + (resource.translated_by ? `<span class="block text-[11.5px] text-faint mt-0.5">Translated by ${esc(resource.translated_by)}</span>` : '')
+      + `<span class="inline-flex mt-1.5 text-[10.5px] font-bold uppercase tracking-wide text-brand bg-brand-soft px-2 py-0.5 rounded-full">${esc(resource.language || resource.format || 'resource')}</span>`;
+  }
+
+  function fiResourceFooter(resource, savedIds) {
+    const saved = savedIds.has(resource.id);
+    return `<div class="flex items-center justify-between gap-1 mt-2">`
+      + `<button class="text-[12px] font-semibold text-brand" data-resource-download><i class="fa-solid fa-download mr-1"></i>${Number(resource.download_count || 0)}</button>`
+      + `<span class="flex">`
+      + (resource.can_delete ? '<button class="icon-btn w-8 h-8 text-rose" data-resource-delete aria-label="Delete resource"><i class="fa-regular fa-trash-can"></i></button>' : '')
+      + `<button class="icon-btn w-8 h-8 ${saved ? '!text-brand' : ''}" data-resource-save aria-label="${saved ? 'Remove saved resource' : 'Save resource'}"><i class="fa-${saved ? 'solid' : 'regular'} fa-bookmark"></i></button>`
+      + `</span></div>`;
+  }
+
+  function fiResourceCardHtml(resource, savedIds) {
+    const format = String(resource.format || '').toLowerCase();
+    const id = esc(resource.id);
+    const cover = resource.thumbnail_url
+      ? `<img class="w-full h-full object-cover" src="${esc(resource.thumbnail_url)}" alt="" loading="lazy" decoding="async">`
+      : '';
+    const playOverlay = `<span class="fi-media-play"><span><i class="fa-solid fa-play"></i></span></span>`;
+
+    // Sermons and videos: wide 16:9 card that opens the in-app player.
+    if (format === 'video') {
+      return `<article class="fi-video-card group relative" data-resource-id="${id}" data-resource-format="video">`
+        + `<button type="button" class="fi-video-cover" data-resource-play aria-label="Play ${esc(resource.title)}">`
+        + (cover || `<span class="fi-video-fallback"><i class="fa-solid fa-video text-[24px]"></i>${esc(resource.title)}</span>`)
+        + playOverlay + `<span class="fi-media-badge">Sermon</span></button>`
+        + `<button type="button" class="block w-full text-left" data-resource-play>${fiResourceMeta(resource)}</button>`
+        + fiResourceFooter(resource, savedIds) + `</article>`;
+    }
+
+    // Audio: square artwork card that opens the music player.
+    if (format === 'audio') {
+      return `<article class="fi-audio-card group relative" data-resource-id="${id}" data-resource-format="audio">`
+        + `<button type="button" class="fi-audio-art" data-resource-play aria-label="Play ${esc(resource.title)}">`
+        + (cover || `<span class="fi-video-fallback"><i class="fa-solid fa-headphones text-[24px]"></i>${esc(resource.title)}</span>`)
+        + playOverlay + `<span class="fi-media-badge">Audio</span></button>`
+        + `<button type="button" class="block w-full text-left" data-resource-play>${fiResourceMeta(resource)}</button>`
+        + fiResourceFooter(resource, savedIds) + `</article>`;
+    }
+
+    // Everything else keeps the book-spine cover.
+    return `<article class="fi-resource-card snap-start group relative" data-resource-id="${id}" data-resource-format="${esc(format)}">`
+      + (resource.open_url ? `<a href="${esc(resource.open_url)}" target="_blank" rel="noopener" class="block">` : '<button type="button" class="block w-full text-left" data-resource-download>')
+      + `<span class="fi-resource-cover book-cover block overflow-hidden bg-[linear-gradient(150deg,#1d4ed8,#172554)]">`
+      + (cover || `<span class="h-full p-3 flex flex-col gap-3 items-center justify-center text-center text-white font-serif font-semibold"><i class="fa-solid fa-${format === 'image' ? 'image' : 'file-lines'} text-[24px]"></i>${esc(resource.title)}</span>`)
+      + `</span>` + fiResourceMeta(resource)
+      + (resource.open_url ? '</a>' : '</button>')
+      + fiResourceFooter(resource, savedIds) + `</article>`;
+  }
+
+  // In-app player. Video plays in a lightbox; audio gets a music player with a
+  // queue, so nothing hands the member off to a separate browser tab.
+  function openMediaPlayer(resource, queue) {
+    const list = (Array.isArray(queue) ? queue : []).filter(item => fiMediaUrl(item));
+    let index = list.findIndex(item => item.id === resource.id);
+    if (index < 0) { list.length = 0; list.push(resource); index = 0; }
+    const isAudio = String(resource.format || '').toLowerCase() === 'audio';
+
+    const backdrop = document.createElement('div');
+    backdrop.className = 'fi-player-backdrop';
+    backdrop.setAttribute('role', 'dialog');
+    backdrop.setAttribute('aria-modal', 'true');
+    backdrop.setAttribute('aria-label', isAudio ? 'Audio player' : 'Video player');
+
+    if (!isAudio) {
+      backdrop.innerHTML = `<div class="fi-player-shell">`
+        + `<video class="fi-player-video" controls autoplay playsinline preload="metadata" controlsList="nodownload" src="${esc(fiMediaUrl(resource))}"${resource.thumbnail_url ? ` poster="${esc(resource.thumbnail_url)}"` : ''}></video>`
+        + `<div class="fi-player-head"><div class="min-w-0">`
+        + `<h2 class="text-[15px] font-bold leading-tight">${esc(resource.title)}</h2>`
+        + `<p class="text-[12.5px] text-muted mt-0.5">By ${esc(resource.author || 'Faith In member')}</p>`
+        + `</div><button type="button" class="icon-btn shrink-0" data-player-close aria-label="Close player"><i class="fa-solid fa-xmark"></i></button>`
+        + `</div></div>`;
+    } else {
+      backdrop.innerHTML = `<div class="fi-player-shell is-audio">`
+        + `<div class="relative"><span data-player-art></span>`
+        + `<button type="button" class="icon-btn absolute top-2 right-2" data-player-close aria-label="Close player" style="background:rgb(4 8 20 / .55);color:#fff"><i class="fa-solid fa-xmark"></i></button></div>`
+        + `<div class="fi-player-body">`
+        + `<h2 class="text-[15px] font-bold leading-tight" data-player-title></h2>`
+        + `<p class="text-[12.5px] text-muted mt-0.5" data-player-author></p>`
+        + `<div class="mt-4"><input type="range" class="fi-seek" min="0" max="1000" step="1" value="0" data-player-seek aria-label="Seek">`
+        + `<div class="fi-player-times"><span data-player-current>0:00</span><span data-player-duration>0:00</span></div></div>`
+        + `<div class="fi-player-controls">`
+        + `<button type="button" class="fi-player-btn" data-player-prev aria-label="Previous track"><i class="fa-solid fa-backward-step"></i></button>`
+        + `<button type="button" class="fi-player-btn is-main" data-player-toggle aria-label="Play"><i class="fa-solid fa-play"></i></button>`
+        + `<button type="button" class="fi-player-btn" data-player-next aria-label="Next track"><i class="fa-solid fa-forward-step"></i></button>`
+        + `</div><audio data-player-audio preload="metadata"></audio></div></div>`;
+    }
+
+    document.body.appendChild(backdrop);
+    const onKey = event => { if (event.key === 'Escape') close(); };
+    function close() {
+      const media = backdrop.querySelector('video, audio');
+      if (media) { try { media.pause(); media.removeAttribute('src'); media.load(); } catch (_) {} }
+      document.removeEventListener('keydown', onKey);
+      backdrop.remove();
+    }
+    document.addEventListener('keydown', onKey);
+    backdrop.addEventListener('click', event => { if (event.target === backdrop) close(); });
+    $('[data-player-close]', backdrop).onclick = close;
+    if (!isAudio) return;
+
+    const audio = $('[data-player-audio]', backdrop), seek = $('[data-player-seek]', backdrop);
+    const toggle = $('[data-player-toggle]', backdrop), prev = $('[data-player-prev]', backdrop), next = $('[data-player-next]', backdrop);
+    const currentLabel = $('[data-player-current]', backdrop), durationLabel = $('[data-player-duration]', backdrop);
+    let scrubbing = false;
+
+    const paint = () => {
+      const track = list[index];
+      $('[data-player-title]', backdrop).textContent = track.title || 'Untitled';
+      $('[data-player-author]', backdrop).textContent = `By ${track.author || 'Faith In member'}`;
+      $('[data-player-art]', backdrop).innerHTML = track.thumbnail_url
+        ? `<img class="fi-player-art" src="${esc(track.thumbnail_url)}" alt="">`
+        : '<span class="fi-player-art-fallback"><i class="fa-solid fa-music"></i></span>';
+      prev.disabled = next.disabled = list.length < 2;
+    };
+    const load = playNow => { paint(); audio.src = fiMediaUrl(list[index]); if (playNow) audio.play().catch(() => {}); };
+    const step = delta => { index = (index + delta + list.length) % list.length; load(true); };
+
+    toggle.onclick = () => { if (audio.paused) audio.play().catch(() => {}); else audio.pause(); };
+    prev.onclick = () => { if (audio.currentTime > 3) { audio.currentTime = 0; return; } step(-1); };
+    next.onclick = () => step(1);
+    audio.addEventListener('play', () => { toggle.innerHTML = '<i class="fa-solid fa-pause"></i>'; toggle.setAttribute('aria-label', 'Pause'); });
+    audio.addEventListener('pause', () => { toggle.innerHTML = '<i class="fa-solid fa-play"></i>'; toggle.setAttribute('aria-label', 'Play'); });
+    audio.addEventListener('loadedmetadata', () => { durationLabel.textContent = fiFmtTime(audio.duration); });
+    audio.addEventListener('timeupdate', () => {
+      if (scrubbing) return;
+      currentLabel.textContent = fiFmtTime(audio.currentTime);
+      seek.value = audio.duration ? String(Math.round((audio.currentTime / audio.duration) * 1000)) : '0';
+    });
+    audio.addEventListener('ended', () => { if (list.length > 1) step(1); });
+    seek.addEventListener('input', () => { scrubbing = true; if (audio.duration) currentLabel.textContent = fiFmtTime((Number(seek.value) / 1000) * audio.duration); });
+    seek.addEventListener('change', () => { if (audio.duration) audio.currentTime = (Number(seek.value) / 1000) * audio.duration; scrubbing = false; });
+    load(true);
+  }
+
   async function loadLibrary() {
     const shelf = $('#shelf'); if (!shelf) return;
-    let resources = [], savedIds = new Set(), searchQuery = '';
+    shelf.className = 'fi-media-grid';
+    $$('[data-rail-prev],[data-rail-next]').forEach(button => { button.style.display = 'none'; });
+    let resources = [], rendered = [], savedIds = new Set(), searchQuery = '';
     const view = new URLSearchParams(location.search).get('view');
     const format = new URLSearchParams(location.search).get('format');
     const category = new URLSearchParams(location.search).get('category');
@@ -198,7 +351,8 @@
       }
       if (view === 'saved') items = items.filter(resource => savedIds.has(resource.id));
       if (searchQuery) items = items.filter(resource => [resource.title, resource.author, resource.category, resource.description].some(value => String(value || '').toLowerCase().includes(searchQuery)));
-      shelf.innerHTML = items.length ? items.map(resource => `<article class="fi-resource-card snap-start group relative" data-resource-id="${esc(resource.id)}">${resource.open_url ? `<a href="${esc(resource.open_url)}" target="_blank" rel="noopener" class="block">` : '<button type="button" class="block w-full text-left" data-resource-download>'}<span class="fi-resource-cover book-cover block overflow-hidden bg-[linear-gradient(150deg,#1d4ed8,#172554)]">${resource.thumbnail_url ? `<img class="w-full h-full object-cover" src="${esc(resource.thumbnail_url)}" alt="" loading="lazy" decoding="async">` : `<span class="h-full p-3 flex flex-col gap-3 items-center justify-center text-center text-white font-serif font-semibold"><i class="fa-solid fa-${resource.format === 'video' ? 'video' : (resource.format === 'audio' ? 'headphones' : (resource.format === 'image' ? 'image' : 'file-lines'))} text-[24px]"></i>${esc(resource.title)}</span>`}</span><span class="block text-[13.5px] font-semibold mt-2.5 leading-tight">${esc(resource.title)}</span><span class="block text-[12px] text-muted mt-1">By ${esc(resource.author || 'Faith In member')}</span>${resource.translated_by ? `<span class="block text-[11.5px] text-faint mt-0.5">Translated by ${esc(resource.translated_by)}</span>` : ''}<span class="inline-flex mt-1.5 text-[10.5px] font-bold uppercase tracking-wide text-brand bg-brand-soft px-2 py-0.5 rounded-full">${esc(resource.language || resource.format || 'resource')}</span>${resource.open_url ? '</a>' : '</button>'}<div class="flex items-center justify-between gap-1 mt-2"><button class="text-[12px] font-semibold text-brand" data-resource-download><i class="fa-solid fa-download mr-1"></i>${Number(resource.download_count || 0)}</button><span class="flex">${resource.can_delete ? '<button class="icon-btn w-8 h-8 text-rose" data-resource-delete aria-label="Delete resource"><i class="fa-regular fa-trash-can"></i></button>' : ''}<button class="icon-btn w-8 h-8 ${savedIds.has(resource.id) ? '!text-brand' : ''}" data-resource-save aria-label="${savedIds.has(resource.id) ? 'Remove saved resource' : 'Save resource'}"><i class="fa-${savedIds.has(resource.id) ? 'solid' : 'regular'} fa-bookmark"></i></button></span></div></article>`).join('') : emptyState(view || format || category || searchQuery ? 'Nothing in this shelf yet.' : 'No community resources have been published yet.');
+      rendered = items;
+      shelf.innerHTML = items.length ? items.map(resource => fiResourceCardHtml(resource, savedIds)).join('') : emptyState(view || format || category || searchQuery ? 'Nothing in this shelf yet.' : 'No community resources have been published yet.');
     };
     try {
       const [result, saved] = await Promise.all([api.request('cv_get_resources'), api.request('cv_get_bookmarks').catch(() => ({ items: [] }))]);
@@ -214,6 +368,16 @@
       if (remove) { event.preventDefault(); if (!confirm('Delete this resource?')) return; await api.request('cv_delete_resource', { resource_id: row.dataset.resourceId }); resources = resources.filter(resource => resource.id !== row.dataset.resourceId); render(); toast('Resource deleted'); return; }
       const save = event.target.closest('[data-resource-save]');
       if (save) { event.preventDefault(); const id = row.dataset.resourceId; await api.request('cv_toggle_bookmark', { object_id: id, object_type: 'resource' }); if (savedIds.has(id)) savedIds.delete(id); else savedIds.add(id); toast(savedIds.has(id) ? 'Resource saved' : 'Resource removed'); render(); return; }
+      const play = event.target.closest('[data-resource-play]');
+      if (play) {
+        event.preventDefault();
+        const resource = rendered.find(item => item.id === row.dataset.resourceId);
+        if (!resource) return;
+        if (!fiMediaUrl(resource)) { toast('This resource has no playable file.'); return; }
+        const kind = String(resource.format || '').toLowerCase();
+        openMediaPlayer(resource, kind === 'audio' ? rendered.filter(item => String(item.format || '').toLowerCase() === 'audio') : [resource]);
+        return;
+      }
       const button = event.target.closest('[data-resource-download]'); if (!button) return; event.preventDefault(); const result = await api.request('cv_download_resource', { resource_id: row.dataset.resourceId }); if (result.url) window.open(result.url, '_blank', 'noopener');
     });
     document.addEventListener('fi:search', event => { searchQuery = event.detail.query.toLowerCase(); render(); });
@@ -223,17 +387,65 @@
 
   function openResourceEditor(refresh) {
     const modal = document.createElement('div'); modal.className = 'fixed inset-0 z-[240] bg-[#0b1120]/70 p-4 flex items-center justify-center';
-    modal.innerHTML = `<form class="card w-full max-w-2xl max-h-[92vh] overflow-y-auto p-5 space-y-4"><div class="flex justify-between"><div><h2 class="text-[20px] font-bold">Publish a resource</h2><p class="text-[12.5px] text-muted mt-1">Share a PDF, image, audio, video, or ZIP file with the community.</p></div><button type="button" class="icon-btn" data-close-resource aria-label="Close"><i class="fa-solid fa-xmark"></i></button></div><input class="field" name="title" placeholder="Resource title" required><textarea class="field" name="description" rows="3" placeholder="Description"></textarea><div class="grid sm:grid-cols-2 gap-3"><input class="field" name="contributor_name" placeholder="Author / Creator"><input class="field" name="translator_name" placeholder="Translated by"><input class="field" name="language" placeholder="Language, e.g. Khmer"><input class="field" name="category" placeholder="Category" value="Bible Study"></div><select class="field" name="format" aria-label="Resource format"><option value="pdf">PDF</option><option value="image">Image</option><option value="audio">Audio</option><option value="video">Video</option><option value="zip">ZIP bundle</option></select><label class="block text-[13px] font-semibold">Resource file<input class="field mt-1" name="resource_file" type="file" accept=".pdf,.zip,image/*,audio/*,video/*" required><span class="block text-[11.5px] text-muted mt-1">Maximum 250MB · stored securely in Vercel Blob</span></label><label class="block text-[13px] font-semibold">Cover image (optional)<input class="field mt-1" name="thumbnail" type="file" accept="image/*"></label><label class="flex items-center gap-2 text-[12.5px] text-muted"><input type="checkbox" name="allow_download" value="1" checked>Allow members to download this resource</label><p class="hidden rounded-xl border border-rose/30 bg-rose/10 px-3 py-2.5 text-[12.5px] text-rose" data-resource-error role="alert"></p><div class="hidden" data-resource-progress><div class="flex justify-between text-[11.5px] text-muted mb-1"><span>Uploading to FaithIn</span><strong data-resource-progress-label>0%</strong></div><div class="h-2 rounded-full bg-line overflow-hidden"><span class="block h-full bg-brand transition" data-resource-progress-bar style="width:0%"></span></div></div><button class="btn btn-primary w-full" data-resource-submit>Publish resource</button></form>`;
+    modal.innerHTML = `<form class="card w-full max-w-2xl max-h-[92vh] overflow-y-auto p-5 space-y-4"><div class="flex justify-between"><div><h2 class="text-[20px] font-bold">Publish a resource</h2><p class="text-[12.5px] text-muted mt-1">Share a PDF, image, audio, video, or ZIP file with the community.</p></div><button type="button" class="icon-btn" data-close-resource aria-label="Close"><i class="fa-solid fa-xmark"></i></button></div><input class="field" name="title" placeholder="Resource title" required><textarea class="field" name="description" rows="3" placeholder="Description"></textarea><div class="grid sm:grid-cols-2 gap-3"><input class="field" name="contributor_name" placeholder="Author / Creator"><input class="field" name="translator_name" placeholder="Translated by"><input class="field" name="language" placeholder="Language, e.g. Khmer"><input class="field" name="category" placeholder="Category" value="Bible Study"></div><select class="field" name="format" aria-label="Resource format"><option value="pdf">PDF</option><option value="image">Image</option><option value="audio">Audio</option><option value="video">Video</option><option value="zip">ZIP bundle</option></select><label class="block text-[13px] font-semibold">Resource file<input class="field mt-1" name="resource_file" type="file" accept=".pdf,.zip,image/*,audio/*,video/*" required><span class="block text-[11.5px] text-muted mt-1">Maximum 250MB · stored securely in Vercel Blob</span></label><div class="block text-[13px] font-semibold">Cover image<span class="block text-[11.5px] font-normal text-muted mt-1" data-thumb-hint>Videos get a thumbnail captured automatically. Upload your own image to use that instead.</span><div class="flex items-center gap-3 mt-2"><img class="fi-thumb-preview hidden" alt="" data-thumb-preview><input class="field" name="thumbnail" type="file" accept="image/*"></div></div><label class="flex items-center gap-2 text-[12.5px] text-muted"><input type="checkbox" name="allow_download" value="1" checked>Allow members to download this resource</label><p class="hidden rounded-xl border border-rose/30 bg-rose/10 px-3 py-2.5 text-[12.5px] text-rose" data-resource-error role="alert"></p><div class="hidden" data-resource-progress><div class="flex justify-between text-[11.5px] text-muted mb-1"><span>Uploading to FaithIn</span><strong data-resource-progress-label>0%</strong></div><div class="h-2 rounded-full bg-line overflow-hidden"><span class="block h-full bg-brand transition" data-resource-progress-bar style="width:0%"></span></div></div><button class="btn btn-primary w-full" data-resource-submit>Publish resource</button></form>`;
     document.body.appendChild(modal); $('[data-close-resource]', modal).onclick = () => modal.remove();
     const form = $('form', modal), fileInput = form.elements.namedItem('resource_file'), formatInput = form.elements.namedItem('format');
-    fileInput.addEventListener('change', () => { const file = fileInput.files?.[0]; if (!file) return; const type = String(file.type || '').toLowerCase(), ext = String(file.name || '').split('.').pop().toLowerCase(); if (type === 'application/pdf' || ext === 'pdf') formatInput.value = 'pdf'; else if (type.startsWith('video/')) formatInput.value = 'video'; else if (type.startsWith('audio/')) formatInput.value = 'audio'; else if (type.startsWith('image/')) formatInput.value = 'image'; else if (type === 'application/zip' || ext === 'zip') formatInput.value = 'zip'; else { fileInput.value = ''; toast('Choose a PDF, image, audio, video, or ZIP file.'); } });
+    const thumbField = form.elements.namedItem('thumbnail'), thumbPreview = $('[data-thumb-preview]', form), thumbHint = $('[data-thumb-hint]', form);
+    const DEFAULT_THUMB_HINT = thumbHint.textContent;
+    let autoThumb = null, autoThumbUrl = '', manualThumbUrl = '';
+    const setThumbPreview = (url, note) => {
+      if (url) { thumbPreview.src = url; thumbPreview.classList.remove('hidden'); }
+      else { thumbPreview.removeAttribute('src'); thumbPreview.classList.add('hidden'); }
+      thumbHint.textContent = note || DEFAULT_THUMB_HINT;
+    };
+    // Draw a frame out of the chosen video and keep it as the default cover.
+    const captureVideoThumbnail = file => {
+      const objectUrl = URL.createObjectURL(file), video = document.createElement('video');
+      video.preload = 'metadata'; video.muted = true; video.playsInline = true;
+      const cleanup = () => { URL.revokeObjectURL(objectUrl); video.removeAttribute('src'); try { video.load(); } catch (_) {} };
+      const fail = () => { cleanup(); setThumbPreview(manualThumbUrl, 'Could not read a frame from this video. Upload a cover image instead.'); };
+      video.addEventListener('loadeddata', () => { try { video.currentTime = Math.min(1.5, (video.duration || 4) / 4); } catch (_) { fail(); } }, { once: true });
+      video.addEventListener('seeked', () => {
+        try {
+          const sourceWidth = video.videoWidth || 1280, sourceHeight = video.videoHeight || 720;
+          const width = Math.min(sourceWidth, 1280), height = Math.round(width * (sourceHeight / sourceWidth));
+          const canvas = document.createElement('canvas'); canvas.width = width; canvas.height = height;
+          canvas.getContext('2d').drawImage(video, 0, 0, width, height);
+          canvas.toBlob(blob => {
+            cleanup();
+            if (!blob) { fail(); return; }
+            if (autoThumbUrl) URL.revokeObjectURL(autoThumbUrl);
+            autoThumb = new File([blob], 'auto-thumbnail.jpg', { type: 'image/jpeg' });
+            autoThumbUrl = URL.createObjectURL(blob);
+            if (!thumbField.files?.[0]) setThumbPreview(autoThumbUrl, 'Thumbnail captured from your video. Upload an image to use a different one.');
+          }, 'image/jpeg', 0.85);
+        } catch (_) { fail(); }
+      }, { once: true });
+      video.addEventListener('error', fail, { once: true });
+      setThumbPreview(manualThumbUrl, 'Capturing a thumbnail from your video…');
+      video.src = objectUrl;
+    };
+    thumbField.addEventListener('change', () => {
+      const picked = thumbField.files?.[0];
+      if (manualThumbUrl) { URL.revokeObjectURL(manualThumbUrl); manualThumbUrl = ''; }
+      if (!picked) { setThumbPreview(autoThumbUrl, autoThumbUrl ? 'Using the thumbnail captured from your video.' : ''); return; }
+      manualThumbUrl = URL.createObjectURL(picked);
+      setThumbPreview(manualThumbUrl, 'Using your uploaded cover image.');
+    });
+    fileInput.addEventListener('change', () => { const file = fileInput.files?.[0]; if (!file) return; const type = String(file.type || '').toLowerCase(), ext = String(file.name || '').split('.').pop().toLowerCase(); if (type === 'application/pdf' || ext === 'pdf') formatInput.value = 'pdf'; else if (type.startsWith('video/')) formatInput.value = 'video'; else if (type.startsWith('audio/')) formatInput.value = 'audio'; else if (type.startsWith('image/')) formatInput.value = 'image'; else if (type === 'application/zip' || ext === 'zip') formatInput.value = 'zip'; else { fileInput.value = ''; toast('Choose a PDF, image, audio, video, or ZIP file.'); return; }
+      if (autoThumbUrl) { URL.revokeObjectURL(autoThumbUrl); autoThumbUrl = ''; }
+      autoThumb = null;
+      if (formatInput.value === 'video') captureVideoThumbnail(file);
+      else if (!thumbField.files?.[0]) setThumbPreview(manualThumbUrl, '');
+    });
     form.onsubmit = async event => {
       event.preventDefault();
       const resourceFile = fileInput.files?.[0], thumbnailInput = form.elements.namedItem('thumbnail'), submit = $('[data-resource-submit]', form);
       if (!resourceFile) return toast('Choose a resource file to publish.');
       if (resourceFile.size > 250 * 1024 * 1024) return toast(`${resourceFile.name} is larger than 250MB.`);
       const data = Object.fromEntries(new FormData(form)); data.allow_download = form.elements.namedItem('allow_download').checked ? '1' : '0'; delete data.resource_file; delete data.thumbnail;
-      const files = { resource_file: [resourceFile], thumbnail: thumbnailInput.files?.[0] ? [thumbnailInput.files[0]] : [] };
+      const chosenThumbnail = thumbnailInput.files?.[0] || autoThumb;
+      const files = { resource_file: [resourceFile], thumbnail: chosenThumbnail ? [chosenThumbnail] : [] };
       const progress = $('[data-resource-progress]', form), label = $('[data-resource-progress-label]', form), bar = $('[data-resource-progress-bar]', form), errorBox = $('[data-resource-error]', form);
       errorBox.classList.add('hidden'); errorBox.textContent = '';
       const oldSubmitHtml = submit.innerHTML; progress.classList.remove('hidden'); submit.disabled = true; submit.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i>Uploading';
