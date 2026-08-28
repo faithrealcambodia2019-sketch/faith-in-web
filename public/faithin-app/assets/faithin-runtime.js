@@ -15,7 +15,7 @@ window.cv_ajax = window.cv_ajax || {
     site_origin: 'https://faithin.co',
     firebase_config: {
       apiKey: 'AIzaSyDJNCX00QsByyUG_1293fzjXJ-LhEbA-a4',
-      authDomain: 'faith-app-98a5f.firebaseapp.com',
+      authDomain: 'auth.faithin.co',
       projectId: 'faith-app-98a5f',
       storageBucket: 'faith-app-98a5f.firebasestorage.app',
       messagingSenderId: '218141432536',
