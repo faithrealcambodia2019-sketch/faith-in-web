@@ -17,7 +17,7 @@
     const media = Array.isArray(post.media_items) ? post.media_items : [];
     const items = media.length ? media : (post.cover_image_url ? [{ type: 'image', url: post.cover_image_url }] : []);
     if (!items.length) return '';
-    return `<div class="border-y border-line bg-raised grid gap-1 ${items.length > 1 ? 'grid-cols-2' : ''}">${items.slice(0, 4).map(item => {
+    return `<div class="border-y border-line bg-raised grid gap-1 ${items.length > 1 ? 'grid-cols-2' : ''}" data-media>${items.slice(0, 4).map(item => {
       const url = esc(item.url || item.preview_url || item.local_url || '');
       // preload="none": with metadata preloading, every feed render opened a
       // range request against Blob for every video on the page, and a video
@@ -31,6 +31,32 @@
       return `<img class="w-full max-h-[620px] object-cover" src="${url}" alt="Shared media" loading="lazy" decoding="async">`;
     }).join('')}</div>`;
   }
+
+  // When media fails to load — a blocked or over-quota Blob store answers 403,
+  // a deleted file 404 — the browser's own fallback is a broken-image glyph or
+  // a dead black player, which reads as "the site is broken". Swap in a calm
+  // placeholder instead. error does not bubble, so listen in the capture phase.
+  function mediaFallback(kind) {
+    const node = document.createElement('div');
+    node.className = 'grid place-items-center p-8 text-center text-muted text-[13px] bg-raised';
+    node.setAttribute('data-media-failed', kind);
+    // Only icons that ship in Font Awesome 6 Free — image-slash is Pro, and a
+    // missing glyph would render as the same empty box this is meant to avoid.
+    const icon = kind === 'video' ? 'fa-video' : 'fa-image';
+    node.innerHTML = `<span><i class="fa-solid ${icon} text-[20px] block mb-2 text-faint"></i>${kind === 'video' ? 'This video' : 'This image'} couldn’t be loaded.</span>`;
+    return node;
+  }
+
+  feed?.addEventListener('error', event => {
+    const el = event.target;
+    if (!el || !el.tagName) return;
+    const tag = el.tagName.toLowerCase();
+    if (tag !== 'img' && tag !== 'video') return;
+    if (!el.closest('[data-media]')) return;
+    if (el.dataset.mediaFailed) return;
+    el.dataset.mediaFailed = '1';
+    el.replaceWith(mediaFallback(tag === 'video' ? 'video' : 'image'));
+  }, true);
 
   function postHTML(post) {
     const author = post.author || { name: post.author_name || 'Faith In Member', uid: post.author_uid || '' };
