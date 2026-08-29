@@ -14,8 +14,8 @@ const contentSecurityPolicy = [
   // wss://*.googleapis.com covers the Firestore listen channel used by the
   // realtime messaging screen when the SDK negotiates a socket rather than
   // long polling.
-  "connect-src 'self' https://*.googleapis.com wss://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com https://vercel.com https://*.blob.vercel-storage.com https://accounts.google.com https://bible-api.com",
-  "frame-src https://accounts.google.com https://*.firebaseapp.com",
+  "connect-src 'self' https://*.googleapis.com wss://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com https://vercel.com https://*.blob.vercel-storage.com https://accounts.google.com https://bible-api.com https://auth.faithin.co",
+  "frame-src https://accounts.google.com https://*.firebaseapp.com https://auth.faithin.co",
   "worker-src 'self' blob:",
   "manifest-src 'self'",
   "upgrade-insecure-requests",
