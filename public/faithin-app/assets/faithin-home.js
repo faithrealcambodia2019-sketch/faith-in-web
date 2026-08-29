@@ -47,6 +47,46 @@
     return node;
   }
 
+  // A blocked Blob store does not always answer: the request can hang, so the
+  // img never fires error and never goes complete — it just sits blank forever.
+  // Watch images that are actually on screen and give up on them after a while.
+  const MEDIA_STALL_MS = 12000;
+  function watchForStall(root) {
+    if (!('IntersectionObserver' in window)) return;
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        const img = entry.target;
+        if (!entry.isIntersecting || img.dataset.stallWatched) return;
+        img.dataset.stallWatched = '1';
+        observer.unobserve(img);
+        const timer = setTimeout(async () => {
+          if (img.complete && img.naturalWidth > 0) return;
+          if (!img.isConnected || img.dataset.mediaFailed) return;
+          // A slow connection also looks like a stall, so confirm the file is
+          // genuinely unavailable before replacing anything the user might
+          // still be waiting on.
+          let dead = false;
+          try {
+            const probe = await fetch(img.src, { method: 'GET', headers: { Range: 'bytes=0-0' } });
+            dead = !probe.ok && probe.status !== 206;
+          } catch (_) { dead = false; }
+          if (!dead) return;
+          if (img.complete && img.naturalWidth > 0) return;
+          if (!img.isConnected || img.dataset.mediaFailed) return;
+          img.dataset.mediaFailed = '1';
+          img.replaceWith(mediaFallback('image'));
+        }, MEDIA_STALL_MS);
+        const clear = () => clearTimeout(timer);
+        img.addEventListener('load', clear, { once: true });
+        img.addEventListener('error', clear, { once: true });
+      });
+    }, { rootMargin: '100px' });
+    root.querySelectorAll('[data-media] img').forEach(img => {
+      if (img.complete && img.naturalWidth > 0) return;
+      observer.observe(img);
+    });
+  }
+
   feed?.addEventListener('error', event => {
     const el = event.target;
     if (!el || !el.tagName) return;
@@ -89,6 +129,7 @@
     if (sortMode === 'Top') items.sort((a, b) => (Number(b.reaction_count || 0) + Number(b.comment_count || 0) + Number(b.share_count || 0)) - (Number(a.reaction_count || 0) + Number(a.comment_count || 0) + Number(a.share_count || 0)));
     if (sortMode === 'Following') items = items.filter(post => followingIds.has(post.author?.uid) || post.author?.uid === window.FILive.user?.uid);
     feed.innerHTML = items.length ? items.map(postHTML).join('') : `<section class="card p-8 text-center"><h2 class="font-bold">${feedQuery || sortMode === 'Following' ? 'No matching posts' : 'Your community feed is ready'}</h2><p class="text-muted text-[13.5px] mt-1">${sortMode === 'Following' ? 'Follow members from Network to build this feed.' : 'Be the first to share a blessing or testimony.'}</p></section>`;
+    watchForStall(feed);
   }
 
   async function loadPosts() {
