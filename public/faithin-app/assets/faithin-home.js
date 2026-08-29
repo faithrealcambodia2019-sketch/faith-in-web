@@ -19,7 +19,14 @@
     if (!items.length) return '';
     return `<div class="border-y border-line bg-raised grid gap-1 ${items.length > 1 ? 'grid-cols-2' : ''}">${items.slice(0, 4).map(item => {
       const url = esc(item.url || item.preview_url || item.local_url || '');
-      if (item.type === 'video') return `<video class="fi-feed-video" controls playsinline preload="metadata" src="${url}"></video>`;
+      // preload="none": with metadata preloading, every feed render opened a
+      // range request against Blob for every video on the page, and a video
+      // whose blob is failing gets retried by the browser over and over. Wait
+      // for an actual play. Use a poster when the item carries one.
+      if (item.type === 'video') {
+        const poster = esc(item.thumbnail_url || item.poster_url || '');
+        return `<video class="fi-feed-video" controls playsinline preload="none"${poster ? ` poster="${poster}"` : ''} src="${url}"></video>`;
+      }
       if (item.type === 'audio') return `<div class="p-5"><audio class="w-full" controls src="${url}"></audio></div>`;
       return `<img class="w-full max-h-[620px] object-cover" src="${url}" alt="Shared media" loading="lazy" decoding="async">`;
     }).join('')}</div>`;
