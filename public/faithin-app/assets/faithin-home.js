@@ -49,41 +49,38 @@
 
   // A blocked Blob store does not always answer: the request can hang, so the
   // img never fires error and never goes complete — it just sits blank forever.
-  // Watch images that are actually on screen and give up on them after a while.
+  // Deliberately not gated on IntersectionObserver: an image that has not
+  // loaded has no intrinsic size, collapses to zero height, and therefore never
+  // reports as intersecting, so an observer would never watch the very images
+  // this exists for. There are at most four per post, and the probe below is
+  // what actually decides, so a plain timer is both simpler and correct.
   const MEDIA_STALL_MS = 12000;
   function watchForStall(root) {
-    if (!('IntersectionObserver' in window)) return;
-    const observer = new IntersectionObserver(entries => {
-      entries.forEach(entry => {
-        const img = entry.target;
-        if (!entry.isIntersecting || img.dataset.stallWatched) return;
-        img.dataset.stallWatched = '1';
-        observer.unobserve(img);
-        const timer = setTimeout(async () => {
-          if (img.complete && img.naturalWidth > 0) return;
-          if (!img.isConnected || img.dataset.mediaFailed) return;
-          // A slow connection also looks like a stall, so confirm the file is
-          // genuinely unavailable before replacing anything the user might
-          // still be waiting on.
-          let dead = false;
-          try {
-            const probe = await fetch(img.src, { method: 'GET', headers: { Range: 'bytes=0-0' } });
-            dead = !probe.ok && probe.status !== 206;
-          } catch (_) { dead = false; }
-          if (!dead) return;
-          if (img.complete && img.naturalWidth > 0) return;
-          if (!img.isConnected || img.dataset.mediaFailed) return;
-          img.dataset.mediaFailed = '1';
-          img.replaceWith(mediaFallback('image'));
-        }, MEDIA_STALL_MS);
-        const clear = () => clearTimeout(timer);
-        img.addEventListener('load', clear, { once: true });
-        img.addEventListener('error', clear, { once: true });
-      });
-    }, { rootMargin: '100px' });
     root.querySelectorAll('[data-media] img').forEach(img => {
+      if (img.dataset.stallWatched) return;
       if (img.complete && img.naturalWidth > 0) return;
-      observer.observe(img);
+      img.dataset.stallWatched = '1';
+      const timer = setTimeout(async () => {
+        if (img.complete && img.naturalWidth > 0) return;
+        if (!img.isConnected || img.dataset.mediaFailed) return;
+        // A slow connection also looks like a stall, so confirm the file is
+        // genuinely unavailable before replacing anything the user might still
+        // be waiting on. Anything inconclusive (including a cross-origin probe
+        // the browser refuses) counts as alive and is left alone.
+        let dead = false;
+        try {
+          const probe = await fetch(img.src, { method: 'GET', headers: { Range: 'bytes=0-0' } });
+          dead = !probe.ok && probe.status !== 206;
+        } catch (_) { dead = false; }
+        if (!dead) return;
+        if (img.complete && img.naturalWidth > 0) return;
+        if (!img.isConnected || img.dataset.mediaFailed) return;
+        img.dataset.mediaFailed = '1';
+        img.replaceWith(mediaFallback('image'));
+      }, MEDIA_STALL_MS);
+      const clear = () => clearTimeout(timer);
+      img.addEventListener('load', clear, { once: true });
+      img.addEventListener('error', clear, { once: true });
     });
   }
 
