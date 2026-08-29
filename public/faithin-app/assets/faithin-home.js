@@ -31,6 +31,7 @@
     const current = window.FILive.user;
     const avatar = author.uid && author.uid === current?.uid ? (current.avatar_url || current.avatar || current.photo_url || author.avatar_url || author.avatar || '') : (author.avatar_url || author.avatar || '');
     const reacted = !!(post.user_reaction || post.current_user_reaction);
+    const saved = !!post.bookmarked;
     const owner = !!post.can_delete;
     const body = post.content || post.excerpt || post.article_excerpt || '';
     return `<article class="card overflow-hidden animate-fade-up" data-post-id="${esc(post.id)}" data-author-uid="${esc(author.uid || '')}">
@@ -43,8 +44,8 @@
       ${post.article_title ? `<div class="px-4 pt-1"><h3 class="font-serif text-[22px] font-semibold">${esc(post.article_title)}</h3></div>` : ''}
       ${body ? `<div class="px-4 pb-3"><p class="text-[14.5px] leading-relaxed whitespace-pre-wrap">${esc(body)}</p></div>` : ''}
       ${mediaHTML(post)}
-      <div class="px-4 py-2 flex items-center justify-between text-[12px] text-muted border-b border-line"><span class="flex items-center gap-1.5"><span class="w-[18px] h-[18px] rounded-full bg-brand text-white grid place-items-center text-[9px]"><i class="fa-solid fa-hands-praying"></i></span><span data-likecount>${Number(post.reaction_count || 0)}</span></span><span class="flex gap-3"><button data-comment-toggle>${Number(post.comment_count || 0)} comments</button><span>${Number(post.share_count || 0)} shares</span></span></div>
-      <div class="flex items-center gap-1 px-2 py-1"><button class="action-btn ${reacted ? '!text-brand' : ''}" data-live-like><i class="fa-${reacted ? 'solid' : 'regular'} fa-hands-praying"></i>Amen</button><button class="action-btn" data-comment-toggle><i class="fa-regular fa-comment"></i>Comment</button><button class="action-btn" data-live-share><i class="fa-solid fa-share-nodes"></i>Share</button><button class="action-btn" data-live-save><i class="fa-regular fa-bookmark"></i><span class="hidden sm:inline">Save</span></button></div>
+      <div class="px-4 py-2 flex items-center justify-between text-[12px] text-muted border-b border-line"><span class="flex items-center gap-1.5"><span class="w-[18px] h-[18px] rounded-full bg-brand text-white grid place-items-center text-[9px]"><i class="fa-solid fa-hands-praying"></i></span><span data-likecount>${Number(post.reaction_count || 0)}</span></span><span class="flex gap-3"><button type="button" data-comment-toggle>${Number(post.comment_count || 0)} comments</button><span data-sharecount>${Number(post.share_count || 0)} shares</span></span></div>
+      <div class="flex items-center gap-1 px-2 py-1"><button type="button" class="action-btn ${reacted ? '!text-brand' : ''}" data-live-like aria-pressed="${reacted}"><i class="fa-solid fa-hands-praying"></i>Amen</button><button type="button" class="action-btn" data-comment-toggle><i class="fa-regular fa-comment"></i>Comment</button><button type="button" class="action-btn" data-live-share><i class="fa-solid fa-share-nodes"></i>Share</button><button type="button" class="action-btn ${saved ? '!text-brand' : ''}" data-live-save aria-pressed="${saved}"><i class="fa-${saved ? 'solid' : 'regular'} fa-bookmark"></i><span class="hidden sm:inline">Save</span></button></div>
       <div class="hidden border-t border-line p-3.5" data-comments><div class="space-y-2 mb-3" data-comment-list></div><form class="flex items-center gap-2.5" data-comment-form>${window.FILive.avatarMarkup(current || { name: 'Me' }, 'avatar w-9 h-9 text-[11px] object-cover')}<input name="content" class="field !rounded-pill" placeholder="Write a thoughtful comment…" required><button class="icon-btn text-brand"><i class="fa-solid fa-paper-plane"></i></button></form></div>
     </article>`;
   }
@@ -198,12 +199,97 @@
   articleButton?.removeAttribute('data-toast');
   articleButton?.addEventListener('click', async event => { event.stopPropagation(); if (!needUser()) return; const modal = $('#modal-article'), title = $('input', modal).value.trim(), text = $('#article-body').textContent.trim(); if (!title || !text) return toast('Add a headline and article text.'); busy(articleButton, true, 'Publishing'); try { await api.request('cv_create_post', { type: 'article', title, article_title: title, article_body: $('#article-body').innerHTML, content: text, visibility: 'public' }); closeModal(); toast('Article published ✨'); await loadPosts(); } catch (error) { toast(error.message); } finally { busy(articleButton, false, 'Publish'); } });
 
+  // Patch a single post in place. Reloading the whole feed after a tap blanks
+  // the list behind a "Loading your community…" spinner, loses scroll position
+  // and re-requests every image and video in the feed, so we never do that for
+  // an action whose response already tells us the new state.
+  function patchPost(id, changes) {
+    const post = loadedPosts.find(item => String(item.id) === String(id));
+    if (post) Object.assign(post, changes);
+    return post;
+  }
+
+  function paintReaction(article, reacted, count) {
+    const button = $('[data-live-like]', article);
+    if (button) {
+      button.classList.toggle('!text-brand', reacted);
+      button.setAttribute('aria-pressed', String(reacted));
+    }
+    const counter = $('[data-likecount]', article);
+    if (counter && count != null) counter.textContent = String(count);
+  }
+
+  function paintSaved(article, saved) {
+    const button = $('[data-live-save]', article);
+    if (!button) return;
+    button.classList.toggle('!text-brand', saved);
+    button.setAttribute('aria-pressed', String(saved));
+    const icon = $('i', button);
+    if (icon) icon.className = saved ? 'fa-solid fa-bookmark' : 'fa-regular fa-bookmark';
+  }
+
   feed?.addEventListener('click', async event => {
     const article = event.target.closest('[data-post-id]'); if (!article) return; const id = article.dataset.postId;
-    if (event.target.closest('[data-live-like]')) { if (!needUser()) return; try { await api.request('cv_like_post', { post_id: id, reaction: 'like' }); await loadPosts(); } catch (error) { toast(error.message); } return; }
+    if (event.target.closest('[data-live-like]')) {
+      if (!needUser()) return;
+      const button = event.target.closest('[data-live-like]');
+      if (button.dataset.busy) return;
+      const post = loadedPosts.find(item => String(item.id) === String(id));
+      const wasReacted = !!(post?.user_reaction || post?.current_user_reaction);
+      const wasCount = Number(post?.reaction_count || 0);
+      // Optimistic flip so the button responds on the tap, then reconcile with
+      // the authoritative counts the server sends back.
+      button.dataset.busy = '1';
+      paintReaction(article, !wasReacted, Math.max(0, wasCount + (wasReacted ? -1 : 1)));
+      try {
+        const result = await api.request('cv_like_post', { post_id: id, reaction: 'like' });
+        const reaction = result?.user_reaction || result?.current_user_reaction || null;
+        const count = Number(result?.reaction_count ?? result?.likes ?? 0);
+        patchPost(id, { user_reaction: reaction, current_user_reaction: reaction, reaction_count: count });
+        paintReaction(article, !!reaction, count);
+      } catch (error) {
+        paintReaction(article, wasReacted, wasCount);
+        toast(error.message);
+      } finally {
+        delete button.dataset.busy;
+      }
+      return;
+    }
     if (event.target.closest('[data-comment-toggle]')) { event.preventDefault(); const box = $('[data-comments]', article); box.classList.toggle('hidden'); if (!box.classList.contains('hidden')) { $('input', box).focus(); try { const result = await api.request('cv_get_post_comments', { post_id: id }); $('[data-comment-list]', box).innerHTML = (result.items || []).map(comment => `<div class="rounded-xl bg-raised p-2.5"><strong class="text-[12.5px]">${esc(comment.author?.name || comment.author_name || 'Member')}</strong><p class="text-[13px] mt-1">${esc(comment.content)}</p></div>`).join(''); } catch (_) {} } return; }
-    if (event.target.closest('[data-live-share]')) { if (!needUser()) return; await api.request('cv_share_post', { post_id: id }); try { await navigator.clipboard.writeText(`${location.origin}/?post=${id}`); } catch (_) {} toast('Post link copied'); await loadPosts(); return; }
-    if (event.target.closest('[data-live-save]')) { if (!needUser()) return; await api.request('cv_toggle_bookmark', { object_id: id, object_type: 'post' }); toast('Saved'); return; }
+    if (event.target.closest('[data-live-share]')) {
+      if (!needUser()) return;
+      try {
+        const result = await api.request('cv_share_post', { post_id: id });
+        const count = Number(result?.share_count ?? 0);
+        patchPost(id, { share_count: count });
+        const label = $('[data-sharecount]', article);
+        if (label) label.textContent = `${count} shares`;
+        try { await navigator.clipboard.writeText(`${location.origin}/?post=${id}`); } catch (_) {}
+        toast('Post link copied');
+      } catch (error) { toast(error.message); }
+      return;
+    }
+    if (event.target.closest('[data-live-save]')) {
+      if (!needUser()) return;
+      const button = event.target.closest('[data-live-save]');
+      if (button.dataset.busy) return;
+      const wasSaved = button.getAttribute('aria-pressed') === 'true';
+      button.dataset.busy = '1';
+      paintSaved(article, !wasSaved);
+      try {
+        const result = await api.request('cv_toggle_bookmark', { object_id: id, object_type: 'post' });
+        const saved = result?.bookmarked !== undefined ? !!result.bookmarked : !wasSaved;
+        patchPost(id, { bookmarked: saved });
+        paintSaved(article, saved);
+        toast(saved ? 'Saved' : 'Removed from saved');
+      } catch (error) {
+        paintSaved(article, wasSaved);
+        toast(error.message);
+      } finally {
+        delete button.dataset.busy;
+      }
+      return;
+    }
     if (event.target.closest('[data-live-follow]')) { event.stopPropagation(); if (!needUser()) return; await api.request('cv_social_follow_user', { target_uid: article.dataset.authorUid }); toast('Following'); event.target.closest('[data-live-follow]').remove(); return; }
     if (event.target.closest('[data-live-delete]')) { if (!needUser() || !confirm('Delete this post?')) return; await api.request('cv_delete_post', { post_id: id }); article.remove(); toast('Post deleted'); }
   });
