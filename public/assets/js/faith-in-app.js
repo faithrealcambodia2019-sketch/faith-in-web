@@ -3080,8 +3080,8 @@ window.signOut = () => {
 
     const cvPostReactions = {
         like: { key: 'like', label: 'Amen', icon: '👍', iconName: 'thumbs-up', color: '#5b89d6', badgeBg: '#5b89d6', stroke: '#1f4e99', fill: '#9cbbf1', bgColor: '#eff6ff' },
-        celebrate: { key: 'celebrate', label: 'Praise', icon: '✦', iconName: 'sparkles', color: '#71a856', badgeBg: '#71a856', stroke: '#285915', fill: '#b4d9a3', bgColor: '#f0fdf4' },
-        support: { key: 'support', label: 'Praying', icon: '🤝', iconName: 'praying', color: '#b09ac8', badgeBg: '#b09ac8', stroke: '#4e346e', fill: '#d3c5e3', bgColor: '#faf5ff' },
+        celebrate: { key: 'celebrate', label: 'Hallelujah', icon: '✦', iconName: 'sparkles', color: '#71a856', badgeBg: '#71a856', stroke: '#285915', fill: '#b4d9a3', bgColor: '#f0fdf4' },
+        support: { key: 'support', label: 'Praise the Lord', icon: '🤝', iconName: 'praying', color: '#b09ac8', badgeBg: '#b09ac8', stroke: '#4e346e', fill: '#d3c5e3', bgColor: '#faf5ff' },
         love: { key: 'love', label: 'Love', icon: '❤️', iconName: 'heart', color: '#cd6e57', badgeBg: '#cd6e57', stroke: '#732111', fill: '#e8a89b', bgColor: '#fff7ed' },
         insightful: { key: 'insightful', label: 'Inspired', icon: '💡', iconName: 'lightbulb', color: '#eab04d', badgeBg: '#eab04d', stroke: '#7c5108', fill: '#f7d899', bgColor: '#fffbeb' },
         funny: { key: 'funny', label: 'Joy', icon: '😄', iconName: 'smile', color: '#5eb0c3', badgeBg: '#5eb0c3', stroke: '#175c6c', fill: '#a3d8e3', bgColor: '#ecfeff' }
@@ -3262,21 +3262,27 @@ window.signOut = () => {
                     });
                 });
                 const updatedPost = (state.posts || []).find(post => String(post.id) === String(id));
+                document.querySelectorAll(`[data-cv-quick-reaction="${CSS.escape(String(id))}"]`).forEach(button => {
+                    const active = !!selected && button.dataset.reaction === selected;
+                    button.classList.toggle('is-active', active);
+                    button.setAttribute('aria-pressed', active ? 'true' : 'false');
+                });
                 const wrap = cvFindReactionWrap(id);
                 if (wrap) {
                     const trigger = wrap.querySelector('.cv-reaction-trigger');
-                    const meta = cvReactionMeta(selected || 'like');
+                    const amenSelected = selected === 'like';
+                    const meta = cvReactionMeta('like');
                     if (trigger) {
-                        trigger.classList.toggle('is-active', !!selected);
-                        if (selected) {
+                        trigger.classList.toggle('is-active', amenSelected);
+                        if (amenSelected) {
                             trigger.style.setProperty('--cv-reaction-active-color', meta.color);
                             trigger.style.setProperty('--cv-reaction-active-bg', meta.bgColor || '#eff6ff');
                         } else {
                             trigger.style.removeProperty('--cv-reaction-active-color');
                             trigger.style.removeProperty('--cv-reaction-active-bg');
                         }
-                        trigger.setAttribute('aria-label', selected ? ('Remove ' + meta.label + ' reaction') : 'Amen to this post');
-                        trigger.innerHTML = selected
+                        trigger.setAttribute('aria-label', amenSelected ? 'Remove Amen reaction' : 'Amen to this post');
+                        trigger.innerHTML = amenSelected
                             ? `<span class="cv-action-icon cv-selected-reaction-icon" style="--cv-reaction-color:${meta.color};--cv-reaction-bg-color:${meta.bgColor}">${cvReactionIconSvg(meta.iconName, 'cv-selected-reaction-svg')}</span><span class="cv-action-label">${meta.label}</span>`
                             : `<span class="cv-action-icon cv-like-icon"><i data-lucide="thumbs-up"></i></span><span class="cv-action-label">Amen</span>`;
                     }
@@ -5976,8 +5982,6 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
         } else {
             filteredPosts.forEach(post => {
                 const selectedReaction = post.current_user_reaction || post.user_reaction || '';
-                const reactionMeta = cvReactionMeta(selectedReaction || 'like');
-                const isLiked = !!selectedReaction;
                 const isSaved = (state.bookmarks || []).map(String).includes(String(post.id));
                 const author = post.author || {};
                 const postType = String(post.type || '').toLowerCase();
@@ -6031,14 +6035,22 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
 
                         <div class="cv-linkedin-post-shell" id="post-${post.id}">
                             ${cvPostCountLine(post)}
-                            <div class="cv-linkedin-actions ${isDark ? 'cv-linkedin-actions-dark' : ''}">
+                            <div class="cv-faith-reaction-actions ${isDark ? 'is-dark' : ''}">
                                 <div class="cv-reaction-wrap" data-post-id="${post.id}" onmouseenter="cvOpenReactionPicker('${post.id}')" onmouseleave="cvScheduleReactionClose('${post.id}', 320)" onfocusin="cvOpenReactionPicker('${post.id}')" onfocusout="cvScheduleReactionClose('${post.id}', 320)">
                                     ${cvRenderReactionPicker(post.id)}
-                                    <button type="button" onclick="likePost('${post.id}')" onpointerdown="cvStartReactionLongPress(event, '${post.id}')" onpointerup="cvCancelReactionLongPress()" onpointerleave="cvCancelReactionLongPress()" oncontextmenu="event.preventDefault(); cvOpenReactionPicker('${post.id}')" class="cv-linkedin-action cv-reaction-trigger ${isLiked ? 'is-active' : ''}" style="${isLiked ? `--cv-reaction-active-color:${reactionMeta.color};--cv-reaction-active-bg:${reactionMeta.bgColor}` : ''}" aria-label="${isLiked ? 'Remove ' + reactionMeta.label + ' reaction' : 'Amen to this post'}" aria-haspopup="menu">
-                                        <span class="cv-action-icon ${isLiked ? 'cv-selected-reaction-icon' : 'cv-like-icon'}" style="${isLiked ? `--cv-reaction-color:${reactionMeta.color};--cv-reaction-bg-color:${reactionMeta.bgColor}` : ''}">${isLiked ? cvReactionIconSvg(reactionMeta.iconName, 'cv-selected-reaction-svg') : '<i data-lucide="thumbs-up"></i>'}</span>
-                                        <span class="cv-action-label">${isLiked ? reactionMeta.label : 'Amen'}</span>
+                                    <button type="button" data-cv-quick-reaction="${post.id}" data-reaction="like" onclick="likePost('${post.id}')" onpointerdown="cvStartReactionLongPress(event, '${post.id}')" onpointerup="cvCancelReactionLongPress()" onpointerleave="cvCancelReactionLongPress()" oncontextmenu="event.preventDefault(); cvOpenReactionPicker('${post.id}')" class="cv-linkedin-action cv-reaction-trigger ${selectedReaction === 'like' ? 'is-active' : ''}" aria-label="${selectedReaction === 'like' ? 'Remove Amen reaction' : 'Amen to this post'}" aria-pressed="${selectedReaction === 'like' ? 'true' : 'false'}" aria-haspopup="menu">
+                                        <span class="cv-action-icon ${selectedReaction === 'like' ? 'cv-selected-reaction-icon' : 'cv-like-icon'}" style="${selectedReaction === 'like' ? `--cv-reaction-color:${cvPostReactions.like.color};--cv-reaction-bg-color:${cvPostReactions.like.bgColor}` : ''}">${selectedReaction === 'like' ? cvReactionIconSvg('thumbs-up', 'cv-selected-reaction-svg') : '<i data-lucide="thumbs-up"></i>'}</span>
+                                        <span class="cv-action-label">Amen</span>
                                     </button>
                                 </div>
+                                <button type="button" data-cv-quick-reaction="${post.id}" data-reaction="celebrate" onclick="cvSetPostReaction(event, '${post.id}', 'celebrate')" class="cv-linkedin-action cv-faith-reaction-button ${selectedReaction === 'celebrate' ? 'is-active' : ''}" aria-label="Hallelujah reaction" aria-pressed="${selectedReaction === 'celebrate' ? 'true' : 'false'}">
+                                    <span class="cv-action-icon">${cvReactionIconSvg('sparkles')}</span><span class="cv-action-label">Hallelujah</span>
+                                </button>
+                                <button type="button" data-cv-quick-reaction="${post.id}" data-reaction="support" onclick="cvSetPostReaction(event, '${post.id}', 'support')" class="cv-linkedin-action cv-faith-reaction-button ${selectedReaction === 'support' ? 'is-active' : ''}" aria-label="Praise the Lord reaction" aria-pressed="${selectedReaction === 'support' ? 'true' : 'false'}">
+                                    <span class="cv-action-icon">${cvReactionIconSvg('praying')}</span><span class="cv-action-label">Praise the Lord</span>
+                                </button>
+                            </div>
+                            <div class="cv-linkedin-actions cv-post-utility-actions ${isDark ? 'cv-linkedin-actions-dark' : ''}">
                                 <button type="button" onclick="cvFocusPostComment('${post.id}')" class="cv-linkedin-action" aria-label="Comment on this post">
                                     <span class="cv-action-icon"><i data-lucide="message-circle"></i></span>
                                     <span class="cv-action-label">Comment</span>
