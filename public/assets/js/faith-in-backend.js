@@ -1409,6 +1409,7 @@
             location: text(data.location),
             bio: text(data.bio),
             verification: data.verification || null,
+            created_at: isoTime(data.createdAt),
             is_self: !!(viewer && viewer.uid === uid),
             is_following: !!(following && following[uid]),
             counts: {},
@@ -1442,6 +1443,9 @@
                         if (matcher && !matcher(data)) return;
                         items.push(shapeMember(d.id, data, user, following));
                     });
+                    items.sort(function (a, c) {
+                        return String(c.created_at || '').localeCompare(String(a.created_at || ''));
+                    });
                     return { items: items };
                 });
             });
@@ -1464,6 +1468,15 @@
             // Suggest people the member is not already following.
             var items = result.items.filter(function (u) { return !u.is_following; });
             return { items: items.slice(0, 12) };
+        });
+    };
+
+    // Lightweight, uncached feed used by the UI to notice a newly activated
+    // member account. It exposes only the same public profile projection as
+    // the Network directory; account email and settings never leave /users.
+    actions.cv_get_recent_users = function (b) {
+        return listMembers(b, null).then(function (result) {
+            return { items: result.items.slice(0, 20) };
         });
     };
 

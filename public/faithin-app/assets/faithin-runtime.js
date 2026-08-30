@@ -36,6 +36,8 @@ window.cv_ajax = window.cv_ajax || {
     cv_get_jobs: 60 * 1000,
     cv_get_resources: 60 * 1000,
     cv_get_suggested_users: 60 * 1000,
+    cv_get_recent_users: 5 * 1000,
+    cv_find_users: 60 * 1000,
     cv_get_prayers: 20 * 1000,
     cv_get_bookmarks: 30 * 1000,
     cv_get_post_comments: 15 * 1000,
