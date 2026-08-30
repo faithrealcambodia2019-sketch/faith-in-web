@@ -7,6 +7,38 @@
   const needUser = () => window.FILive.requireUser();
   let loadedPosts = [], feedQuery = '', sortMode = 'Top', followingIds = new Set();
 
+  const LEGACY_MEDIA_BASE = 'https://nckvrhdyrikrbpgjlqlw.supabase.co/storage/v1/object/public/faithin-media/migrated/';
+  const LEGACY_MEDIA_FILES = [
+    [/2026[-_]?08[-_]?15.*19[._-]?51[._-]?25/i, '2026-08-15_19.51.25.jpg'],
+    [/2026[-_]?08[-_]?16.*20[._-]?36[._-]?24/i, '2026-08-16_20.36.24.jpg'],
+    [/img[_-]?0585/i, 'IMG_0585.jpg'],
+    [/img[_-]?0628/i, 'IMG_0628.jpg'],
+    [/img[_-]?0637/i, 'IMG_0637.jpg'],
+    [/img[_-]?0639/i, 'IMG_0639.jpg'],
+    [/img[_-]?0665/i, 'IMG_0665.jpg'],
+    [/jesus.*love.*you/i, 'JESUS_LOVE_YOU.png'],
+    [/(love.*can.*change|hpF5tGVEuM1rMsqjdfG8rHsnLXRE52|^_[-_])/i, 'LOVE_CAN_CHANGE_EVERYTHING.mp4'],
+    [/(peter.*tan.*chi|gather25|ytdown.*mKEiNA6yeII)/i, 'Peter_Tan_Chi_Gather25.mp4'],
+    [/strength.*christian.*fellowship/i, 'Strength_in_Christian_fellowship.mp3'],
+    [/mhc.*gen.*01/i, 'MHC_Gen_01_1-2.pdf'],
+    [/mhc.*preface.*first.*volume/i, 'MHC_Preface_to_the_First_Volume.pdf'],
+    [/images[-_]?31998/i, 'images-31998.jpeg'],
+    [/images[-_]?5268/i, 'images-5268.jpeg'],
+    [/wallpaper[-_]?04/i, 'wallpaper-04.jpg']
+  ];
+
+  function mediaUrl(value) {
+    const raw = String(value || '').trim();
+    if (!raw) return '';
+    try {
+      const parsed = new URL(raw, window.location.origin);
+      if (!/\.blob\.vercel-storage\.com$/i.test(parsed.hostname)) return raw;
+      const legacyName = decodeURIComponent(parsed.pathname.split('/').filter(Boolean).pop() || '');
+      const match = LEGACY_MEDIA_FILES.find(([pattern]) => pattern.test(legacyName));
+      return match ? LEGACY_MEDIA_BASE + encodeURIComponent(match[1]) : raw;
+    } catch (_) { return raw; }
+  }
+
   function busy(button, active, label) {
     if (!button) return;
     if (active) { button.dataset.oldLabel = button.innerHTML; button.disabled = true; button.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i>${label}`; }
@@ -18,13 +50,13 @@
     const items = media.length ? media : (post.cover_image_url ? [{ type: 'image', url: post.cover_image_url }] : []);
     if (!items.length) return '';
     return `<div class="border-y border-line bg-raised grid gap-1 ${items.length > 1 ? 'grid-cols-2' : ''}" data-media>${items.slice(0, 4).map(item => {
-      const url = esc(item.url || item.preview_url || item.local_url || '');
+      const url = esc(mediaUrl(item.url || item.preview_url || item.local_url || ''));
       // preload="none": with metadata preloading, every feed render opened a
       // range request against Blob for every video on the page, and a video
       // whose blob is failing gets retried by the browser over and over. Wait
       // for an actual play. Use a poster when the item carries one.
       if (item.type === 'video') {
-        const poster = esc(item.thumbnail_url || item.poster_url || '');
+        const poster = esc(mediaUrl(item.thumbnail_url || item.poster_url || ''));
         return `<video class="fi-feed-video" controls playsinline preload="none"${poster ? ` poster="${poster}"` : ''} src="${url}"></video>`;
       }
       if (item.type === 'audio') return `<div class="p-5"><audio class="w-full" controls src="${url}"></audio></div>`;
@@ -149,7 +181,7 @@
       const author = post.author || {};
       const colors = ['#3730a3','#065f46','#92400e','#6b21a8','#1e40af'];
       const media = Array.isArray(post.media_items) ? post.media_items.find(item => item.type === 'image') : null;
-      const blessingImage = media?.url || media?.preview_url || post.cover_image_url || '';
+      const blessingImage = mediaUrl(media?.url || media?.preview_url || post.cover_image_url || '');
       const authorPhoto = author.uid === current.uid ? currentPhoto : (author.avatar_url || author.avatar || '');
       const avatar = authorPhoto ? `<img class="absolute top-2.5 left-2.5 avatar w-9 h-9 object-cover ring-[3px] ring-white/80" src="${esc(authorPhoto)}" alt="${esc(author.name || 'Faith In member')}">` : `<span class="absolute top-2.5 left-2.5 avatar w-9 h-9 text-[11px] ring-[3px] ring-white/80">${esc(api.initials(author.name))}</span>`;
       return `<button class="snap-start shrink-0 w-[112px] h-[172px] rounded-card overflow-hidden relative text-left text-white" style="background:linear-gradient(180deg,${colors[index % colors.length]},#111827)" data-blessing-post="${esc(post.id)}">${blessingImage ? `<img class="absolute inset-0 w-full h-full object-cover" src="${esc(blessingImage)}" alt="Blessing image"><span class="absolute inset-0" style="background:linear-gradient(180deg,rgba(0,0,0,.2),rgba(0,0,0,.35) 48%,rgba(0,0,0,.78))"></span>` : ''}${avatar}<span class="absolute inset-x-3 top-1/2 -translate-y-1/2 text-center font-serif italic text-[13px] line-clamp-4">${esc(post.content || 'Shared a blessing')}</span><span class="absolute bottom-2.5 left-3 right-3 text-[11.5px] font-semibold truncate">${esc(author.name || 'Faith In Member')}</span></button>`;
