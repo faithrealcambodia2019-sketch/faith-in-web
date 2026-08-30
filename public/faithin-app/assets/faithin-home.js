@@ -132,7 +132,7 @@
     const name = author.name || author.displayName || 'Faith In Member';
     const current = window.FILive.user;
     const avatar = author.uid && author.uid === current?.uid ? (current.avatar_url || current.avatar || current.photo_url || author.avatar_url || author.avatar || '') : (author.avatar_url || author.avatar || '');
-    const reacted = !!(post.user_reaction || post.current_user_reaction);
+    const selectedReaction = post.user_reaction || post.current_user_reaction || '';
     const saved = !!post.bookmarked;
     const owner = !!post.can_delete;
     const body = post.content || post.excerpt || post.article_excerpt || '';
@@ -147,7 +147,12 @@
       ${body ? `<div class="px-4 pb-3"><p class="text-[14.5px] leading-relaxed whitespace-pre-wrap">${esc(body)}</p></div>` : ''}
       ${mediaHTML(post)}
       <div class="px-4 py-2 flex items-center justify-between text-[12px] text-muted border-b border-line"><span class="flex items-center gap-1.5"><span class="w-[18px] h-[18px] rounded-full bg-brand text-white grid place-items-center text-[9px]"><i class="fa-solid fa-hands-praying"></i></span><span data-likecount>${Number(post.reaction_count || 0)}</span></span><span class="flex gap-3"><button type="button" data-comment-toggle>${Number(post.comment_count || 0)} comments</button><span data-sharecount>${Number(post.share_count || 0)} shares</span></span></div>
-      <div class="flex items-center gap-1 px-2 py-1"><button type="button" class="action-btn ${reacted ? '!text-brand' : ''}" data-live-like aria-pressed="${reacted}"><i class="fa-solid fa-hands-praying"></i>Amen</button><button type="button" class="action-btn" data-comment-toggle><i class="fa-regular fa-comment"></i>Comment</button><button type="button" class="action-btn" data-live-share><i class="fa-solid fa-share-nodes"></i>Share</button><button type="button" class="action-btn ${saved ? '!text-brand' : ''}" data-live-save aria-pressed="${saved}"><i class="fa-${saved ? 'solid' : 'regular'} fa-bookmark"></i><span class="hidden sm:inline">Save</span></button></div>
+      <div class="faith-reaction-row px-2 pt-2 pb-1">
+        <button type="button" class="action-btn faith-reaction-btn ${selectedReaction === 'like' ? 'is-on' : ''}" data-live-reaction="like" aria-pressed="${selectedReaction === 'like'}"><i class="fa-solid fa-hands-praying"></i>Amen</button>
+        <button type="button" class="action-btn faith-reaction-btn ${selectedReaction === 'celebrate' ? 'is-on' : ''}" data-live-reaction="celebrate" aria-pressed="${selectedReaction === 'celebrate'}"><i class="fa-solid fa-star"></i>Hallelujah</button>
+        <button type="button" class="action-btn faith-reaction-btn ${selectedReaction === 'support' ? 'is-on' : ''}" data-live-reaction="support" aria-pressed="${selectedReaction === 'support'}"><i class="fa-solid fa-hands-praying"></i>Praise the Lord</button>
+      </div>
+      <div class="flex items-center gap-1 px-2 pb-1"><button type="button" class="action-btn" data-comment-toggle><i class="fa-regular fa-comment"></i>Comment</button><button type="button" class="action-btn" data-live-share><i class="fa-solid fa-share-nodes"></i>Share</button><button type="button" class="action-btn ${saved ? '!text-brand' : ''}" data-live-save aria-pressed="${saved}"><i class="fa-${saved ? 'solid' : 'regular'} fa-bookmark"></i><span>Save</span></button></div>
       <div class="hidden border-t border-line p-3.5" data-comments><div class="space-y-2 mb-3" data-comment-list></div><form class="flex items-center gap-2.5" data-comment-form>${window.FILive.avatarMarkup(current || { name: 'Me' }, 'avatar w-9 h-9 text-[11px] object-cover')}<input name="content" class="field !rounded-pill" placeholder="Write a thoughtful comment…" required><button class="icon-btn text-brand"><i class="fa-solid fa-paper-plane"></i></button></form></div>
     </article>`;
   }
@@ -312,12 +317,12 @@
     return post;
   }
 
-  function paintReaction(article, reacted, count) {
-    const button = $('[data-live-like]', article);
-    if (button) {
-      button.classList.toggle('!text-brand', reacted);
-      button.setAttribute('aria-pressed', String(reacted));
-    }
+  function paintReaction(article, selectedReaction, count) {
+    $$('[data-live-reaction]', article).forEach(button => {
+      const active = !!selectedReaction && button.dataset.liveReaction === selectedReaction;
+      button.classList.toggle('is-on', active);
+      button.setAttribute('aria-pressed', String(active));
+    });
     const counter = $('[data-likecount]', article);
     if (counter && count != null) counter.textContent = String(count);
   }
@@ -333,25 +338,26 @@
 
   feed?.addEventListener('click', async event => {
     const article = event.target.closest('[data-post-id]'); if (!article) return; const id = article.dataset.postId;
-    if (event.target.closest('[data-live-like]')) {
+    if (event.target.closest('[data-live-reaction]')) {
       if (!needUser()) return;
-      const button = event.target.closest('[data-live-like]');
+      const button = event.target.closest('[data-live-reaction]');
       if (button.dataset.busy) return;
       const post = loadedPosts.find(item => String(item.id) === String(id));
-      const wasReacted = !!(post?.user_reaction || post?.current_user_reaction);
+      const requestedReaction = button.dataset.liveReaction || 'like';
+      const previousReaction = post?.user_reaction || post?.current_user_reaction || '';
       const wasCount = Number(post?.reaction_count || 0);
-      // Optimistic flip so the button responds on the tap, then reconcile with
-      // the authoritative counts the server sends back.
+      const optimisticReaction = previousReaction === requestedReaction ? '' : requestedReaction;
+      const optimisticCount = Math.max(0, wasCount + (!previousReaction ? 1 : (optimisticReaction ? 0 : -1)));
       button.dataset.busy = '1';
-      paintReaction(article, !wasReacted, Math.max(0, wasCount + (wasReacted ? -1 : 1)));
+      paintReaction(article, optimisticReaction, optimisticCount);
       try {
-        const result = await api.request('cv_like_post', { post_id: id, reaction: 'like' });
+        const result = await api.request('cv_like_post', { post_id: id, reaction: requestedReaction });
         const reaction = result?.user_reaction || result?.current_user_reaction || null;
         const count = Number(result?.reaction_count ?? result?.likes ?? 0);
         patchPost(id, { user_reaction: reaction, current_user_reaction: reaction, reaction_count: count });
-        paintReaction(article, !!reaction, count);
+        paintReaction(article, reaction, count);
       } catch (error) {
-        paintReaction(article, wasReacted, wasCount);
+        paintReaction(article, previousReaction, wasCount);
         toast(error.message);
       } finally {
         delete button.dataset.busy;
