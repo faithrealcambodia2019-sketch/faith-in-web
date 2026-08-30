@@ -7,7 +7,7 @@ tailwind.config = {
       fontFamily: {
         sans: ['Inter', 'ui-sans-serif', 'system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'sans-serif'],
         serif: ['Lora', 'Georgia', 'serif'],
-        khmer: ['"Noto Serif Khmer"', 'Lora', 'serif']
+        khmer: ['"Koh Santepheap"', '"Noto Serif Khmer"', 'serif']
       },
       colors: {
         surface:  'rgb(var(--surface) / <alpha-value>)',
