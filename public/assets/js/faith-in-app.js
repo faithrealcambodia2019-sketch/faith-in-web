@@ -6023,7 +6023,7 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
                                 </div>
                             ` : `
                                 <div class="text-[16px] leading-relaxed ${postType === 'verse' ? 'cv-feed-verse-content font-serif text-lg italic' : ''}">
-                                    <p>${escapeHtml(post.content || '')}</p>
+                                    <p class="${hasKhmerText(post.content || '') ? 'cv-article-body cv-article-khmer' : ''}">${renderLocalizedText(post.content || '')}</p>
                                     ${cvRenderPostMedia(post, isDark)}
                                 </div>
                             `}
