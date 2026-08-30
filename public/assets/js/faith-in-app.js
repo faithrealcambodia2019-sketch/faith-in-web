@@ -188,16 +188,27 @@
     }
 
     function safeImageUrl(value, fallback) {
-        const url = String(value || '').trim();
+        let url = String(value || '').trim();
         if (!url) return fallback;
         if (/^data:image\/(?:png|jpeg|gif|webp);base64,[a-z0-9+/=]+$/i.test(url)) return url;
         try {
             const parsed = new URL(url, window.location.origin);
-            if (!['https:', 'blob:'].includes(parsed.protocol)) return fallback;
-            if (url.charAt(0) === '/' && url.charAt(1) !== '/') {
-                return parsed.pathname + parsed.search + parsed.hash;
+            // Legacy media was stored in Vercel Blob. Resolve recovered objects
+            // from the free Supabase bucket while old Firestore documents are
+            // still being phased over.
+            if (/\.blob\.vercel-storage\.com$/i.test(parsed.hostname)) {
+                const parts = parsed.pathname.split('/').filter(Boolean);
+                const legacyName = parts.length ? decodeURIComponent(parts[parts.length - 1]) : '';
+                if (legacyName) {
+                    url = 'https://nckvrhdyrikrbpgjlqlw.supabase.co/storage/v1/object/public/faithin-media/migrated/' + encodeURIComponent(legacyName);
+                }
             }
-            return parsed.href;
+            const resolved = new URL(url, window.location.origin);
+            if (!['https:', 'blob:'].includes(resolved.protocol)) return fallback;
+            if (url.charAt(0) === '/' && url.charAt(1) !== '/') {
+                return resolved.pathname + resolved.search + resolved.hash;
+            }
+            return resolved.href;
         } catch (error) {
             return fallback;
         }
