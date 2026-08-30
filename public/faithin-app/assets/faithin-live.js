@@ -585,15 +585,28 @@
   }
 
   async function loadNetwork() {
-    const heading = $$('#main h2').find(node => /people you may know/i.test(node.textContent)); const section = heading?.closest('section'); if (!section) return;
+    const heading = $$('#main h2').find(node => /faith in members|people you may know/i.test(node.textContent)); const section = heading?.closest('section'); if (!section) return;
     const grid = $('.grid', section); if (!grid) return;
     let users = [], query = '';
+    const isNewMember = user => {
+      const joined = Date.parse(user.created_at || '');
+      return Number.isFinite(joined) && Date.now() - joined < 7 * 24 * 60 * 60 * 1000;
+    };
+    const joinedLabel = user => {
+      const joined = Date.parse(user.created_at || '');
+      if (!Number.isFinite(joined)) return '';
+      const days = Math.max(0, Math.floor((Date.now() - joined) / (24 * 60 * 60 * 1000)));
+      if (days === 0) return 'Joined today';
+      if (days === 1) return 'Joined yesterday';
+      if (days < 7) return `Joined ${days} days ago`;
+      return `Joined ${new Date(joined).toLocaleDateString()}`;
+    };
     const render = () => {
       const items = users.filter(user => !query || [user.name, user.role, user.bio, user.church, user.location, user.ministry].some(value => String(value || '').toLowerCase().includes(query)));
-      grid.innerHTML = items.length ? items.map(user => `<article class="card overflow-hidden flex flex-col relative" data-user-uid="${esc(user.uid)}"><div class="h-16 bg-[linear-gradient(110deg,#60a5fa,#4f46e5)]"></div><div class="px-3 pb-4 -mt-8 flex flex-col items-center text-center flex-1">${avatarMarkup(user, 'avatar w-16 h-16 text-[17px] ring-4 ring-surface object-cover')}<a href="/profile?uid=${encodeURIComponent(user.uid)}" class="mt-2 text-[14.5px] font-semibold">${esc(user.name)}</a><p class="text-[12.5px] text-muted mt-1 line-clamp-2">${esc(user.role || user.bio || user.church || 'Faith In member')}</p><p class="text-[11.5px] text-faint mt-2">${esc(user.location || user.ministry || '')}</p><button class="btn btn-outline w-full mt-3 !py-2" data-connect>${user.is_following ? 'Following' : '<i class="fa-solid fa-user-plus text-[11px]"></i>Connect'}</button><button class="btn btn-ghost w-full mt-1 !py-2" data-message>Message</button></div></article>`).join('') : emptyState(query ? 'No members match your search.' : 'No new member suggestions right now.');
+      grid.innerHTML = items.length ? items.map(user => `<article class="card overflow-hidden flex flex-col relative" data-user-uid="${esc(user.uid)}"><div class="h-16 bg-[linear-gradient(110deg,#60a5fa,#4f46e5)]"></div>${isNewMember(user) ? '<span class="absolute right-2.5 top-2.5 rounded-full bg-emerald-500 px-2.5 py-1 text-[10.5px] font-bold text-white shadow">New</span>' : ''}<div class="px-3 pb-4 -mt-8 flex flex-col items-center text-center flex-1">${avatarMarkup(user, 'avatar w-16 h-16 text-[17px] ring-4 ring-surface object-cover')}<a href="/profile?uid=${encodeURIComponent(user.uid)}" class="mt-2 text-[14.5px] font-semibold">${esc(user.name)}</a><p class="text-[12.5px] text-muted mt-1 line-clamp-2">${esc(user.role || user.bio || user.church || 'Faith In member')}</p><p class="text-[11.5px] text-faint mt-2">${esc(joinedLabel(user) || user.location || user.ministry || '')}</p><button class="btn btn-outline w-full mt-3 !py-2" data-connect>${user.is_following ? 'Following' : '<i class="fa-solid fa-user-plus text-[11px]"></i>Connect'}</button><button class="btn btn-ghost w-full mt-1 !py-2" data-message>Message</button></div></article>`).join('') : emptyState(query ? 'No members match your search.' : 'No new member suggestions right now.');
     };
     try {
-      const result = await api.request('cv_get_suggested_users'); users = result.items || []; render();
+      const result = await api.request('cv_find_users'); users = result.items || []; render();
     } catch (error) { grid.innerHTML = emptyState(error.message); }
     grid.addEventListener('click', async event => { const card = event.target.closest('[data-user-uid]'); if (!card) return; if (event.target.closest('[data-connect]')) { if (!requireUser()) return; const button = event.target.closest('[data-connect]'); await api.request(/following/i.test(button.textContent) ? 'cv_social_unfollow_user' : 'cv_social_follow_user', { target_uid: card.dataset.userUid }); button.textContent = /following/i.test(button.textContent) ? 'Connect' : 'Following'; } if (event.target.closest('[data-message]')) openMessenger(card.dataset.userUid); });
     Promise.all([api.request('cv_social_get_followers'), api.request('cv_social_get_following')]).then(results => { const counts = $$('.count', $('#main > aside')); if (counts[0]) counts[0].textContent = results[0].items?.length || 0; if (counts[1]) counts[1].textContent = results[1].items?.length || 0; counts.slice(2).forEach(node => node.textContent = '0'); }).catch(() => {});
@@ -601,6 +614,35 @@
     const requested = new URLSearchParams(location.search).get('message'); if (requested) openMessenger(requested);
     document.addEventListener('fi:search', event => { query = event.detail.query.toLowerCase(); render(); });
     $$('#main section').filter(item => /invitations|groups you might/i.test(item.querySelector('h2')?.textContent || '')).forEach(item => item.remove());
+  }
+
+  function startNewMemberAlerts() {
+    if (!session?.uid) return;
+    const key = `faithin:new-member-alert:${session.uid}`;
+    const readSeenAt = () => { try { return localStorage.getItem(key) || ''; } catch { return ''; } };
+    const saveSeenAt = value => { try { localStorage.setItem(key, value); } catch {} };
+    const check = async () => {
+      try {
+        const result = await api.request('cv_get_recent_users', { poll: Math.floor(Date.now() / 60000) });
+        const members = (result.items || []).filter(member => member.created_at);
+        if (!members.length) return;
+        const latestAt = members[0].created_at;
+        const seenAt = readSeenAt();
+        const fresh = members.filter(member => !seenAt || member.created_at > seenAt);
+        saveSeenAt(latestAt);
+        if (!fresh.length) return;
+        // On the first visit, only announce an account activated in the last
+        // day. Later checks announce every newly detected member immediately.
+        if (!seenAt && Date.now() - Date.parse(latestAt) > 24 * 60 * 60 * 1000) return;
+        const names = fresh.slice(0, 2).map(member => member.name || 'A new member');
+        const message = fresh.length === 1
+          ? `${names[0]} just joined Faith In`
+          : `${names.join(' and ')}${fresh.length > 2 ? ` +${fresh.length - 2} more` : ''} joined Faith In`;
+        toast(message);
+      } catch {}
+    };
+    check();
+    setInterval(check, 60 * 1000);
   }
 
   /**
@@ -862,7 +904,7 @@
     const targets = {
       jobs: $$('#main h2').find(node => /recommended for you/i.test(node.textContent))?.closest('section')?.querySelector('.divide-y'),
       library: $('#shelf'),
-      network: $$('#main h2').find(node => /people you may know/i.test(node.textContent))?.closest('section')?.querySelector('.grid'),
+      network: $$('#main h2').find(node => /faith in members|people you may know/i.test(node.textContent))?.closest('section')?.querySelector('.grid'),
       notifications: $('#main > section.card')?.querySelector('.divide-y')
     };
     const target = targets[page];
@@ -891,6 +933,7 @@
       return;
     }
     refreshNotifications();
+    startNewMemberAlerts();
     if (page === 'jobs') loadJobs();
     if (page === 'library') loadLibrary();
     if (page === 'network') loadNetwork();
