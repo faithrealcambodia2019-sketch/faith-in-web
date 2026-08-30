@@ -101,9 +101,9 @@ class FakeXHR {
     this.responseText = JSON.stringify(uploadBody !== null ? uploadBody : {
       success: true,
       data: { items: files.map(f => ({
-        url: 'https://blob.example/' + f.name,
-        local_url: 'https://blob.example/' + f.name,
-        preview_url: 'https://blob.example/' + f.name,
+        url: 'https://supabase.example/' + f.name,
+        local_url: 'https://supabase.example/' + f.name,
+        preview_url: 'https://supabase.example/' + f.name,
         drive_url: '',
         type: /^video\//.test(f.type) ? 'video' : (/^audio\//.test(f.type) ? 'audio' : 'image'),
         mime: f.type, name: f.name, size: f.size,
@@ -197,9 +197,9 @@ check('video typed', withMedia.media_items[1].type === 'video', withMedia.media_
 check('cover set from first media', !!withMedia.cover_image_url);
 
 console.log('\n5) Oversize file rejected');
-r = await call(fd([['action','cv_create_post'],['content','big'],['post_media[]', new FakeFile('huge.mp4','video/mp4', 260*1024*1024)]]));
+r = await call(fd([['action','cv_create_post'],['content','big'],['post_media[]', new FakeFile('huge.mp4','video/mp4', 60*1024*1024)]]));
 check('rejected', r.success === false);
-check('mentions 250MB limit', /250MB/.test(r.data), r.data);
+check('mentions 50MB limit', /50MB/.test(r.data), r.data);
 
 console.log('\n6) Feed');
 r = await call({ action: 'cv_get_posts' });
@@ -329,8 +329,8 @@ console.log('\n15) Bookmarks, settings, verification, notes');
 const bpid = postIds()[0];
 r = await call(fd([['action','cv_update_profile'],['display_name','Hun Updated'],['role','Creator'],['location','Phnom Penh'],['bio','Sharing faith online.'],['profile_image',new FakeFile('profile.jpg','image/jpeg',1024)]]));
 check('profile fields saved', r.success === true && store['users/uid-abc'].displayName === 'Hun Updated' && store['users/uid-abc'].bio === 'Sharing faith online.');
-check('profile photo uploaded', store['users/uid-abc'].photoURL === 'https://blob.example/profile.jpg');
-check('public profile updated', store['publicProfiles/uid-abc'].displayName === 'Hun Updated' && store['publicProfiles/uid-abc'].photoURL === 'https://blob.example/profile.jpg');
+check('profile photo uploaded', store['users/uid-abc'].photoURL === 'https://supabase.example/profile.jpg');
+check('public profile updated', store['publicProfiles/uid-abc'].displayName === 'Hun Updated' && store['publicProfiles/uid-abc'].photoURL === 'https://supabase.example/profile.jpg');
 r = await call({ action:'cv_toggle_bookmark', post_id: bpid });
 check('bookmark on', r.data.bookmarked === true && !!store['users/uid-abc/bookmarks/'+bpid]);
 r = await call({ action:'cv_toggle_bookmark', post_id: bpid });
@@ -359,8 +359,8 @@ uploadStatus = 500; uploadBody = null;
 r = await call(fd([['action','cv_stage_post_media'],['post_media[]', new FakeFile('b.jpg','image/jpeg',10)]]));
 check('generic message on 500', r.success === false && /Upload failed/.test(r.data), r.data);
 uploadStatus = 200; uploadBody = null;
-r = await call(fd([['action','cv_create_post'],['content','big'],['post_media[]', new FakeFile('huge.mp4','video/mp4', 260*1024*1024)]]));
-check('oversize rejected before upload', r.success === false && /250MB/.test(r.data), r.data);
+r = await call(fd([['action','cv_create_post'],['content','big'],['post_media[]', new FakeFile('huge.mp4','video/mp4', 60*1024*1024)]]));
+check('oversize rejected before upload', r.success === false && /50MB/.test(r.data), r.data);
 
 console.log('\n17) Non-cv request passes through');
 const t = transportFactory({ url:'https://example.com/thing' }, { url:'https://example.com/thing', data:{} });

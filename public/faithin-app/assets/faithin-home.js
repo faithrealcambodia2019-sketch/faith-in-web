@@ -191,8 +191,8 @@
   function selectBlessingMedia(files, mode) {
     const chosen = [...files].slice(0, mode === 'video' ? 1 : 10);
     if (!chosen.length) return clearBlessingMedia();
-    const oversize = chosen.find(file => file.size > 250 * 1024 * 1024);
-    if (oversize) return toast(`${oversize.name} is larger than 250MB.`);
+    const oversize = chosen.find(file => file.size > 50 * 1024 * 1024);
+    if (oversize) return toast(`${oversize.name} is larger than the free 50MB limit.`);
     clearBlessingMedia(); blessingMediaFiles = chosen;
     blessingPreview.classList.toggle('is-video', mode === 'video');
     blessingPreview.classList.toggle('is-gallery', mode !== 'video');
@@ -225,7 +225,7 @@
     fileInput.accept = mediaMode === 'video' ? 'video/*,.mp4,.m4v,.mov,.qt,.webm,.ogv' : 'image/*';
     fileInput.multiple = mediaMode !== 'video';
     if (mediaPickerTitle) mediaPickerTitle.textContent = mediaMode === 'video' ? 'Select a video to share' : 'Select photos to share';
-    if (mediaPickerHelp) mediaPickerHelp.textContent = mediaMode === 'video' ? 'Portrait, square, or landscape · maximum 250MB' : 'JPG, PNG, GIF, WebP, or HEIC · up to 10 images';
+    if (mediaPickerHelp) mediaPickerHelp.textContent = mediaMode === 'video' ? 'Portrait, square, or landscape · maximum 50MB' : 'JPG, PNG, GIF, WebP, or HEIC · up to 10 images';
     if (mediaPickerIcon) mediaPickerIcon.className = mediaMode === 'video' ? 'fa-solid fa-video text-3xl text-rose mb-3' : 'fa-regular fa-images text-3xl text-faint mb-3';
     showFiles([]);
   }
@@ -236,8 +236,8 @@
     if (videoFiles.length && imageFiles.length) { toast('Choose either photos or one video, not both.'); return; }
     if (videoFiles.length > 1) { toast('Choose one video per post.'); return; }
     const chosen = videoFiles.length ? videoFiles.slice(0, 1) : imageFiles.slice(0, 10);
-    const oversize = chosen.find(file => file.size > 250 * 1024 * 1024);
-    if (oversize) { toast(`${oversize.name} is larger than 250MB.`); return; }
+    const oversize = chosen.find(file => file.size > 50 * 1024 * 1024);
+    if (oversize) { toast(`${oversize.name} is larger than the free 50MB limit.`); return; }
     mediaMode = videoFiles.length ? 'video' : mediaMode;
     selectedFiles = chosen;
     clearPreviewUrls();

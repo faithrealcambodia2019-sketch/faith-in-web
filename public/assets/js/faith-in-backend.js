@@ -19,10 +19,8 @@
  * the browser. It returns exactly the `{ success, data }` envelope the
  * application already expects, so no calling code had to change.
  *
- * File uploads are the exception: they POST to /api/upload, which stores them
- * in Vercel Blob. Firebase Cloud Storage was dropped because publishing its
- * rules requires the Firebase CLI or Console, and uploads failed with
- * `storage/unauthorized` until they were.
+ * File uploads are the exception: they request a protected upload ticket from
+ * /api/upload and write directly to the free Supabase media bucket.
  *
  * Authorisation for Firestore is enforced by the security rules, not here —
  * this file cannot grant itself access it does not have. Uploads are
@@ -36,7 +34,7 @@
     'use strict';
 
     var SDK = '10.14.1';
-    var MAX_MEDIA_BYTES = 250 * 1024 * 1024; // Must stay in step with app/api/upload/route.ts.
+    var MAX_MEDIA_BYTES = 50 * 1024 * 1024; // Supabase free-project per-file limit.
     var MAX_MEDIA_FILES = 10;
     var FEED_PAGE_SIZE = 50;
     var BLESSING_LIFETIME_MS = 24 * 60 * 60 * 1000;
@@ -63,8 +61,8 @@
             import('https://www.gstatic.com/firebasejs/' + SDK + '/firebase-app.js'),
             import('https://www.gstatic.com/firebasejs/' + SDK + '/firebase-auth.js'),
             import('https://www.gstatic.com/firebasejs/' + SDK + '/firebase-firestore.js')
-            // firebase-storage is intentionally not loaded: uploads go through
-            // /api/upload to Vercel Blob.
+            // firebase-storage is intentionally not loaded: media uses the
+            // free Supabase bucket through /api/upload.
         ]).then(function (mods) {
             var appMod = mods[0], authMod = mods[1], dbMod = mods[2];
             // Reuse the app the auth code already created so there is a single
@@ -431,13 +429,9 @@
     // ---------------------------------------------------------------------
 
     /**
-     * Uploads through /api/upload, which stores files in Vercel Blob.
-     *
-     * Previously this wrote straight to Firebase Cloud Storage, which failed
-     * with `storage/unauthorized` because publishing Storage rules needs the
-     * Firebase CLI or Console. Vercel Blob needs neither. The route verifies
-     * the member's Firebase ID token server-side and namespaces every file
-     * under their uid.
+     * Uploads through /api/upload into the free Supabase media bucket. The
+     * route verifies the member's Firebase ID token and issues a short-lived,
+     * single-path upload URL namespaced under that member's uid.
      */
     function uploadAll(b, user, files, onProgress) {
         var list = Array.prototype.slice.call(files || []).slice(0, MAX_MEDIA_FILES);
@@ -447,7 +441,7 @@
         if (oversize) {
             return Promise.reject(new Error(
                 '"' + (oversize.name || 'file') + '" is ' + Math.ceil(oversize.size / 1048576) +
-                'MB. The limit is 250MB — please choose a smaller file.'
+                'MB. The free storage limit is 50MB per file.'
             ));
         }
 
@@ -490,8 +484,8 @@
         }
 
         return user.getIdToken(true).then(function (token) {
-            // Upload directly to Blob so files larger than Vercel Function's
-            // request limit do not fail before reaching /api/upload.
+            // Upload directly to Supabase so files larger than Vercel
+            // Function's request limit do not pass through the function body.
             if (window.cvBlobUpload) {
                 var completed = 0;
                 return list.reduce(function (promise, file) {
@@ -506,13 +500,11 @@
                     });
                 }, Promise.resolve([])).catch(function (directError) {
                     // Small files can still use the server compatibility route.
-                    // This also returns the route's useful configuration or
-                    // authentication message instead of Blob's generic token error.
                     var canUseServerFallback = list.every(function (file) { return file.size <= 4 * 1024 * 1024; });
                     if (canUseServerFallback) return uploadThroughServer(token);
                     var message = directError && directError.message ? directError.message : '';
-                    if (/client token|retrieve the client token/i.test(message)) {
-                        throw new Error('Large video upload storage could not start. Connect Faith In file storage in Vercel, then try again.');
+                    if (/could not be started|storage could not start/i.test(message)) {
+                        throw new Error('Free media storage could not start. Please refresh and try again.');
                     }
                     throw directError;
                 });

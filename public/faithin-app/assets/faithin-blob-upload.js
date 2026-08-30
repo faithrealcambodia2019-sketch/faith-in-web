@@ -1,119 +1,78 @@
-/* Faith In — authenticated resumable uploads to Firebase Cloud Storage. */
-(() => {
-  'use strict';
-
-  const SDK = '10.14.1';
-  let bundlePromise;
-
-  function config() {
-    return window.cv_ajax?.auth?.firebase_config || null;
-  }
-
-  function safeName(name) {
-    return String(name || 'upload')
-      .replace(/[^\w.\-]+/g, '_')
-      .slice(-80);
-  }
-
-  function mediaType(mime) {
-    const value = String(mime || '');
-    if (value.startsWith('image/')) return 'image';
-    if (value.startsWith('video/')) return 'video';
-    if (value.startsWith('audio/')) return 'audio';
+(function () {
+  function kindOf(type) {
+    if (type.startsWith('image/')) return 'image';
+    if (type.startsWith('video/')) return 'video';
+    if (type.startsWith('audio/')) return 'audio';
     return 'file';
   }
 
-  function uidFromToken(token) {
-    const payload = String(token || '').split('.')[1];
-    if (!payload) throw new Error('Your session could not be verified. Please log in again.');
-    const normalized = payload.replace(/-/g, '+').replace(/_/g, '/');
-    const padded = normalized + '='.repeat((4 - normalized.length % 4) % 4);
-    const decoded = JSON.parse(atob(padded));
-    if (!decoded.sub || typeof decoded.sub !== 'string') {
-      throw new Error('Your session could not be verified. Please log in again.');
+  async function uploadTicket(file, idToken) {
+    var response = await fetch('/api/upload', {
+      method: 'POST',
+      headers: {
+        Authorization: 'Bearer ' + idToken,
+        'Content-Type': 'application/json',
+        'x-faith-in-supabase-upload': '1'
+      },
+      body: JSON.stringify({ name: file.name, type: file.type, size: file.size })
+    });
+    var body = null;
+    try { body = await response.json(); } catch { body = null; }
+    if (!response.ok || !body || !body.success || !body.data || !body.data.upload) {
+      throw new Error(body && typeof body.data === 'string' ? body.data : 'Upload could not be started.');
     }
-    return decoded.sub;
+    return body.data.upload;
   }
 
-  async function bundle() {
-    if (bundlePromise) return bundlePromise;
-    const firebaseConfig = config();
-    if (!firebaseConfig?.apiKey || !firebaseConfig?.projectId || !firebaseConfig?.storageBucket) {
-      throw new Error('Firebase Storage is not configured yet. Please try again shortly.');
-    }
-    bundlePromise = Promise.all([
-      import('https://www.gstatic.com/firebasejs/' + SDK + '/firebase-app.js'),
-      import('https://www.gstatic.com/firebasejs/' + SDK + '/firebase-auth.js'),
-      import('https://www.gstatic.com/firebasejs/' + SDK + '/firebase-storage.js')
-    ]).then(([appMod, authMod, storageMod]) => {
-      const name = 'faith-in-auth';
-      const app = appMod.getApps().find(candidate => candidate.name === name)
-        || appMod.initializeApp(firebaseConfig, name);
-      return {
-        auth: authMod.getAuth(app),
-        authMod,
-        storage: storageMod.getStorage(app),
-        storageMod
+  function putFile(file, ticket, onProgress) {
+    return new Promise(function (resolve, reject) {
+      var xhr = new XMLHttpRequest();
+      xhr.open('PUT', ticket.signed_url, true);
+      xhr.setRequestHeader('x-upsert', 'false');
+      if (ticket.publishable_key) {
+        xhr.setRequestHeader('apikey', ticket.publishable_key);
+        xhr.setRequestHeader('Authorization', 'Bearer ' + ticket.publishable_key);
+      }
+      if (xhr.upload && onProgress) {
+        xhr.upload.onprogress = function (event) {
+          if (event.lengthComputable && event.total) onProgress(event.loaded / event.total);
+        };
+      }
+      xhr.onload = function () {
+        if (xhr.status >= 200 && xhr.status < 300) {
+          if (onProgress) onProgress(1);
+          resolve(ticket.item);
+          return;
+        }
+        var message = '';
+        try {
+          var errorBody = JSON.parse(xhr.responseText);
+          message = errorBody.message || errorBody.error || '';
+        } catch {}
+        reject(new Error(message || 'Upload failed. Please try again.'));
       };
-    });
-    bundlePromise.catch(() => { bundlePromise = null; });
-    return bundlePromise;
-  }
-
-  function settledUser(auth, authMod) {
-    if (auth.currentUser) return Promise.resolve(auth.currentUser);
-    return new Promise(resolve => {
-      let finished = false;
-      const finish = user => {
-        if (finished) return;
-        finished = true;
-        resolve(user || null);
+      xhr.onerror = function () {
+        reject(new Error('Upload failed. Please check your connection and try again.'));
       };
-      const stop = authMod.onAuthStateChanged(auth, user => {
-        stop();
-        finish(user);
-      });
-      setTimeout(() => finish(auth.currentUser), 8000);
+
+      var form = new FormData();
+      form.append('cacheControl', '3600');
+      form.append('', file);
+      xhr.send(form);
     });
   }
 
-  window.cvBlobUpload = async function uploadToFirebase(file, idToken, onProgress) {
-    if (!(file instanceof File)) throw new Error('Please choose a valid file.');
-    const tokenUid = uidFromToken(idToken);
-    const { auth, authMod, storage, storageMod } = await bundle();
-    const user = await settledUser(auth, authMod);
-    if (!user || user.uid !== tokenUid) {
-      throw new Error('Your session could not be verified. Please log in again.');
+  window.cvBlobUpload = async function cvBlobUpload(file, idToken, onProgress) {
+    if (!idToken) throw new Error('Your session could not be verified. Please log in again.');
+    if (file.size > 50 * 1024 * 1024) {
+      throw new Error('"' + (file.name || 'file') + '" is larger than the free 50MB per-file limit.');
     }
-
-    const unique = globalThis.crypto?.randomUUID?.() || Math.random().toString(36).slice(2);
-    const pathname = `faith-in-uploads/${user.uid}/${Date.now()}-${unique}-${safeName(file.name)}`;
-    const objectRef = storageMod.ref(storage, pathname);
-    const task = storageMod.uploadBytesResumable(objectRef, file, {
-      contentType: file.type || 'application/octet-stream',
-      customMetadata: { originalName: file.name || 'upload' }
-    });
-
-    const snapshot = await new Promise((resolve, reject) => {
-      task.on('state_changed', state => {
-        const total = Number(state.totalBytes || 0);
-        onProgress?.(total > 0 ? state.bytesTransferred / total : 0);
-      }, reject, () => resolve(task.snapshot));
-    });
-
-    const url = await storageMod.getDownloadURL(snapshot.ref);
-    onProgress?.(1);
-    return {
-      url,
-      local_url: url,
-      preview_url: url,
-      drive_url: '',
-      type: mediaType(file.type),
-      mime: file.type,
-      name: file.name,
-      size: file.size,
-      path: pathname,
-      storage: 'firebase'
-    };
+    var ticket = await uploadTicket(file, idToken);
+    var item = await putFile(file, ticket, onProgress);
+    item.type = item.type || kindOf(file.type);
+    item.mime = item.mime || file.type;
+    item.name = item.name || file.name;
+    item.size = item.size || file.size;
+    return item;
   };
 })();

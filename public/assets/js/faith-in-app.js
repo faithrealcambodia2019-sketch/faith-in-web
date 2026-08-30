@@ -3840,11 +3840,11 @@ window.signOut = () => {
     window.cvPostingSetPostType = (type) => setState({ postType: type, createIntent: type === 'Blessing' ? 'blessing' : 'post' });
     window.updateFileName = (input) => {
         const file = input.files && input.files[0] ? input.files[0] : null;
-        if (file && file.size > 250 * 1024 * 1024) {
+        if (file && file.size > 50 * 1024 * 1024) {
             input.value = '';
             state.selectedResourceFile = null;
             state.selectedFileName = '';
-            window.showToast('That file is larger than 250MB. Please choose a smaller file.', 'error');
+            window.showToast('That file is larger than the free 50MB limit.', 'error');
             return;
         }
         const name = file ? file.name : '';
@@ -3931,10 +3931,10 @@ window.signOut = () => {
             window.showToast('Choose a photo or video before retrying.', 'info');
             return;
         }
-        const oversizeFile = files.find(file => file && file.size > 250 * 1024 * 1024);
+        const oversizeFile = files.find(file => file && file.size > 50 * 1024 * 1024);
         if (oversizeFile) {
             input.value = '';
-            window.showToast('“' + (oversizeFile.name || 'That file') + '” is larger than 250MB. Please choose a smaller file.', 'error');
+            window.showToast('“' + (oversizeFile.name || 'That file') + '” is larger than the free 50MB limit.', 'error');
             return;
         }
         uploadPostMediaToServer(files, state.postMediaMode || 'gallery');
@@ -6656,7 +6656,7 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
                                         class="px-4 py-1.5 border border-[rgba(0,0,0,0.6)] text-[rgba(0,0,0,0.6)] text-sm font-semibold rounded-full group-hover:border-[#0A66C2] group-hover:text-[#0A66C2] transition-colors mb-3"
                                     >Select File</button>
                                     <h4 id="file-name-display" class="text-sm font-semibold text-[rgba(0,0,0,0.9)]">${state.selectedFileName || 'No file selected'}</h4>
-                                    <p class="text-xs text-[rgba(0,0,0,0.6)] mt-1">PDF, image, audio, video, or ZIP • up to 250MB • stored in Vercel Blob</p>
+                                    <p class="text-xs text-[rgba(0,0,0,0.6)] mt-1">PDF, image, audio, video, or ZIP • up to 50MB • free Supabase Storage</p>
                                 </div>
                             </div>
                         </form>
@@ -6701,7 +6701,7 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
             const hasMedia = mediaCount > 0;
             const isReel = state.postMediaMode === 'reel';
             const mediaTitle = isReel ? 'Video selected' : (hasMedia ? (mediaCount + ' image' + (mediaCount > 1 ? 's' : '') + ' selected') : 'Add images or video');
-            const mediaHelp = isReel ? 'Publish one video up to 250MB. Supported files: MP4, MOV, M4V, WEBM, OGV.' : (hasMedia ? 'Upload up to 10 images, or switch to one video.' : 'Choose up to 10 images or one video. Files upload directly to Vercel storage.');
+            const mediaHelp = isReel ? 'Publish one video up to 50MB. Supported files: MP4, MOV, M4V, WEBM, OGV.' : (hasMedia ? 'Upload up to 10 images, or switch to one video.' : 'Choose up to 10 images or one video. Files upload to free Supabase Storage.');
             const mediaLabel = hasMedia ? (isReel ? 'Video selected' : state.selectedPostCoverName) : 'No media selected';
             const mediaReadyPercent = hasMedia ? Math.max(0, Math.min(100, parseInt(state.postMediaReadyPercent || 0, 10))) : 0;
             const mediaReady = !hasMedia || mediaReadyPercent >= 100;
@@ -6955,7 +6955,7 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
                                 <i data-lucide="folder-open" class="w-5 h-5"></i> Select File
                             </button>
                             <span id="file-name-display" class="text-lg font-bold mb-1">${state.selectedFileName || 'No file selected'}</span>
-                            <span class="text-sm opacity-60 font-medium">Max upload size: 250MB</span>
+                            <span class="text-sm opacity-60 font-medium">Max upload size: 50MB</span>
                         </div>
                     </div>
                 </div>
