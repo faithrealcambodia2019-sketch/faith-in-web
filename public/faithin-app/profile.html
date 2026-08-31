@@ -8,10 +8,14 @@
 <meta content="#0b1120" media="(prefers-color-scheme: dark)" name="theme-color"/>
 <meta content="Your Faith In profile — ministry, activity and connections." name="description"/>
 <title>Faith In — Profile</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg"/>
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/images/favicon-32x32.png"/>
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/images/favicon-16x16.png"/>
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/images/favicon-180x180.png"/>
 <link href="/faithin-app/assets/faithin-fonts.css" rel="stylesheet"/>
 <link href="/faithin-app/assets/faithin-icons.css" rel="stylesheet"/>
 <link href="/faithin-app/assets/faithin-tw.css" rel="stylesheet"/>
-<link href="/faithin-app/assets/faithin.css" rel="stylesheet"/>
+<link href="/faithin-app/assets/faithin.css?v=20260831-v10" rel="stylesheet"/>
 </head>
 <body class="font-sans min-h-screen pb-16 lg:pb-0" data-page="profile" data-search="Search Faith In">
 <main class="max-w-[1200px] mx-auto px-3 sm:px-4 py-5 grid gap-5 xl:grid-cols-[minmax(0,1fr)_312px] items-start" id="main">
@@ -27,17 +31,21 @@
 </div>
 <div class="px-5 sm:px-6 pb-6">
 <div class="flex items-start justify-between relative z-10">
-<span class="avatar w-[132px] h-[132px] text-[38px] -mt-[66px] ring-4 ring-surface" data-current-user-avatar style="background:linear-gradient(135deg,#2f5bea,#1e40af)">HC</span>
+<span class="avatar w-[132px] h-[132px] text-[38px] -mt-[66px] ring-4 ring-surface" style="background:linear-gradient(135deg,#2f5bea,#1e40af)">HC</span>
 <button aria-label="Edit profile" class="reveal icon-btn mt-4"><i class="fa-solid fa-pen text-[13px]"></i></button>
 </div>
 <div class="mt-3 max-w-[62ch]">
 <h1 class="text-[24px] font-bold leading-tight">Hun Chet</h1>
 <p class="text-[15.5px] mt-1 leading-snug">Christian Content Creator · Worship Leader · Seeking to spread the Gospel</p>
 <p class="text-[13.5px] text-muted mt-1.5">
-            Phnom Penh, Cambodia <span class="text-faint mx-1">·</span>
-<a class="font-semibold text-brand hover:underline" href="/settings">Contact info</a>
+  <span>Phnom Penh, Cambodia</span> <span class="text-faint mx-1">·</span>
+  <a class="font-semibold text-brand hover:underline" href="/settings">Contact info</a>
 </p>
-<a class="inline-block mt-2 text-[13.5px] font-semibold text-brand hover:underline" href="/network">Connections</a>
+<div class="flex flex-wrap items-center gap-x-3 gap-y-1.5 mt-2.5 text-[13.5px]" data-profile-connections-row="">
+<a class="font-semibold text-brand hover:underline shrink-0" data-hero-following="" href="/network">0 following</a>
+<span class="text-faint" data-hero-sep="">·</span>
+<a class="font-semibold text-brand hover:underline shrink-0" data-hero-followers="" href="/network">0 followers</a>
+</div>
 </div>
 <div class="flex flex-wrap gap-2 mt-4">
 <button class="btn btn-primary">Open to</button>
@@ -72,7 +80,14 @@
 <div class="flex items-start justify-between gap-3 mb-4">
 <div>
 <h2 class="text-[19px] font-bold">Activity</h2>
-<a class="text-[13.5px] font-semibold text-brand hover:underline" href="/network">Followers</a>
+<a class="flex items-center gap-2.5 mt-1.5 text-[13.5px] sm:text-[14px] text-muted hover:text-ink transition cursor-pointer" data-follower-summary="" href="/network">
+<div class="flex -space-x-2 overflow-hidden py-0.5 items-center shrink-0" data-follower-avatars="">
+<span class="inline-flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-full ring-2 ring-surface text-[10px] font-bold text-white shadow-sm bg-gradient-to-br from-indigo-500 to-sky-500">SV</span>
+<span class="inline-flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-full ring-2 ring-surface text-[10px] font-bold text-white shadow-sm bg-gradient-to-br from-amber-500 to-rose-500">PS</span>
+<span class="inline-flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-full ring-2 ring-surface text-[10px] font-bold text-white shadow-sm bg-gradient-to-br from-emerald-500 to-teal-500">MJ</span>
+</div>
+<span class="leading-snug text-muted" data-follower-text="">Followed by <strong class="font-semibold text-ink">Soeung Vanny</strong>, <strong class="font-semibold text-ink">Pich Sreynoch</strong>, <strong class="font-semibold text-ink">Mrr Jenn</strong> and <strong class="font-semibold text-ink">60 others</strong></span>
+</a>
 </div>
 <div class="flex items-center gap-2">
 <a class="btn btn-outline" href="/home">Create a post</a>
@@ -122,9 +137,9 @@
 </footer>
 </aside>
 </main>
-<script src="/faithin-app/assets/faithin-runtime.js?v=20260828-3"></script>
-<script src="/assets/js/faith-in-backend.js?v=20260828-3"></script>
-<script src="/faithin-app/assets/faithin.js?v=20260828-3"></script>
-<script src="/faithin-app/assets/faithin-live.js?v=20260828-3"></script>
+<script src="/faithin-app/assets/faithin-runtime.js?v=20260831-v20"></script>
+<script src="/assets/js/faith-in-backend.js?v=20260831-v20"></script>
+<script src="/faithin-app/assets/faithin.js?v=20260831-v20"></script>
+<script src="/faithin-app/assets/faithin-live.js?v=20260831-v20"></script>
 </body>
 </html>

@@ -5441,16 +5441,7 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
     function cvRenderFeedRightSidebar() {
         const verse = cvSidebarVerseOfDay();
         const visibleCount = Math.max(5, parseInt(state.suggestedVisibleCount || 5, 10));
-        let contacts = cvGetSuggestedConnections(visibleCount).slice(0, 5);
-        if (!contacts.length) {
-            contacts = [
-                { id: 1, name: 'Bible Verse', subtitle: 'Faithin', role: 'Faithin', avatar_url: '', initials: 'BV', bgColor: '#2554D7', is_following: false },
-                { id: 2, name: 'Chhoun P...', subtitle: 'Faithin', role: 'Faithin', avatar_url: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&auto=format&fit=crop&q=80', is_following: false },
-                { id: 3, name: 'Heng Sok', subtitle: 'Faithin', role: 'Faithin', avatar_url: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=150&auto=format&fit=crop&q=80', is_following: true },
-                { id: 4, name: 'Heng S...', subtitle: 'Faithin', role: 'Faithin', avatar_url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80', is_following: true },
-                { id: 5, name: 'Hun Sen', subtitle: 'Faithin', role: 'Faithin', avatar_url: '', initials: 'H', bgColor: '#6B72C2', is_following: false }
-            ];
-        }
+        const contacts = cvGetSuggestedConnections(visibleCount).slice(0, 5);
         const renderContactHeadline = user => {
             const headline = user.subtitle || user.role || user.headline || user.ministry || user.church || user.handle || 'Faithin';
             return String(headline || '').trim() || 'Faithin';
@@ -5483,7 +5474,7 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
                         </div>
                     </div>
                     <div class="cv-suggested-list cv-react-contact-list cv-ui-contact-list">
-                        ${state.suggestedUsersLoading && !contacts.length ? '<div class="cv-suggested-empty cv-ui-contact-loading"><span class="cv-social-spinner"></span><p>Loading contacts...</p></div>' : ''}
+                        ${state.suggestedUsersLoading && !contacts.length ? '<div class="cv-suggested-empty cv-ui-contact-loading"><span class="cv-social-spinner"></span><p>Loading contacts...</p></div>' : (!contacts.length ? '<div class="cv-suggested-empty cv-ui-contact-empty p-3 text-center text-muted text-[12.5px]">No other members found</div>' : '')}
                         ${contacts.map(user => {
                             const id = parseInt(user.id || 0, 10);
                             const messagePayload = renderContactMessagePayload(user);
