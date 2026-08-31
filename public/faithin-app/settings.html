@@ -15,7 +15,7 @@
 <link href="/faithin-app/assets/faithin-fonts.css" rel="stylesheet"/>
 <link href="/faithin-app/assets/faithin-icons.css" rel="stylesheet"/>
 <link href="/faithin-app/assets/faithin-tw.css" rel="stylesheet"/>
-<link href="/faithin-app/assets/faithin.css?v=20260831-v24" rel="stylesheet"/>
+<link href="/faithin-app/assets/faithin.css?v=20260831-v31" rel="stylesheet"/>
 </head>
 <body class="font-sans min-h-screen pb-16 lg:pb-0" data-page="settings" data-search="Search settings">
 <main class="max-w-[1200px] mx-auto px-3 sm:px-4 py-5 grid gap-5 lg:grid-cols-[288px_minmax(0,1fr)] items-start" id="main">
@@ -25,33 +25,33 @@
 <div class="flex items-center gap-3 px-4 py-3.5 bg-raised border-b border-line">
 <span class="avatar w-11 h-11 text-[13px]" data-current-user-avatar style="background:linear-gradient(135deg,#2f5bea,#1e40af)">FI</span>
 <div class="min-w-0">
-<h1 class="text-[15.5px] font-bold leading-tight">Settings</h1>
+<h2 class="text-[15.5px] font-bold leading-tight" data-current-user-name>Settings</h2>
 <p class="text-[12px] text-muted mt-0.5">Manage your account</p>
 </div>
 </div>
-<nav class="py-2 space-y-0.5">
-<a class="settings-menu-item active" href="/settings">
-  <i class="fa-solid fa-user-gear w-6 text-center text-[15px] mr-2"></i>
+<nav class="p-2 space-y-1">
+<a class="side-link is-active" href="/settings">
+  <i class="fa-solid fa-user-gear"></i>
   <span>Account preferences</span>
 </a>
-<a class="settings-menu-item" href="/settings-security">
-  <i class="fa-solid fa-shield-halved w-6 text-center text-[15px] mr-2"></i>
+<a class="side-link" href="/settings-security">
+  <i class="fa-solid fa-shield-halved"></i>
   <span>Sign in &amp; security</span>
 </a>
-<a class="settings-menu-item" href="#" data-settings-notice="Visibility preferences are linked to your profile privacy.">
-  <i class="fa-solid fa-eye w-6 text-center text-[15px] mr-2"></i>
+<a class="side-link" href="#" data-settings-notice="Visibility preferences are linked to your profile privacy.">
+  <i class="fa-solid fa-eye"></i>
   <span>Visibility</span>
 </a>
-<a class="settings-menu-item" href="#" data-settings-notice="Manage email and push communication preferences under Account Preferences.">
-  <i class="fa-solid fa-comment-dots w-6 text-center text-[15px] mr-2"></i>
+<a class="side-link" href="#" data-settings-notice="Manage communication preferences under Account Preferences.">
+  <i class="fa-solid fa-comment-dots"></i>
   <span>Communications</span>
 </a>
-<a class="settings-menu-item" href="/privacy">
-  <i class="fa-solid fa-database w-6 text-center text-[15px] mr-2"></i>
+<a class="side-link" href="/privacy">
+  <i class="fa-solid fa-database"></i>
   <span>Data privacy</span>
 </a>
-<a class="settings-menu-item" href="#" data-settings-notice="Faithin does not sell or share your personal data for third-party advertising.">
-  <i class="fa-solid fa-rectangle-ad w-6 text-center text-[15px] mr-2"></i>
+<a class="side-link" href="#" data-settings-notice="Faithin does not sell or share your personal data for advertising.">
+  <i class="fa-solid fa-rectangle-ad"></i>
   <span>Advertising data</span>
 </a>
 </nav>
@@ -167,9 +167,9 @@
 </footer>
 </div>
 </main>
-<script src="/faithin-app/assets/faithin-runtime.js?v=20260831-v24"></script>
-<script src="/assets/js/faith-in-backend.js?v=20260831-v24"></script>
-<script src="/faithin-app/assets/faithin.js?v=20260831-v24"></script>
+<script src="/faithin-app/assets/faithin-runtime.js?v=20260831-v31"></script>
+<script src="/assets/js/faith-in-backend.js?v=20260831-v31"></script>
+<script src="/faithin-app/assets/faithin.js?v=20260831-v31"></script>
 <script>
   /* The theme picker drives the real theme via the shared FI.setTheme(). */
   const picker = document.getElementById('theme-picker');
@@ -186,6 +186,6 @@
   document.addEventListener('fi:theme', e => paintPicker(e.detail.mode));
   paintPicker(FI.getTheme());
 </script>
-<script src="/faithin-app/assets/faithin-live.js?v=20260831-v24"></script>
+<script src="/faithin-app/assets/faithin-live.js?v=20260831-v31"></script>
 </body>
 </html>
