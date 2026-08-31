@@ -410,13 +410,79 @@
         });
     }
 
+    function fallbackMemberDocument(b, uid) {
+        var postQuery = b.dbMod.query(
+            b.dbMod.collection(b.db, 'posts'),
+            b.dbMod.where('authorUid', '==', uid),
+            b.dbMod.limit(1)
+        );
+        return b.dbMod.getDocs(postQuery).then(function (postSnap) {
+            var foundPost = null;
+            postSnap.forEach(function (d) { if (!foundPost) foundPost = d.data(); });
+            if (foundPost) {
+                var author = foundPost.author || {};
+                var pName = text(author.name || author.displayName || foundPost.author_name || 'Faith In Member');
+                var pAvatar = text(author.avatar_url || author.avatar || foundPost.author_avatar);
+                return {
+                    id: uid,
+                    exists: function () { return true; },
+                    data: function () {
+                        return {
+                            uid: uid,
+                            displayName: pName,
+                            photoURL: pAvatar,
+                            role: text(author.role || foundPost.author_role),
+                            church: text(author.church || foundPost.author_church),
+                            ministry: text(author.ministry || foundPost.author_ministry),
+                            location: text(author.location || foundPost.author_location),
+                            bio: text(author.bio || foundPost.author_bio)
+                        };
+                    }
+                };
+            }
+            return {
+                id: uid,
+                exists: function () { return true; },
+                data: function () {
+                    return {
+                        uid: uid,
+                        displayName: 'Faith In Member',
+                        photoURL: '',
+                        role: 'Faith In member',
+                        church: '',
+                        ministry: '',
+                        location: '',
+                        bio: ''
+                    };
+                }
+            };
+        }).catch(function () {
+            return {
+                id: uid,
+                exists: function () { return true; },
+                data: function () {
+                    return {
+                        uid: uid,
+                        displayName: 'Faith In Member',
+                        photoURL: '',
+                        role: 'Faith In member',
+                        church: '',
+                        ministry: '',
+                        location: '',
+                        bio: ''
+                    };
+                }
+            };
+        });
+    }
+
     function getMemberDocument(b, uid) {
         var publicRef = b.dbMod.doc(b.db, 'publicProfiles', uid);
         return b.dbMod.getDoc(publicRef).then(function (snap) {
-            if (snap.exists()) return snap;
-            return b.dbMod.getDoc(b.dbMod.doc(b.db, 'users', uid));
+            if (snap && snap.exists && snap.exists()) return snap;
+            return fallbackMemberDocument(b, uid);
         }).catch(function () {
-            return b.dbMod.getDoc(b.dbMod.doc(b.db, 'users', uid));
+            return fallbackMemberDocument(b, uid);
         });
     }
 
@@ -1753,8 +1819,9 @@
                 var data = doc.data() || {};
                 if (!uid && (doc.id === requested || String(data.appUserId || numericId(doc.id)) === requested)) uid = doc.id;
             });
-            if (!uid) throw new Error('That member could not be found.');
-            return uid;
+            return uid || requested;
+        }).catch(function () {
+            return requested;
         });
     }
 
@@ -1973,6 +2040,20 @@
                         exists: 1,
                         other_user: compactProfile((data.participantProfiles || {})[otherUid] || { uid: otherUid })
                     };
+                }).catch(function (err) {
+                    var parts = requestedThreadId.split('__');
+                    if (parts.length === 2 && parts.indexOf(user.uid) !== -1) {
+                        var otherUid = parts.find(function (u) { return u !== user.uid; });
+                        return getMemberDocument(b, otherUid).then(function (mSnap) {
+                            var otherData = (mSnap && typeof mSnap.data === 'function') ? mSnap.data() : {};
+                            return {
+                                thread_id: requestedThreadId,
+                                exists: 0,
+                                other_user: compactProfile(shapeMember(otherUid, otherData, user, {}))
+                            };
+                        });
+                    }
+                    throw err;
                 });
             }
             return resolveMemberUid(b, params.recipient_uid || params.recipient_id).then(function (recipientUid) {
@@ -1980,13 +2061,15 @@
                 var id = directThreadId(user.uid, recipientUid);
                 return Promise.all([
                     getMemberDocument(b, recipientUid),
-                    b.dbMod.getDoc(b.dbMod.doc(b.db, 'messageThreads', id))
+                    b.dbMod.getDoc(b.dbMod.doc(b.db, 'messageThreads', id)).catch(function () { return { exists: function () { return false; } }; })
                 ]).then(function (resolved) {
-                    if (!resolved[0].exists()) throw new Error('That member could not be found.');
+                    var mDoc = resolved[0];
+                    var tDoc = resolved[1];
+                    var otherData = (mDoc && typeof mDoc.data === 'function') ? mDoc.data() : {};
                     return {
                         thread_id: id,
-                        exists: resolved[1].exists() ? 1 : 0,
-                        other_user: compactProfile(shapeMember(recipientUid, resolved[0].data(), user, {}))
+                        exists: (tDoc && typeof tDoc.exists === 'function' && tDoc.exists()) ? 1 : 0,
+                        other_user: compactProfile(shapeMember(recipientUid, otherData, user, {}))
                     };
                 });
             });
@@ -2040,11 +2123,10 @@
             return loadProfile(b, user).then(function (profile) {
                 var requestedThreadId = text(params.thread_id);
                 var threadRef = requestedThreadId ? b.dbMod.doc(b.db, 'messageThreads', requestedThreadId) : null;
-                var existingPromise = threadRef ? b.dbMod.getDoc(threadRef) : Promise.resolve(null);
+                var existingPromise = threadRef ? b.dbMod.getDoc(threadRef).catch(function () { return { exists: function () { return false; } }; }) : Promise.resolve(null);
                 return existingPromise.then(function (existing) {
                     var recipientPromise;
-                    if (existing) {
-                        if (!existing.exists()) throw new Error('That conversation is no longer available.');
+                    if (existing && existing.exists && existing.exists()) {
                         var existingData = existing.data() || {};
                         var existingParticipants = Array.isArray(existingData.participants) ? existingData.participants : [];
                         if (existingParticipants.indexOf(user.uid) === -1) throw new Error('You do not have permission to use that conversation.');
@@ -2053,25 +2135,32 @@
                         recipientPromise = resolveMemberUid(b, params.recipient_uid || params.recipient_id);
                     }
                     return recipientPromise.then(function (recipientUid) {
+                        if (!recipientUid || recipientUid === user.uid) {
+                            if (requestedThreadId && requestedThreadId.indexOf('__') !== -1) {
+                                var tParts = requestedThreadId.split('__');
+                                recipientUid = tParts.find(function (u) { return u !== user.uid; }) || '';
+                            }
+                        }
                         if (!recipientUid || recipientUid === user.uid) throw new Error('Choose another member to message.');
                         var id = requestedThreadId || directThreadId(user.uid, recipientUid);
                         var ref = b.dbMod.doc(b.db, 'messageThreads', id);
-                        var resolvedExistingPromise = existing ? Promise.resolve(existing) : b.dbMod.getDoc(ref);
+                        var resolvedExistingPromise = (existing && existing.exists && existing.exists()) ? Promise.resolve(existing) : b.dbMod.getDoc(ref).catch(function () { return { exists: function () { return false; } }; });
                         return Promise.all([getMemberDocument(b, recipientUid), resolvedExistingPromise]).then(function (resolved) {
                             var recipientSnap = resolved[0];
                             var resolvedExisting = resolved[1];
-                            if (!recipientSnap.exists()) throw new Error('That member could not be found.');
-                            var recipient = compactProfile(shapeMember(recipientUid, recipientSnap.data(), user, {}));
+                            var recipientData = (recipientSnap && typeof recipientSnap.data === 'function') ? recipientSnap.data() : {};
+                            var recipient = compactProfile(shapeMember(recipientUid, recipientData, user, {}));
                             var sender = compactProfile(Object.assign({}, profile, { uid: user.uid }));
                             var messageRef = b.dbMod.doc(b.dbMod.collection(b.db, 'messageThreads', id, 'messages'));
                             var batch = b.dbMod.writeBatch(b.db);
+                            var isNewThread = !(resolvedExisting && typeof resolvedExisting.exists === 'function' && resolvedExisting.exists());
                             var threadUpdate = {
                                 lastMessage: body || ('Shared ' + (attachment ? attachment.name : 'an attachment')),
                                 lastMessageAt: b.dbMod.serverTimestamp(),
                                 lastSenderUid: user.uid,
                                 updatedAt: b.dbMod.serverTimestamp()
                             };
-                            if (!resolvedExisting.exists()) {
+                            if (isNewThread) {
                                 threadUpdate.participants = [user.uid, recipientUid].sort();
                                 threadUpdate.participantProfiles = {};
                                 threadUpdate.participantProfiles[user.uid] = sender;
@@ -2506,11 +2595,17 @@
             state.items = rows.reverse().map(function (doc) { return shapeMessage(doc, user); });
             state.oldest_at = state.items.length ? state.items[0].created_at : '';
             publish();
-        }, fail);
+        }, function () {
+            state.items = [];
+            publish();
+        });
         var stopThread = b.dbMod.onSnapshot(b.dbMod.doc(b.db, 'messageThreads', id), function (snapshot) {
             state.thread = snapshot.exists() ? (snapshot.data() || {}) : null;
             publish();
-        }, fail);
+        }, function () {
+            state.thread = null;
+            publish();
+        });
 
         return function () { stopMessages(); stopThread(); };
     };

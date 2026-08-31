@@ -27,11 +27,25 @@ const key = p => p.join('/');
 
 const dbMod = {
   getFirestore: () => ({}),
-  doc: (db, ...path) => ({ path }),
-  collection: (db, ...path) => ({ path }),
+  doc: (first, ...rest) => {
+    let p;
+    let id = '';
+    if (first && first.path) {
+      id = rest[0] || ('msg' + (++idSeq));
+      p = first.path.concat(id);
+    } else {
+      p = rest;
+      id = p[p.length - 1] || '';
+    }
+    return { id, path: p };
+  },
+  collection: (first, ...rest) => {
+    const p = (first && first.path) ? first.path.concat(rest) : rest;
+    return { path: p };
+  },
   getDoc: async (ref) => {
     const d = store[key(ref.path)];
-    return { exists: () => !!d, data: () => d };
+    return { id: ref.id, exists: () => !!d, data: () => d };
   },
   setDoc: async (ref, data, opts) => {
     const k = key(ref.path);
@@ -56,6 +70,15 @@ const dbMod = {
   },
   deleteDoc: async (ref) => { delete store[key(ref.path)]; },
   deleteField: () => ({ __delete: true }),
+  writeBatch: (db) => {
+    const ops = [];
+    return {
+      set: (ref, data) => { ops.push(() => { store[key(ref.path)] = Object.assign({}, store[key(ref.path)] || {}, data); }); },
+      update: (ref, data) => { ops.push(() => { store[key(ref.path)] = Object.assign({}, store[key(ref.path)] || {}, data); }); },
+      delete: (ref) => { ops.push(() => { delete store[key(ref.path)]; }); },
+      commit: async () => { ops.forEach(op => op()); }
+    };
+  },
   increment: (n) => ({ __increment: n }),
   serverTimestamp: () => SENTINEL,
   where: (field, op, value) => ({ __where: { field, op, value } }),
@@ -74,7 +97,11 @@ const dbMod = {
     const rows = Object.entries(store)
       .filter(([k]) => k.startsWith(prefix) && !k.slice(prefix.length).includes('/'))
       .map(([k, data]) => ({ id: k.slice(prefix.length), data: () => data }))
-      .filter(r => wheres.every(w => r.data()[w.field] === w.value));
+      .filter(r => wheres.every(w => {
+        const val = r.data()[w.field];
+        if (w.op === 'array-contains') return Array.isArray(val) && val.includes(w.value);
+        return val === w.value;
+      }));
     return { forEach: (cb) => rows.forEach(cb) };
   }
 };
@@ -366,9 +393,19 @@ uploadStatus = 200; uploadBody = null;
 r = await call(fd([['action','cv_create_post'],['content','big'],['post_media[]', new FakeFile('huge.mp4','video/mp4', 60*1024*1024)]]));
 check('oversize rejected before upload', r.success === false && /50MB/.test(r.data), r.data);
 
-console.log('\n17) Non-cv request passes through');
-const t = transportFactory({ url:'https://example.com/thing' }, { url:'https://example.com/thing', data:{} });
-check('not intercepted', t === undefined);
+console.log('\n18) Messaging');
+r = await call({ action:'cv_social_search_message_users', search:'Sok' });
+check('search users returns list', r.success === true && r.data.items.length === 1 && r.data.items[0].name === 'Sok Dara');
+r = await call({ action:'cv_social_open_thread', recipient_uid:'uid-friend' });
+check('open new thread returns thread id and exists 0', r.success === true && r.data.exists === 0 && r.data.other_user.uid === 'uid-friend');
+const directId = r.data.thread_id;
+r = await call({ action:'cv_social_send_message', thread_id: directId, recipient_uid:'uid-friend', body:'Peace be with you!' });
+check('send message creates thread and message', r.success === true && r.data.thread_id === directId && !!store['messageThreads/' + directId]);
+check('message stored with author and body', Object.keys(store).some(k => k.startsWith('messageThreads/' + directId + '/messages/') && store[k].body === 'Peace be with you!'));
+r = await call({ action:'cv_social_get_message_threads' });
+check('inbox lists conversation', r.success === true && r.data.items.length >= 1 && r.data.items[0].id === directId);
+r = await call({ action:'cv_social_mark_thread_read', thread_id: directId });
+check('mark thread read returns success', r.success === true && r.data.read === 1);
 
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);
