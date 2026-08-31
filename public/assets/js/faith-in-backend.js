@@ -157,7 +157,7 @@
 
     function setAuthPersistence(b, remember) {
         if (!b.authMod || typeof b.authMod.setPersistence !== 'function') return Promise.resolve();
-        var persistence = remember
+        var persistence = (remember !== false && String(remember) !== 'false')
             ? (b.authMod.indexedDBLocalPersistence || b.authMod.browserLocalPersistence)
             : (b.authMod.browserSessionPersistence || b.authMod.inMemoryPersistence);
         if (!persistence) return Promise.resolve();
@@ -788,7 +788,7 @@
         var email = emailAddress(params.email);
         var password = String(params.password || '');
         if (!email || !password) throw new Error('Enter your email and password.');
-        return setAuthPersistence(b, String(params.remember) === 'true')
+        return setAuthPersistence(b, String(params.remember) !== 'false')
             .then(function () { return b.authMod.signInWithEmailAndPassword(b.auth, email, password); })
             .then(function (credential) {
                 if (!needsEmailVerification(credential.user)) return loadProfile(b, credential.user);
@@ -810,7 +810,7 @@
         var displayName = text(params.display_name, 120);
         if (!displayName) throw new Error('Enter your first and last name.');
         if (!email || password.length < 8) throw new Error('Enter a valid email and a password with at least 8 characters.');
-        return setAuthPersistence(b, String(params.remember) === 'true')
+        return setAuthPersistence(b, String(params.remember) !== 'false')
             .then(function () { return b.authMod.createUserWithEmailAndPassword(b.auth, email, password); })
             .then(function (credential) {
                 return b.authMod.updateProfile(credential.user, { displayName: displayName })
