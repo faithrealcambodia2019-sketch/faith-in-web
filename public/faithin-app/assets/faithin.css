@@ -373,6 +373,52 @@ html.dark .chip.is-on{ color:#0b1120; }
   box-shadow: 0 1px 3px rgba(245, 158, 11, 0.45) !important;
 }
 
+/* --- settings sidebar & status badges ----------------------------------- */
+.settings-menu-item {
+  display: flex !important;
+  align-items: center !important;
+  padding: 0.75rem 1rem !important;
+  color: rgb(var(--muted)) !important;
+  transition: all 0.2s ease-in-out !important;
+  font-weight: 500 !important;
+  font-size: 13.5px !important;
+  border-left: 3px solid transparent !important;
+  border-radius: 0 8px 8px 0 !important;
+  text-decoration: none !important;
+}
+.settings-menu-item:hover {
+  background-color: rgb(var(--raised)) !important;
+  color: rgb(var(--ink)) !important;
+}
+.settings-menu-item.active,
+.settings-menu-item.is-active {
+  background-color: rgba(37, 99, 235, 0.08) !important;
+  color: rgb(var(--brand)) !important;
+  border-left-color: rgb(var(--brand)) !important;
+  font-weight: 600 !important;
+}
+.status-badge {
+  display: inline-flex !important;
+  align-items: center !important;
+  padding: 0.125rem 0.5rem !important;
+  border-radius: 9999px !important;
+  font-size: 0.75rem !important;
+  font-weight: 600 !important;
+  margin-left: 0.5rem !important;
+}
+.status-on {
+  background-color: #dcfce7 !important;
+  color: #166534 !important;
+}
+.dark .status-on {
+  background-color: rgba(22, 101, 52, 0.35) !important;
+  color: #86efac !important;
+}
+.status-off {
+  background-color: rgb(var(--raised)) !important;
+  color: rgb(var(--muted)) !important;
+}
+
 /* --- contacts card & widget --------------------------------------------- */
 #contacts {
   display: flex !important;

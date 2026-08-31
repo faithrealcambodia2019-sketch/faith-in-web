@@ -14,8 +14,8 @@ const contentSecurityPolicy = [
   // wss://*.googleapis.com covers the Firestore listen channel used by the
   // realtime messaging screen when the SDK negotiates a socket rather than
   // long polling.
-  "connect-src 'self' https://*.googleapis.com wss://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com https://vercel.com https://*.blob.vercel-storage.com https://accounts.google.com https://bible-api.com",
-  "frame-src https://accounts.google.com https://*.firebaseapp.com",
+  "connect-src 'self' https://*.googleapis.com wss://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com https://*.supabase.co https://*.storage.supabase.co https://accounts.google.com https://bible-api.com https://auth.faithin.co",
+  "frame-src https://accounts.google.com https://*.firebaseapp.com https://auth.faithin.co",
   "worker-src 'self' blob:",
   "manifest-src 'self'",
   "upgrade-insecure-requests",
@@ -43,6 +43,7 @@ const nextConfig: NextConfig = {
       { source: "/faithin-app/notifications.html", destination: "/notifications", permanent: true },
       { source: "/faithin-app/profile.html", destination: "/profile", permanent: true },
       { source: "/faithin-app/settings.html", destination: "/settings", permanent: true },
+      { source: "/faithin-app/settings-security.html", destination: "/settings-security", permanent: true },
     ];
   },
   async rewrites() {
@@ -59,6 +60,8 @@ const nextConfig: NextConfig = {
         { source: "/notifications", destination: "/faithin-app/notifications.html" },
         { source: "/profile", destination: "/faithin-app/profile.html" },
         { source: "/settings", destination: "/faithin-app/settings.html" },
+        { source: "/settings-security", destination: "/faithin-app/settings-security.html" },
+        { source: "/settings/security", destination: "/faithin-app/settings-security.html" },
       ],
       afterFiles: [],
       fallback: [],
@@ -87,7 +90,7 @@ const nextConfig: NextConfig = {
         ],
       },
       {
-        source: "/:path(home|network|messages|profile|jobs|library|notifications|settings)?",
+        source: "/:path(home|network|messages|profile|jobs|library|notifications|settings|settings-security)?",
         headers: [{ key: "Cache-Control", value: "public, max-age=0, must-revalidate" }],
       },
       {

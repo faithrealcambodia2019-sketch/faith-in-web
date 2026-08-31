@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html class="scroll-smooth" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
+<meta content="#ffffff" media="(prefers-color-scheme: light)" name="theme-color"/>
+<meta content="#0b1120" media="(prefers-color-scheme: dark)" name="theme-color"/>
+<meta content="Manage your Faith In sign in, security, password, and two-step verification." name="description"/>
+<title>Faith In — Sign in &amp; Security</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg"/>
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/images/favicon-32x32.png"/>
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/images/favicon-16x16.png"/>
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/images/favicon-180x180.png"/>
+<link href="/faithin-app/assets/faithin-fonts.css" rel="stylesheet"/>
+<link href="/faithin-app/assets/faithin-icons.css" rel="stylesheet"/>
+<link href="/faithin-app/assets/faithin-tw.css" rel="stylesheet"/>
+<link href="/faithin-app/assets/faithin.css?v=20260831-v30" rel="stylesheet"/>
+<style>
+  .settings-menu-item {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    color: rgb(var(--muted));
+    transition: all 0.2s;
+    font-weight: 500;
+    font-size: 13.5px;
+    border-left: 3px solid transparent;
+    border-radius: 0 8px 8px 0;
+  }
+  .settings-menu-item:hover {
+    background-color: rgb(var(--raised));
+    color: rgb(var(--ink));
+  }
+  .settings-menu-item.active {
+    background-color: rgba(37, 99, 235, 0.08);
+    color: rgb(var(--brand));
+    border-left-color: rgb(var(--brand));
+    font-weight: 600;
+  }
+  .status-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.125rem 0.5rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-left: 0.5rem;
+  }
+  .status-on {
+    background-color: #dcfce7;
+    color: #166534;
+  }
+  .dark .status-on {
+    background-color: rgba(22, 101, 52, 0.35);
+    color: #86efac;
+  }
+  .status-off {
+    background-color: rgb(var(--raised));
+    color: rgb(var(--muted));
+  }
+</style>
+</head>
+<body class="font-sans min-h-screen pb-16 lg:pb-0" data-page="settings-security" data-search="Search settings">
+<main class="max-w-[1200px] mx-auto px-3 sm:px-4 py-5 grid gap-5 lg:grid-cols-[288px_minmax(0,1fr)] items-start" id="main">
+<!-- ───── LEFT RAIL ───── -->
+<aside class="lg:sticky lg:top-[72px]">
+<section class="card overflow-hidden">
+<div class="flex items-center gap-3 px-4 py-3.5 bg-raised border-b border-line">
+<span class="avatar w-11 h-11 text-[13px]" data-current-user-avatar style="background:linear-gradient(135deg,#2f5bea,#1e40af)">FI</span>
+<div class="min-w-0">
+<h2 class="text-[15.5px] font-bold leading-tight" data-current-user-name>Settings</h2>
+<p class="text-[12px] text-muted mt-0.5">Manage your account</p>
+</div>
+</div>
+<nav class="py-2 space-y-0.5">
+<a class="settings-menu-item" href="/settings">
+  <i class="fa-solid fa-user-gear w-6 text-center text-[15px] mr-2"></i>
+  <span>Account preferences</span>
+</a>
+<a class="settings-menu-item active" href="/settings-security">
+  <i class="fa-solid fa-shield-halved w-6 text-center text-[15px] mr-2"></i>
+  <span>Sign in &amp; security</span>
+</a>
+<a class="settings-menu-item" href="#" data-settings-notice="Visibility preferences are linked to your profile privacy.">
+  <i class="fa-solid fa-eye w-6 text-center text-[15px] mr-2"></i>
+  <span>Visibility</span>
+</a>
+<a class="settings-menu-item" href="#" data-settings-notice="Manage email and push communication preferences under Account Preferences.">
+  <i class="fa-solid fa-comment-dots w-6 text-center text-[15px] mr-2"></i>
+  <span>Communications</span>
+</a>
+<a class="settings-menu-item" href="/privacy">
+  <i class="fa-solid fa-database w-6 text-center text-[15px] mr-2"></i>
+  <span>Data privacy</span>
+</a>
+<a class="settings-menu-item" href="#" data-settings-notice="Faithin does not sell or share your personal data for third-party advertising.">
+  <i class="fa-solid fa-rectangle-ad w-6 text-center text-[15px] mr-2"></i>
+  <span>Advertising data</span>
+</a>
+</nav>
+</section>
+</aside>
+
+<!-- ───── CONTENT ───── -->
+<div class="space-y-5 min-w-0">
+<h1 class="text-[22px] font-bold px-1">Sign in &amp; security</h1>
+
+<!-- Section 1: Account Access -->
+<section class="card overflow-hidden">
+<div class="px-5 py-3.5 bg-raised border-b border-line">
+  <h2 class="font-bold text-[15px]">Account access</h2>
+</div>
+
+<!-- Email addresses -->
+<div class="settings-row cursor-pointer group" data-security-email-row>
+  <div class="flex-1 pr-4 min-w-0">
+    <h3 class="font-bold text-[14.5px] group-hover:text-brand transition">Email addresses</h3>
+    <p class="text-[13px] text-muted mt-0.5">Add or manage email addresses on your account</p>
+    <p class="text-[13px] font-semibold text-ink mt-2">1 email address</p>
+    <p class="text-[13px] text-muted" data-security-primary-email>Primary: <span class="font-medium text-ink">loading...</span></p>
+  </div>
+  <button class="w-8 h-8 rounded-full text-muted group-hover:bg-raised group-hover:text-ink flex items-center justify-center transition shrink-0" aria-label="Manage email">
+    <i class="fa-solid fa-arrow-right text-[13px]"></i>
+  </button>
+</div>
+
+<!-- Phone numbers -->
+<div class="settings-row cursor-pointer group" data-security-phone-row>
+  <div class="flex-1 pr-4 min-w-0">
+    <h3 class="font-bold text-[14.5px] group-hover:text-brand transition">Phone numbers</h3>
+    <p class="text-[13px] text-muted mt-0.5">Add a phone number to help keep your account secure</p>
+    <p class="text-[13px] font-semibold text-ink mt-2" data-security-phone-count>1 phone number</p>
+    <p class="text-[13px] text-muted" data-security-phone-val>+855 12 345 678</p>
+  </div>
+  <button class="w-8 h-8 rounded-full text-muted group-hover:bg-raised group-hover:text-ink flex items-center justify-center transition shrink-0" aria-label="Manage phone">
+    <i class="fa-solid fa-arrow-right text-[13px]"></i>
+  </button>
+</div>
+
+<!-- Change password -->
+<div class="settings-row cursor-pointer group" data-security-password-row>
+  <div class="flex-1 pr-4 min-w-0">
+    <h3 class="font-bold text-[14.5px] group-hover:text-brand transition">Change password</h3>
+    <p class="text-[13px] text-muted mt-0.5">Choose a unique password to protect your account</p>
+    <p class="text-[13px] text-faint mt-2" data-security-pass-time><i class="fa-solid fa-clock-rotate-left mr-1"></i> Last changed August 2026</p>
+  </div>
+  <button class="btn btn-ghost !text-brand font-semibold text-[13.5px] shrink-0">
+    Change
+  </button>
+</div>
+
+<!-- Two-step verification -->
+<div class="settings-row cursor-pointer group" data-security-2fa-row>
+  <div class="flex-1 pr-4 min-w-0">
+    <div class="flex items-center flex-wrap">
+      <h3 class="font-bold text-[14.5px] group-hover:text-brand transition">Two-step verification</h3>
+      <span class="status-badge status-on" data-security-2fa-badge>On</span>
+    </div>
+    <p class="text-[13px] text-muted mt-0.5">Activate this feature for enhanced account security</p>
+    <p class="text-[13px] text-ink font-medium mt-1.5" data-security-2fa-sub>Authenticator App &amp; Email (Primary)</p>
+  </div>
+  <button class="btn btn-ghost !text-brand font-semibold text-[13.5px] shrink-0">
+    Change
+  </button>
+</div>
+
+<!-- Passkeys -->
+<div class="settings-row cursor-pointer group" data-security-passkeys-row>
+  <div class="flex-1 pr-4 min-w-0">
+    <div class="flex items-center flex-wrap">
+      <h3 class="font-bold text-[14.5px] group-hover:text-brand transition">Passkeys</h3>
+      <span class="status-badge status-off" data-security-passkeys-badge>Off</span>
+    </div>
+    <p class="text-[13px] text-muted mt-0.5">Sign in with a passkey using your device's screen lock or biometric auth</p>
+  </div>
+  <button class="w-8 h-8 rounded-full text-muted group-hover:bg-raised group-hover:text-ink flex items-center justify-center transition shrink-0" aria-label="Manage passkeys">
+    <i class="fa-solid fa-arrow-right text-[13px]"></i>
+  </button>
+</div>
+</section>
+
+<!-- Section 2: Where you're signed in -->
+<section class="card overflow-hidden">
+<div class="px-5 py-3.5 bg-raised border-b border-line">
+  <h2 class="font-bold text-[15px]">Where you're signed in</h2>
+</div>
+
+<!-- Active sessions -->
+<div class="settings-row cursor-pointer group" data-security-sessions-row>
+  <div class="flex-1 pr-4 min-w-0">
+    <h3 class="font-bold text-[14.5px] group-hover:text-brand transition">Active sessions</h3>
+    <p class="text-[13px] text-muted mt-0.5">See your active sessions and sign out if you'd like</p>
+    
+    <div class="mt-3.5 flex items-start gap-3">
+      <div class="w-8 h-8 rounded-lg bg-brand-soft text-brand flex items-center justify-center shrink-0">
+        <i class="fa-solid fa-desktop text-[14px]"></i>
+      </div>
+      <div>
+        <p class="text-[13px] font-semibold text-ink" data-security-current-os>Mac OS X • Phnom Penh, Cambodia</p>
+        <p class="text-[12px] text-muted" data-security-current-browser>Chrome • Current session</p>
+      </div>
+    </div>
+
+    <div class="mt-3 flex items-start gap-3 opacity-75">
+      <div class="w-8 h-8 rounded-lg bg-raised text-muted flex items-center justify-center shrink-0">
+        <i class="fa-solid fa-mobile-screen text-[14px]"></i>
+      </div>
+      <div>
+        <p class="text-[13px] font-semibold text-ink">iOS Mobile • Phnom Penh, Cambodia</p>
+        <p class="text-[12px] text-muted">FaithIn WebApp • Active recently</p>
+      </div>
+    </div>
+  </div>
+  <button class="btn btn-neutral text-[13px] !py-1.5 shrink-0 h-fit" data-security-manage-sessions>
+    Manage
+  </button>
+</div>
+
+<!-- Devices that remember your password -->
+<div class="settings-row cursor-pointer group" data-security-remember-devices-row>
+  <div class="flex-1 pr-4 min-w-0">
+    <h3 class="font-bold text-[14.5px] group-hover:text-brand transition">Devices that remember your password</h3>
+    <p class="text-[13px] text-muted mt-0.5">Manage the devices that save your login details</p>
+  </div>
+  <button class="w-8 h-8 rounded-full text-muted group-hover:bg-raised group-hover:text-ink flex items-center justify-center transition shrink-0" aria-label="Manage remembered devices">
+    <i class="fa-solid fa-arrow-right text-[13px]"></i>
+  </button>
+</div>
+</section>
+
+<!-- Section 3: App permissions -->
+<section class="card overflow-hidden">
+<div class="px-5 py-3.5 bg-raised border-b border-line">
+  <h2 class="font-bold text-[15px]">App permissions</h2>
+</div>
+
+<!-- Permitted services -->
+<div class="settings-row cursor-pointer group" data-security-services-row>
+  <div class="flex-1 pr-4 min-w-0">
+    <h3 class="font-bold text-[14.5px] group-hover:text-brand transition">Permitted services</h3>
+    <p class="text-[13px] text-muted mt-0.5">Manage cloud and auth services connected to your Faith In account</p>
+    <p class="text-[13px] font-semibold text-ink mt-2">2 connected services</p>
+    <p class="text-[12px] text-muted">Google Identity / Firebase Auth · Supabase Cloud Media Storage</p>
+  </div>
+  <button class="w-8 h-8 rounded-full text-muted group-hover:bg-raised group-hover:text-ink flex items-center justify-center transition shrink-0" aria-label="Manage services">
+    <i class="fa-solid fa-arrow-right text-[13px]"></i>
+  </button>
+</div>
+</section>
+
+<footer class="px-2 py-4 text-center space-y-2">
+<p class="text-[11.5px] text-muted">
+<a class="hover:text-brand hover:underline" href="/about">About</a> 
+         ·
+        <a class="hover:text-brand hover:underline" href="/contact">Help Center</a> ·
+        <a class="hover:text-brand hover:underline" href="/privacy">Privacy</a> · <a class="hover:text-brand hover:underline" href="/terms">Terms</a>
+</p>
+<p class="text-[11.5px] text-faint">Faith In Corporation © 2026</p>
+</footer>
+</div>
+</main>
+
+<script src="/faithin-app/assets/faithin-runtime.js?v=20260831-v30"></script>
+<script src="/assets/js/faith-in-backend.js?v=20260831-v30"></script>
+<script src="/faithin-app/assets/faithin.js?v=20260831-v30"></script>
+<script src="/faithin-app/assets/faithin-live.js?v=20260831-v30"></script>
+</body>
+</html>
