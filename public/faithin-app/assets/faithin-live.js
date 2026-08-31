@@ -841,14 +841,20 @@
 
     $$('#main section').filter(item => /ministry experience|spiritual gifts|people also viewed/i.test(item.querySelector('h2')?.textContent || '')).forEach(item => item.remove());
 
-    if (isSelf) {
-      Promise.all([api.request('cv_social_get_followers'), api.request('cv_social_get_following')]).then(results => {
-        const connection = $$('a', hero).find(link => /connections/i.test(link.textContent));
+    const refreshProfileCounts = () => {
+      Promise.all([
+        api.request('cv_social_get_followers', { uid: user.uid }),
+        api.request('cv_social_get_following', { uid: user.uid })
+      ]).then(results => {
+        const connection = $$('a', hero).find(link => /connections|following/i.test(link.textContent));
         if (connection) connection.textContent = `${results[1].items?.length || 0} following`;
         const follower = $$('a', activity).find(link => /followers/i.test(link.textContent));
         if (follower) follower.textContent = `${results[0].items?.length || 0} followers`;
       }).catch(() => {});
+    };
+    refreshProfileCounts();
 
+    if (isSelf) {
       $$('[aria-label="Edit profile"],[aria-label="Edit services"]', hero || document).forEach(button => {
         button.onclick = () => openProfileEditor(user, button.getAttribute('aria-label') === 'Edit services' ? 'ministry' : 'display_name');
       });
@@ -895,6 +901,7 @@
               connectBtn.className = `btn ${nowFollowing ? 'btn-outline' : 'btn-primary'}`;
               if (!nowFollowing) connectBtn.innerHTML = '<i class="fa-solid fa-user-plus text-[11px] mr-1.5"></i>Connect';
               toast(nowFollowing ? `Following ${user.name}` : `Unfollowed ${user.name}`);
+              refreshProfileCounts();
             } catch (err) {
               toast(err.message);
             } finally {
@@ -916,11 +923,6 @@
           };
         }
       }
-
-      const connection = $$('a', hero).find(link => /connections/i.test(link.textContent));
-      if (connection) connection.textContent = `Faith In Member`;
-      const follower = $$('a', activity).find(link => /followers/i.test(link.textContent));
-      if (follower) follower.textContent = `Member Activity`;
     }
 
     const detailsButton = $$('#main button').find(button => /show details/i.test(button.textContent));

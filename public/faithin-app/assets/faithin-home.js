@@ -490,7 +490,44 @@
     }
     if (event.target.closest('[data-live-delete]')) { if (!needUser() || !confirm('Delete this post?')) return; await api.request('cv_delete_post', { post_id: id }); article.remove(); toast('Post deleted'); }
   });
-  feed?.addEventListener('submit', async event => { const form = event.target.closest('[data-comment-form]'); if (!form) return; event.preventDefault(); if (!needUser()) return; const article = form.closest('[data-post-id]'), input = $('input', form); try { await api.request('cv_create_post_comment', { post_id: article.dataset.postId, content: input.value.trim() }); input.value = ''; toast('Comment posted'); } catch (error) { toast(error.message); } });
+  feed?.addEventListener('submit', async event => {
+    const form = event.target.closest('[data-comment-form]');
+    if (!form) return;
+    event.preventDefault();
+    if (!needUser()) return;
+    const article = form.closest('[data-post-id]'), input = $('input', form);
+    const text = input.value.trim();
+    if (!text) return;
+    try {
+      const result = await api.request('cv_create_post_comment', { post_id: article.dataset.postId, content: text });
+      input.value = '';
+      const countBtn = $('[data-comment-toggle]', article);
+      if (countBtn && result.comment_count !== undefined) {
+        countBtn.textContent = `${result.comment_count} comments`;
+      }
+      const list = $('[data-comment-list]', article);
+      if (list && result.comment) {
+        const c = result.comment;
+        const commentDiv = document.createElement('div');
+        commentDiv.className = 'rounded-xl bg-raised p-2.5 flex items-start gap-2.5 animate-fade-up';
+        commentDiv.innerHTML = `
+          <a href="/profile?uid=${encodeURIComponent(c.author?.uid || c.author_uid || '')}" class="shrink-0 block mt-0.5">
+            ${window.FILive.avatarMarkup(c.author || { name: c.author_name || 'Member' }, 'avatar w-7 h-7 text-[10px] object-cover')}
+          </a>
+          <div class="min-w-0 flex-1">
+            <a href="/profile?uid=${encodeURIComponent(c.author?.uid || c.author_uid || '')}" class="text-[12.5px] font-semibold hover:text-brand">
+              ${esc(c.author?.name || c.author_name || 'Member')}
+            </a>
+            <p class="text-[13px] mt-0.5 text-ink/90">${esc(c.content)}</p>
+          </div>
+        `;
+        list.appendChild(commentDiv);
+      }
+      toast('Comment posted');
+    } catch (error) {
+      toast(error.message);
+    }
+  });
 
   document.addEventListener('click', async event => {
     const removePrayer = event.target.closest('[data-prayer-delete]'); if (removePrayer) { if (!needUser() || !confirm('Delete this prayer request?')) return; try { await api.request('cv_delete_prayer', { prayer_id: removePrayer.closest('[data-prayer-id]').dataset.prayerId }); await loadPrayers(); toast('Prayer request deleted'); } catch (error) { toast(error.message); } return; }

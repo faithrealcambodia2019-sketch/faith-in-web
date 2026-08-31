@@ -1814,21 +1814,24 @@
     actions.cv_social_follow_user = function (b, params) { return setFollow(b, params, true); };
     actions.cv_social_unfollow_user = function (b, params) { return setFollow(b, params, false); };
 
-    function followList(b, field, otherField) {
-        return requireUser(b).then(function (user) {
+    function followList(b, field, otherField, params) {
+        var explicitUid = params && text(params.uid || params.target_uid);
+        return currentUser(b).then(function (viewer) {
+            var subjectUid = explicitUid || (viewer ? viewer.uid : '');
+            if (!subjectUid) return { items: [] };
             var q = b.dbMod.query(
                 b.dbMod.collection(b.db, 'follows'),
-                b.dbMod.where(field, '==', user.uid),
+                b.dbMod.where(field, '==', subjectUid),
                 b.dbMod.limit(200)
             );
             return b.dbMod.getDocs(q).then(function (snap) {
                 var uids = [];
                 snap.forEach(function (d) { uids.push(d.data()[otherField]); });
                 if (!uids.length) return { items: [] };
-                return followingMap(b, user).then(function (following) {
+                return followingMap(b, viewer).then(function (following) {
                     return Promise.all(uids.map(function (uid) {
                         return getMemberDocument(b, uid)
-                            .then(function (s) { return s.exists() ? shapeMember(uid, s.data(), user, following) : null; })
+                            .then(function (s) { return s.exists() ? shapeMember(uid, s.data(), viewer, following) : null; })
                             .catch(function () { return null; });
                     })).then(function (items) {
                         return { items: items.filter(Boolean) };
@@ -1838,8 +1841,8 @@
         });
     }
 
-    actions.cv_social_get_followers = function (b) { return followList(b, 'targetUid', 'followerUid'); };
-    actions.cv_social_get_following = function (b) { return followList(b, 'followerUid', 'targetUid'); };
+    actions.cv_social_get_followers = function (b, params) { return followList(b, 'targetUid', 'followerUid', params); };
+    actions.cv_social_get_following = function (b, params) { return followList(b, 'followerUid', 'targetUid', params); };
 
     // ---------------------------------------------------------------------
     // Private messaging and notifications
