@@ -761,20 +761,256 @@
   function openProfileEditor(user, focusField) {
     if (!requireUser()) return;
     const modal = document.createElement('div');
-    modal.className = 'fixed inset-0 z-[240] bg-[#0b1120]/70 p-4 flex items-center justify-center overflow-y-auto';
-    modal.innerHTML = `<form class="card w-full max-w-2xl p-5 sm:p-6 space-y-4 my-auto"><div class="flex items-start justify-between gap-3"><div><h2 class="text-[20px] font-bold">Edit your Faith In profile</h2><p class="text-[13px] text-muted mt-1">These details are saved to Firebase and shown across Faith In.</p></div><button type="button" class="icon-btn" data-profile-close aria-label="Close"><i class="fa-solid fa-xmark"></i></button></div><div class="grid sm:grid-cols-2 gap-3"><label class="text-[13px] font-semibold sm:col-span-2">Display name<input class="field mt-1" name="display_name" value="${esc(user.name || '')}" required></label><label class="text-[13px] font-semibold">Role<input class="field mt-1" name="role" value="${esc(user.role || '')}"></label><label class="text-[13px] font-semibold">Location<input class="field mt-1" name="location" value="${esc(user.location || '')}"></label><label class="text-[13px] font-semibold">Industry<input class="field mt-1" name="industry" value="${esc(user.industry || '')}"></label><label class="text-[13px] font-semibold">Church<input class="field mt-1" name="church" value="${esc(user.church || '')}"></label><label class="text-[13px] font-semibold sm:col-span-2">Ministry<input class="field mt-1" name="ministry" value="${esc(user.ministry || '')}"></label><label class="text-[13px] font-semibold sm:col-span-2">About<textarea class="field mt-1 resize-y" name="bio" rows="4">${esc(user.bio || '')}</textarea></label><label class="text-[13px] font-semibold">Profile photo<input class="field mt-1" name="profile_image" type="file" accept="image/*"></label><label class="text-[13px] font-semibold">Cover photo<input class="field mt-1" name="profile_cover" type="file" accept="image/*"></label></div><div class="flex justify-end gap-2"><button type="button" class="btn btn-ghost" data-profile-close>Cancel</button><button class="btn btn-primary" data-profile-save>Save profile</button></div></form>`;
+    modal.className = 'fixed inset-0 z-[240] flex items-center justify-center bg-black/50 p-4 font-[\'Segoe_UI\',_Helvetica,_Arial,_sans-serif]';
+    
+    const coverUrl = user.cover_url || user.cover || '';
+    const photoUrl = user.avatar_url || user.avatar || user.photo_url || '';
+    
+    modal.innerHTML = `
+      <div class="w-full max-w-[700px] bg-white rounded-[8px] shadow-[0_12px_28px_rgba(0,0,0,0.2)] overflow-hidden flex flex-col max-h-[90vh]">
+        <!-- Header -->
+        <div class="relative flex flex-col items-center justify-center px-6 py-4 border-b border-[#e5e5e5] shrink-0">
+          <h2 class="text-[20px] font-bold text-[#1c1e21] leading-tight">Edit your profile</h2>
+          <p class="text-[14px] text-[#65676b] mt-1">These details are saved to Firebase and shown across the platform.</p>
+          <button type="button" class="absolute right-4 top-4 p-2 rounded-full bg-[#e4e6eb] hover:bg-[#d8dadf] transition-colors text-[#65676b]" data-profile-close aria-label="Close">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+
+        <!-- Content -->
+        <div class="p-6 overflow-y-auto flex-1 custom-scrollbar">
+          <form class="space-y-6">
+            <!-- Visual Cover Photo Uploader -->
+            <div>
+              <div class="flex justify-between items-center mb-2">
+                <label class="block text-[16px] font-bold text-[#1c1e21]">
+                  Cover photo
+                </label>
+              </div>
+              <label class="relative flex w-full h-[150px] bg-[#f0f2f5] rounded-[8px] border border-[#ccd0d5] cursor-pointer overflow-hidden group">
+                <img id="fi-cover-preview" src="${esc(coverUrl)}" alt="Cover Preview" class="w-full h-full object-cover ${coverUrl ? '' : 'hidden'}" />
+                <div id="fi-cover-placeholder" class="w-full h-full flex items-center justify-center text-[#bcc0c4] ${coverUrl ? 'hidden' : ''}"></div>
+                <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
+                  <div class="bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-md text-[#1c1e21] flex items-center gap-2 shadow-sm font-semibold text-[14px]">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg> Edit Cover Photo
+                  </div>
+                </div>
+                <input type="file" name="profile_cover" class="hidden" accept="image/*" />
+              </label>
+            </div>
+
+            <!-- Visual Profile Photo Uploader -->
+            <div class="flex flex-col items-center">
+              <div class="w-full flex justify-between items-center mb-2">
+                <label class="block text-[16px] font-bold text-[#1c1e21]">
+                  Profile photo
+                </label>
+              </div>
+              <label class="relative flex w-[120px] h-[120px] bg-[#f0f2f5] rounded-full border border-[#ccd0d5] cursor-pointer overflow-hidden group shadow-sm">
+                <img id="fi-profile-preview" src="${esc(photoUrl)}" alt="Profile Preview" class="w-full h-full object-cover ${photoUrl ? '' : 'hidden'}" />
+                <div id="fi-profile-placeholder" class="w-full h-full flex items-center justify-center bg-[#e4e6eb] text-[#bcc0c4] ${photoUrl ? 'hidden' : ''}">
+                  <svg class="w-16 h-16 mt-2" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                  </svg>
+                </div>
+                <div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
+                  <div class="bg-black/60 p-2.5 rounded-full text-white">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                  </div>
+                </div>
+                <input type="file" name="profile_image" class="hidden" accept="image/*" />
+              </label>
+            </div>
+
+            <!-- Display name -->
+            <div>
+              <label for="displayName" class="block text-[15px] font-bold text-[#1c1e21] mb-1.5">
+                Display name
+              </label>
+              <input
+                type="text"
+                id="displayName"
+                name="display_name"
+                value="${esc(user.name || user.displayName || '')}"
+                required
+                class="w-full px-3 py-2 bg-[#f0f2f5] border border-[#ccd0d5] rounded-md text-[#1c1e21] focus:bg-white focus:outline-none focus:border-[#1877f2] focus:ring-1 focus:ring-[#1877f2] text-[15px] transition-colors"
+              />
+            </div>
+
+            <!-- Role & Location -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              <div>
+                <label for="role" class="block text-[15px] font-bold text-[#1c1e21] mb-1.5">
+                  Role
+                </label>
+                <input
+                  type="text"
+                  id="role"
+                  name="role"
+                  value="${esc(user.role || '')}"
+                  class="w-full px-3 py-2 bg-[#f0f2f5] border border-[#ccd0d5] rounded-md text-[#1c1e21] focus:bg-white focus:outline-none focus:border-[#1877f2] focus:ring-1 focus:ring-[#1877f2] text-[15px] transition-colors"
+                />
+              </div>
+              <div>
+                <label for="location" class="block text-[15px] font-bold text-[#1c1e21] mb-1.5">
+                  Location
+                </label>
+                <input
+                  type="text"
+                  id="location"
+                  name="location"
+                  value="${esc(user.location || '')}"
+                  class="w-full px-3 py-2 bg-[#f0f2f5] border border-[#ccd0d5] rounded-md text-[#1c1e21] focus:bg-white focus:outline-none focus:border-[#1877f2] focus:ring-1 focus:ring-[#1877f2] text-[15px] transition-colors"
+                />
+              </div>
+            </div>
+
+            <!-- Industry & Church -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              <div>
+                <label for="industry" class="block text-[15px] font-bold text-[#1c1e21] mb-1.5">
+                  Industry
+                </label>
+                <input
+                  type="text"
+                  id="industry"
+                  name="industry"
+                  value="${esc(user.industry || '')}"
+                  class="w-full px-3 py-2 bg-[#f0f2f5] border border-[#ccd0d5] rounded-md text-[#1c1e21] focus:bg-white focus:outline-none focus:border-[#1877f2] focus:ring-1 focus:ring-[#1877f2] text-[15px] transition-colors"
+                />
+              </div>
+              <div>
+                <label for="church" class="block text-[15px] font-bold text-[#1c1e21] mb-1.5">
+                  Church
+                </label>
+                <input
+                  type="text"
+                  id="church"
+                  name="church"
+                  value="${esc(user.church || '')}"
+                  class="w-full px-3 py-2 bg-[#f0f2f5] border border-[#ccd0d5] rounded-md text-[#1c1e21] focus:bg-white focus:outline-none focus:border-[#1877f2] focus:ring-1 focus:ring-[#1877f2] text-[15px] transition-colors"
+                />
+              </div>
+            </div>
+
+            <!-- Ministry -->
+            <div>
+              <label for="ministry" class="block text-[15px] font-bold text-[#1c1e21] mb-1.5">
+                Ministry
+              </label>
+              <input
+                type="text"
+                id="ministry"
+                name="ministry"
+                value="${esc(user.ministry || '')}"
+                class="w-full px-3 py-2 bg-[#f0f2f5] border border-[#ccd0d5] rounded-md text-[#1c1e21] focus:bg-white focus:outline-none focus:border-[#1877f2] focus:ring-1 focus:ring-[#1877f2] text-[15px] transition-colors"
+              />
+            </div>
+
+            <!-- About -->
+            <div>
+              <label for="about" class="block text-[15px] font-bold text-[#1c1e21] mb-1.5">
+                About
+              </label>
+              <textarea
+                id="about"
+                name="bio"
+                rows="3"
+                class="w-full px-3 py-2 bg-[#f0f2f5] border border-[#ccd0d5] rounded-md text-[#1c1e21] focus:bg-white focus:outline-none focus:border-[#1877f2] focus:ring-1 focus:ring-[#1877f2] text-[15px] resize-none transition-colors"
+              >${esc(user.bio || user.about || '')}</textarea>
+            </div>
+
+          </form>
+        </div>
+
+        <!-- Footer Actions -->
+        <div class="flex items-center justify-end px-6 py-4 border-t border-[#e5e5e5] gap-3 bg-white shrink-0">
+          <button type="button" class="px-6 py-2 text-[15px] font-bold text-[#4b4f56] bg-[#e4e6eb] hover:bg-[#d8dadf] rounded-md transition-colors" data-profile-close>
+            Cancel
+          </button>
+          <button type="button" class="px-8 py-2 text-[15px] font-bold text-white bg-[#1877f2] hover:bg-[#166fe5] rounded-md transition-colors" data-profile-save>
+            Save profile
+          </button>
+        </div>
+
+      </div>
+    `;
+
     document.body.appendChild(modal);
-    $$('[data-profile-close]', modal).forEach(button => { button.onclick = () => modal.remove(); });
-    const form = $('form', modal);
-    if (focusField) form.elements[focusField]?.focus();
-    form.onsubmit = async event => {
-      event.preventDefault(); const save = $('[data-profile-save]', modal); save.disabled = true; save.textContent = 'Saving…';
-      const data = Object.fromEntries(new FormData(form));
-      const files = { profile_image: form.profile_image.files[0] ? [form.profile_image.files[0]] : [], profile_cover: form.profile_cover.files[0] ? [form.profile_cover.files[0]] : [] };
-      delete data.profile_image; delete data.profile_cover;
-      try { const updated = await api.request('cv_update_profile', data, files); applySession(updated.user || updated); modal.remove(); toast('Profile saved'); setTimeout(() => location.reload(), 350); }
-      catch (error) { toast(error.message); save.disabled = false; save.textContent = 'Save profile'; }
+    document.body.style.overflow = 'hidden';
+
+    const cleanup = () => {
+      modal.remove();
+      document.body.style.overflow = '';
     };
+
+    $$('[data-profile-close]', modal).forEach(button => { button.onclick = cleanup; });
+    modal.onclick = (e) => { if (e.target === modal) cleanup(); };
+
+    const form = $('form', modal);
+    
+    // Live image previews
+    const coverInput = form.querySelector('input[name="profile_cover"]');
+    const coverPreview = modal.querySelector('#fi-cover-preview');
+    const coverPlaceholder = modal.querySelector('#fi-cover-placeholder');
+    if (coverInput && coverPreview) {
+      coverInput.onchange = (e) => {
+        const file = e.target.files && e.target.files[0];
+        if (file) {
+          coverPreview.src = URL.createObjectURL(file);
+          coverPreview.classList.remove('hidden');
+          if (coverPlaceholder) coverPlaceholder.classList.add('hidden');
+        }
+      };
+    }
+
+    const profileInput = form.querySelector('input[name="profile_image"]');
+    const profilePreview = modal.querySelector('#fi-profile-preview');
+    const profilePlaceholder = modal.querySelector('#fi-profile-placeholder');
+    if (profileInput && profilePreview) {
+      profileInput.onchange = (e) => {
+        const file = e.target.files && e.target.files[0];
+        if (file) {
+          profilePreview.src = URL.createObjectURL(file);
+          profilePreview.classList.remove('hidden');
+          if (profilePlaceholder) profilePlaceholder.classList.add('hidden');
+        }
+      };
+    }
+
+    if (focusField) {
+      const fieldMap = { bio: 'bio', ministry: 'ministry', role: 'role', location: 'location', profile_cover: 'profile_cover', display_name: 'display_name' };
+      const targetName = fieldMap[focusField] || focusField;
+      form.elements[targetName]?.focus();
+    }
+
+    const saveBtn = $('[data-profile-save]', modal);
+    const handleSave = async (event) => {
+      if (event) event.preventDefault();
+      saveBtn.disabled = true;
+      saveBtn.textContent = 'Saving…';
+      const data = Object.fromEntries(new FormData(form));
+      const files = {
+        profile_image: form.profile_image.files[0] ? [form.profile_image.files[0]] : [],
+        profile_cover: form.profile_cover.files[0] ? [form.profile_cover.files[0]] : []
+      };
+      delete data.profile_image;
+      delete data.profile_cover;
+      try {
+        const updated = await api.request('cv_update_profile', data, files);
+        applySession(updated.user || updated);
+        cleanup();
+        toast('Profile saved');
+        setTimeout(() => location.reload(), 350);
+      } catch (error) {
+        toast(error.message);
+        saveBtn.disabled = false;
+        saveBtn.textContent = 'Save profile';
+      }
+    };
+
+    form.onsubmit = handleSave;
+    saveBtn.onclick = handleSave;
   }
 
   async function loadProfile(currentUser) {
