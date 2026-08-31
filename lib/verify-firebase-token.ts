@@ -30,6 +30,7 @@ export type VerifiedUser = {
   emailVerified: boolean;
   name: string;
   picture: string;
+  signInProvider: string;
 };
 
 /**
@@ -140,6 +141,10 @@ async function verifyWithPem(idToken: string, pem: string): Promise<VerifiedUser
     emailVerified: payload.email_verified === true,
     name: typeof payload.name === "string" ? payload.name : "",
     picture: typeof payload.picture === "string" ? payload.picture : "",
+    signInProvider:
+      payload.firebase && typeof payload.firebase === "object" && "sign_in_provider" in payload.firebase
+        ? String(payload.firebase.sign_in_provider || "")
+        : "",
   };
 }
 
@@ -152,5 +157,9 @@ export function bearerToken(request: Request): string {
 
 /** Verifies the caller, or throws with a message safe to show a member. */
 export async function requireMember(request: Request): Promise<VerifiedUser> {
-  return verifyFirebaseToken(bearerToken(request));
+  const member = await verifyFirebaseToken(bearerToken(request));
+  if (member.signInProvider === "password" && member.email && !member.emailVerified) {
+    throw new Error("Please verify your email address before continuing.");
+  }
+  return member;
 }

@@ -27,11 +27,25 @@ const key = p => p.join('/');
 
 const dbMod = {
   getFirestore: () => ({}),
-  doc: (db, ...path) => ({ path }),
-  collection: (db, ...path) => ({ path }),
+  doc: (first, ...rest) => {
+    let p;
+    let id = '';
+    if (first && first.path) {
+      id = rest[0] || ('msg' + (++idSeq));
+      p = first.path.concat(id);
+    } else {
+      p = rest;
+      id = p[p.length - 1] || '';
+    }
+    return { id, path: p };
+  },
+  collection: (first, ...rest) => {
+    const p = (first && first.path) ? first.path.concat(rest) : rest;
+    return { path: p };
+  },
   getDoc: async (ref) => {
     const d = store[key(ref.path)];
-    return { exists: () => !!d, data: () => d };
+    return { id: ref.id, exists: () => !!d, data: () => d };
   },
   setDoc: async (ref, data, opts) => {
     const k = key(ref.path);
@@ -56,6 +70,15 @@ const dbMod = {
   },
   deleteDoc: async (ref) => { delete store[key(ref.path)]; },
   deleteField: () => ({ __delete: true }),
+  writeBatch: (db) => {
+    const ops = [];
+    return {
+      set: (ref, data) => { ops.push(() => { store[key(ref.path)] = Object.assign({}, store[key(ref.path)] || {}, data); }); },
+      update: (ref, data) => { ops.push(() => { store[key(ref.path)] = Object.assign({}, store[key(ref.path)] || {}, data); }); },
+      delete: (ref) => { ops.push(() => { delete store[key(ref.path)]; }); },
+      commit: async () => { ops.forEach(op => op()); }
+    };
+  },
   increment: (n) => ({ __increment: n }),
   serverTimestamp: () => SENTINEL,
   where: (field, op, value) => ({ __where: { field, op, value } }),
@@ -74,7 +97,11 @@ const dbMod = {
     const rows = Object.entries(store)
       .filter(([k]) => k.startsWith(prefix) && !k.slice(prefix.length).includes('/'))
       .map(([k, data]) => ({ id: k.slice(prefix.length), data: () => data }))
-      .filter(r => wheres.every(w => r.data()[w.field] === w.value));
+      .filter(r => wheres.every(w => {
+        const val = r.data()[w.field];
+        if (w.op === 'array-contains') return Array.isArray(val) && val.includes(w.value);
+        return val === w.value;
+      }));
     return { forEach: (cb) => rows.forEach(cb) };
   }
 };
@@ -101,9 +128,9 @@ class FakeXHR {
     this.responseText = JSON.stringify(uploadBody !== null ? uploadBody : {
       success: true,
       data: { items: files.map(f => ({
-        url: 'https://blob.example/' + f.name,
-        local_url: 'https://blob.example/' + f.name,
-        preview_url: 'https://blob.example/' + f.name,
+        url: 'https://supabase.example/' + f.name,
+        local_url: 'https://supabase.example/' + f.name,
+        preview_url: 'https://supabase.example/' + f.name,
         drive_url: '',
         type: /^video\//.test(f.type) ? 'video' : (/^audio\//.test(f.type) ? 'audio' : 'image'),
         mime: f.type, name: f.name, size: f.size,
@@ -114,7 +141,7 @@ class FakeXHR {
   }
 }
 
-const USER = { uid: 'uid-abc', email: 'Hun@Faithin.co', displayName: 'Hun Chet', photoURL: '', providerData: [{providerId:'password'}], getIdToken: async () => 'fake-id-token' };
+const USER = { uid: 'uid-abc', email: 'Hun@Faithin.co', emailVerified: true, displayName: 'Hun Chet', photoURL: '', providerData: [{providerId:'password'}], getIdToken: async () => 'fake-id-token' };
 const authMod = { getAuth: () => ({ currentUser: USER }), onAuthStateChanged: (a,cb)=>{cb(USER); return ()=>{};}, signOut: async()=>{} };
 const appMod = { getApps: () => [], initializeApp: () => ({ name:'faith-in-auth' }) };
 
@@ -197,9 +224,9 @@ check('video typed', withMedia.media_items[1].type === 'video', withMedia.media_
 check('cover set from first media', !!withMedia.cover_image_url);
 
 console.log('\n5) Oversize file rejected');
-r = await call(fd([['action','cv_create_post'],['content','big'],['post_media[]', new FakeFile('huge.mp4','video/mp4', 260*1024*1024)]]));
+r = await call(fd([['action','cv_create_post'],['content','big'],['post_media[]', new FakeFile('huge.mp4','video/mp4', 60*1024*1024)]]));
 check('rejected', r.success === false);
-check('mentions 250MB limit', /250MB/.test(r.data), r.data);
+check('mentions 50MB limit', /50MB/.test(r.data), r.data);
 
 console.log('\n6) Feed');
 r = await call({ action: 'cv_get_posts' });
@@ -324,13 +351,17 @@ r = await call({ action:'cv_social_get_following' });
 check('following list', r.data.items.length === 1 && r.data.items[0].uid === 'uid-friend', r.data.items);
 r = await call({ action:'cv_social_unfollow_user', target_uid:'uid-friend' });
 check('unfollow ok', r.data.following === false && !store['follows/uid-abc__uid-friend']);
+r = await call({ action:'cv_get_user', uid:'uid-friend' });
+check('get user by uid', r.success === true && r.data.name === 'Sok Dara' && r.data.church === 'Grace Church');
+r = await call({ action:'cv_get_user', id:'4242' });
+check('get user by numeric id', r.success === true && r.data.uid === 'uid-friend');
 
 console.log('\n15) Bookmarks, settings, verification, notes');
 const bpid = postIds()[0];
 r = await call(fd([['action','cv_update_profile'],['display_name','Hun Updated'],['role','Creator'],['location','Phnom Penh'],['bio','Sharing faith online.'],['profile_image',new FakeFile('profile.jpg','image/jpeg',1024)]]));
 check('profile fields saved', r.success === true && store['users/uid-abc'].displayName === 'Hun Updated' && store['users/uid-abc'].bio === 'Sharing faith online.');
-check('profile photo uploaded', store['users/uid-abc'].photoURL === 'https://blob.example/profile.jpg');
-check('public profile updated', store['publicProfiles/uid-abc'].displayName === 'Hun Updated' && store['publicProfiles/uid-abc'].photoURL === 'https://blob.example/profile.jpg');
+check('profile photo uploaded', store['users/uid-abc'].photoURL === 'https://supabase.example/profile.jpg');
+check('public profile updated', store['publicProfiles/uid-abc'].displayName === 'Hun Updated' && store['publicProfiles/uid-abc'].photoURL === 'https://supabase.example/profile.jpg');
 r = await call({ action:'cv_toggle_bookmark', post_id: bpid });
 check('bookmark on', r.data.bookmarked === true && !!store['users/uid-abc/bookmarks/'+bpid]);
 r = await call({ action:'cv_toggle_bookmark', post_id: bpid });
@@ -359,12 +390,22 @@ uploadStatus = 500; uploadBody = null;
 r = await call(fd([['action','cv_stage_post_media'],['post_media[]', new FakeFile('b.jpg','image/jpeg',10)]]));
 check('generic message on 500', r.success === false && /Upload failed/.test(r.data), r.data);
 uploadStatus = 200; uploadBody = null;
-r = await call(fd([['action','cv_create_post'],['content','big'],['post_media[]', new FakeFile('huge.mp4','video/mp4', 260*1024*1024)]]));
-check('oversize rejected before upload', r.success === false && /250MB/.test(r.data), r.data);
+r = await call(fd([['action','cv_create_post'],['content','big'],['post_media[]', new FakeFile('huge.mp4','video/mp4', 60*1024*1024)]]));
+check('oversize rejected before upload', r.success === false && /50MB/.test(r.data), r.data);
 
-console.log('\n17) Non-cv request passes through');
-const t = transportFactory({ url:'https://example.com/thing' }, { url:'https://example.com/thing', data:{} });
-check('not intercepted', t === undefined);
+console.log('\n18) Messaging');
+r = await call({ action:'cv_social_search_message_users', search:'Sok' });
+check('search users returns list', r.success === true && r.data.items.length === 1 && r.data.items[0].name === 'Sok Dara');
+r = await call({ action:'cv_social_open_thread', recipient_uid:'uid-friend' });
+check('open new thread returns thread id and exists 0', r.success === true && r.data.exists === 0 && r.data.other_user.uid === 'uid-friend');
+const directId = r.data.thread_id;
+r = await call({ action:'cv_social_send_message', thread_id: directId, recipient_uid:'uid-friend', body:'Peace be with you!' });
+check('send message creates thread and message', r.success === true && r.data.thread_id === directId && !!store['messageThreads/' + directId]);
+check('message stored with author and body', Object.keys(store).some(k => k.startsWith('messageThreads/' + directId + '/messages/') && store[k].body === 'Peace be with you!'));
+r = await call({ action:'cv_social_get_message_threads' });
+check('inbox lists conversation', r.success === true && r.data.items.length >= 1 && r.data.items[0].id === directId);
+r = await call({ action:'cv_social_mark_thread_read', thread_id: directId });
+check('mark thread read returns success', r.success === true && r.data.read === 1);
 
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

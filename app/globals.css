@@ -42,7 +42,7 @@
   --fi-radius-xl: 28px;
   --fi-radius-full: 9999px;
 
-  --fi-font-khmer: "Kantumruy Pro", "Battambang", "Noto Sans Khmer", sans-serif;
+  --fi-font-khmer: var(--font-koh-santepheap), "Koh Santepheap", "Noto Sans Khmer", serif;
 }
 
 html {

@@ -1875,3 +1875,75 @@ html body #cv-root .cv-library-detail__credits span {
 html body #cv-root .cv-library-detail__credits strong {
   color: #273244 !important;
 }
+
+/* Faith reactions stay prominent and separate from utility actions. */
+html body #cv-root .cv-faith-reaction-actions {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin: 2px 0 8px;
+  padding: 0 8px 9px;
+  border-bottom: 1px solid #e7eaf0;
+}
+
+html body #cv-root .cv-faith-reaction-actions .cv-reaction-wrap {
+  width: 100%;
+  min-width: 0;
+}
+
+html body #cv-root .cv-faith-reaction-actions .cv-linkedin-action {
+  min-height: 46px !important;
+  padding: 7px 10px !important;
+  border-radius: 12px !important;
+  background: #f7f8fa !important;
+  color: #344054 !important;
+  font-size: 14px !important;
+  font-weight: 700 !important;
+}
+
+html body #cv-root .cv-faith-reaction-actions .cv-linkedin-action:hover {
+  background: #eef3ff !important;
+  color: #244dc2 !important;
+}
+
+html body #cv-root .cv-faith-reaction-actions .cv-linkedin-action.is-active {
+  background: #e9efff !important;
+  color: #3157d5 !important;
+  box-shadow: inset 0 0 0 1px #b8c8f8 !important;
+}
+
+html body #cv-root .cv-post-utility-actions {
+  margin-bottom: 8px !important;
+}
+
+@media (max-width: 560px) {
+  html body #cv-root .cv-faith-reaction-actions {
+    gap: 4px;
+    padding-inline: 4px;
+  }
+
+  html body #cv-root .cv-faith-reaction-actions .cv-linkedin-action {
+    min-height: 52px !important;
+    padding: 5px 3px !important;
+    flex-direction: column !important;
+    gap: 3px !important;
+    font-size: 11px !important;
+    white-space: normal !important;
+    line-height: 1.15 !important;
+  }
+}
+
+html.dark body #cv-root .cv-faith-reaction-actions {
+  border-bottom-color: #334155;
+}
+
+html.dark body #cv-root .cv-faith-reaction-actions .cv-linkedin-action {
+  background: #182235 !important;
+  color: #d6deeb !important;
+}
+
+html.dark body #cv-root .cv-faith-reaction-actions .cv-linkedin-action.is-active {
+  background: #24365d !important;
+  color: #a9c1ff !important;
+  box-shadow: inset 0 0 0 1px #4967a9 !important;
+}

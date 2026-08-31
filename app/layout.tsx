@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Kantumruy_Pro } from "next/font/google";
+import { Inter, Koh_Santepheap } from "next/font/google";
 import "./globals.css";
 import { siteConfig } from "@/lib/runtime-config";
 import { site } from "@/lib/site-content";
@@ -10,11 +10,11 @@ const inter = Inter({
   display: "swap",
 });
 
-const kantumruy = Kantumruy_Pro({
+const kohSantepheap = Koh_Santepheap({
   subsets: ["khmer", "latin"],
-  variable: "--font-khmer",
+  variable: "--font-koh-santepheap",
   display: "swap",
-  weight: ["400", "500", "600", "700"],
+  weight: ["400", "700"],
 });
 
 export const metadata: Metadata = {
@@ -90,7 +90,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} ${kantumruy.variable}`}>
+    <html lang="en" className={`${inter.variable} ${kohSantepheap.variable}`}>
       <body className="font-sans antialiased min-h-screen flex flex-col bg-[#FCFCFA] text-[#0D1017]">
         {children}
       </body>

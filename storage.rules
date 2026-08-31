@@ -3,7 +3,11 @@ rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
     function isSignedIn() {
-      return request.auth != null;
+      return request.auth != null
+        && (
+          request.auth.token.get('email_verified', false) == true
+          || request.auth.token.get('firebase', {}).get('sign_in_provider', '') != 'password'
+        );
     }
 
     function isSafeFaithInFile() {
