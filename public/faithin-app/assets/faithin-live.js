@@ -119,9 +119,17 @@
       const google = event.target.closest('[data-auth-google]');
       if (google) {
         setBusy(google, true);
-        try { session = await api.request('cv_google_sign_in'); applySession(session); window.location.reload(); }
-        catch (error) { showAuthError(google.closest('[data-auth-view]'), error); }
-        finally { setBusy(google, false); }
+        try {
+          const res = await api.request('cv_google_sign_in');
+          if (res?.redirected) return;
+          session = res;
+          applySession(session);
+          window.location.reload();
+        } catch (error) {
+          showAuthError(google.closest('[data-auth-view]'), error);
+        } finally {
+          setBusy(google, false);
+        }
         return;
       }
       const resend = event.target.closest('[data-auth-resend]');
@@ -877,17 +885,34 @@
   markActiveSideLink();
   loadVerseOfTheDay();
   document.addEventListener('fi:session', () => { if (page === 'home') loadPrayerWall(); });
+  document.addEventListener('fi:session-updated', event => {
+    const updated = event.detail;
+    if (updated?.logged_in) {
+      applySession(updated);
+      refreshNotifications();
+    } else if (session && !updated?.logged_in) {
+      applySession(null);
+      signedOutState();
+      const requiresAuth = (page === 'profile' || page === 'settings' || page === 'messaging');
+      if (requiresAuth) {
+        window.FI.openAuth({ locked: true });
+      }
+    }
+  });
   wireArticleComposer();
   $$('form[role="search"], #main form').forEach(form => form.querySelector('[data-toast]')?.removeAttribute('data-toast'));
   api.session().then(user => {
     applySession(user);
     if (!user?.logged_in) {
       signedOutState();
-      window.FI.openAuth({
-        locked: true,
-        verificationRequired: !!user?.verification_required,
-        email: user?.email || ''
-      });
+      const requiresAuth = (page === 'profile' || page === 'settings' || page === 'messaging');
+      if (requiresAuth || user?.verification_required) {
+        window.FI.openAuth({
+          locked: requiresAuth,
+          verificationRequired: !!user?.verification_required,
+          email: user?.email || ''
+        });
+      }
       return;
     }
     refreshNotifications();
@@ -900,6 +925,9 @@
   }).catch(() => {
     applySession(null);
     signedOutState();
-    window.FI.openAuth({ locked: true });
+    const requiresAuth = (page === 'profile' || page === 'settings' || page === 'messaging');
+    if (requiresAuth) {
+      window.FI.openAuth({ locked: true });
+    }
   });
 })();

@@ -31,7 +31,7 @@ window.cv_ajax = window.cv_ajax || {
   const memory = new Map();
   let cacheEpoch = 0;
   const readTtl = {
-    cv_get_session: 10 * 60 * 1000,
+    cv_get_session: 24 * 60 * 60 * 1000,
     cv_get_posts: 30 * 1000,
     cv_get_jobs: 60 * 1000,
     cv_get_resources: 60 * 1000,
@@ -48,22 +48,52 @@ window.cv_ajax = window.cv_ajax || {
     cv_bible_get_verses: 24 * 60 * 60 * 1000
   };
 
+  const storage = (() => {
+    try {
+      localStorage.setItem('__fi_test', '1');
+      localStorage.removeItem('__fi_test');
+      return localStorage;
+    } catch (_) {
+      try { return sessionStorage; } catch (__) { return null; }
+    }
+  })();
+
   function keyFor(action, params) { return `${CACHE_PREFIX}${action}:${JSON.stringify(params || {})}`; }
+
   function readRecord(key) {
     if (memory.has(key)) return memory.get(key);
-    try { const value = JSON.parse(sessionStorage.getItem(key)); if (value) memory.set(key, value); return value; } catch (_) { return null; }
+    try {
+      const raw = storage ? storage.getItem(key) : sessionStorage.getItem(key);
+      if (!raw) return null;
+      const parsed = JSON.parse(raw);
+      if (parsed) memory.set(key, parsed);
+      return parsed;
+    } catch (_) { return null; }
   }
+
   function writeRecord(key, value) {
     const record = { savedAt: Date.now(), value };
     memory.set(key, record);
-    try { sessionStorage.setItem(key, JSON.stringify(record)); } catch (_) {}
+    try {
+      const str = JSON.stringify(record);
+      if (storage) storage.setItem(key, str);
+      sessionStorage.setItem(key, str);
+    } catch (_) {}
     return value;
   }
+
   function clearRecords() {
     cacheEpoch += 1;
     memory.clear();
     pending.clear();
-    try { Object.keys(sessionStorage).filter(key => key.startsWith(CACHE_PREFIX)).forEach(key => sessionStorage.removeItem(key)); } catch (_) {}
+    try {
+      if (storage) {
+        Object.keys(storage).filter(key => key.startsWith(CACHE_PREFIX)).forEach(key => storage.removeItem(key));
+      }
+    } catch (_) {}
+    try {
+      Object.keys(sessionStorage).filter(key => key.startsWith(CACHE_PREFIX)).forEach(key => sessionStorage.removeItem(key));
+    } catch (_) {}
   }
 
   function requestNetwork(action, params, files, onProgress, key) {
@@ -75,7 +105,7 @@ window.cv_ajax = window.cv_ajax || {
     // Large videos and resource bundles upload directly to Blob and can take
     // several minutes on mobile connections. Keep the request alive while
     // progress is still being reported instead of failing after two minutes.
-    const wait = action === 'cv_get_session' ? 8000 : (uploads ? 20 * 60 * 1000 : (readTtl[action] ? 12000 : 30000));
+    const wait = action === 'cv_get_session' ? 10000 : (uploads ? 20 * 60 * 1000 : (readTtl[action] ? 12000 : 30000));
     const operation = window.cvDataRequest(action, params || {}, files || {}, onProgress || null);
     let timer;
     const deadline = new Promise((_, reject) => { timer = setTimeout(() => reject(new Error('Faith In took too long to respond. Please try again.')), wait); });
@@ -90,6 +120,27 @@ window.cv_ajax = window.cv_ajax || {
       const key = keyFor(action, values);
       const ttl = readTtl[action] || 0;
       const cached = ttl ? readRecord(key) : null;
+
+      // For user sessions: if a valid logged-in session exists in local storage,
+      // return it instantly so refresh never flashes or signs the user out.
+      // Simultaneously revalidate with Firebase in the background.
+      if (action === 'cv_get_session' && cached?.value?.logged_in) {
+        const epoch = cacheEpoch;
+        requestNetwork(action, values, files, onProgress, key)
+          .then(value => {
+            if (epoch === cacheEpoch) {
+              if (value && value.logged_in) {
+                writeRecord(key, value);
+              } else if (value && value.logged_in === false) {
+                clearRecords();
+                document.dispatchEvent(new CustomEvent('fi:session-updated', { detail: value }));
+              }
+            }
+          })
+          .catch(() => {});
+        return Promise.resolve(cached.value);
+      }
+
       const sessionTtl = action === 'cv_get_session' && cached?.value?.logged_in === false ? 10000 : ttl;
       const fresh = cached && Date.now() - cached.savedAt < sessionTtl;
 
@@ -118,7 +169,9 @@ window.cv_ajax = window.cv_ajax || {
       return requestNetwork(action, values, files, onProgress, key)
         .then(value => {
           if (ttl && epoch === cacheEpoch) writeRecord(key, value);
-          if (/^cv_(google|email)_sign_/.test(action)) writeRecord(keyFor('cv_get_session', {}), value);
+          if (/^cv_(google|email)_sign_/.test(action)) {
+            if (value && value.logged_in) writeRecord(keyFor('cv_get_session', {}), value);
+          }
           if (action === 'cv_logout') clearRecords();
           return value;
         })
@@ -130,6 +183,20 @@ window.cv_ajax = window.cv_ajax || {
         });
     },
     session() { return this.request('cv_get_session'); },
+    refreshSession() {
+      const key = keyFor('cv_get_session', {});
+      return requestNetwork('cv_get_session', {}, {}, null, key)
+        .then(value => {
+          if (value && value.logged_in) {
+            writeRecord(key, value);
+          } else {
+            clearRecords();
+          }
+          document.dispatchEvent(new CustomEvent('fi:session-updated', { detail: value }));
+          return value;
+        })
+        .catch(() => null);
+    },
     clearCache: clearRecords,
     initials(name) {
       return String(name || 'Faith In Member').split(/\s+/).filter(Boolean).map(part => part[0]).join('').slice(0, 2).toUpperCase() || 'FI';

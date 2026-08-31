@@ -70,9 +70,20 @@
             var name = 'faith-in-auth';
             var app = appMod.getApps().find(function (a) { return a.name === name; })
                 || appMod.initializeApp(config, name);
+            var auth = authMod.getAuth(app);
+            if (authMod.indexedDBLocalPersistence && typeof authMod.setPersistence === 'function') {
+                authMod.setPersistence(auth, authMod.indexedDBLocalPersistence).catch(function () {});
+            }
+            if (typeof authMod.onIdTokenChanged === 'function') {
+                authMod.onIdTokenChanged(auth, function (user) {
+                    if (user && window.FIData && typeof window.FIData.refreshSession === 'function') {
+                        window.FIData.refreshSession().catch(function () {});
+                    }
+                });
+            }
             return {
                 app: app,
-                auth: authMod.getAuth(app),
+                auth: auth,
                 db: dbMod.getFirestore(app),
                 authMod: authMod,
                 dbMod: dbMod
@@ -85,14 +96,35 @@
 
     /** Resolves with the signed-in user, or null. Waits for auth to settle. */
     function currentUser(b) {
-        if (b.auth.currentUser) return Promise.resolve(b.auth.currentUser);
-        return new Promise(function (resolve) {
-            var stop = b.authMod.onAuthStateChanged(b.auth, function (user) {
-                stop();
-                resolve(user || null);
+        if (b.auth && b.auth.currentUser) return Promise.resolve(b.auth.currentUser);
+        if (b.auth && typeof b.auth.authStateReady === 'function') {
+            return b.auth.authStateReady().then(function () {
+                return (b.auth && b.auth.currentUser) || null;
+            }).catch(function () {
+                return (b.auth && b.auth.currentUser) || null;
             });
+        }
+        return new Promise(function (resolve) {
+            var settled = false;
+            var stop = (b.authMod && typeof b.authMod.onAuthStateChanged === 'function')
+                ? b.authMod.onAuthStateChanged(b.auth, function (user) {
+                    if (settled) return;
+                    settled = true;
+                    if (typeof stop === 'function') stop();
+                    resolve(user || null);
+                }, function () {
+                    if (settled) return;
+                    settled = true;
+                    resolve(null);
+                })
+                : null;
             // Never hang the UI if Firebase does not answer.
-            setTimeout(function () { resolve(b.auth.currentUser || null); }, 6000);
+            setTimeout(function () {
+                if (settled) return;
+                settled = true;
+                if (typeof stop === 'function') stop();
+                resolve((b.auth && b.auth.currentUser) || null);
+            }, 6000);
         });
     }
 
@@ -124,8 +156,12 @@
     }
 
     function setAuthPersistence(b, remember) {
-        var persistence = remember ? b.authMod.browserLocalPersistence : b.authMod.browserSessionPersistence;
-        return b.authMod.setPersistence(b.auth, persistence);
+        if (!b.authMod || typeof b.authMod.setPersistence !== 'function') return Promise.resolve();
+        var persistence = remember
+            ? (b.authMod.indexedDBLocalPersistence || b.authMod.browserLocalPersistence)
+            : (b.authMod.browserSessionPersistence || b.authMod.inMemoryPersistence);
+        if (!persistence) return Promise.resolve();
+        return b.authMod.setPersistence(b.auth, persistence).catch(function () {});
     }
 
     /** Prevent a slow profile document from blocking the entire interface. */
@@ -582,20 +618,30 @@
     var actions = {};
 
     actions.cv_get_session = function (b, params) {
-        return currentUser(b).then(function (user) {
-            if (!user) return { logged_in: false };
-            if (needsEmailVerification(user)) {
-                return {
-                    logged_in: false,
-                    verification_required: true,
-                    email: emailAddress(user.email)
-                };
+        var checkRedirect = (b.authMod && typeof b.authMod.getRedirectResult === 'function')
+            ? b.authMod.getRedirectResult(b.auth).catch(function () { return null; })
+            : Promise.resolve(null);
+
+        return checkRedirect.then(function (redirectResult) {
+            var redirectedUser = redirectResult && redirectResult.user;
+            if (redirectedUser) {
+                return loadProfile(b, redirectedUser);
             }
-            // Authentication is authoritative. A temporarily slow profile read
-            // should not leave every page waiting forever; use the provider's
-            // real identity until Firestore is available again.
-            return within(loadProfile(b, user), 4500)
-                .catch(function () { return profileFor(user, {}); });
+            return currentUser(b).then(function (user) {
+                if (!user) return { logged_in: false };
+                if (needsEmailVerification(user)) {
+                    return {
+                        logged_in: false,
+                        verification_required: true,
+                        email: emailAddress(user.email)
+                    };
+                }
+                // Authentication is authoritative. A temporarily slow profile read
+                // should not leave every page waiting forever; use the provider's
+                // real identity until Firestore is available again.
+                return within(loadProfile(b, user), 5000)
+                    .catch(function () { return profileFor(user, {}); });
+            });
         });
     };
 
@@ -607,8 +653,24 @@
         var provider = new b.authMod.GoogleAuthProvider();
         provider.setCustomParameters({ prompt: 'select_account' });
         return setAuthPersistence(b, true)
-            .then(function () { return b.authMod.signInWithPopup(b.auth, provider); })
-            .then(function (credential) { return loadProfile(b, credential.user); });
+            .then(function () {
+                return b.authMod.signInWithPopup(b.auth, provider)
+                    .catch(function (error) {
+                        var code = error && error.code ? String(error.code) : '';
+                        if (code === 'auth/popup-blocked' || code === 'auth/operation-not-supported-in-this-environment') {
+                            if (typeof b.authMod.signInWithRedirect === 'function') {
+                                return b.authMod.signInWithRedirect(b.auth, provider).then(function () {
+                                    return { redirected: true };
+                                });
+                            }
+                        }
+                        throw error;
+                    });
+            })
+            .then(function (result) {
+                if (result && result.redirected) return { redirected: true };
+                return loadProfile(b, result.user);
+            });
     };
 
     actions.cv_email_sign_in = function (b, params) {
@@ -2494,4 +2556,13 @@
             }
         }, 50);
     }
+
+    // Pre-warm the Firebase bundle so auth and db instances are ready in memory.
+    try {
+        if (typeof setTimeout === 'function') {
+            setTimeout(function () {
+                getBundle().catch(function () {});
+            }, 0);
+        }
+    } catch (_) {}
 })();
