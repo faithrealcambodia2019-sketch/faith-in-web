@@ -16,6 +16,12 @@
 <link href="/faithin-app/assets/faithin-tw.css" rel="stylesheet"/>
 <link href="/faithin-app/assets/faithin.css?v=20260831-v32" rel="stylesheet"/>
 <style>
+  @media (min-width: 1024px) {
+    #main { grid-template-columns: 240px minmax(0, 1fr); }
+  }
+  @media (min-width: 1280px) {
+    #main { grid-template-columns: 240px minmax(0, 1fr) 300px; }
+  }
   .metric-card {
     padding: 1.25rem;
     border-radius: 0.75rem;
@@ -78,7 +84,7 @@
   </div>
 </header>
 
-<main class="max-w-[1200px] mx-auto px-3 sm:px-4 py-5 grid gap-5 lg:grid-cols-[240px_minmax(0,1fr)] xl:grid-cols-[240px_minmax(0,1fr)_300px] items-start" id="main">
+<main class="max-w-[1200px] mx-auto px-3 sm:px-4 py-5 grid gap-5 items-start" id="main">
   
   <!-- Left Sidebar: Studio Navigation (Desktop) -->
   <aside class="hidden lg:block space-y-4 sticky top-[72px]">
@@ -218,7 +224,7 @@
         </select>
       </div>
       
-      <div id="analyticsChartHost" class="w-full h-[230px] relative">
+      <div id="analyticsChartHost" class="w-full h-[230px] relative" style="height: 230px; overflow: hidden;">
         <!-- Injected dynamically by loadStudio() -->
       </div>
     </div>
