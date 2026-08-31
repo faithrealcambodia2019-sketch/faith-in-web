@@ -87,12 +87,16 @@ const nextConfig: NextConfig = {
         ],
       },
       {
-        source: "/faithin-app/assets/:path*",
-        headers: [{ key: "Cache-Control", value: "public, max-age=300, stale-while-revalidate=86400" }],
+        source: "/:path((?:home|network|messages|profile|jobs|library|notifications|settings)?)",
+        headers: [{ key: "Cache-Control", value: "public, max-age=0, must-revalidate" }],
+      },
+      {
+        source: "/faithin-app/:path*",
+        headers: [{ key: "Cache-Control", value: "public, max-age=0, must-revalidate" }],
       },
       {
         source: "/assets/:path*",
-        headers: [{ key: "Cache-Control", value: "public, max-age=60, stale-while-revalidate=3600" }],
+        headers: [{ key: "Cache-Control", value: "public, max-age=0, must-revalidate" }],
       },
       {
         source: "/app/:path*",
