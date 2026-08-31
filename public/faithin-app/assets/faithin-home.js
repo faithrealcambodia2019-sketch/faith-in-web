@@ -321,7 +321,7 @@
         ${window.FILive.avatarMarkup(user, 'avatar w-10 h-10 text-[13px] object-cover')}
         <span class="min-w-0 flex-1">
           <a href="/profile?uid=${encodeURIComponent(user.uid)}" class="block text-[13.5px] font-semibold truncate hover:text-brand transition">${esc(user.name)}</a>
-          <span class="block text-[12px] text-muted truncate">${esc([user.role, user.church, user.ministry].filter(Boolean).join(' · ') || user.headline || 'Faith In member')}</span>
+          <span class="block text-[12px] text-muted truncate">${esc([user.role, user.church, user.ministry].filter(Boolean).join(' · ') || user.headline || 'Faithin')}</span>
         </span>
         <button class="btn ${user.is_following ? 'btn-neutral' : 'btn-outline'} !px-2.5 !py-1 !text-[12px]" data-contact-follow>
           <i class="fa-solid ${user.is_following ? 'fa-check' : 'fa-plus'} text-[10px] mr-1"></i>${user.is_following ? 'Following' : 'Follow'}

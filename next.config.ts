@@ -87,15 +87,15 @@ const nextConfig: NextConfig = {
         ],
       },
       {
-        source: "/:path((?:home|network|messages|profile|jobs|library|notifications|settings)?)",
+        source: "/:path(home|network|messages|profile|jobs|library|notifications|settings)?",
         headers: [{ key: "Cache-Control", value: "public, max-age=0, must-revalidate" }],
       },
       {
-        source: "/faithin-app/:file*\\.(?:js|css|woff2|woff|ttf|png|svg|ico|jpg|jpeg|webp)",
+        source: "/faithin-app/:path*",
         headers: [{ key: "Cache-Control", value: "public, max-age=86400, stale-while-revalidate=604800" }],
       },
       {
-        source: "/assets/:file*\\.(?:js|css|woff2|woff|ttf|png|svg|ico|jpg|jpeg|webp)",
+        source: "/assets/:path*",
         headers: [{ key: "Cache-Control", value: "public, max-age=86400, stale-while-revalidate=604800" }],
       },
       {
