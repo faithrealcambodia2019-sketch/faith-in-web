@@ -14,7 +14,7 @@
 <link href="/faithin-app/assets/faithin-fonts.css" rel="stylesheet"/>
 <link href="/faithin-app/assets/faithin-icons.css" rel="stylesheet"/>
 <link href="/faithin-app/assets/faithin-tw.css" rel="stylesheet"/>
-<link href="/faithin-app/assets/faithin.css?v=20260831-v22" rel="stylesheet"/>
+<link href="/faithin-app/assets/faithin.css?v=20260831-v24" rel="stylesheet"/>
 </head>
 <body class="font-sans min-h-screen pb-16 lg:pb-0" data-page="home" data-search="Search Faith In">
 <main class="max-w-[1200px] mx-auto px-3 sm:px-4 py-5 grid gap-5 lg:grid-cols-[232px_minmax(0,1fr)] xl:grid-cols-[232px_minmax(0,600px)_312px] items-start" id="main">
@@ -144,105 +144,21 @@
 <input type="text" id="contacts-search-input" placeholder="Search contacts..." class="w-full px-3 py-1.5 text-xs bg-raised border border-line rounded-lg focus:outline-none focus:border-brand" />
 </div>
 <ul id="contacts">
-<li data-contact-id="1">
-<div class="flex items-center gap-3 min-w-0 flex-1">
-<span class="avatar" style="background:#2554D7">BV</span>
-<div class="contact-info">
-<span class="contact-name">Bible Verse</span>
-<span class="contact-subtitle">Faithin</span>
+<li class="flex items-center gap-3 py-1 animate-pulse">
+<div class="w-[42px] h-[42px] rounded-full bg-raised shrink-0"></div>
+<div class="flex-1 space-y-1.5 min-w-0">
+<div class="h-3.5 bg-raised rounded w-24"></div>
+<div class="h-2.5 bg-raised rounded w-14"></div>
 </div>
-</div>
-<div class="contact-actions">
-<button type="button" class="contact-follow-btn" data-contact-follow-btn data-following="false">
-<i class="fa-solid fa-plus text-[10px] mr-1"></i> Follow
-</button>
-<button type="button" class="contact-chat-btn" aria-label="Chat with Bible Verse" data-contact-chat>
-<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-<path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
-<path d="M10 8.5h4" /><path d="M10 12h3" /><path d="M10 8.5v7" />
-</svg>
-</button>
-</div>
+<div class="w-16 h-7 bg-raised rounded-full shrink-0"></div>
 </li>
-<li data-contact-id="2">
-<div class="flex items-center gap-3 min-w-0 flex-1">
-<img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&auto=format&fit=crop&q=80" alt="Chhoun P..." class="avatar" />
-<div class="contact-info">
-<span class="contact-name">Chhoun P...</span>
-<span class="contact-subtitle">Faithin</span>
+<li class="flex items-center gap-3 py-1 animate-pulse">
+<div class="w-[42px] h-[42px] rounded-full bg-raised shrink-0"></div>
+<div class="flex-1 space-y-1.5 min-w-0">
+<div class="h-3.5 bg-raised rounded w-20"></div>
+<div class="h-2.5 bg-raised rounded w-14"></div>
 </div>
-</div>
-<div class="contact-actions">
-<button type="button" class="contact-follow-btn" data-contact-follow-btn data-following="false">
-<i class="fa-solid fa-plus text-[10px] mr-1"></i> Follow
-</button>
-<button type="button" class="contact-chat-btn" aria-label="Chat with Chhoun P..." data-contact-chat>
-<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-<path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
-<path d="M10 8.5h4" /><path d="M10 12h3" /><path d="M10 8.5v7" />
-</svg>
-</button>
-</div>
-</li>
-<li data-contact-id="3">
-<div class="flex items-center gap-3 min-w-0 flex-1">
-<img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=150&auto=format&fit=crop&q=80" alt="Heng Sok" class="avatar" />
-<div class="contact-info">
-<span class="contact-name">Heng Sok</span>
-<span class="contact-subtitle">Faithin</span>
-</div>
-</div>
-<div class="contact-actions">
-<button type="button" class="contact-follow-btn is-following" data-contact-follow-btn data-following="true">
-<i class="fa-solid fa-check text-[10px] mr-1"></i> Following
-</button>
-<button type="button" class="contact-chat-btn" aria-label="Chat with Heng Sok" data-contact-chat>
-<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-<path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
-<path d="M10 8.5h4" /><path d="M10 12h3" /><path d="M10 8.5v7" />
-</svg>
-</button>
-</div>
-</li>
-<li data-contact-id="4">
-<div class="flex items-center gap-3 min-w-0 flex-1">
-<img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80" alt="Heng S..." class="avatar" />
-<div class="contact-info">
-<span class="contact-name">Heng S...</span>
-<span class="contact-subtitle">Faithin</span>
-</div>
-</div>
-<div class="contact-actions">
-<button type="button" class="contact-follow-btn is-following" data-contact-follow-btn data-following="true">
-<i class="fa-solid fa-check text-[10px] mr-1"></i> Following
-</button>
-<button type="button" class="contact-chat-btn" aria-label="Chat with Heng S..." data-contact-chat>
-<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-<path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
-<path d="M10 8.5h4" /><path d="M10 12h3" /><path d="M10 8.5v7" />
-</svg>
-</button>
-</div>
-</li>
-<li data-contact-id="5">
-<div class="flex items-center gap-3 min-w-0 flex-1">
-<span class="avatar" style="background:#6B72C2">H</span>
-<div class="contact-info">
-<span class="contact-name">Hun Sen</span>
-<span class="contact-subtitle">Faithin</span>
-</div>
-</div>
-<div class="contact-actions">
-<button type="button" class="contact-follow-btn" data-contact-follow-btn data-following="false">
-<i class="fa-solid fa-plus text-[10px] mr-1"></i> Follow
-</button>
-<button type="button" class="contact-chat-btn" aria-label="Chat with Hun Sen" data-contact-chat>
-<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-<path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
-<path d="M10 8.5h4" /><path d="M10 12h3" /><path d="M10 8.5v7" />
-</svg>
-</button>
-</div>
+<div class="w-16 h-7 bg-raised rounded-full shrink-0"></div>
 </li>
 </ul>
 <button class="w-full mt-3 py-2 text-[13px] font-semibold text-muted hover:text-ink hover:bg-raised rounded-lg transition" data-show-contacts>Show all contacts <i class="fa-solid fa-arrow-right text-[11px] ml-1"></i></button>
@@ -393,11 +309,11 @@
 </div>
 </div>
 </div>
-<script src="/faithin-app/assets/faithin-runtime.js?v=20260831-v22"></script>
-<script src="/faithin-app/assets/faithin-blob-upload.js?v=20260831-v22"></script>
-<script src="/assets/js/faith-in-backend.js?v=20260831-v22"></script>
-<script src="/faithin-app/assets/faithin.js?v=20260831-v22"></script>
-<script src="/faithin-app/assets/faithin-live.js?v=20260831-v22"></script>
-<script src="/faithin-app/assets/faithin-home.js?v=20260831-v22"></script>
+<script src="/faithin-app/assets/faithin-runtime.js?v=20260831-v24"></script>
+<script src="/faithin-app/assets/faithin-blob-upload.js?v=20260831-v24"></script>
+<script src="/assets/js/faith-in-backend.js?v=20260831-v24"></script>
+<script src="/faithin-app/assets/faithin.js?v=20260831-v24"></script>
+<script src="/faithin-app/assets/faithin-live.js?v=20260831-v24"></script>
+<script src="/faithin-app/assets/faithin-home.js?v=20260831-v24"></script>
 </body>
 </html>

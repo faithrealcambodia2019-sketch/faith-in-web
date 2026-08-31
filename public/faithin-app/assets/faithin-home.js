@@ -316,7 +316,8 @@
     const list = $('#contacts'); if (!list) return;
     try {
       const result = await api.request('cv_find_users');
-      const items = (result.items || []).slice(0, 8);
+      const current = window.FILive?.user;
+      const items = (result.items || []).filter(u => !current?.uid || u.uid !== current.uid).slice(0, 8);
       if (items.length) {
         list.innerHTML = items.map(user => `<li data-user-uid="${esc(user.uid)}">
           <div class="flex items-center gap-3 min-w-0 flex-1">
@@ -338,8 +339,12 @@
             </button>
           </div>
         </li>`).join('');
+      } else {
+        list.innerHTML = '<li class="text-[12.5px] text-muted py-3 px-1 text-center">No other members yet</li>';
       }
-    } catch (_) { /* Keep default Faithin contacts on guest mode */ }
+    } catch (_) {
+      list.innerHTML = '<li class="text-[12.5px] text-muted py-3 px-1 text-center">No other members yet</li>';
+    }
   }
 
   async function loadPrayers() {
