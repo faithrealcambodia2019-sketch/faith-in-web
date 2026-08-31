@@ -94,6 +94,14 @@
         return bundlePromise;
     }
 
+    // Eagerly initiate Firebase connection in the background so there is zero
+    // connection delay when the first user request runs.
+    try {
+        if (typeof window !== 'undefined' && firebaseConfig()) {
+            getBundle().catch(function () {});
+        }
+    } catch (_) {}
+
     /** Resolves with the signed-in user, or null. Waits for auth to settle. */
     function currentUser(b) {
         if (b.auth && b.auth.currentUser) return Promise.resolve(b.auth.currentUser);
