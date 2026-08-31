@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { site, features } from "@/lib/site-content";
+import { ContactsWidget } from "@/components/ContactsWidget";
 import {
   ArrowRight,
   BookOpen,
@@ -107,8 +108,49 @@ export default function FeaturesPage() {
         </div>
       </section>
 
-      {/* Modern Technology Comparison */}
+      {/* Interactive FaithIn Contacts & Fellowship Showcase */}
       <section className="fi-section">
+        <div className="fi-shell">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div className="space-y-6">
+              <span className="fi-eyebrow">Fellowship &amp; Connections • ការប្រកបគ្នា</span>
+              <h2 className="text-3xl sm:text-4xl font-black text-charcoal-900 tracking-tight leading-tight">
+                Connect with believers and ministries on <span className="fi-hero-highlight">Faithin.</span>
+              </h2>
+              <p className="text-base sm:text-lg text-charcoal-600 leading-relaxed">
+                Stay updated with ministry friends, discover community leaders, and initiate encouraging conversations with our streamlined FaithIn Contacts network.
+              </p>
+              <div className="space-y-3 pt-2">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full bg-[#FEF7E6] text-[#B87814] flex items-center justify-center font-bold text-sm">✓</div>
+                  <span className="text-sm font-semibold text-charcoal-800">Direct 1-to-1 messaging with custom FaithIn chat</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full bg-[#EFF6FF] text-[#2563EB] flex items-center justify-center font-bold text-sm">✓</div>
+                  <span className="text-sm font-semibold text-charcoal-800">Follow Bible channels, pastors, and Christian friends</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full bg-[#ECFDF5] text-[#059669] flex items-center justify-center font-bold text-sm">✓</div>
+                  <span className="text-sm font-semibold text-charcoal-800">Privacy-preserving community with instant search</span>
+                </div>
+              </div>
+              <div className="pt-2">
+                <Link href={site.appPath} className="fi-btn fi-btn--primary">
+                  <span>Open Community Network</span>
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+              </div>
+            </div>
+
+            <div className="flex justify-center lg:justify-end">
+              <ContactsWidget />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Modern Technology Comparison */}
+      <section className="fi-section fi-section--subtle">
         <div className="fi-shell">
           <div className="fi-head">
             <span className="fi-eyebrow">The Difference • ភាពខុសប្លែក</span>
