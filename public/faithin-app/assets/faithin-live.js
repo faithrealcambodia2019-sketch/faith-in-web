@@ -761,162 +761,175 @@
   function openProfileEditor(user, focusField) {
     if (!requireUser()) return;
     const modal = document.createElement('div');
-    modal.className = 'fixed inset-0 z-[240] flex items-center justify-center bg-black/50 p-4 font-[\'Segoe_UI\',_Helvetica,_Arial,_sans-serif]';
+    modal.style.cssText = 'position: fixed; inset: 0; z-index: 9999; background: rgba(0, 0, 0, 0.65); display: flex; align-items: center; justify-content: center; padding: 16px; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; backdrop-filter: blur(2px);';
     
     const coverUrl = user.cover_url || user.cover || '';
     const photoUrl = user.avatar_url || user.avatar || user.photo_url || '';
     
     modal.innerHTML = `
-      <div class="w-full max-w-[700px] bg-white rounded-[8px] shadow-[0_12px_28px_rgba(0,0,0,0.2)] overflow-hidden flex flex-col max-h-[90vh]">
+      <div style="width: 100%; max-width: 580px; max-height: 88vh; background: #ffffff; border-radius: 12px; box-shadow: 0 20px 48px rgba(0,0,0,0.28); display: flex; flex-direction: column; overflow: hidden; position: relative; border: 1px solid rgba(0,0,0,0.08); animation: fiModalPop 0.18s cubic-bezier(0.16, 1, 0.3, 1);">
+        
         <!-- Header -->
-        <div class="relative flex flex-col items-center justify-center px-6 py-4 border-b border-[#e5e5e5] shrink-0">
-          <h2 class="text-[20px] font-bold text-[#1c1e21] leading-tight">Edit your profile</h2>
-          <p class="text-[14px] text-[#65676b] mt-1">These details are saved to Firebase and shown across the platform.</p>
-          <button type="button" class="absolute right-4 top-4 p-2 rounded-full bg-[#e4e6eb] hover:bg-[#d8dadf] transition-colors text-[#65676b]" data-profile-close aria-label="Close">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        <div style="position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 14px 20px; border-bottom: 1px solid #e5e5e5; flex-shrink: 0; background: #ffffff; text-align: center;">
+          <h2 style="font-size: 19px; font-weight: 700; color: #1c1e21; margin: 0; line-height: 1.25;">Edit your profile</h2>
+          <p style="font-size: 13px; color: #65676b; margin: 4px 0 0 0;">These details are saved to Firebase and shown across the platform.</p>
+          <button type="button" style="position: absolute; right: 14px; top: 14px; width: 34px; height: 34px; border-radius: 50%; background: #e4e6eb; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #65676b; transition: background 0.15s;" data-profile-close aria-label="Close">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
           </button>
         </div>
 
-        <!-- Content -->
-        <div class="p-6 overflow-y-auto flex-1 custom-scrollbar">
-          <form class="space-y-6">
-            <!-- Visual Cover Photo Uploader -->
-            <div>
-              <div class="flex justify-between items-center mb-2">
-                <label class="block text-[16px] font-bold text-[#1c1e21]">
-                  Cover photo
-                </label>
-              </div>
-              <label class="relative flex w-full h-[150px] bg-[#f0f2f5] rounded-[8px] border border-[#ccd0d5] cursor-pointer overflow-hidden group">
-                <img id="fi-cover-preview" src="${esc(coverUrl)}" alt="Cover Preview" class="w-full h-full object-cover ${coverUrl ? '' : 'hidden'}" />
-                <div id="fi-cover-placeholder" class="w-full h-full flex items-center justify-center text-[#bcc0c4] ${coverUrl ? 'hidden' : ''}"></div>
-                <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
-                  <div class="bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-md text-[#1c1e21] flex items-center gap-2 shadow-sm font-semibold text-[14px]">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg> Edit Cover Photo
+        <!-- Content Body -->
+        <div style="padding: 18px 22px; overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 16px; box-sizing: border-box; background: #ffffff;">
+          <form style="display: flex; flex-direction: column; gap: 16px; margin: 0;">
+            
+            <!-- Cover Photo Uploader -->
+            <div style="display: flex; flex-direction: column; gap: 6px;">
+              <label style="font-size: 14.5px; font-weight: 700; color: #1c1e21; margin: 0;">
+                Cover photo
+              </label>
+              <label style="position: relative; width: 100%; height: 130px; background: #f0f2f5; border-radius: 8px; border: 1px solid #ccd0d5; cursor: pointer; overflow: hidden; display: block; box-sizing: border-box;">
+                <img id="fi-cover-preview" src="${esc(coverUrl)}" alt="Cover Preview" style="width: 100%; height: 130px; object-fit: cover; display: ${coverUrl ? 'block' : 'none'}; margin: 0;" />
+                <div id="fi-cover-placeholder" style="width: 100%; height: 130px; display: ${coverUrl ? 'none' : 'flex'}; align-items: center; justify-content: center; background: #f0f2f5; color: #bcc0c4;"></div>
+                <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.06); transition: background 0.15s;">
+                  <div style="background: rgba(255,255,255,0.92); backdrop-filter: blur(4px); padding: 6px 13px; border-radius: 6px; color: #1c1e21; display: flex; align-items: center; gap: 7px; box-shadow: 0 1px 4px rgba(0,0,0,0.18); font-weight: 600; font-size: 13px; pointer-events: none;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                    Edit Cover Photo
                   </div>
                 </div>
-                <input type="file" name="profile_cover" class="hidden" accept="image/*" />
+                <input type="file" name="profile_cover" accept="image/*" style="display: none;" />
               </label>
             </div>
 
-            <!-- Visual Profile Photo Uploader -->
-            <div class="flex flex-col items-center">
-              <div class="w-full flex justify-between items-center mb-2">
-                <label class="block text-[16px] font-bold text-[#1c1e21]">
-                  Profile photo
-                </label>
+            <!-- Profile Photo Uploader -->
+            <div style="display: flex; flex-direction: column; align-items: center; margin-top: -4px;">
+              <div style="width: 100%; font-size: 14.5px; font-weight: 700; color: #1c1e21; margin-bottom: 8px; text-align: left;">
+                Profile photo
               </div>
-              <label class="relative flex w-[120px] h-[120px] bg-[#f0f2f5] rounded-full border border-[#ccd0d5] cursor-pointer overflow-hidden group shadow-sm">
-                <img id="fi-profile-preview" src="${esc(photoUrl)}" alt="Profile Preview" class="w-full h-full object-cover ${photoUrl ? '' : 'hidden'}" />
-                <div id="fi-profile-placeholder" class="w-full h-full flex items-center justify-center bg-[#e4e6eb] text-[#bcc0c4] ${photoUrl ? 'hidden' : ''}">
-                  <svg class="w-16 h-16 mt-2" fill="currentColor" viewBox="0 0 24 24">
+              <label style="position: relative; width: 96px; height: 96px; border-radius: 50%; background: #e4e6eb; border: 2px solid #ffffff; box-shadow: 0 2px 8px rgba(0,0,0,0.15); cursor: pointer; overflow: hidden; display: flex; align-items: center; justify-content: center; box-sizing: border-box;">
+                <img id="fi-profile-preview" src="${esc(photoUrl)}" alt="Profile Preview" style="width: 96px; height: 96px; object-fit: cover; border-radius: 50%; display: ${photoUrl ? 'block' : 'none'}; margin: 0;" />
+                <div id="fi-profile-placeholder" style="width: 100%; height: 100%; display: ${photoUrl ? 'none' : 'flex'}; align-items: center; justify-content: center; background: #e4e6eb; color: #bcc0c4;">
+                  <svg style="width: 52px; height: 52px; margin-top: 8px;" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
                   </svg>
                 </div>
-                <div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
-                  <div class="bg-black/60 p-2.5 rounded-full text-white">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.12);">
+                  <div style="background: rgba(0,0,0,0.6); width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #ffffff; pointer-events: none;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
                   </div>
                 </div>
-                <input type="file" name="profile_image" class="hidden" accept="image/*" />
+                <input type="file" name="profile_image" accept="image/*" style="display: none;" />
               </label>
             </div>
 
             <!-- Display name -->
-            <div>
-              <label for="displayName" class="block text-[15px] font-bold text-[#1c1e21] mb-1.5">
+            <div style="display: flex; flex-direction: column; gap: 5px;">
+              <label for="fi-displayName" style="font-size: 13.5px; font-weight: 700; color: #1c1e21;">
                 Display name
               </label>
               <input
                 type="text"
-                id="displayName"
+                id="fi-displayName"
                 name="display_name"
                 value="${esc(user.name || user.displayName || '')}"
                 required
-                class="w-full px-3 py-2 bg-[#f0f2f5] border border-[#ccd0d5] rounded-md text-[#1c1e21] focus:bg-white focus:outline-none focus:border-[#1877f2] focus:ring-1 focus:ring-[#1877f2] text-[15px] transition-colors"
+                style="width: 100%; box-sizing: border-box; padding: 8px 12px; background: #f0f2f5; border: 1px solid #ccd0d5; border-radius: 6px; font-size: 14px; color: #1c1e21; outline: none; transition: all 0.15s; font-family: inherit;"
+                onfocus="this.style.background='#fff'; this.style.borderColor='#1877f2'; this.style.boxShadow='0 0 0 1px #1877f2';"
+                onblur="this.style.background='#f0f2f5'; this.style.borderColor='#ccd0d5'; this.style.boxShadow='none';"
               />
             </div>
 
             <!-- Role & Location -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-              <div>
-                <label for="role" class="block text-[15px] font-bold text-[#1c1e21] mb-1.5">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; width: 100%; box-sizing: border-box;">
+              <div style="display: flex; flex-direction: column; gap: 5px;">
+                <label for="fi-role" style="font-size: 13.5px; font-weight: 700; color: #1c1e21;">
                   Role
                 </label>
                 <input
                   type="text"
-                  id="role"
+                  id="fi-role"
                   name="role"
                   value="${esc(user.role || '')}"
-                  class="w-full px-3 py-2 bg-[#f0f2f5] border border-[#ccd0d5] rounded-md text-[#1c1e21] focus:bg-white focus:outline-none focus:border-[#1877f2] focus:ring-1 focus:ring-[#1877f2] text-[15px] transition-colors"
+                  style="width: 100%; box-sizing: border-box; padding: 8px 12px; background: #f0f2f5; border: 1px solid #ccd0d5; border-radius: 6px; font-size: 14px; color: #1c1e21; outline: none; transition: all 0.15s; font-family: inherit;"
+                  onfocus="this.style.background='#fff'; this.style.borderColor='#1877f2'; this.style.boxShadow='0 0 0 1px #1877f2';"
+                  onblur="this.style.background='#f0f2f5'; this.style.borderColor='#ccd0d5'; this.style.boxShadow='none';"
                 />
               </div>
-              <div>
-                <label for="location" class="block text-[15px] font-bold text-[#1c1e21] mb-1.5">
+              <div style="display: flex; flex-direction: column; gap: 5px;">
+                <label for="fi-location" style="font-size: 13.5px; font-weight: 700; color: #1c1e21;">
                   Location
                 </label>
                 <input
                   type="text"
-                  id="location"
+                  id="fi-location"
                   name="location"
                   value="${esc(user.location || '')}"
-                  class="w-full px-3 py-2 bg-[#f0f2f5] border border-[#ccd0d5] rounded-md text-[#1c1e21] focus:bg-white focus:outline-none focus:border-[#1877f2] focus:ring-1 focus:ring-[#1877f2] text-[15px] transition-colors"
+                  style="width: 100%; box-sizing: border-box; padding: 8px 12px; background: #f0f2f5; border: 1px solid #ccd0d5; border-radius: 6px; font-size: 14px; color: #1c1e21; outline: none; transition: all 0.15s; font-family: inherit;"
+                  onfocus="this.style.background='#fff'; this.style.borderColor='#1877f2'; this.style.boxShadow='0 0 0 1px #1877f2';"
+                  onblur="this.style.background='#f0f2f5'; this.style.borderColor='#ccd0d5'; this.style.boxShadow='none';"
                 />
               </div>
             </div>
 
             <!-- Industry & Church -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-              <div>
-                <label for="industry" class="block text-[15px] font-bold text-[#1c1e21] mb-1.5">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; width: 100%; box-sizing: border-box;">
+              <div style="display: flex; flex-direction: column; gap: 5px;">
+                <label for="fi-industry" style="font-size: 13.5px; font-weight: 700; color: #1c1e21;">
                   Industry
                 </label>
                 <input
                   type="text"
-                  id="industry"
+                  id="fi-industry"
                   name="industry"
                   value="${esc(user.industry || '')}"
-                  class="w-full px-3 py-2 bg-[#f0f2f5] border border-[#ccd0d5] rounded-md text-[#1c1e21] focus:bg-white focus:outline-none focus:border-[#1877f2] focus:ring-1 focus:ring-[#1877f2] text-[15px] transition-colors"
+                  style="width: 100%; box-sizing: border-box; padding: 8px 12px; background: #f0f2f5; border: 1px solid #ccd0d5; border-radius: 6px; font-size: 14px; color: #1c1e21; outline: none; transition: all 0.15s; font-family: inherit;"
+                  onfocus="this.style.background='#fff'; this.style.borderColor='#1877f2'; this.style.boxShadow='0 0 0 1px #1877f2';"
+                  onblur="this.style.background='#f0f2f5'; this.style.borderColor='#ccd0d5'; this.style.boxShadow='none';"
                 />
               </div>
-              <div>
-                <label for="church" class="block text-[15px] font-bold text-[#1c1e21] mb-1.5">
+              <div style="display: flex; flex-direction: column; gap: 5px;">
+                <label for="fi-church" style="font-size: 13.5px; font-weight: 700; color: #1c1e21;">
                   Church
                 </label>
                 <input
                   type="text"
-                  id="church"
+                  id="fi-church"
                   name="church"
                   value="${esc(user.church || '')}"
-                  class="w-full px-3 py-2 bg-[#f0f2f5] border border-[#ccd0d5] rounded-md text-[#1c1e21] focus:bg-white focus:outline-none focus:border-[#1877f2] focus:ring-1 focus:ring-[#1877f2] text-[15px] transition-colors"
+                  style="width: 100%; box-sizing: border-box; padding: 8px 12px; background: #f0f2f5; border: 1px solid #ccd0d5; border-radius: 6px; font-size: 14px; color: #1c1e21; outline: none; transition: all 0.15s; font-family: inherit;"
+                  onfocus="this.style.background='#fff'; this.style.borderColor='#1877f2'; this.style.boxShadow='0 0 0 1px #1877f2';"
+                  onblur="this.style.background='#f0f2f5'; this.style.borderColor='#ccd0d5'; this.style.boxShadow='none';"
                 />
               </div>
             </div>
 
             <!-- Ministry -->
-            <div>
-              <label for="ministry" class="block text-[15px] font-bold text-[#1c1e21] mb-1.5">
+            <div style="display: flex; flex-direction: column; gap: 5px;">
+              <label for="fi-ministry" style="font-size: 13.5px; font-weight: 700; color: #1c1e21;">
                 Ministry
               </label>
               <input
                 type="text"
-                id="ministry"
+                id="fi-ministry"
                 name="ministry"
                 value="${esc(user.ministry || '')}"
-                class="w-full px-3 py-2 bg-[#f0f2f5] border border-[#ccd0d5] rounded-md text-[#1c1e21] focus:bg-white focus:outline-none focus:border-[#1877f2] focus:ring-1 focus:ring-[#1877f2] text-[15px] transition-colors"
+                style="width: 100%; box-sizing: border-box; padding: 8px 12px; background: #f0f2f5; border: 1px solid #ccd0d5; border-radius: 6px; font-size: 14px; color: #1c1e21; outline: none; transition: all 0.15s; font-family: inherit;"
+                onfocus="this.style.background='#fff'; this.style.borderColor='#1877f2'; this.style.boxShadow='0 0 0 1px #1877f2';"
+                onblur="this.style.background='#f0f2f5'; this.style.borderColor='#ccd0d5'; this.style.boxShadow='none';"
               />
             </div>
 
             <!-- About -->
-            <div>
-              <label for="about" class="block text-[15px] font-bold text-[#1c1e21] mb-1.5">
+            <div style="display: flex; flex-direction: column; gap: 5px;">
+              <label for="fi-about" style="font-size: 13.5px; font-weight: 700; color: #1c1e21;">
                 About
               </label>
               <textarea
-                id="about"
+                id="fi-about"
                 name="bio"
                 rows="3"
-                class="w-full px-3 py-2 bg-[#f0f2f5] border border-[#ccd0d5] rounded-md text-[#1c1e21] focus:bg-white focus:outline-none focus:border-[#1877f2] focus:ring-1 focus:ring-[#1877f2] text-[15px] resize-none transition-colors"
+                style="width: 100%; box-sizing: border-box; padding: 8px 12px; background: #f0f2f5; border: 1px solid #ccd0d5; border-radius: 6px; font-size: 14px; color: #1c1e21; outline: none; resize: vertical; min-height: 70px; font-family: inherit; transition: all 0.15s;"
+                onfocus="this.style.background='#fff'; this.style.borderColor='#1877f2'; this.style.boxShadow='0 0 0 1px #1877f2';"
+                onblur="this.style.background='#f0f2f5'; this.style.borderColor='#ccd0d5'; this.style.boxShadow='none';"
               >${esc(user.bio || user.about || '')}</textarea>
             </div>
 
@@ -924,11 +937,11 @@
         </div>
 
         <!-- Footer Actions -->
-        <div class="flex items-center justify-end px-6 py-4 border-t border-[#e5e5e5] gap-3 bg-white shrink-0">
-          <button type="button" class="px-6 py-2 text-[15px] font-bold text-[#4b4f56] bg-[#e4e6eb] hover:bg-[#d8dadf] rounded-md transition-colors" data-profile-close>
+        <div style="display: flex; align-items: center; justify-content: flex-end; padding: 12px 22px; border-top: 1px solid #e5e5e5; gap: 10px; background: #ffffff; flex-shrink: 0;">
+          <button type="button" style="padding: 8px 18px; font-size: 14px; font-weight: 700; color: #4b4f56; background: #e4e6eb; border: none; border-radius: 6px; cursor: pointer; transition: background 0.15s; font-family: inherit;" data-profile-close>
             Cancel
           </button>
-          <button type="button" class="px-8 py-2 text-[15px] font-bold text-white bg-[#1877f2] hover:bg-[#166fe5] rounded-md transition-colors" data-profile-save>
+          <button type="button" style="padding: 8px 22px; font-size: 14px; font-weight: 700; color: #ffffff; background: #1877f2; border: none; border-radius: 6px; cursor: pointer; transition: background 0.15s; font-family: inherit;" data-profile-save>
             Save profile
           </button>
         </div>
@@ -958,8 +971,8 @@
         const file = e.target.files && e.target.files[0];
         if (file) {
           coverPreview.src = URL.createObjectURL(file);
-          coverPreview.classList.remove('hidden');
-          if (coverPlaceholder) coverPlaceholder.classList.add('hidden');
+          coverPreview.style.display = 'block';
+          if (coverPlaceholder) coverPlaceholder.style.display = 'none';
         }
       };
     }
@@ -972,8 +985,8 @@
         const file = e.target.files && e.target.files[0];
         if (file) {
           profilePreview.src = URL.createObjectURL(file);
-          profilePreview.classList.remove('hidden');
-          if (profilePlaceholder) profilePlaceholder.classList.add('hidden');
+          profilePreview.style.display = 'block';
+          if (profilePlaceholder) profilePlaceholder.style.display = 'none';
         }
       };
     }
