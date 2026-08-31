@@ -92,7 +92,7 @@
             </svg>
           </button>
 
-          <button class="icon-btn hidden sm:inline-flex" aria-label="Apps"><i class="fa-solid fa-table-cells"></i></button>
+          <a href="/studio" class="icon-btn icon-hover-bounce hidden sm:inline-flex ${page === 'studio' ? '!bg-brand !text-white dark:!text-[#0b1120]' : ''}" aria-label="Studio Dashboard" title="Creator Studio"><i class="fa-solid fa-table-cells"></i></a>
 
           <!-- Custom Faithin Chat (Modern Line with stylized F monogram) -->
           <a href="/messages" class="icon-btn icon-hover-bounce relative group ${page === 'messaging' ? '!bg-brand !text-white dark:!text-[#0b1120]' : ''}" aria-label="Messages"${page === 'messaging' ? ' aria-current="page"' : ''}>
@@ -115,7 +115,7 @@
           </a>
 
           <div class="relative ml-1" data-menu-root>
-            <button class="flex items-center gap-1.5 rounded-pill p-0.5 pr-1.5 hover:bg-raised transition${['profile','settings'].includes(page) ? ' ring-2 ring-brand ring-offset-2 ring-offset-surface' : ''}" data-menu-btn aria-haspopup="menu" aria-expanded="false">
+            <button class="flex items-center gap-1.5 rounded-pill p-0.5 pr-1.5 hover:bg-raised transition${['profile','settings','studio'].includes(page) ? ' ring-2 ring-brand ring-offset-2 ring-offset-surface' : ''}" data-menu-btn aria-haspopup="menu" aria-expanded="false">
               <span class="avatar w-8 h-8 text-[12px]" style="background:linear-gradient(135deg,#2f5bea,#1e40af)">HC</span>
               <i class="fa-solid fa-chevron-down text-[10px] text-faint"></i>
             </button>
@@ -128,6 +128,7 @@
                 </div>
               </div>
               <a href="/profile" class="side-link${page === 'profile' ? ' is-active' : ''}" role="menuitem"><i class="fa-regular fa-user"></i>View profile</a>
+              <a href="/studio" class="side-link${page === 'studio' ? ' is-active' : ''}" role="menuitem"><i class="fa-solid fa-chart-line text-blue-500"></i>Creator Studio</a>
               <a href="/library?view=saved" class="side-link" role="menuitem"><i class="fa-solid fa-bookmark"></i>Saved items</a>
               <a href="/settings" class="side-link${page === 'settings' ? ' is-active' : ''}" role="menuitem"><i class="fa-solid fa-gear"></i>Settings</a>
               <div class="my-1.5 border-t border-line"></div>
@@ -177,7 +178,7 @@
   const warmedPages = new Set();
   function warmPage(link) {
     if (!link || link.origin !== location.origin || warmedPages.has(link.pathname)) return;
-    if (!['/home','/jobs','/library','/network','/messages','/notifications','/profile','/settings'].includes(link.pathname)) return;
+    if (!['/home','/jobs','/library','/network','/messages','/notifications','/profile','/settings','/studio','/dashboard','/settings-security'].includes(link.pathname)) return;
     warmedPages.add(link.pathname);
     const hint = document.createElement('link'); hint.rel = 'prefetch'; hint.href = link.pathname; hint.as = 'document'; document.head.appendChild(hint);
   }
