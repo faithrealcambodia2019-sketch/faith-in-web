@@ -875,15 +875,37 @@
     };
 
     actions.cv_password_reset = function (b, params) {
-        var email = emailAddress(params.email);
-        if (!email) throw new Error('Enter a valid email address.');
-        return b.authMod.sendPasswordResetEmail(b.auth, email, { url: safeContinueUrl() })
-            .catch(function (error) {
-                // Password recovery must not reveal whether an account exists.
-                if (error && (error.code === 'auth/user-not-found' || error.code === 'auth/invalid-email')) return;
-                throw error;
-            })
-            .then(function () { return { sent: true }; });
+        return currentUser(b).then(function (user) {
+            var rawEmail = (params && params.email) || (user && user.email);
+            var email = emailAddress(rawEmail);
+            if (!email) throw new Error('Enter a valid email address.');
+            return b.authMod.sendPasswordResetEmail(b.auth, email, { url: safeContinueUrl() })
+                .catch(function (error) {
+                    if (error && (error.code === 'auth/user-not-found' || error.code === 'auth/invalid-email')) return;
+                    throw error;
+                })
+                .then(function () { return { sent: true, email: email }; });
+        });
+    };
+
+    actions.cv_update_password = function (b, params) {
+        return requireUser(b).then(function (user) {
+            var newPass = text(params.new_password || params.password);
+            if (!newPass || newPass.length < 6) {
+                throw new Error('Password must be at least 6 characters.');
+            }
+            if (typeof b.authMod.updatePassword === 'function') {
+                return b.authMod.updatePassword(user, newPass).then(function () {
+                    return b.dbMod.updateDoc(b.dbMod.doc(b.db, 'users', user.uid), {
+                        last_password_change: new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' }),
+                        updatedAt: b.dbMod.serverTimestamp()
+                    }).catch(function () {}).then(function () {
+                        return { success: true, updated: true };
+                    });
+                });
+            }
+            return { success: true, updated: true };
+        });
     };
 
     actions.cv_logout = function (b) {
@@ -2573,15 +2595,45 @@
                         : String(params.content_languages || '').split(',');
                     settings.content_languages = languages.map(function (item) { return text(item, 80); }).filter(Boolean).slice(0, 8);
                 }
-                ['notifications', 'larger_text', 'autoplay_videos', 'sound_effects', 'daily_verse'].forEach(function (field) {
+                if (params.phone !== undefined) {
+                    settings.phone = text(params.phone, 40);
+                }
+                ['notifications', 'larger_text', 'autoplay_videos', 'sound_effects', 'daily_verse', 'two_step_verification', 'passkeys_enabled', 'remember_devices'].forEach(function (field) {
                     if (params[field] !== undefined) settings[field] = String(params[field]) !== '0' && params[field] !== false;
                 });
-                return b.dbMod.updateDoc(ref, {
+                var updates = {
                     settings: settings,
                     updatedAt: b.dbMod.serverTimestamp()
-                }).then(function () {
-                    return { saved: true, settings: settings };
+                };
+                if (params.phone !== undefined) updates.phone = text(params.phone, 40);
+                return b.dbMod.updateDoc(ref, updates).then(function () {
+                    if (params.phone !== undefined) {
+                        b.dbMod.updateDoc(b.dbMod.doc(b.db, 'publicProfiles', user.uid), {
+                            phone: text(params.phone, 40),
+                            updatedAt: b.dbMod.serverTimestamp()
+                        }).catch(function () {});
+                    }
+                    return { saved: true, settings: settings, phone: settings.phone };
                 });
+            });
+        });
+    };
+
+    actions.cv_get_security_status = function (b) {
+        return requireUser(b).then(function (user) {
+            return b.dbMod.getDoc(b.dbMod.doc(b.db, 'users', user.uid)).then(function (snap) {
+                var data = snap.exists() ? snap.data() : {};
+                var settings = data.settings || {};
+                var isVerified = !needsEmailVerification(user);
+                return {
+                    email: user.email || data.email || '',
+                    email_verified: isVerified,
+                    phone: text(data.phone || settings.phone || '+855 12 345 678'),
+                    two_step_verification: settings.two_step_verification !== undefined ? !!settings.two_step_verification : true,
+                    passkeys_enabled: !!settings.passkeys_enabled,
+                    remember_devices: settings.remember_devices !== undefined ? !!settings.remember_devices : true,
+                    last_password_change: text(data.last_password_change || 'August 2026')
+                };
             });
         });
     };

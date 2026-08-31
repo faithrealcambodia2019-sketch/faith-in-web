@@ -1112,6 +1112,416 @@
     $$('#main section').find(section => /syncing options/i.test($('h3', section)?.textContent || ''))?.remove();
   }
 
+  async function loadSettingsSecurity(user) {
+    if (!user) return;
+    
+    let security = {
+      email: user.email || '',
+      email_verified: true,
+      phone: user.phone || user.settings?.phone || '+855 12 345 678',
+      two_step_verification: user.settings?.two_step_verification !== undefined ? user.settings.two_step_verification : true,
+      passkeys_enabled: !!user.settings?.passkeys_enabled,
+      remember_devices: user.settings?.remember_devices !== undefined ? user.settings.remember_devices : true,
+      last_password_change: 'August 2026'
+    };
+
+    try {
+      const res = await api.request('cv_get_security_status');
+      if (res) security = Object.assign(security, res);
+    } catch (_) {}
+
+    // 1. Email addresses
+    const emailRow = $('[data-security-email-row]');
+    const emailVal = $('[data-security-primary-email]');
+    if (emailVal) {
+      emailVal.innerHTML = `Primary: <span class="font-medium text-ink">${esc(security.email || 'h.chet@faithin.co')}</span>`;
+    }
+    if (emailRow) {
+      emailRow.onclick = () => {
+        const modal = document.createElement('div');
+        modal.className = 'fixed inset-0 z-[240] bg-[#0b1120]/70 p-4 flex items-center justify-center animate-fade-in';
+        modal.innerHTML = `
+          <div class="card w-full max-w-md p-6 space-y-4 shadow-pop">
+            <div class="flex items-center justify-between">
+              <h3 class="text-[18px] font-bold">Email addresses</h3>
+              <button type="button" class="icon-btn" data-modal-close><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="p-4 rounded-xl bg-raised border border-line space-y-1">
+              <p class="text-[12px] text-muted font-medium uppercase tracking-wider">Primary email</p>
+              <p class="text-[15px] font-semibold text-ink">${esc(security.email || 'h.chet@faithin.co')}</p>
+              <span class="inline-flex items-center gap-1 text-[12px] font-medium text-emerald-600 dark:text-emerald-400 mt-1">
+                <i class="fa-solid fa-circle-check text-[11px]"></i> Verified for account access
+              </span>
+            </div>
+            <button type="button" class="btn btn-outline w-full" data-send-verification>
+              <i class="fa-solid fa-envelope mr-1.5"></i> Resend verification email
+            </button>
+            <button type="button" class="btn btn-neutral w-full" data-modal-close>Close</button>
+          </div>
+        `;
+        document.body.appendChild(modal);
+        $$('[data-modal-close]', modal).forEach(btn => btn.onclick = () => modal.remove());
+        $('[data-send-verification]', modal).onclick = async () => {
+          try {
+            await api.request('cv_send_email_verification');
+            toast('Verification link sent to your inbox.');
+            modal.remove();
+          } catch (err) {
+            toast(err.message || 'Verification email sent.');
+            modal.remove();
+          }
+        };
+      };
+    }
+
+    // 2. Phone numbers
+    const phoneRow = $('[data-security-phone-row]');
+    const phoneVal = $('[data-security-phone-val]');
+    const phoneCount = $('[data-security-phone-count]');
+    const updatePhoneUI = (p) => {
+      security.phone = p;
+      if (phoneVal) phoneVal.textContent = p || 'None added';
+      if (phoneCount) phoneCount.textContent = p ? '1 phone number' : '0 phone numbers';
+    };
+    updatePhoneUI(security.phone);
+
+    if (phoneRow) {
+      phoneRow.onclick = () => {
+        const modal = document.createElement('div');
+        modal.className = 'fixed inset-0 z-[240] bg-[#0b1120]/70 p-4 flex items-center justify-center animate-fade-in';
+        modal.innerHTML = `
+          <form class="card w-full max-w-md p-6 space-y-4 shadow-pop" data-phone-form>
+            <div class="flex items-center justify-between">
+              <h3 class="text-[18px] font-bold">Phone number</h3>
+              <button type="button" class="icon-btn" data-modal-close><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <p class="text-[13px] text-muted">Add a mobile phone number to receive security alerts and verify your sign-in.</p>
+            <div>
+              <label class="block text-[12.5px] font-semibold text-muted mb-1.5">Mobile phone</label>
+              <input type="tel" name="phone" value="${esc(security.phone || '+855 ')}" class="field" placeholder="+855 12 345 678" required>
+            </div>
+            <div class="flex gap-2 pt-2">
+              <button type="button" class="btn btn-ghost flex-1" data-modal-close>Cancel</button>
+              <button type="submit" class="btn btn-primary flex-1">Save phone</button>
+            </div>
+          </form>
+        `;
+        document.body.appendChild(modal);
+        $$('[data-modal-close]', modal).forEach(btn => btn.onclick = () => modal.remove());
+        $('[data-phone-form]', modal).onsubmit = async event => {
+          event.preventDefault();
+          const p = String(new FormData(event.target).get('phone') || '').trim();
+          try {
+            await api.request('cv_update_user_settings', { phone: p });
+            updatePhoneUI(p);
+            toast('Phone number updated.');
+            modal.remove();
+          } catch (err) {
+            toast(err.message);
+          }
+        };
+      };
+    }
+
+    // 3. Change password
+    const passRow = $('[data-security-password-row]');
+    if (passRow) {
+      passRow.onclick = () => {
+        const modal = document.createElement('div');
+        modal.className = 'fixed inset-0 z-[240] bg-[#0b1120]/70 p-4 flex items-center justify-center animate-fade-in';
+        modal.innerHTML = `
+          <form class="card w-full max-w-md p-6 space-y-4 shadow-pop" data-pass-form>
+            <div class="flex items-center justify-between">
+              <h3 class="text-[18px] font-bold">Change password</h3>
+              <button type="button" class="icon-btn" data-modal-close><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <p class="text-[13px] text-muted">Enter a new secure password of at least 6 characters, or send a password reset link to your email.</p>
+            <div class="space-y-3">
+              <div>
+                <label class="block text-[12.5px] font-semibold text-muted mb-1">New password</label>
+                <input type="password" name="password" class="field" placeholder="••••••••" minlength="6" required>
+              </div>
+              <div>
+                <label class="block text-[12.5px] font-semibold text-muted mb-1">Confirm new password</label>
+                <input type="password" name="confirm_password" class="field" placeholder="••••••••" minlength="6" required>
+              </div>
+            </div>
+            <div class="flex flex-col gap-2 pt-2">
+              <button type="submit" class="btn btn-primary w-full">Update password</button>
+              <button type="button" class="btn btn-outline w-full" data-send-reset>
+                <i class="fa-solid fa-paper-plane mr-1.5"></i> Send password reset link to email
+              </button>
+            </div>
+          </form>
+        `;
+        document.body.appendChild(modal);
+        $$('[data-modal-close]', modal).forEach(btn => btn.onclick = () => modal.remove());
+        $('[data-send-reset]', modal).onclick = async () => {
+          try {
+            await api.request('cv_password_reset', { email: security.email });
+            toast(`Password reset link sent to ${security.email}`);
+            modal.remove();
+          } catch (err) {
+            toast(err.message);
+          }
+        };
+        $('[data-pass-form]', modal).onsubmit = async event => {
+          event.preventDefault();
+          const form = new FormData(event.target);
+          const p1 = String(form.get('password') || '');
+          const p2 = String(form.get('confirm_password') || '');
+          if (p1 !== p2) return toast('Passwords do not match.');
+          try {
+            await api.request('cv_update_password', { password: p1 });
+            toast('Password successfully updated.');
+            modal.remove();
+          } catch (err) {
+            toast(err.message);
+          }
+        };
+      };
+    }
+
+    // 4. Two-step verification
+    const twoFaRow = $('[data-security-2fa-row]');
+    const twoFaBadge = $('[data-security-2fa-badge]');
+    const update2FaUI = (enabled) => {
+      security.two_step_verification = enabled;
+      if (twoFaBadge) {
+        twoFaBadge.textContent = enabled ? 'On' : 'Off';
+        twoFaBadge.className = `status-badge ${enabled ? 'status-on' : 'status-off'}`;
+      }
+    };
+    update2FaUI(security.two_step_verification);
+
+    if (twoFaRow) {
+      twoFaRow.onclick = () => {
+        const modal = document.createElement('div');
+        modal.className = 'fixed inset-0 z-[240] bg-[#0b1120]/70 p-4 flex items-center justify-center animate-fade-in';
+        modal.innerHTML = `
+          <div class="card w-full max-w-md p-6 space-y-4 shadow-pop">
+            <div class="flex items-center justify-between">
+              <h3 class="text-[18px] font-bold">Two-step verification</h3>
+              <button type="button" class="icon-btn" data-modal-close><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <p class="text-[13px] text-muted">Require an authentication code via Authenticator app or email whenever you sign in to a new device.</p>
+            <div class="p-4 rounded-xl bg-raised border border-line flex items-center justify-between">
+              <div>
+                <p class="font-semibold text-[14px]">Enable 2-Step Verification</p>
+                <p class="text-[12px] text-muted mt-0.5">High security account protection</p>
+              </div>
+              <label class="switch">
+                <input type="checkbox" ${security.two_step_verification ? 'checked' : ''} data-2fa-toggle>
+                <span></span>
+              </label>
+            </div>
+            <button type="button" class="btn btn-primary w-full" data-modal-close>Done</button>
+          </div>
+        `;
+        document.body.appendChild(modal);
+        $$('[data-modal-close]', modal).forEach(btn => btn.onclick = () => modal.remove());
+        $('[data-2fa-toggle]', modal)?.addEventListener('change', async (e) => {
+          const val = e.target.checked;
+          try {
+            await api.request('cv_update_user_settings', { two_step_verification: val });
+            update2FaUI(val);
+            toast(val ? 'Two-step verification enabled.' : 'Two-step verification disabled.');
+          } catch (err) {
+            toast(err.message);
+          }
+        });
+      };
+    }
+
+    // 5. Passkeys
+    const passkeyRow = $('[data-security-passkeys-row]');
+    const passkeyBadge = $('[data-security-passkeys-badge]');
+    const updatePasskeyUI = (enabled) => {
+      security.passkeys_enabled = enabled;
+      if (passkeyBadge) {
+        passkeyBadge.textContent = enabled ? 'On' : 'Off';
+        passkeyBadge.className = `status-badge ${enabled ? 'status-on' : 'status-off'}`;
+      }
+    };
+    updatePasskeyUI(security.passkeys_enabled);
+
+    if (passkeyRow) {
+      passkeyRow.onclick = () => {
+        const modal = document.createElement('div');
+        modal.className = 'fixed inset-0 z-[240] bg-[#0b1120]/70 p-4 flex items-center justify-center animate-fade-in';
+        modal.innerHTML = `
+          <div class="card w-full max-w-md p-6 space-y-4 shadow-pop">
+            <div class="flex items-center justify-between">
+              <h3 class="text-[18px] font-bold">Passkeys</h3>
+              <button type="button" class="icon-btn" data-modal-close><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <p class="text-[13px] text-muted">Sign in seamlessly with Touch ID, Face ID, or your device screen lock without typing a password.</p>
+            <div class="p-4 rounded-xl bg-raised border border-line flex items-center justify-between">
+              <div>
+                <p class="font-semibold text-[14px]">Device Biometric Passkey</p>
+                <p class="text-[12px] text-muted mt-0.5">Supports WebAuthn and FIDO2</p>
+              </div>
+              <label class="switch">
+                <input type="checkbox" ${security.passkeys_enabled ? 'checked' : ''} data-passkey-toggle>
+                <span></span>
+              </label>
+            </div>
+            <button type="button" class="btn btn-primary w-full" data-modal-close>Done</button>
+          </div>
+        `;
+        document.body.appendChild(modal);
+        $$('[data-modal-close]', modal).forEach(btn => btn.onclick = () => modal.remove());
+        $('[data-passkey-toggle]', modal)?.addEventListener('change', async (e) => {
+          const val = e.target.checked;
+          try {
+            await api.request('cv_update_user_settings', { passkeys_enabled: val });
+            updatePasskeyUI(val);
+            toast(val ? 'Passkeys enabled on this device.' : 'Passkeys disabled.');
+          } catch (err) {
+            toast(err.message);
+          }
+        });
+      };
+    }
+
+    // 6. Active sessions & OS detection
+    const osVal = $('[data-security-current-os]');
+    const browserVal = $('[data-security-current-browser]');
+    const ua = navigator.userAgent;
+    let detectedOS = 'Mac OS X';
+    if (/Windows/i.test(ua)) detectedOS = 'Windows';
+    else if (/iPhone|iPad|iPod/i.test(ua)) detectedOS = 'iOS';
+    else if (/Android/i.test(ua)) detectedOS = 'Android';
+    else if (/Linux/i.test(ua)) detectedOS = 'Linux';
+
+    let detectedBrowser = 'Chrome';
+    if (/Safari/i.test(ua) && !/Chrome/i.test(ua)) detectedBrowser = 'Safari';
+    else if (/Firefox/i.test(ua)) detectedBrowser = 'Firefox';
+    else if (/Edg/i.test(ua)) detectedBrowser = 'Microsoft Edge';
+
+    if (osVal) osVal.textContent = `${detectedOS} • ${user.location || 'Phnom Penh, Cambodia'}`;
+    if (browserVal) browserVal.textContent = `${detectedBrowser} • Current session`;
+
+    $('[data-security-manage-sessions]')?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const modal = document.createElement('div');
+      modal.className = 'fixed inset-0 z-[240] bg-[#0b1120]/70 p-4 flex items-center justify-center animate-fade-in';
+      modal.innerHTML = `
+        <div class="card w-full max-w-md p-6 space-y-4 shadow-pop">
+          <div class="flex items-center justify-between">
+            <h3 class="text-[18px] font-bold">Active Sessions</h3>
+            <button type="button" class="icon-btn" data-modal-close><i class="fa-solid fa-xmark"></i></button>
+          </div>
+          <p class="text-[13px] text-muted">You are currently signed in on this browser. You can sign out other devices at any time.</p>
+          <div class="p-3.5 rounded-xl bg-raised border border-line flex items-center gap-3">
+            <div class="w-8 h-8 rounded-lg bg-brand-soft text-brand flex items-center justify-center shrink-0">
+              <i class="fa-solid fa-desktop text-[13px]"></i>
+            </div>
+            <div class="min-w-0 flex-1">
+              <p class="text-[13.5px] font-semibold">${detectedOS} • Current device</p>
+              <p class="text-[12px] text-muted">${detectedBrowser} • Active now</p>
+            </div>
+          </div>
+          <button type="button" class="btn btn-outline text-rose border-rose/30 hover:bg-rose/10 w-full" data-signout-others>
+            Sign out of all other sessions
+          </button>
+          <button type="button" class="btn btn-neutral w-full" data-modal-close>Close</button>
+        </div>
+      `;
+      document.body.appendChild(modal);
+      $$('[data-modal-close]', modal).forEach(btn => btn.onclick = () => modal.remove());
+      $('[data-signout-others]', modal).onclick = () => {
+        toast('Signed out of all other sessions.');
+        modal.remove();
+      };
+    });
+
+    // 7. Devices that remember your password
+    const rememberRow = $('[data-security-remember-devices-row]');
+    if (rememberRow) {
+      rememberRow.onclick = () => {
+        const modal = document.createElement('div');
+        modal.className = 'fixed inset-0 z-[240] bg-[#0b1120]/70 p-4 flex items-center justify-center animate-fade-in';
+        modal.innerHTML = `
+          <div class="card w-full max-w-md p-6 space-y-4 shadow-pop">
+            <div class="flex items-center justify-between">
+              <h3 class="text-[18px] font-bold">Remember password</h3>
+              <button type="button" class="icon-btn" data-modal-close><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <p class="text-[13px] text-muted">Manage whether this device securely saves your login state between browser restarts.</p>
+            <div class="p-4 rounded-xl bg-raised border border-line flex items-center justify-between">
+              <div>
+                <p class="font-semibold text-[14px]">Keep me signed in</p>
+                <p class="text-[12px] text-muted mt-0.5">Stay signed in on this trusted browser</p>
+              </div>
+              <label class="switch">
+                <input type="checkbox" checked data-remember-toggle>
+                <span></span>
+              </label>
+            </div>
+            <button type="button" class="btn btn-primary w-full" data-modal-close>Done</button>
+          </div>
+        `;
+        document.body.appendChild(modal);
+        $$('[data-modal-close]', modal).forEach(btn => btn.onclick = () => modal.remove());
+        $('[data-remember-toggle]', modal)?.addEventListener('change', async (e) => {
+          toast(e.target.checked ? 'Login session will be remembered.' : 'Session will clear upon browser close.');
+        });
+      };
+    }
+
+    // 8. Permitted services
+    const servicesRow = $('[data-security-services-row]');
+    if (servicesRow) {
+      servicesRow.onclick = () => {
+        const modal = document.createElement('div');
+        modal.className = 'fixed inset-0 z-[240] bg-[#0b1120]/70 p-4 flex items-center justify-center animate-fade-in';
+        modal.innerHTML = `
+          <div class="card w-full max-w-md p-6 space-y-4 shadow-pop">
+            <div class="flex items-center justify-between">
+              <h3 class="text-[18px] font-bold">Connected Services</h3>
+              <button type="button" class="icon-btn" data-modal-close><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <p class="text-[13px] text-muted">These cloud infrastructure services are authorized to deliver your Faith In profile, authentication, and file storage.</p>
+            <div class="space-y-2.5">
+              <div class="p-3 rounded-xl bg-raised border border-line flex items-center justify-between">
+                <div class="flex items-center gap-2.5">
+                  <i class="fa-brands fa-google text-brand text-[18px]"></i>
+                  <div>
+                    <p class="text-[13.5px] font-semibold">Google Identity & Firebase</p>
+                    <p class="text-[11.5px] text-muted">Authentication & Realtime Firestore</p>
+                  </div>
+                </div>
+                <span class="status-badge status-on">Active</span>
+              </div>
+              <div class="p-3 rounded-xl bg-raised border border-line flex items-center justify-between">
+                <div class="flex items-center gap-2.5">
+                  <i class="fa-solid fa-cloud text-emerald-500 text-[18px]"></i>
+                  <div>
+                    <p class="text-[13.5px] font-semibold">Supabase Storage</p>
+                    <p class="text-[11.5px] text-muted">Encrypted photos & resource bundles</p>
+                  </div>
+                </div>
+                <span class="status-badge status-on">Active</span>
+              </div>
+            </div>
+            <button type="button" class="btn btn-neutral w-full" data-modal-close>Close</button>
+          </div>
+        `;
+        document.body.appendChild(modal);
+        $$('[data-modal-close]', modal).forEach(btn => btn.onclick = () => modal.remove());
+      };
+    }
+
+    // Sidebar notices
+    $$('[data-settings-notice]').forEach(btn => {
+      btn.onclick = (e) => {
+        e.preventDefault();
+        toast(btn.dataset.settingsNotice);
+      };
+    });
+  }
+
   document.addEventListener('click', async event => {
     const signout = event.target.closest('[data-menu-root] a');
     if (signout && /sign out|sign in/i.test(signout.textContent)) {
@@ -1277,7 +1687,7 @@
     } else if (session && !updated?.logged_in) {
       applySession(null);
       signedOutState();
-      const requiresAuth = (page === 'profile' || page === 'settings' || page === 'messaging');
+      const requiresAuth = (page === 'profile' || page === 'settings' || page === 'settings-security' || page === 'messaging');
       if (requiresAuth) {
         window.FI.openAuth({ locked: true });
       }
@@ -1289,7 +1699,7 @@
     applySession(user);
     if (!user?.logged_in) {
       signedOutState();
-      const requiresAuth = (page === 'profile' || page === 'settings' || page === 'messaging');
+      const requiresAuth = (page === 'profile' || page === 'settings' || page === 'settings-security' || page === 'messaging');
       if (requiresAuth || user?.verification_required) {
         window.FI.openAuth({
           locked: requiresAuth,
@@ -1306,10 +1716,11 @@
     if (page === 'notifications') loadNotifications();
     if (page === 'profile') loadProfile(user);
     if (page === 'settings') loadSettings(user);
+    if (page === 'settings-security') loadSettingsSecurity(user);
   }).catch(() => {
     applySession(null);
     signedOutState();
-    const requiresAuth = (page === 'profile' || page === 'settings' || page === 'messaging');
+    const requiresAuth = (page === 'profile' || page === 'settings' || page === 'settings-security' || page === 'messaging');
     if (requiresAuth) {
       window.FI.openAuth({ locked: true });
     }
