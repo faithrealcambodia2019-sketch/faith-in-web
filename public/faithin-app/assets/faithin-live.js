@@ -893,45 +893,65 @@
       ]).then(results => {
         const followers = results[0].items || [];
         const following = results[1].items || [];
-        const connection = $$('a', hero).find(link => /connections|following/i.test(link.textContent));
-        if (connection) connection.textContent = `${following.length} following`;
-        
-        const followerSummary = activity.querySelector('[data-follower-summary]') || $$('a', activity).find(link => /followers|followed by/i.test(link.textContent));
-        if (followerSummary) {
-          const count = followers.length;
-          const topFollowers = followers.slice(0, 3);
-          
+        const count = followers.length;
+        const topFollowers = followers.slice(0, 3);
+
+        const avatarsHtml = count > 0 ? topFollowers.map(f => {
+          const photo = f.photo_url || f.avatar_url || f.avatar;
+          const name = f.name || f.displayName || 'Member';
+          if (photo) {
+            return `<img class="inline-block w-7 h-7 sm:w-8 sm:h-8 rounded-full ring-2 ring-surface object-cover shadow-sm transition hover:scale-105" src="${esc(photo)}" alt="${esc(name)}" title="${esc(name)}">`;
+          }
+          return window.FILive.avatarMarkup(f, 'inline-flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-full ring-2 ring-surface text-[10px] font-bold text-white shadow-sm transition hover:scale-105');
+        }).join('') : '';
+
+        let textMarkup = `${count} ${count === 1 ? 'follower' : 'followers'}`;
+        if (count === 1) {
+          const n1 = topFollowers[0]?.name || topFollowers[0]?.displayName || '1 member';
+          textMarkup = `Followed by <strong class="font-semibold text-ink">${esc(n1)}</strong>`;
+        } else if (count === 2) {
+          const n1 = topFollowers[0]?.name || topFollowers[0]?.displayName || '1 member';
+          const n2 = topFollowers[1]?.name || topFollowers[1]?.displayName || '1 member';
+          textMarkup = `Followed by <strong class="font-semibold text-ink">${esc(n1)}</strong> and <strong class="font-semibold text-ink">${esc(n2)}</strong>`;
+        } else if (count === 3) {
+          const n1 = topFollowers[0]?.name || topFollowers[0]?.displayName || '1 member';
+          const n2 = topFollowers[1]?.name || topFollowers[1]?.displayName || '1 member';
+          const n3 = topFollowers[2]?.name || topFollowers[2]?.displayName || '1 member';
+          textMarkup = `Followed by <strong class="font-semibold text-ink">${esc(n1)}</strong>, <strong class="font-semibold text-ink">${esc(n2)}</strong> and <strong class="font-semibold text-ink">${esc(n3)}</strong>`;
+        } else if (count > 3) {
+          const n1 = topFollowers[0]?.name || topFollowers[0]?.displayName || '1 member';
+          const n2 = topFollowers[1]?.name || topFollowers[1]?.displayName || '1 member';
+          const n3 = topFollowers[2]?.name || topFollowers[2]?.displayName || '1 member';
+          const others = count - 3;
+          textMarkup = `Followed by <strong class="font-semibold text-ink">${esc(n1)}</strong>, <strong class="font-semibold text-ink">${esc(n2)}</strong>, <strong class="font-semibold text-ink">${esc(n3)}</strong> and <strong class="font-semibold text-ink">${others} other${others > 1 ? 's' : ''}</strong>`;
+        }
+
+        // 1. Update Hero Connections & Followers row
+        const heroFollowing = $('[data-hero-following]', hero) || $$('a', hero).find(link => /connections|following/i.test(link.textContent));
+        if (heroFollowing) heroFollowing.textContent = `${following.length} following`;
+
+        const heroFollowers = $('[data-hero-followers]', hero);
+        if (heroFollowers) {
           if (count > 0) {
-            const avatarsHtml = topFollowers.map(f => {
-              const photo = f.photo_url || f.avatar_url || f.avatar;
-              const name = f.name || f.displayName || 'Member';
-              if (photo) {
-                return `<img class="inline-block w-7 h-7 sm:w-8 sm:h-8 rounded-full ring-2 ring-surface object-cover shadow-sm transition hover:scale-105" src="${esc(photo)}" alt="${esc(name)}" title="${esc(name)}">`;
-              }
-              return window.FILive.avatarMarkup(f, 'inline-flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-full ring-2 ring-surface text-[10px] font-bold text-white shadow-sm transition hover:scale-105');
-            }).join('');
-            
-            let textMarkup = `${count} ${count === 1 ? 'follower' : 'followers'}`;
-            if (count === 1) {
-              const n1 = topFollowers[0]?.name || topFollowers[0]?.displayName || '1 member';
-              textMarkup = `Followed by <strong class="font-semibold text-ink">${esc(n1)}</strong>`;
-            } else if (count === 2) {
-              const n1 = topFollowers[0]?.name || topFollowers[0]?.displayName || '1 member';
-              const n2 = topFollowers[1]?.name || topFollowers[1]?.displayName || '1 member';
-              textMarkup = `Followed by <strong class="font-semibold text-ink">${esc(n1)}</strong> and <strong class="font-semibold text-ink">${esc(n2)}</strong>`;
-            } else if (count === 3) {
-              const n1 = topFollowers[0]?.name || topFollowers[0]?.displayName || '1 member';
-              const n2 = topFollowers[1]?.name || topFollowers[1]?.displayName || '1 member';
-              const n3 = topFollowers[2]?.name || topFollowers[2]?.displayName || '1 member';
-              textMarkup = `Followed by <strong class="font-semibold text-ink">${esc(n1)}</strong>, <strong class="font-semibold text-ink">${esc(n2)}</strong>, and <strong class="font-semibold text-ink">${esc(n3)}</strong>`;
-            } else if (count > 3) {
-              const n1 = topFollowers[0]?.name || topFollowers[0]?.displayName || '1 member';
-              const n2 = topFollowers[1]?.name || topFollowers[1]?.displayName || '1 member';
-              const n3 = topFollowers[2]?.name || topFollowers[2]?.displayName || '1 member';
-              const others = count - 3;
-              textMarkup = `Followed by <strong class="font-semibold text-ink">${esc(n1)}</strong>, <strong class="font-semibold text-ink">${esc(n2)}</strong>, <strong class="font-semibold text-ink">${esc(n3)}</strong> and <strong class="font-semibold text-ink">${others} other${others > 1 ? 's' : ''}</strong>`;
-            }
-            
+            heroFollowers.className = 'flex items-center gap-2 text-muted hover:text-ink transition cursor-pointer';
+            heroFollowers.innerHTML = `
+              <div class="flex -space-x-2 overflow-hidden py-0.5 items-center shrink-0" data-hero-follower-avatars="">
+                ${avatarsHtml}
+              </div>
+              <span class="leading-tight text-ink font-normal text-[13.5px]" data-hero-follower-text="">
+                ${textMarkup}
+              </span>
+            `;
+          } else {
+            heroFollowers.className = 'font-semibold text-brand hover:underline cursor-pointer';
+            heroFollowers.innerHTML = '0 followers';
+          }
+        }
+
+        // 2. Update Activity section Followers row
+        const followerSummary = activity?.querySelector('[data-follower-summary]') || (activity ? $$('a', activity).find(link => /followers|followed by/i.test(link.textContent)) : null);
+        if (followerSummary) {
+          if (count > 0) {
             followerSummary.className = 'flex items-center gap-2.5 mt-1.5 text-[13.5px] sm:text-[14px] text-muted hover:text-ink transition cursor-pointer';
             followerSummary.innerHTML = `
               <div class="flex -space-x-2 overflow-hidden py-0.5 items-center shrink-0" data-follower-avatars="">
