@@ -933,32 +933,67 @@
     actions.cv_get_posts = function (b) {
         return currentUser(b).then(function (user) {
             if (!user) return { items: [] };
-            var postsQuery = b.dbMod.query(
-                b.dbMod.collection(b.db, 'posts'),
-                b.dbMod.orderBy('createdAt', 'desc'),
-                b.dbMod.limit(FEED_PAGE_SIZE)
-            );
-            var publicQuery = b.dbMod.query(
-                b.dbMod.collection(b.db, 'posts'),
-                b.dbMod.where('visibility', '==', 'public'),
-                b.dbMod.orderBy('createdAt', 'desc'),
-                b.dbMod.limit(FEED_PAGE_SIZE)
-            );
-            var ownQuery = b.dbMod.query(
-                b.dbMod.collection(b.db, 'posts'),
-                b.dbMod.where('authorUid', '==', user.uid),
-                b.dbMod.orderBy('createdAt', 'desc'),
-                b.dbMod.limit(FEED_PAGE_SIZE)
-            );
 
-            function shapeSnapshots(snapshots) {
-                var byId = {};
-                snapshots.forEach(function (snap) {
-                    if (snap && snap.forEach) {
-                        snap.forEach(function (d) { byId[d.id] = d.data(); });
+            return followingMap(b, user).then(function (following) {
+                var queries = [];
+
+                // 1. General posts query with order (if rules/index allow)
+                queries.push(
+                    b.dbMod.getDocs(b.dbMod.query(
+                        b.dbMod.collection(b.db, 'posts'),
+                        b.dbMod.orderBy('createdAt', 'desc'),
+                        b.dbMod.limit(FEED_PAGE_SIZE)
+                    )).catch(function () { return null; })
+                );
+
+                // 2. Unordered general collection query (never requires composite index)
+                queries.push(
+                    b.dbMod.getDocs(b.dbMod.query(
+                        b.dbMod.collection(b.db, 'posts'),
+                        b.dbMod.limit(FEED_PAGE_SIZE)
+                    )).catch(function () { return null; })
+                );
+
+                // 3. Public posts query without composite order
+                queries.push(
+                    b.dbMod.getDocs(b.dbMod.query(
+                        b.dbMod.collection(b.db, 'posts'),
+                        b.dbMod.where('visibility', '==', 'public'),
+                        b.dbMod.limit(FEED_PAGE_SIZE)
+                    )).catch(function () { return null; })
+                );
+
+                // 4. Own posts query
+                queries.push(
+                    b.dbMod.getDocs(b.dbMod.query(
+                        b.dbMod.collection(b.db, 'posts'),
+                        b.dbMod.where('authorUid', '==', user.uid),
+                        b.dbMod.limit(FEED_PAGE_SIZE)
+                    )).catch(function () { return null; })
+                );
+
+                // 5. Explicit queries for every user followed
+                var followedUids = Object.keys(following || {});
+                followedUids.slice(0, 30).forEach(function (fUid) {
+                    if (fUid && fUid !== user.uid) {
+                        queries.push(
+                            b.dbMod.getDocs(b.dbMod.query(
+                                b.dbMod.collection(b.db, 'posts'),
+                                b.dbMod.where('authorUid', '==', fUid),
+                                b.dbMod.limit(50)
+                            )).catch(function () { return null; })
+                        );
                     }
                 });
-                return followingMap(b, user).then(function (following) {
+
+                return Promise.all(queries).then(function (snapshots) {
+                    var byId = {};
+                    snapshots.forEach(function (snap) {
+                        if (snap && snap.forEach) {
+                            snap.forEach(function (d) { byId[d.id] = d.data(); });
+                        }
+                    });
+
                     var now = Date.now();
                     var items = Object.keys(byId)
                         .filter(function (id) {
@@ -977,18 +1012,10 @@
                             if (post.author) post.author.is_following = post.is_following;
                             return post;
                         });
+
                     items.sort(function (a, c) { return String(c.created_at || '').localeCompare(String(a.created_at || '')); });
                     return { items: items };
                 });
-            }
-
-            return b.dbMod.getDocs(postsQuery).then(function (snap) {
-                return shapeSnapshots([snap]);
-            }).catch(function () {
-                return Promise.all([
-                    b.dbMod.getDocs(publicQuery).catch(function () { return { forEach: function () {} }; }),
-                    b.dbMod.getDocs(ownQuery).catch(function () { return { forEach: function () {} }; })
-                ]).then(shapeSnapshots);
             });
         });
     };
