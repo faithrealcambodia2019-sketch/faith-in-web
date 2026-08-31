@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html class="scroll-smooth" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
+<meta content="#ffffff" media="(prefers-color-scheme: light)" name="theme-color"/>
+<meta content="#0b1120" media="(prefers-color-scheme: dark)" name="theme-color"/>
+<meta content="Faith In Creator Studio — Manage your channel, view analytics and track engagement." name="description"/>
+<title>Faith In — Studio</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg"/>
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/images/favicon-32x32.png"/>
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/images/favicon-16x16.png"/>
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/images/favicon-180x180.png"/>
+<link href="/faithin-app/assets/faithin-fonts.css" rel="stylesheet"/>
+<link href="/faithin-app/assets/faithin-icons.css" rel="stylesheet"/>
+<link href="/faithin-app/assets/faithin-tw.css" rel="stylesheet"/>
+<link href="/faithin-app/assets/faithin.css?v=20260831-v31" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  .metric-card {
+    padding: 1.25rem;
+    border-radius: 0.75rem;
+    border: 1px solid rgb(var(--line));
+    background-color: rgb(var(--surface));
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    transition: all 0.2s ease-in-out;
+  }
+  .metric-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  }
+  .progress-bar-bg {
+    background-color: rgb(var(--raised));
+    border-radius: 9999px;
+    height: 0.5rem;
+    width: 100%;
+    overflow: hidden;
+  }
+  .progress-bar-fill {
+    background-color: rgb(var(--brand));
+    height: 100%;
+    border-radius: 9999px;
+  }
+</style>
+</head>
+<body class="font-sans min-h-screen pb-16 lg:pb-0" data-page="studio" data-search="Search your content & analytics">
+
+<!-- Header -->
+<header class="sticky top-0 z-50 bg-surface/85 backdrop-blur-xl border-b border-line">
+  <div class="max-w-[1200px] mx-auto h-[56px] px-3 sm:px-4 flex items-center justify-between gap-3">
+    
+    <div class="flex items-center gap-3">
+      <a href="/home" class="flex items-center gap-1.5 shrink-0 text-brand" aria-label="Faith In Studio">
+        <span class="text-[22px] font-extrabold tracking-tight leading-none">FaithIn</span>
+        <i class="fa-solid fa-globe text-[15px]"></i>
+        <span class="ml-2 px-1.5 py-0.5 bg-slate-800 text-white text-[10px] rounded uppercase tracking-wider font-semibold">Studio</span>
+      </a>
+      
+      <div class="relative w-[280px] hidden md:block ml-3">
+        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-[13px] text-faint pointer-events-none"></i>
+        <input type="search" placeholder="Search your content & analytics"
+               class="w-full pl-9 pr-4 py-1.5 text-[13.5px] rounded-pill bg-raised border border-line placeholder:text-faint focus:bg-surface focus:border-brand outline-none transition">
+      </div>
+    </div>
+
+    <div class="flex-1"></div>
+
+    <div class="flex items-center gap-3 h-full">
+      <a href="/studio" class="w-9 h-9 rounded-full bg-brand-soft text-brand flex items-center justify-center ring-2 ring-brand ring-offset-2 ring-offset-surface shadow-xs" title="Studio Dashboard">
+        <i class="fa-solid fa-table-cells text-[16px]"></i>
+      </a>
+      <a href="/home" class="text-[13.5px] font-semibold text-muted hover:text-brand transition flex items-center gap-1.5">
+        <i class="fa-solid fa-arrow-left text-[11px]"></i>
+        <span>Back to FaithIn</span>
+      </a>
+      <a href="/profile" class="flex items-center justify-center ml-1 border-l border-line pl-3">
+        <span class="avatar w-8 h-8 text-[12px]" data-current-user-avatar style="background:linear-gradient(135deg,#2f5bea,#1e40af)">FI</span>
+      </a>
+    </div>
+  </div>
+</header>
+
+<main class="max-w-[1200px] mx-auto px-3 sm:px-4 py-5 grid gap-5 lg:grid-cols-[240px_minmax(0,1fr)] xl:grid-cols-[240px_minmax(0,1fr)_300px] items-start" id="main">
+  
+  <!-- Left Sidebar: Studio Navigation -->
+  <aside class="space-y-4 lg:sticky lg:top-[72px]">
+    
+    <div class="flex items-center gap-3 px-2 py-1">
+      <span class="avatar w-12 h-12 text-[14px] shadow-sm" data-current-user-avatar style="background:linear-gradient(135deg,#2f5bea,#1e40af)">FI</span>
+      <div class="min-w-0">
+        <h2 class="font-bold text-[15px] leading-tight truncate" data-current-user-name>Hun Chet</h2>
+        <p class="text-[12px] text-muted truncate" data-current-user-headline>Content Creator</p>
+      </div>
+    </div>
+
+    <section class="card overflow-hidden">
+      <nav class="p-2 space-y-1">
+        <a href="/studio" class="side-link is-active">
+          <i class="fa-solid fa-chart-line"></i>
+          <span>Dashboard</span>
+        </a>
+        <a href="#content-list" class="side-link">
+          <i class="fa-solid fa-layer-group"></i>
+          <span>Content</span>
+        </a>
+        <a href="#reach-chart" class="side-link">
+          <i class="fa-solid fa-chart-pie"></i>
+          <span>Analytics</span>
+        </a>
+        <a href="#latest-comments" class="side-link">
+          <i class="fa-regular fa-comments"></i>
+          <span>Comments</span>
+        </a>
+        
+        <div class="border-t border-line my-1.5"></div>
+        
+        <a href="/settings" class="side-link">
+          <i class="fa-solid fa-paintbrush"></i>
+          <span>Customization</span>
+        </a>
+        <a href="/for-churches" class="side-link">
+          <i class="fa-solid fa-sack-dollar"></i>
+          <span>Monetization</span>
+        </a>
+      </nav>
+    </section>
+    
+    <!-- Quick Upload Button -->
+    <button class="btn btn-primary w-full shadow-sm flex items-center justify-center gap-2 !py-2.5" data-studio-create-btn>
+      <i class="fa-solid fa-cloud-arrow-up"></i>
+      <span>Create Content</span>
+    </button>
+  </aside>
+
+  <!-- Center Section -->
+  <section class="space-y-5 min-w-0">
+    
+    <div class="flex items-center justify-between">
+      <h1 class="text-[22px] font-bold text-ink">Channel Dashboard</h1>
+      <span class="text-[12px] text-muted font-medium bg-raised px-2.5 py-1 rounded-pill border border-line">Live Analytics</span>
+    </div>
+    
+    <!-- Top Level Metrics -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+      <div class="metric-card border-t-4 !border-t-blue-500">
+        <div class="flex justify-between items-start">
+          <div>
+            <p class="text-[12.5px] text-muted font-medium">Followers</p>
+            <h3 class="text-2xl font-bold text-ink mt-1" data-metric-followers>1,042</h3>
+          </div>
+          <div class="w-9 h-9 rounded-lg bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center">
+            <i class="fa-solid fa-users text-[15px]"></i>
+          </div>
+        </div>
+        <div class="mt-3.5 flex items-center text-[12px]">
+          <span class="text-emerald-600 dark:text-emerald-400 font-bold flex items-center gap-1" data-metric-followers-growth>
+            <i class="fa-solid fa-arrow-trend-up"></i> +12
+          </span>
+          <span class="text-muted ml-2">in last 28 days</span>
+        </div>
+      </div>
+
+      <div class="metric-card border-t-4 !border-t-emerald-500">
+        <div class="flex justify-between items-start">
+          <div>
+            <p class="text-[12.5px] text-muted font-medium">Content Impressions</p>
+            <h3 class="text-2xl font-bold text-ink mt-1" data-metric-impressions>12.4K</h3>
+          </div>
+          <div class="w-9 h-9 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+            <i class="fa-regular fa-eye text-[15px]"></i>
+          </div>
+        </div>
+        <div class="mt-3.5 flex items-center text-[12px]">
+          <span class="text-emerald-600 dark:text-emerald-400 font-bold flex items-center gap-1" data-metric-impressions-growth>
+            <i class="fa-solid fa-arrow-trend-up"></i> +15%
+          </span>
+          <span class="text-muted ml-2">vs previous 28 days</span>
+        </div>
+      </div>
+
+      <div class="metric-card border-t-4 !border-t-purple-500">
+        <div class="flex justify-between items-start">
+          <div>
+            <p class="text-[12.5px] text-muted font-medium">Total Engagement</p>
+            <h3 class="text-2xl font-bold text-ink mt-1" data-metric-engagement>843</h3>
+          </div>
+          <div class="w-9 h-9 rounded-lg bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center">
+            <i class="fa-regular fa-heart text-[15px]"></i>
+          </div>
+        </div>
+        <div class="mt-3.5 flex items-center text-[12px]">
+          <span class="text-rose font-bold flex items-center gap-1" data-metric-engagement-growth>
+            <i class="fa-solid fa-arrow-trend-down"></i> -2%
+          </span>
+          <span class="text-muted ml-2">vs previous 28 days</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Chart Area -->
+    <div class="card p-5" id="reach-chart">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+        <div>
+          <h2 class="font-bold text-[16px] text-ink">Reach &amp; Engagement</h2>
+          <p class="text-[12px] text-muted">Last 28 Days (Aug 2026)</p>
+        </div>
+        <select class="bg-raised border border-line text-ink text-[13px] rounded-lg px-3 py-1.5 outline-none focus:border-brand cursor-pointer" data-chart-metric-select>
+          <option value="Impressions">Impressions</option>
+          <option value="Engagements">Engagements</option>
+          <option value="New Followers">New Followers</option>
+        </select>
+      </div>
+      
+      <div class="w-full h-[250px] relative">
+        <canvas id="analyticsChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Recent Content Performance -->
+    <div class="card overflow-hidden" id="content-list">
+      <div class="p-4 border-b border-line flex justify-between items-center bg-raised">
+        <h2 class="font-bold text-[15px] text-ink">Recent Content Performance</h2>
+        <a href="/home" class="text-brand text-[13px] font-semibold hover:underline">View all posts</a>
+      </div>
+      
+      <div class="flex flex-col divide-y divide-line" data-studio-recent-content>
+        <!-- Populated dynamically by loadStudio() -->
+        <div class="p-8 text-center text-muted text-[13px]">
+          <i class="fa-solid fa-circle-notch fa-spin text-brand text-lg mb-2"></i>
+          <p>Loading channel analytics...</p>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- Right Column: Quick Stats & News -->
+  <aside class="space-y-4 lg:sticky lg:top-[72px]" id="latest-comments">
+    
+    <!-- Latest Comments -->
+    <div class="card p-4">
+      <div class="flex justify-between items-center mb-3">
+        <h3 class="font-bold text-[14.5px] text-ink">Latest Comments</h3>
+      </div>
+      
+      <div class="space-y-3.5">
+        <div class="flex gap-3 items-start">
+          <span class="avatar w-8 h-8 text-[11px] shrink-0" style="background:linear-gradient(135deg,#0ea5e9,#0369a1)">PT</span>
+          <div class="min-w-0">
+            <p class="text-[13px] text-ink leading-snug"><span class="font-semibold">Paul Tripp</span> commented on <a href="/home" class="text-brand hover:underline">Finding Peace in the Storm</a></p>
+            <p class="text-[12px] text-muted mt-1 italic border-l-2 border-line pl-2 line-clamp-2">"This is a wonderfully profound piece, Hun. Thank you for sharing these insights..."</p>
+            <div class="mt-2 flex gap-3 text-[11.5px]">
+              <button class="font-semibold text-muted hover:text-brand transition flex items-center gap-1"><i class="fa-solid fa-reply"></i>Reply</button>
+              <button class="font-semibold text-muted hover:text-rose transition flex items-center gap-1"><i class="fa-regular fa-heart"></i>Like</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="mt-3.5 pt-3 border-t border-line">
+        <a href="/home" class="text-[13px] font-semibold text-brand hover:underline block text-center">View all interactions</a>
+      </div>
+    </div>
+
+    <!-- Audience Overview -->
+    <div class="card p-4">
+      <h3 class="font-bold text-[14.5px] text-ink mb-3.5">Audience Insights</h3>
+      
+      <div class="space-y-3.5">
+        <div>
+          <div class="flex justify-between text-[12px] mb-1.5">
+            <span class="text-muted font-medium">Top Location</span>
+            <span class="font-bold text-ink">Phnom Penh (45%)</span>
+          </div>
+          <div class="progress-bar-bg">
+            <div class="progress-bar-fill w-[45%]"></div>
+          </div>
+        </div>
+        
+        <div>
+          <div class="flex justify-between text-[12px] mb-1.5">
+            <span class="text-muted font-medium">Top Profession</span>
+            <span class="font-bold text-ink">Ministry Leaders (32%)</span>
+          </div>
+          <div class="progress-bar-bg">
+            <div class="progress-bar-fill w-[32%] !bg-emerald-500"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Creator News / Tips -->
+    <div class="card bg-brand-soft/70 border-brand/20 p-4">
+      <div class="flex items-center gap-2 mb-2">
+        <i class="fa-solid fa-lightbulb text-amber-500 text-[14px]"></i>
+        <h3 class="font-bold text-brand text-[13.5px]">Creator Tip</h3>
+      </div>
+      <p class="text-[12.5px] text-muted leading-relaxed mb-3">
+        Posts that include a personal testimony alongside scripture see a <strong class="text-ink">40% higher engagement rate</strong>. Try sharing a short story with your next verse of the day!
+      </p>
+      <a href="/library" class="text-[12px] font-semibold text-brand hover:underline">Read the Creator Playbook &rarr;</a>
+    </div>
+
+    <footer class="text-center px-4 pt-1 space-y-1">
+      <p class="text-[11.5px] text-muted">Faith In Studio © 2026</p>
+      <a href="/contact" class="text-[11px] text-faint hover:text-brand hover:underline">Send Feedback</a>
+    </footer>
+
+  </aside>
+</main>
+
+<script src="/faithin-app/assets/faithin-runtime.js?v=20260831-v31"></script>
+<script src="/assets/js/faith-in-backend.js?v=20260831-v31"></script>
+<script src="/faithin-app/assets/faithin-live.js?v=20260831-v31"></script>
+</body>
+</html>

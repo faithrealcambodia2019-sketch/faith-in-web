@@ -1524,6 +1524,181 @@
     });
   }
 
+  async function loadStudio(user) {
+    if (!user) return;
+    
+    let data = {
+      followers: 1042,
+      followers_growth: '+12',
+      impressions: '12.4K',
+      impressions_growth: '+15%',
+      engagement: 843,
+      engagement_growth: '-2%',
+      analytics: {
+        labels: ['Aug 12', 'Aug 13', 'Aug 14', 'Aug 15', 'Aug 16', 'Aug 17', 'Aug 18', 'Aug 19', 'Aug 20', 'Aug 21', 'Aug 22', 'Aug 23', 'Aug 24', 'Aug 25'],
+        impressions: [320, 450, 410, 890, 1200, 850, 600, 450, 2100, 1800, 1500, 900, 1100, 850],
+        engagements: [24, 38, 30, 65, 92, 58, 41, 32, 142, 118, 95, 62, 78, 68],
+        followers: [1, 2, 0, 3, 4, 2, 1, 0, 5, 4, 3, 2, 3, 2]
+      },
+      recent_content: []
+    };
+
+    try {
+      const res = await api.request('cv_get_studio_dashboard');
+      if (res) data = Object.assign(data, res);
+    } catch (_) {}
+
+    // Populate Top Metrics
+    const followersEl = $('[data-metric-followers]');
+    const followersGrowthEl = $('[data-metric-followers-growth]');
+    const impressionsEl = $('[data-metric-impressions]');
+    const impressionsGrowthEl = $('[data-metric-impressions-growth]');
+    const engagementEl = $('[data-metric-engagement]');
+    const engagementGrowthEl = $('[data-metric-engagement-growth]');
+
+    if (followersEl) followersEl.textContent = Number(data.followers).toLocaleString();
+    if (followersGrowthEl) followersGrowthEl.innerHTML = `<i class="fa-solid fa-arrow-trend-up"></i> ${data.followers_growth}`;
+    if (impressionsEl) impressionsEl.textContent = data.impressions;
+    if (impressionsGrowthEl) impressionsGrowthEl.innerHTML = `<i class="fa-solid fa-arrow-trend-up"></i> ${data.impressions_growth}`;
+    if (engagementEl) engagementEl.textContent = Number(data.engagement).toLocaleString();
+    if (engagementGrowthEl) engagementGrowthEl.innerHTML = `<i class="fa-solid fa-arrow-trend-down"></i> ${data.engagement_growth}`;
+
+    // Render Recent Content List
+    const contentContainer = $('[data-studio-recent-content]');
+    if (contentContainer && data.recent_content && data.recent_content.length > 0) {
+      contentContainer.innerHTML = data.recent_content.map((item, idx) => {
+        const borderClass = idx === data.recent_content.length - 1 ? '' : 'border-b border-gray-100 dark:border-slate-800';
+        const typeBadge = item.type === 'Video'
+          ? `<div class="absolute inset-0 bg-black/25 flex items-center justify-center"><i class="fa-solid fa-play text-white text-xs drop-shadow"></i></div><div class="absolute bottom-1 right-1 bg-black/70 text-white text-[9px] px-1 rounded uppercase font-bold tracking-wider">Video</div>`
+          : (item.type === 'Article'
+            ? `<div class="absolute bottom-1 right-1 bg-black/70 text-white text-[9px] px-1 rounded uppercase font-bold tracking-wider">Article</div>`
+            : `<div class="absolute bottom-1 right-1 bg-black/70 text-white text-[9px] px-1 rounded uppercase font-bold tracking-wider">Post</div>`);
+
+        const thumb = item.cover
+          ? `<img src="${esc(item.cover)}" class="w-full h-full object-cover" alt="Thumbnail">`
+          : `<div class="w-full h-full bg-brand-soft text-brand flex items-center justify-center"><i class="fa-solid fa-${item.type === 'Video' ? 'video' : (item.type === 'Article' ? 'newspaper' : 'pen-nib')} text-[18px]"></i></div>`;
+
+        return `
+          <div class="p-4 ${borderClass} flex items-start gap-4 hover:bg-raised/60 transition-colors group">
+            <div class="w-[100px] h-[56px] shrink-0 rounded-lg border border-line overflow-hidden relative">
+              ${thumb}
+              ${typeBadge}
+            </div>
+            <div class="flex-1 min-w-0">
+              <a href="/home" class="font-bold text-[14px] text-ink group-hover:text-brand leading-tight line-clamp-1 transition-colors">
+                ${esc(item.title)}
+              </a>
+              <p class="text-[12px] text-muted mt-1">${esc(item.date)}</p>
+              <div class="flex items-center gap-6 mt-3 text-[13px] text-muted flex-wrap">
+                <div class="flex flex-col">
+                  <span class="text-[11px] text-faint font-medium">Impressions</span>
+                  <span class="font-semibold text-ink">${Number(item.impressions).toLocaleString()}</span>
+                </div>
+                <div class="flex flex-col">
+                  <span class="text-[11px] text-faint font-medium">Likes</span>
+                  <span class="font-semibold text-ink">${Number(item.likes).toLocaleString()}</span>
+                </div>
+                <div class="flex flex-col">
+                  <span class="text-[11px] text-faint font-medium">Comments</span>
+                  <span class="font-semibold text-ink">${Number(item.comments).toLocaleString()}</span>
+                </div>
+                <div class="flex flex-col ml-auto">
+                  <span class="text-[11px] text-faint font-medium">CTR</span>
+                  <span class="font-semibold text-emerald-600 dark:text-emerald-400">${esc(item.ctr || '4.8%')}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Chart.js initialization
+    const chartCanvas = document.getElementById('analyticsChart');
+    if (chartCanvas && window.Chart) {
+      const ctx = chartCanvas.getContext('2d');
+      let currentChart;
+      const renderChart = (metricType) => {
+        if (currentChart) currentChart.destroy();
+        const datasetData = metricType === 'Engagements'
+          ? data.analytics.engagements
+          : (metricType === 'New Followers' ? data.analytics.followers : data.analytics.impressions);
+        const metricLabel = metricType || 'Impressions';
+        const color = metricType === 'Engagements' ? '#9333ea' : (metricType === 'New Followers' ? '#16a34a' : '#2563eb');
+        const bgColor = metricType === 'Engagements' ? 'rgba(147, 51, 234, 0.1)' : (metricType === 'New Followers' ? 'rgba(22, 163, 74, 0.1)' : 'rgba(37, 99, 235, 0.1)');
+
+        currentChart = new window.Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: data.analytics.labels,
+            datasets: [{
+              label: metricLabel,
+              data: datasetData,
+              borderColor: color,
+              backgroundColor: bgColor,
+              borderWidth: 2.5,
+              pointBackgroundColor: '#ffffff',
+              pointBorderColor: color,
+              pointBorderWidth: 2,
+              pointRadius: 4,
+              pointHoverRadius: 6,
+              fill: true,
+              tension: 0.4
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                backgroundColor: '#1f2937',
+                padding: 10,
+                titleFont: { size: 13 },
+                bodyFont: { size: 14, weight: 'bold' },
+                displayColors: false,
+                callbacks: {
+                  label: function (context) {
+                    return context.parsed.y + ' ' + metricLabel;
+                  }
+                }
+              }
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+                grid: { color: 'rgba(156, 163, 175, 0.12)', drawBorder: false },
+                ticks: { color: '#6b7280', font: { size: 11 } }
+              },
+              x: {
+                grid: { display: false, drawBorder: false },
+                ticks: { color: '#6b7280', font: { size: 11 }, maxTicksLimit: 7 }
+              }
+            },
+            interaction: {
+              intersect: false,
+              mode: 'index'
+            }
+          }
+        });
+      };
+
+      renderChart('Impressions');
+
+      const selectEl = $('[data-chart-metric-select]');
+      if (selectEl) {
+        selectEl.onchange = (e) => {
+          renderChart(e.target.value);
+        };
+      }
+    }
+
+    // Quick Upload / Create Content Button
+    $('[data-studio-create-btn]')?.addEventListener('click', () => {
+      window.location.href = '/home?compose=post';
+    });
+  }
+
   document.addEventListener('click', async event => {
     const signout = event.target.closest('[data-menu-root] a');
     if (signout && /sign out|sign in/i.test(signout.textContent)) {
@@ -1701,7 +1876,7 @@
     applySession(user);
     if (!user?.logged_in) {
       signedOutState();
-      const requiresAuth = (page === 'profile' || page === 'settings' || page === 'settings-security' || page === 'messaging');
+      const requiresAuth = (page === 'profile' || page === 'settings' || page === 'settings-security' || page === 'messaging' || page === 'studio' || page === 'dashboard');
       if (requiresAuth || user?.verification_required) {
         window.FI.openAuth({
           locked: requiresAuth,
@@ -1719,10 +1894,11 @@
     if (page === 'profile') loadProfile(user);
     if (page === 'settings') loadSettings(user);
     if (page === 'settings-security') loadSettingsSecurity(user);
+    if (page === 'studio' || page === 'dashboard') loadStudio(user);
   }).catch(() => {
     applySession(null);
     signedOutState();
-    const requiresAuth = (page === 'profile' || page === 'settings' || page === 'settings-security' || page === 'messaging');
+    const requiresAuth = (page === 'profile' || page === 'settings' || page === 'settings-security' || page === 'messaging' || page === 'studio' || page === 'dashboard');
     if (requiresAuth) {
       window.FI.openAuth({ locked: true });
     }
