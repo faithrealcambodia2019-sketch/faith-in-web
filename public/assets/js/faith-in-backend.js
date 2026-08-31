@@ -398,11 +398,20 @@
         );
     }
 
-    function fallbackMemberSnapshot(b) {
+    function getMemberSnapshot(b) {
+        var publicQuery = b.dbMod.query(b.dbMod.collection(b.db, 'publicProfiles'), b.dbMod.limit(200));
         var postQuery = b.dbMod.query(b.dbMod.collection(b.db, 'posts'), b.dbMod.limit(100));
-        return b.dbMod.getDocs(postQuery).then(function (postSnap) {
+        return Promise.all([
+            b.dbMod.getDocs(publicQuery).catch(function () { return { forEach: function () {} }; }),
+            b.dbMod.getDocs(postQuery).catch(function () { return { forEach: function () {} }; })
+        ]).then(function (results) {
+            var publicSnap = results[0];
+            var postsSnap = results[1];
             var membersByUid = {};
-            postSnap.forEach(function (d) {
+            publicSnap.forEach(function (d) {
+                membersByUid[d.id] = { id: d.id, data: function () { return d.data(); } };
+            });
+            postsSnap.forEach(function (d) {
                 var p = d.data() || {};
                 var author = p.author || {};
                 var uid = text(author.uid || p.authorUid || p.author_uid);
@@ -432,18 +441,6 @@
             };
         }).catch(function () {
             return { forEach: function () {}, empty: true, size: 0 };
-        });
-    }
-
-    function getMemberSnapshot(b) {
-        var publicQuery = b.dbMod.query(b.dbMod.collection(b.db, 'publicProfiles'), b.dbMod.limit(200));
-        return b.dbMod.getDocs(publicQuery).then(function (snap) {
-            var count = 0;
-            snap.forEach(function () { count++; });
-            if (count > 0) return snap;
-            return fallbackMemberSnapshot(b);
-        }).catch(function () {
-            return fallbackMemberSnapshot(b);
         });
     }
 

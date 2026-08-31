@@ -222,8 +222,19 @@
   async function loadMembers() {
     const list = $('#contacts'); if (!list) return;
     try {
-      const result = await api.request('cv_get_suggested_users');
-      list.innerHTML = (result.items || []).slice(0, 6).map(user => `<li class="flex items-start gap-3 p-2 rounded-xl hover:bg-raised" data-user-uid="${esc(user.uid)}">${window.FILive.avatarMarkup(user)}<span class="min-w-0 flex-1"><a href="/profile?uid=${encodeURIComponent(user.uid)}" class="block text-[13.5px] font-semibold truncate">${esc(user.name)}</a><span class="block text-[12px] text-muted truncate">${esc(user.role || user.church || user.location || 'Faith In member')}</span></span><button class="btn btn-ghost !px-3 !py-1 !text-[12.5px] border border-line" data-live-message>Message</button></li>`).join('') || '<li class="text-[13px] text-muted p-2">No other members yet.</li>';
+      const result = await api.request('cv_find_users');
+      const items = (result.items || []).slice(0, 8);
+      list.innerHTML = items.length ? items.map(user => `<li class="flex items-center gap-3 p-2 rounded-xl hover:bg-raised transition" data-user-uid="${esc(user.uid)}">
+        ${window.FILive.avatarMarkup(user, 'avatar w-10 h-10 text-[13px] object-cover')}
+        <span class="min-w-0 flex-1">
+          <a href="/profile?uid=${encodeURIComponent(user.uid)}" class="block text-[13.5px] font-semibold truncate hover:text-brand transition">${esc(user.name)}</a>
+          <span class="block text-[12px] text-muted truncate">${esc([user.role, user.church, user.ministry].filter(Boolean).join(' · ') || user.headline || 'Faith In member')}</span>
+        </span>
+        <button class="btn ${user.is_following ? 'btn-neutral' : 'btn-outline'} !px-2.5 !py-1 !text-[12px]" data-contact-follow>
+          <i class="fa-solid ${user.is_following ? 'fa-check' : 'fa-plus'} text-[10px] mr-1"></i>${user.is_following ? 'Following' : 'Follow'}
+        </button>
+        <button class="icon-btn !w-7 !h-7 text-muted hover:text-brand" data-live-message aria-label="Message ${esc(user.name)}"><i class="fa-regular fa-paper-plane text-[12px]"></i></button>
+      </li>`).join('') : '<li class="text-[13px] text-muted p-2">No other members yet.</li>';
     } catch (_) { list.innerHTML = '<li class="text-[13px] text-muted p-2">Sign in to see members.</li>'; }
   }
 
@@ -483,8 +494,29 @@
 
   document.addEventListener('click', async event => {
     const removePrayer = event.target.closest('[data-prayer-delete]'); if (removePrayer) { if (!needUser() || !confirm('Delete this prayer request?')) return; try { await api.request('cv_delete_prayer', { prayer_id: removePrayer.closest('[data-prayer-id]').dataset.prayerId }); await loadPrayers(); toast('Prayer request deleted'); } catch (error) { toast(error.message); } return; }
-    const pray = event.target.closest('[data-live-pray]'); if (pray) { if (!needUser()) return; try { await api.request('cv_update_prayer', { prayer_id: pray.closest('[data-prayer-id]').dataset.prayerId }); await loadPrayers(); } catch (error) { toast(error.message); } }
-    const message = event.target.closest('[data-live-message]'); if (message) { if (!needUser()) return; location.href = `/network?message=${encodeURIComponent(message.closest('[data-user-uid]').dataset.userUid)}`; }
+    const pray = event.target.closest('[data-live-pray]'); if (pray) { if (!needUser()) return; try { await api.request('cv_update_prayer', { prayer_id: pray.closest('[data-prayer-id]').dataset.prayerId }); await loadPrayers(); } catch (error) { toast(error.message); } return; }
+    const contactFollow = event.target.closest('[data-contact-follow]');
+    if (contactFollow) {
+      if (!needUser()) return;
+      const row = contactFollow.closest('[data-user-uid]');
+      const targetUid = row?.dataset.userUid;
+      if (!targetUid) return;
+      const isFollowing = /following/i.test(contactFollow.textContent);
+      contactFollow.disabled = true;
+      try {
+        await api.request(isFollowing ? 'cv_social_unfollow_user' : 'cv_social_follow_user', { target_uid: targetUid });
+        const nowFollowing = !isFollowing;
+        contactFollow.innerHTML = `<i class="fa-solid ${nowFollowing ? 'fa-check' : 'fa-plus'} text-[10px] mr-1"></i>${nowFollowing ? 'Following' : 'Follow'}`;
+        contactFollow.className = `btn ${nowFollowing ? 'btn-neutral' : 'btn-outline'} !px-2.5 !py-1 !text-[12px]`;
+        toast(nowFollowing ? 'Following' : 'Unfollowed');
+      } catch (err) {
+        toast(err.message);
+      } finally {
+        contactFollow.disabled = false;
+      }
+      return;
+    }
+    const message = event.target.closest('[data-live-message]'); if (message) { if (!needUser()) return; location.href = `/messages?to=${encodeURIComponent(message.closest('[data-user-uid]').dataset.userUid)}`; }
   });
 
   $('[data-copy-verse]')?.addEventListener('click', async () => { try { await navigator.clipboard.writeText('For God so loved the world, that he gave his only begotten Son. — John 3:16'); toast('Verse copied'); } catch (_) { toast('Copy unavailable'); } });

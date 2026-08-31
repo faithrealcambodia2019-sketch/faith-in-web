@@ -595,21 +595,77 @@
   }
 
   async function loadNetwork() {
-    const heading = $$('#main h2').find(node => /people you may know/i.test(node.textContent)); const section = heading?.closest('section'); if (!section) return;
-    const grid = $('.grid', section); if (!grid) return;
+    const heading = $$('#main h2').find(node => /people you may know/i.test(node.textContent));
+    const section = heading?.closest('section');
+    if (!section) return;
+    const grid = $('.grid', section);
+    if (!grid) return;
     let users = [], query = '';
+
     const render = () => {
       const items = users.filter(user => !query || [user.name, user.role, user.bio, user.church, user.location, user.ministry].some(value => String(value || '').toLowerCase().includes(query)));
-      grid.innerHTML = items.length ? items.map(user => `<article class="card overflow-hidden flex flex-col relative" data-user-uid="${esc(user.uid)}"><div class="h-16 bg-[linear-gradient(110deg,#60a5fa,#4f46e5)]"></div><div class="px-3 pb-4 -mt-8 flex flex-col items-center text-center flex-1">${avatarMarkup(user, 'avatar w-16 h-16 text-[17px] ring-4 ring-surface object-cover')}<a href="/profile?uid=${encodeURIComponent(user.uid)}" class="mt-2 text-[14.5px] font-semibold">${esc(user.name)}</a><p class="text-[12.5px] text-muted mt-1 line-clamp-2">${esc(user.role || user.bio || user.church || 'Faith In member')}</p><p class="text-[11.5px] text-faint mt-2">${esc(user.location || user.ministry || '')}</p><button class="btn btn-outline w-full mt-3 !py-2" data-connect>${user.is_following ? 'Following' : '<i class="fa-solid fa-user-plus text-[11px]"></i>Connect'}</button><button class="btn btn-ghost w-full mt-1 !py-2" data-message>Message</button></div></article>`).join('') : emptyState(query ? 'No members match your search.' : 'No new member suggestions right now.');
+      grid.innerHTML = items.length
+        ? items.map(user => `<article class="card overflow-hidden flex flex-col relative animate-fade-up" data-user-uid="${esc(user.uid)}">
+            <div class="h-16 bg-[linear-gradient(110deg,#60a5fa,#4f46e5)]"></div>
+            <div class="px-3 pb-4 -mt-8 flex flex-col items-center text-center flex-1">
+              ${avatarMarkup(user, 'avatar w-16 h-16 text-[17px] ring-4 ring-surface object-cover')}
+              <a href="/profile?uid=${encodeURIComponent(user.uid)}" class="mt-2 text-[14.5px] font-semibold hover:text-brand transition">${esc(user.name)}</a>
+              <p class="text-[12.5px] text-muted mt-1 line-clamp-2">${esc(user.role || user.bio || user.church || 'Faith In member')}</p>
+              <p class="text-[11.5px] text-faint mt-2">${esc(user.location || user.ministry || '')}</p>
+              <button class="btn ${user.is_following ? 'btn-neutral' : 'btn-outline'} w-full mt-3 !py-2" data-connect>
+                <i class="fa-solid ${user.is_following ? 'fa-check' : 'fa-user-plus'} text-[11px] mr-1"></i>${user.is_following ? 'Following' : 'Connect'}
+              </button>
+              <button class="btn btn-ghost w-full mt-1 !py-2" data-message>Message</button>
+            </div>
+          </article>`).join('')
+        : emptyState(query ? 'No members match your search.' : 'No members found in the community yet.');
     };
+
+    const refreshCounts = () => {
+      Promise.all([api.request('cv_social_get_followers'), api.request('cv_social_get_following')]).then(results => {
+        const counts = $$('.count', $('#main > aside'));
+        if (counts[0]) counts[0].textContent = results[0].items?.length || 0;
+        if (counts[1]) counts[1].textContent = results[1].items?.length || 0;
+      }).catch(() => {});
+    };
+
     try {
-      const result = await api.request('cv_get_suggested_users'); users = result.items || []; render();
-    } catch (error) { grid.innerHTML = emptyState(error.message); }
-    grid.addEventListener('click', async event => { const card = event.target.closest('[data-user-uid]'); if (!card) return; if (event.target.closest('[data-connect]')) { if (!requireUser()) return; const button = event.target.closest('[data-connect]'); await api.request(/following/i.test(button.textContent) ? 'cv_social_unfollow_user' : 'cv_social_follow_user', { target_uid: card.dataset.userUid }); button.textContent = /following/i.test(button.textContent) ? 'Connect' : 'Following'; } if (event.target.closest('[data-message]')) openMessenger(card.dataset.userUid); });
-    Promise.all([api.request('cv_social_get_followers'), api.request('cv_social_get_following')]).then(results => { const counts = $$('.count', $('#main > aside')); if (counts[0]) counts[0].textContent = results[0].items?.length || 0; if (counts[1]) counts[1].textContent = results[1].items?.length || 0; counts.slice(2).forEach(node => node.textContent = '0'); }).catch(() => {});
+      const result = await api.request('cv_find_users');
+      users = result.items || [];
+      render();
+      refreshCounts();
+    } catch (error) {
+      grid.innerHTML = emptyState(error.message);
+    }
+
+    grid.addEventListener('click', async event => {
+      const card = event.target.closest('[data-user-uid]');
+      if (!card) return;
+      const connectBtn = event.target.closest('[data-connect]');
+      if (connectBtn) {
+        if (!requireUser()) return;
+        const following = /following/i.test(connectBtn.textContent);
+        connectBtn.disabled = true;
+        try {
+          await api.request(following ? 'cv_social_unfollow_user' : 'cv_social_follow_user', { target_uid: card.dataset.userUid });
+          const nowFollowing = !following;
+          connectBtn.innerHTML = `<i class="fa-solid ${nowFollowing ? 'fa-check' : 'fa-user-plus'} text-[11px] mr-1"></i>${nowFollowing ? 'Following' : 'Connect'}`;
+          connectBtn.className = `btn ${nowFollowing ? 'btn-neutral' : 'btn-outline'} w-full mt-3 !py-2`;
+          toast(nowFollowing ? 'Following' : 'Unfollowed');
+          refreshCounts();
+        } catch (err) {
+          toast(err.message);
+        } finally {
+          connectBtn.disabled = false;
+        }
+      }
+      if (event.target.closest('[data-message]')) openMessenger(card.dataset.userUid);
+    });
+
     $('#main > aside section.text-center')?.remove();
-    const requested = new URLSearchParams(location.search).get('message'); if (requested) openMessenger(requested);
-    document.addEventListener('fi:search', event => { query = event.detail.query.toLowerCase(); render(); });
+    const requested = new URLSearchParams(location.search).get('message');
+    if (requested) openMessenger(requested);
+    document.addEventListener('fi:search', event => { query = (event.detail.query || '').toLowerCase(); render(); });
     $$('#main section').filter(item => /invitations|groups you might/i.test(item.querySelector('h2')?.textContent || '')).forEach(item => item.remove());
   }
 
