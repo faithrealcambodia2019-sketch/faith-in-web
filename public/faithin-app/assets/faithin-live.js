@@ -1613,74 +1613,80 @@
       }).join('');
     }
 
-    // Chart.js initialization
-    const chartCanvas = document.getElementById('analyticsChart');
-    if (chartCanvas && window.Chart) {
-      const ctx = chartCanvas.getContext('2d');
-      let currentChart;
+    // Chart initialization (Bulletproof SVG renderer + Chart.js fallback)
+    const chartHost = document.getElementById('analyticsChartHost') || document.getElementById('analyticsChart')?.parentElement;
+    if (chartHost) {
       const renderChart = (metricType) => {
-        if (currentChart) currentChart.destroy();
         const datasetData = metricType === 'Engagements'
           ? data.analytics.engagements
           : (metricType === 'New Followers' ? data.analytics.followers : data.analytics.impressions);
         const metricLabel = metricType || 'Impressions';
         const color = metricType === 'Engagements' ? '#9333ea' : (metricType === 'New Followers' ? '#16a34a' : '#2563eb');
-        const bgColor = metricType === 'Engagements' ? 'rgba(147, 51, 234, 0.1)' : (metricType === 'New Followers' ? 'rgba(22, 163, 74, 0.1)' : 'rgba(37, 99, 235, 0.1)');
+        
+        const labels = data.analytics.labels;
+        const values = datasetData;
+        const maxVal = Math.max(...values, 10);
+        const minVal = 0;
+        const w = 680;
+        const h = 230;
+        const padL = 45;
+        const padR = 20;
+        const padT = 20;
+        const padB = 35;
+        const plotW = w - padL - padR;
+        const plotH = h - padT - padB;
 
-        currentChart = new window.Chart(ctx, {
-          type: 'line',
-          data: {
-            labels: data.analytics.labels,
-            datasets: [{
-              label: metricLabel,
-              data: datasetData,
-              borderColor: color,
-              backgroundColor: bgColor,
-              borderWidth: 2.5,
-              pointBackgroundColor: '#ffffff',
-              pointBorderColor: color,
-              pointBorderWidth: 2,
-              pointRadius: 4,
-              pointHoverRadius: 6,
-              fill: true,
-              tension: 0.4
-            }]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-              legend: { display: false },
-              tooltip: {
-                backgroundColor: '#1f2937',
-                padding: 10,
-                titleFont: { size: 13 },
-                bodyFont: { size: 14, weight: 'bold' },
-                displayColors: false,
-                callbacks: {
-                  label: function (context) {
-                    return context.parsed.y + ' ' + metricLabel;
-                  }
-                }
-              }
-            },
-            scales: {
-              y: {
-                beginAtZero: true,
-                grid: { color: 'rgba(156, 163, 175, 0.12)', drawBorder: false },
-                ticks: { color: '#6b7280', font: { size: 11 } }
-              },
-              x: {
-                grid: { display: false, drawBorder: false },
-                ticks: { color: '#6b7280', font: { size: 11 }, maxTicksLimit: 7 }
-              }
-            },
-            interaction: {
-              intersect: false,
-              mode: 'index'
-            }
-          }
+        const points = values.map((v, i) => {
+          const x = padL + (i / (values.length - 1)) * plotW;
+          const y = padT + plotH - ((v - minVal) / (maxVal - minVal)) * plotH;
+          return { x, y, v, label: labels[i] };
         });
+
+        let pathD = `M ${points[0].x},${points[0].y}`;
+        for (let i = 0; i < points.length - 1; i++) {
+          const p0 = points[i];
+          const p1 = points[i + 1];
+          const mx = (p0.x + p1.x) / 2;
+          pathD += ` C ${mx},${p0.y} ${mx},${p1.y} ${p1.x},${p1.y}`;
+        }
+
+        const areaD = `${pathD} L ${points[points.length - 1].x},${padT + plotH} L ${points[0].x},${padT + plotH} Z`;
+
+        const gridlines = [0, 0.33, 0.66, 1].map(frac => {
+          const y = padT + plotH * (1 - frac);
+          const val = Math.round(minVal + frac * (maxVal - minVal));
+          return `
+            <line x1="${padL}" y1="${y}" x2="${w - padR}" y2="${y}" stroke="currentColor" stroke-opacity="0.12" stroke-dasharray="3,3" />
+            <text x="${padL - 8}" y="${y + 4}" font-size="11" fill="currentColor" fill-opacity="0.55" text-anchor="end">${val >= 1000 ? (val/1000).toFixed(1) + 'k' : val}</text>
+          `;
+        }).join('');
+
+        const xLabels = points.filter((_, idx) => idx % 2 === 0 || idx === points.length - 1).map(p => `
+          <text x="${p.x}" y="${h - 8}" font-size="11" fill="currentColor" fill-opacity="0.55" text-anchor="middle">${p.label}</text>
+        `).join('');
+
+        const circles = points.map(p => `
+          <g class="chart-point group/pt cursor-pointer">
+            <circle cx="${p.x}" cy="${p.y}" r="4" fill="#ffffff" stroke="${color}" stroke-width="2.5" class="transition-transform hover:scale-150" />
+            <title>${p.label}: ${Number(p.v).toLocaleString()} ${metricLabel}</title>
+          </g>
+        `).join('');
+
+        chartHost.innerHTML = `
+          <svg viewBox="0 0 ${w} ${h}" class="w-full h-full text-slate-700 dark:text-slate-300 overflow-visible" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="chartGrad_${metricLabel.replace(/\s+/g,'_')}" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="${color}" stop-opacity="0.28" />
+                <stop offset="100%" stop-color="${color}" stop-opacity="0.0" />
+              </linearGradient>
+            </defs>
+            ${gridlines}
+            <path d="${areaD}" fill="url(#chartGrad_${metricLabel.replace(/\s+/g,'_')})" />
+            <path d="${pathD}" fill="none" stroke="${color}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+            ${xLabels}
+            ${circles}
+          </svg>
+        `;
       };
 
       renderChart('Impressions');
