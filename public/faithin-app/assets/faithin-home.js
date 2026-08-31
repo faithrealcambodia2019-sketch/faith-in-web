@@ -129,8 +129,10 @@
 
   const faithReactions = {
     like: { label: 'Amen', icon: 'fa-hands-praying', tone: 'amen' },
+    love: { label: 'Love', icon: 'fa-heart', tone: 'love' },
+    pray: { label: 'Pray', icon: 'fa-hands-praying', tone: 'pray' },
     celebrate: { label: 'Hallelujah', icon: 'fa-star', tone: 'hallelujah' },
-    support: { label: 'Praise the Lord', icon: 'fa-hands-praying', tone: 'praise' }
+    support: { label: 'Praise', icon: 'fa-dove', tone: 'praise' }
   };
 
   function faithReactionMeta(key) {
@@ -157,7 +159,7 @@
     const saved = !!post.bookmarked;
     const owner = !!(post.can_delete || isSelf);
     const body = post.content || post.excerpt || post.article_excerpt || '';
-    return `<article class="card overflow-hidden animate-fade-up" data-post-id="${esc(post.id)}" data-author-uid="${esc(uid)}">
+    return `<article class="card animate-fade-up" data-post-id="${esc(post.id)}" data-author-uid="${esc(uid)}">
       <header class="flex items-start gap-3 p-4 pb-2.5">
         <a href="${profileHref}" class="shrink-0 block">${avatar ? `<img class="avatar w-11 h-11 object-cover" src="${esc(avatar)}" alt="${esc(name)}">` : `<span class="avatar w-11 h-11 text-[14px]">${esc(api.initials(name))}</span>`}</a>
         <div class="min-w-0 flex-1"><div class="flex items-center gap-2 flex-wrap"><a href="${profileHref}" class="text-[14.5px] font-semibold hover:text-brand">${esc(name)}</a>${post.type && post.type !== 'post' ? `<span class="text-[10.5px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-brand-soft text-brand-strong">${esc(post.type)}</span>` : ''}</div><p class="text-[12px] text-muted mt-0.5">${esc(post.time || 'just now')} · ${esc(post.visibility || 'Public')}</p></div>

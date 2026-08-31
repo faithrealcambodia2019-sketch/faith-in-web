@@ -167,7 +167,7 @@ service cloud.firestore {
           && request.resource.data.reactions.diff(resource.data.reactions)
                .affectedKeys().hasOnly([request.auth.uid])
           && request.resource.data.reactions.get(request.auth.uid, null)
-               in [null, 'like', 'celebrate', 'support', 'love', 'insightful', 'funny'];
+               in [null, 'like', 'celebrate', 'support', 'love', 'insightful', 'funny', 'pray'];
       }
 
       function incrementsOnly(field) {
