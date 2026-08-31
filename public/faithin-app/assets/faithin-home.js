@@ -215,6 +215,25 @@
 
     feed.innerHTML = items.length ? items.map(postHTML).join('') : `<section class="card p-8 text-center"><h2 class="font-bold">${feedQuery || sortMode === 'Following' ? 'No matching posts' : 'Your community feed is ready'}</h2><p class="text-muted text-[13.5px] mt-1">${sortMode === 'Following' ? 'Follow members from Network or Contacts to build this feed.' : 'Be the first to share a blessing or testimony.'}</p></section>`;
     watchForStall(feed);
+
+    // Scroll to & highlight target post if coming from a notification
+    const targetPostId = new URLSearchParams(location.search).get('post') || location.hash.replace(/^#post-/, '').replace(/^#/, '');
+    if (targetPostId) {
+      setTimeout(() => {
+        const targetCard = feed.querySelector(`[data-post-id="${targetPostId}"]`);
+        if (targetCard) {
+          targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          targetCard.classList.add('ring-2', 'ring-brand', 'transition-all');
+          setTimeout(() => {
+            targetCard.classList.remove('ring-2', 'ring-brand');
+          }, 3000);
+          if (new URLSearchParams(location.search).get('action') === 'comment') {
+            const toggle = targetCard.querySelector('[data-comment-toggle]');
+            if (toggle) toggle.click();
+          }
+        }
+      }, 250);
+    }
   }
 
   async function loadPosts() {

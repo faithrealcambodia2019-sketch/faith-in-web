@@ -696,13 +696,43 @@
       const types = groups[active] || null;
       const filtered = allItems.filter(item => (!types || types.includes(item.type)) && (!searchQuery || `${item.actor?.name || ''} ${labels[item.type] || ''}`.toLowerCase().includes(searchQuery)));
       const items = filtered.slice(0, shown);
-      holder.innerHTML = items.length ? items.map(item => { const actor = item.actor || {}; return `<article class="${item.is_read ? '' : 'notif-unread'} p-4 flex gap-3.5 relative" data-notification-id="${esc(item.id)}" data-notification-type="${esc(item.type || '')}">${avatarMarkup(actor, 'avatar w-12 h-12 text-[13px] object-cover')}<div class="min-w-0 flex-1"><p class="text-[14px]"><strong>${esc(actor.name || 'A member')}</strong> ${esc(labels[item.type] || 'sent an update')}</p><p class="text-[12px] ${item.is_read ? 'text-muted' : 'text-brand'} mt-1.5">${esc(item.created_at ? new Date(item.created_at).toLocaleString() : '')}</p></div>${item.is_read ? '' : '<span class="w-2.5 h-2.5 rounded-full bg-brand"></span>'}</article>`; }).join('') : emptyState('You are all caught up.');
+      holder.innerHTML = items.length ? items.map(item => {
+        const actor = item.actor || {};
+        return `<article class="${item.is_read ? '' : 'notif-unread'} p-4 flex gap-3.5 relative cursor-pointer hover:bg-raised transition-colors" data-notification-id="${esc(item.id)}" data-notification-type="${esc(item.type || '')}" data-object-id="${esc(item.object_id || '')}" data-actor-uid="${esc(actor.uid || '')}">${avatarMarkup(actor, 'avatar w-12 h-12 text-[13px] object-cover')}<div class="min-w-0 flex-1"><p class="text-[14px]"><strong>${esc(actor.name || 'A member')}</strong> ${esc(labels[item.type] || 'sent an update')}</p><p class="text-[12px] ${item.is_read ? 'text-muted' : 'text-brand'} mt-1.5">${esc(item.created_at ? new Date(item.created_at).toLocaleString() : '')}</p></div>${item.is_read ? '' : '<span class="w-2.5 h-2.5 rounded-full bg-brand shrink-0 self-center"></span>'}</article>`;
+      }).join('') : emptyState('You are all caught up.');
       if (earlier) { earlier.classList.toggle('hidden', shown >= filtered.length); earlier.innerHTML = 'Show earlier notifications <i class="fa-solid fa-arrow-down text-[11px] ml-1"></i>'; }
     };
     try {
       const result = await api.request('cv_social_get_notifications');
       allItems = result.items || []; render();
-      holder.onclick = async event => { const row = event.target.closest('[data-notification-id]'); if (!row) return; await api.request('cv_social_mark_notifications_read', { id: row.dataset.notificationId }); const item = allItems.find(entry => entry.id === row.dataset.notificationId); if (item) item.is_read = true; render(); };
+      holder.onclick = async event => {
+        const row = event.target.closest('[data-notification-id]');
+        if (!row) return;
+        const notifId = row.dataset.notificationId;
+        const item = allItems.find(entry => entry.id === notifId);
+        
+        api.request('cv_social_mark_notifications_read', { id: notifId }).catch(() => {});
+        if (item) item.is_read = true;
+        render();
+
+        if (!item) return;
+        const type = (item.type || '').toLowerCase();
+        const objId = item.object_id || row.dataset.objectId || '';
+        const actor = item.actor || {};
+        const actorUid = actor.uid || row.dataset.actorUid || '';
+
+        if (type === 'comment') {
+          location.href = `/home?post=${encodeURIComponent(objId)}&action=comment#post-${encodeURIComponent(objId)}`;
+        } else if (type === 'reaction' || type === 'new_post') {
+          location.href = `/home?post=${encodeURIComponent(objId)}#post-${encodeURIComponent(objId)}`;
+        } else if (type === 'follow') {
+          location.href = actorUid ? `/profile?uid=${encodeURIComponent(actorUid)}` : '/network';
+        } else if (type === 'message' || type === 'reply') {
+          location.href = actorUid ? `/messages?to=${encodeURIComponent(actorUid)}` : '/messages';
+        } else if (type === 'job') {
+          location.href = objId ? `/jobs?id=${encodeURIComponent(objId)}` : '/jobs';
+        }
+      };
       if (earlier) earlier.onclick = () => { shown += 12; render(); };
       const chips = $('[data-chip-group]', center);
       const activeLabel = { post: 'My posts', mention: 'Mentions', follow: 'Connections' }[active] || 'All';
