@@ -117,9 +117,36 @@ html.dark .nav-item.is-active{ color:#0b1120; }
 .icon-btn{
   display:inline-flex; align-items:center; justify-content:center;
   width:38px; height:38px; border-radius:999px; color: rgb(var(--muted));
-  transition: background .15s ease, color .15s ease;
+  transition: background .15s ease, color .15s ease, transform .15s ease;
 }
 .icon-btn:hover{ background: rgb(var(--raised)); color: rgb(var(--ink)); }
+
+/* Custom styles for modern icons & badges */
+.glass-icon {
+  background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0));
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.05);
+}
+
+.notification-badge {
+  animation: pulse-soft 2s infinite;
+}
+
+@keyframes pulse-soft {
+  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+  70% { transform: scale(1.05); box-shadow: 0 0 0 4px rgba(239, 68, 68, 0); }
+  100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+}
+
+.icon-hover-bounce:hover svg {
+  transform: translateY(-2px);
+  transition: transform 0.2s ease;
+}
+.icon-hover-bounce svg {
+  transition: transform 0.2s ease;
+}
 
 .btn{
   display:inline-flex; align-items:center; justify-content:center; gap:7px;
