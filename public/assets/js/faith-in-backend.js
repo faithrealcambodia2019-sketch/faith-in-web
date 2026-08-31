@@ -953,15 +953,20 @@
                 snapshots.forEach(function (snap) {
                     snap.forEach(function (d) { byId[d.id] = d.data(); });
                 });
-                // Blessings are story-style content. Expiration only controls
-                // visibility: the Firestore record and its uploaded media stay
-                // untouched so this remains safe for production data.
-                var now = Date.now();
-                var items = Object.keys(byId)
-                    .filter(function (id) { return !isExpiredBlessing(byId[id], now); })
-                    .map(function (id) { return shapePost(b, id, byId[id], user); });
-                items.sort(function (a, c) { return String(c.created_at || '').localeCompare(String(a.created_at || '')); });
-                return { items: items };
+                return followingMap(b, user).then(function (following) {
+                    var now = Date.now();
+                    var items = Object.keys(byId)
+                        .filter(function (id) { return !isExpiredBlessing(byId[id], now); })
+                        .map(function (id) {
+                            var post = shapePost(b, id, byId[id], user);
+                            var authorUid = post.author_uid || (post.author && post.author.uid) || '';
+                            post.is_following = !!(following && following[authorUid]);
+                            if (post.author) post.author.is_following = post.is_following;
+                            return post;
+                        });
+                    items.sort(function (a, c) { return String(c.created_at || '').localeCompare(String(a.created_at || '')); });
+                    return { items: items };
+                });
             }
 
             return Promise.all([b.dbMod.getDocs(publicQuery), b.dbMod.getDocs(ownQuery)]).then(shapeSnapshots).catch(function (error) {

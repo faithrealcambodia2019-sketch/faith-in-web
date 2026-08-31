@@ -142,9 +142,16 @@
     const uid = author.uid || post.author_uid || post.authorUid || '';
     const name = author.name || author.displayName || post.author_name || post.authorName || 'Faith In Member';
     const current = window.FILive.user;
-    const isSelf = !!(current && uid && uid === current.uid);
+    const isSelf = !!(
+      post.can_delete ||
+      post.is_self ||
+      author.is_self ||
+      (current && uid && (uid === current.uid || String(current.id) === String(uid))) ||
+      (current && (current.name === name || current.displayName === name))
+    );
+    const isFollowing = !isSelf && !!(post.is_following || author.is_following);
     const avatar = isSelf
-      ? (current.avatar_url || current.avatar || current.photo_url || author.avatar_url || author.avatar || '')
+      ? (current?.avatar_url || current?.avatar || current?.photo_url || author.avatar_url || author.avatar || '')
       : (author.avatar_url || author.avatar || author.photo_url || post.author_avatar || '');
     const profileHref = uid ? `/profile?uid=${encodeURIComponent(uid)}` : '/profile';
     const selectedReaction = post.user_reaction || post.current_user_reaction || '';
@@ -156,7 +163,7 @@
       <header class="flex items-start gap-3 p-4 pb-2.5">
         <a href="${profileHref}" class="shrink-0 block">${avatar ? `<img class="avatar w-11 h-11 object-cover" src="${esc(avatar)}" alt="${esc(name)}">` : `<span class="avatar w-11 h-11 text-[14px]">${esc(api.initials(name))}</span>`}</a>
         <div class="min-w-0 flex-1"><div class="flex items-center gap-2 flex-wrap"><a href="${profileHref}" class="text-[14.5px] font-semibold hover:text-brand">${esc(name)}</a>${post.type && post.type !== 'post' ? `<span class="text-[10.5px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-brand-soft text-brand-strong">${esc(post.type)}</span>` : ''}</div><p class="text-[12px] text-muted mt-0.5">${esc(post.time || 'just now')} · ${esc(post.visibility || 'Public')}</p></div>
-        ${!owner && uid ? `<button class="btn btn-outline !py-1 !px-3 !text-[13px]" data-live-follow><i class="fa-solid fa-plus text-[11px]"></i>Follow</button>` : ''}
+        ${!owner && uid ? `<button class="btn ${isFollowing ? 'btn-neutral' : 'btn-outline'} !py-1 !px-3 !text-[13px]" data-live-follow><i class="fa-solid ${isFollowing ? 'fa-check' : 'fa-plus'} text-[11px] mr-1"></i>${isFollowing ? 'Following' : 'Follow'}</button>` : ''}
         ${owner ? `<button class="icon-btn" data-live-delete aria-label="Delete post"><i class="fa-regular fa-trash-can"></i></button>` : ''}
       </header>
       ${post.article_title ? `<div class="px-4 pt-1"><h3 class="font-serif text-[22px] font-semibold">${esc(post.article_title)}</h3></div>` : ''}
@@ -449,7 +456,27 @@
       }
       return;
     }
-    if (event.target.closest('[data-live-follow]')) { event.stopPropagation(); if (!needUser()) return; await api.request('cv_social_follow_user', { target_uid: article.dataset.authorUid }); toast('Following'); event.target.closest('[data-live-follow]').remove(); return; }
+    if (event.target.closest('[data-live-follow]')) {
+      event.stopPropagation();
+      if (!needUser()) return;
+      const btn = event.target.closest('[data-live-follow]');
+      const targetUid = article.dataset.authorUid;
+      if (!targetUid) return;
+      const isFollowing = /following/i.test(btn.textContent);
+      btn.disabled = true;
+      try {
+        await api.request(isFollowing ? 'cv_social_unfollow_user' : 'cv_social_follow_user', { target_uid: targetUid });
+        const nowFollowing = !isFollowing;
+        btn.innerHTML = `<i class="fa-solid ${nowFollowing ? 'fa-check' : 'fa-plus'} text-[11px] mr-1"></i>${nowFollowing ? 'Following' : 'Follow'}`;
+        btn.className = `btn ${nowFollowing ? 'btn-neutral' : 'btn-outline'} !py-1 !px-3 !text-[13px]`;
+        toast(nowFollowing ? 'Following' : 'Unfollowed');
+      } catch (err) {
+        toast(err.message);
+      } finally {
+        btn.disabled = false;
+      }
+      return;
+    }
     if (event.target.closest('[data-live-delete]')) { if (!needUser() || !confirm('Delete this post?')) return; await api.request('cv_delete_post', { post_id: id }); article.remove(); toast('Post deleted'); }
   });
   feed?.addEventListener('submit', async event => { const form = event.target.closest('[data-comment-form]'); if (!form) return; event.preventDefault(); if (!needUser()) return; const article = form.closest('[data-post-id]'), input = $('input', form); try { await api.request('cv_create_post_comment', { post_id: article.dataset.postId, content: input.value.trim() }); input.value = ''; toast('Comment posted'); } catch (error) { toast(error.message); } });
