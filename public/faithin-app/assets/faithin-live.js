@@ -901,24 +901,8 @@
           const count = followers.length;
           const topFollowers = followers.slice(0, 3);
           
-          let avatarCluster = activity.querySelector('[data-follower-avatars]');
-          let followerText = activity.querySelector('[data-follower-text]');
-          
-          if (!avatarCluster) {
-            avatarCluster = document.createElement('div');
-            avatarCluster.setAttribute('data-follower-avatars', '');
-            avatarCluster.className = 'flex -space-x-2 overflow-hidden py-0.5 items-center shrink-0';
-            followerSummary.prepend(avatarCluster);
-          }
-          if (!followerText) {
-            followerText = document.createElement('span');
-            followerText.setAttribute('data-follower-text', '');
-            followerText.className = 'leading-tight';
-            followerSummary.appendChild(followerText);
-          }
-          
           if (count > 0) {
-            avatarCluster.innerHTML = topFollowers.map(f => {
+            const avatarsHtml = topFollowers.map(f => {
               const photo = f.photo_url || f.avatar_url || f.avatar;
               const name = f.name || f.displayName || 'Member';
               if (photo) {
@@ -926,7 +910,6 @@
               }
               return window.FILive.avatarMarkup(f, 'inline-flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-full ring-2 ring-surface text-[10px] font-bold text-white shadow-sm transition hover:scale-105');
             }).join('');
-            avatarCluster.style.display = 'flex';
             
             let textMarkup = `${count} ${count === 1 ? 'follower' : 'followers'}`;
             if (count === 1) {
@@ -948,11 +931,19 @@
               const others = count - 3;
               textMarkup = `Followed by <strong class="font-semibold text-ink">${esc(n1)}</strong>, <strong class="font-semibold text-ink">${esc(n2)}</strong>, <strong class="font-semibold text-ink">${esc(n3)}</strong> and <strong class="font-semibold text-ink">${others} other${others > 1 ? 's' : ''}</strong>`;
             }
-            followerText.innerHTML = textMarkup;
+            
+            followerSummary.className = 'flex items-center gap-2.5 mt-1.5 text-[13.5px] sm:text-[14px] text-muted hover:text-ink transition cursor-pointer';
+            followerSummary.innerHTML = `
+              <div class="flex -space-x-2 overflow-hidden py-0.5 items-center shrink-0" data-follower-avatars="">
+                ${avatarsHtml}
+              </div>
+              <span class="leading-snug text-muted" data-follower-text="">
+                ${textMarkup}
+              </span>
+            `;
           } else {
-            avatarCluster.innerHTML = '';
-            avatarCluster.style.display = 'none';
-            followerText.textContent = '0 followers';
+            followerSummary.className = 'inline-block mt-1 text-[13.5px] font-semibold text-brand hover:underline cursor-pointer';
+            followerSummary.innerHTML = '0 followers';
           }
         }
       }).catch(() => {});

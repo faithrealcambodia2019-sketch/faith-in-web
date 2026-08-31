@@ -1901,15 +1901,56 @@
         return currentUser(b).then(function (viewer) {
             var subjectUid = explicitUid || (viewer ? viewer.uid : '');
             if (!subjectUid) return { items: [] };
-            var q = b.dbMod.query(
+
+            var altField = field === 'targetUid' ? 'target_uid' : 'follower_uid';
+            var altOtherField = otherField === 'followerUid' ? 'follower_uid' : 'target_uid';
+
+            var q1 = b.dbMod.query(
                 b.dbMod.collection(b.db, 'follows'),
                 b.dbMod.where(field, '==', subjectUid),
                 b.dbMod.limit(200)
             );
-            return b.dbMod.getDocs(q).then(function (snap) {
-                var uids = [];
-                snap.forEach(function (d) { uids.push(d.data()[otherField]); });
+            var q2 = b.dbMod.query(
+                b.dbMod.collection(b.db, 'follows'),
+                b.dbMod.where(altField, '==', subjectUid),
+                b.dbMod.limit(200)
+            );
+            var q3 = b.dbMod.query(
+                b.dbMod.collection(b.db, 'follows'),
+                b.dbMod.limit(200)
+            );
+
+            return Promise.all([
+                b.dbMod.getDocs(q1).catch(function () { return null; }),
+                b.dbMod.getDocs(q2).catch(function () { return null; }),
+                b.dbMod.getDocs(q3).catch(function () { return null; })
+            ]).then(function (results) {
+                var uidsMap = {};
+                results.forEach(function (snap) {
+                    if (snap && snap.forEach) {
+                        snap.forEach(function (d) {
+                            var data = d.data() || {};
+                            var docId = d.id || '';
+                            var targetValue = data.targetUid || data.target_uid;
+                            var followerValue = data.followerUid || data.follower_uid;
+                            if (field === 'targetUid') {
+                                if (targetValue === subjectUid || (docId.indexOf('__') !== -1 && docId.split('__')[1] === subjectUid)) {
+                                    var fUid = followerValue || docId.split('__')[0];
+                                    if (fUid && fUid !== subjectUid) uidsMap[fUid] = true;
+                                }
+                            } else {
+                                if (followerValue === subjectUid || (docId.indexOf('__') !== -1 && docId.split('__')[0] === subjectUid)) {
+                                    var tUid = targetValue || docId.split('__')[1];
+                                    if (tUid && tUid !== subjectUid) uidsMap[tUid] = true;
+                                }
+                            }
+                        });
+                    }
+                });
+
+                var uids = Object.keys(uidsMap);
                 if (!uids.length) return { items: [] };
+
                 return followingMap(b, viewer).then(function (following) {
                     return Promise.all(uids.map(function (uid) {
                         return getMemberDocument(b, uid)
