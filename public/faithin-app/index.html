@@ -274,136 +274,192 @@
 <!-- article -->
 <div aria-labelledby="t-article" aria-modal="true" class="modal hidden article-editor-modal animate-pop-in" id="modal-article" role="dialog" style="max-width: 960px; width: 100%; height: 90vh; max-height: 90vh; border-radius: 16px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); display: flex; flex-direction: column; overflow: hidden; position: relative;">
   
-  <!-- Header / Formatting Toolbar -->
-  <header class="flex items-center justify-between px-4 sm:px-6 py-3 border-b border-line bg-surface rounded-t-2xl z-10 shrink-0">
-    <!-- Left side: Formatting tools -->
-    <div class="flex items-center gap-1 sm:gap-2 overflow-x-auto pb-1 sm:pb-0" id="editor-tools" style="-ms-overflow-style: none; scrollbar-width: none;">
-      
-      <!-- Text Formatting Group -->
-      <div class="flex items-center bg-raised rounded-lg border border-line p-1">
-        <button type="button" class="format-btn article-tooltip" data-cmd="bold" aria-label="Bold">
-          <i class="fa-solid fa-bold text-sm"></i>
-          <span class="tooltiptext">Bold (Cmd+B)</span>
-        </button>
-        <button type="button" class="format-btn article-tooltip" data-cmd="italic" aria-label="Italic">
-          <i class="fa-solid fa-italic text-sm"></i>
-          <span class="tooltiptext">Italic (Cmd+I)</span>
-        </button>
-        <button type="button" class="format-btn article-tooltip" data-cmd="underline" aria-label="Underline">
-          <i class="fa-solid fa-underline text-sm"></i>
-          <span class="tooltiptext">Underline (Cmd+U)</span>
-        </button>
-        <button type="button" class="format-btn article-tooltip" data-cmd="strikeThrough" aria-label="Strikethrough">
-          <i class="fa-solid fa-strikethrough text-sm"></i>
-          <span class="tooltiptext">Strikethrough</span>
-        </button>
-      </div>
+  <!-- ================= EDIT VIEW ================= -->
+  <div id="article-edit-view" class="flex flex-col h-full overflow-hidden flex-1">
+    <!-- Header / Formatting Toolbar -->
+    <header class="flex items-center justify-between px-4 sm:px-6 py-3 border-b border-line bg-surface rounded-t-2xl z-10 shrink-0">
+      <!-- Left side: Formatting tools -->
+      <div class="flex items-center gap-1 sm:gap-2 overflow-x-auto pb-1 sm:pb-0" id="editor-tools" style="-ms-overflow-style: none; scrollbar-width: none;">
+        
+        <!-- Text Formatting Group -->
+        <div class="flex items-center bg-raised rounded-lg border border-line p-1">
+          <button type="button" class="format-btn article-tooltip" data-cmd="bold" aria-label="Bold">
+            <i class="fa-solid fa-bold text-sm"></i>
+            <span class="tooltiptext">Bold (Cmd+B)</span>
+          </button>
+          <button type="button" class="format-btn article-tooltip" data-cmd="italic" aria-label="Italic">
+            <i class="fa-solid fa-italic text-sm"></i>
+            <span class="tooltiptext">Italic (Cmd+I)</span>
+          </button>
+          <button type="button" class="format-btn article-tooltip" data-cmd="underline" aria-label="Underline">
+            <i class="fa-solid fa-underline text-sm"></i>
+            <span class="tooltiptext">Underline (Cmd+U)</span>
+          </button>
+          <button type="button" class="format-btn article-tooltip" data-cmd="strikeThrough" aria-label="Strikethrough">
+            <i class="fa-solid fa-strikethrough text-sm"></i>
+            <span class="tooltiptext">Strikethrough</span>
+          </button>
+        </div>
 
-      <div class="w-px h-6 bg-line mx-1"></div>
+        <div class="w-px h-6 bg-line mx-1"></div>
 
-      <!-- Lists & Quotes Group -->
-      <div class="flex items-center bg-raised rounded-lg border border-line p-1">
-        <button type="button" class="format-btn article-tooltip" data-cmd="insertUnorderedList" aria-label="Bullet List">
-          <i class="fa-solid fa-list-ul text-sm"></i>
-          <span class="tooltiptext">Bulleted List</span>
-        </button>
-        <button type="button" class="format-btn article-tooltip" data-cmd="insertOrderedList" aria-label="Numbered List">
-          <i class="fa-solid fa-list-ol text-sm"></i>
-          <span class="tooltiptext">Numbered List</span>
-        </button>
-        <button type="button" class="format-btn article-tooltip" data-cmd="formatBlock" data-arg="blockquote" aria-label="Blockquote">
-          <i class="fa-solid fa-quote-right text-sm"></i>
-          <span class="tooltiptext">Quote</span>
-        </button>
-      </div>
+        <!-- Lists & Quotes Group -->
+        <div class="flex items-center bg-raised rounded-lg border border-line p-1">
+          <button type="button" class="format-btn article-tooltip" data-cmd="insertUnorderedList" aria-label="Bullet List">
+            <i class="fa-solid fa-list-ul text-sm"></i>
+            <span class="tooltiptext">Bulleted List</span>
+          </button>
+          <button type="button" class="format-btn article-tooltip" data-cmd="insertOrderedList" aria-label="Numbered List">
+            <i class="fa-solid fa-list-ol text-sm"></i>
+            <span class="tooltiptext">Numbered List</span>
+          </button>
+          <button type="button" class="format-btn article-tooltip" data-cmd="formatBlock" data-arg="blockquote" aria-label="Blockquote">
+            <i class="fa-solid fa-quote-right text-sm"></i>
+            <span class="tooltiptext">Quote</span>
+          </button>
+        </div>
 
-      <div class="w-px h-6 bg-line mx-1"></div>
+        <div class="w-px h-6 bg-line mx-1"></div>
 
-      <!-- Headings Group -->
-      <div class="flex items-center bg-raised rounded-lg border border-line p-1">
-        <button type="button" class="format-btn article-tooltip font-serif font-bold text-sm" data-cmd="formatBlock" data-arg="h1" aria-label="Heading 1">
-          H1
-          <span class="tooltiptext">Heading 1</span>
-        </button>
-        <button type="button" class="format-btn article-tooltip font-serif font-semibold text-xs" data-cmd="formatBlock" data-arg="h2" aria-label="Heading 2">
-          H2
-          <span class="tooltiptext">Heading 2</span>
-        </button>
-      </div>
-       
-      <div class="w-px h-6 bg-line mx-1 hidden sm:block"></div>
+        <!-- Headings Group -->
+        <div class="flex items-center bg-raised rounded-lg border border-line p-1">
+          <button type="button" class="format-btn article-tooltip font-serif font-bold text-sm" data-cmd="formatBlock" data-arg="h1" aria-label="Heading 1">
+            H1
+            <span class="tooltiptext">Heading 1</span>
+          </button>
+          <button type="button" class="format-btn article-tooltip font-serif font-semibold text-xs" data-cmd="formatBlock" data-arg="h2" aria-label="Heading 2">
+            H2
+            <span class="tooltiptext">Heading 2</span>
+          </button>
+        </div>
+         
+        <div class="w-px h-6 bg-line mx-1 hidden sm:block"></div>
 
-      <!-- Insert Media Group -->
-      <div class="hidden sm:flex items-center bg-raised rounded-lg border border-line p-1">
-        <button type="button" class="format-btn article-tooltip" data-insert-image aria-label="Insert Image">
-          <i class="fa-regular fa-image text-sm"></i>
-          <span class="tooltiptext">Add Image</span>
-        </button>
-        <button type="button" class="format-btn article-tooltip" data-insert-link aria-label="Insert Link">
-          <i class="fa-solid fa-link text-sm"></i>
-          <span class="tooltiptext">Add Link</span>
-        </button>
-      </div>
-    </div>
-
-    <!-- Right side: Close button -->
-    <h2 class="sr-only" id="t-article">Write an article</h2>
-    <button type="button" class="w-8 h-8 flex items-center justify-center rounded-full text-muted hover:bg-raised hover:text-ink transition-colors shrink-0" data-close="" aria-label="Close Editor">
-      <i class="fa-solid fa-xmark text-lg"></i>
-    </button>
-  </header>
-
-  <!-- Main Editor Area -->
-  <main class="flex-1 overflow-y-auto article-editor-content px-6 sm:px-16 py-8 sm:py-12 bg-surface">
-    <div class="max-w-3xl mx-auto" style="max-width: 48rem; margin: 0 auto;">
-      
-      <!-- Cover Image Placeholder -->
-      <div class="mb-8 relative group cursor-pointer" id="cover-image-area">
-        <label class="w-full h-44 sm:h-60 bg-raised rounded-xl border-2 border-dashed border-line flex flex-col items-center justify-center text-muted hover:bg-raised/70 transition-colors cursor-pointer overflow-hidden block">
-          <img id="article-cover-preview" src="" class="w-full h-full object-cover hidden" alt="Article Cover" />
-          <div id="article-cover-prompt" class="flex flex-col items-center justify-center h-full py-6">
-            <i class="fa-regular fa-image text-3xl mb-2 text-muted"></i>
-            <span class="font-medium text-sm">Add a cover image</span>
-          </div>
-          <input type="file" id="article-cover-input" accept="image/*" class="hidden" />
-        </label>
-      </div>
-
-      <!-- Headline -->
-      <h1 class="text-3xl sm:text-5xl font-serif font-bold text-ink mb-6 leading-tight outline-none break-words article-editable min-h-[50px]" contenteditable="true" placeholder="Headline" data-placeholder="Headline" id="article-headline" role="textbox" aria-multiline="true"></h1>
-
-      <!-- Article Metadata -->
-      <div class="flex items-center gap-3 mb-8 text-sm text-muted border-b border-line pb-4">
-        <span id="article-author-avatar" class="avatar w-8 h-8 rounded-full text-xs font-semibold" style="background:linear-gradient(135deg,#2f5bea,#1e40af)">FI</span>
-        <div>
-          <p class="font-medium text-ink" id="article-author-name">By You</p>
-          <p class="text-xs text-muted">Draft • Just now</p>
+        <!-- Insert Media Group -->
+        <div class="hidden sm:flex items-center bg-raised rounded-lg border border-line p-1">
+          <button type="button" class="format-btn article-tooltip" data-insert-image aria-label="Insert Image">
+            <i class="fa-regular fa-image text-sm"></i>
+            <span class="tooltiptext">Add Image</span>
+          </button>
+          <button type="button" class="format-btn article-tooltip" data-insert-link aria-label="Insert Link">
+            <i class="fa-solid fa-link text-sm"></i>
+            <span class="tooltiptext">Add Link</span>
+          </button>
         </div>
       </div>
 
-      <!-- Body Content -->
-      <div class="text-lg font-serif text-ink leading-relaxed outline-none min-h-[300px] break-words whitespace-pre-wrap article-editable" contenteditable="true" placeholder="Write your story..." data-placeholder="Write your story..." data-ph="Write your story..." id="article-body" role="textbox" aria-multiline="true"></div>
-    </div>
-  </main>
-
-  <!-- Footer / Action Area -->
-  <footer class="px-6 py-4 border-t border-line bg-surface rounded-b-2xl flex flex-col sm:flex-row items-center justify-between shrink-0 gap-4 sm:gap-0">
-    <!-- Left side: Status -->
-    <div class="flex items-center text-muted text-sm font-medium gap-2">
-      <i class="fa-solid fa-cloud text-muted" id="save-icon"></i>
-      <span id="save-status">Saved to draft</span>
-    </div>
-
-    <!-- Right side: Actions -->
-    <div class="flex items-center gap-3 w-full sm:w-auto">
-      <button type="button" class="flex-1 sm:flex-none px-4 py-2 text-sm font-medium text-muted hover:text-ink hover:bg-raised rounded-lg transition-colors border border-transparent" id="article-preview-btn">
-        Preview
+      <!-- Right side: Close button -->
+      <h2 class="sr-only" id="t-article">Write an article</h2>
+      <button type="button" class="w-8 h-8 flex items-center justify-center rounded-full text-muted hover:bg-raised hover:text-ink transition-colors shrink-0" data-close="" aria-label="Close Editor">
+        <i class="fa-solid fa-xmark text-lg"></i>
       </button>
-      <button type="button" class="flex-1 sm:flex-none px-6 py-2 text-sm font-medium text-white bg-brand hover:bg-brand-strong rounded-lg shadow-sm transition-all active:scale-95" id="article-publish-btn" style="background:#2563eb; color:#ffffff;">
-        Publish
-      </button>
-    </div>
-  </footer>
+    </header>
+
+    <!-- Main Editor Area -->
+    <main class="flex-1 overflow-y-auto article-editor-content px-6 sm:px-16 py-8 sm:py-12 bg-surface">
+      <div class="max-w-3xl mx-auto" style="max-width: 48rem; margin: 0 auto;">
+        
+        <!-- Cover Image Placeholder -->
+        <div class="mb-8 relative group cursor-pointer" id="cover-image-area">
+          <label class="w-full h-44 sm:h-60 bg-raised rounded-xl border-2 border-dashed border-line flex flex-col items-center justify-center text-muted hover:bg-raised/70 transition-colors cursor-pointer overflow-hidden block">
+            <img id="article-cover-preview" src="" class="w-full h-full object-cover hidden" alt="Article Cover" />
+            <div id="article-cover-prompt" class="flex flex-col items-center justify-center h-full py-6">
+              <i class="fa-regular fa-image text-3xl mb-2 text-muted"></i>
+              <span class="font-medium text-sm">Add a cover image</span>
+            </div>
+            <input type="file" id="article-cover-input" accept="image/*" class="hidden" />
+          </label>
+        </div>
+
+        <!-- Headline -->
+        <h1 class="text-3xl sm:text-5xl font-serif font-bold text-ink mb-6 leading-tight outline-none break-words article-editable min-h-[50px]" contenteditable="true" placeholder="Headline" data-placeholder="Headline" id="article-headline" role="textbox" aria-multiline="true" style="font-family:'Koh Santepheap','Merriweather',serif !important;"></h1>
+
+        <!-- Article Metadata -->
+        <div class="flex items-center gap-3 mb-8 text-sm text-muted border-b border-line pb-4">
+          <span id="article-author-avatar" class="avatar w-8 h-8 rounded-full text-xs font-semibold" style="background:linear-gradient(135deg,#2f5bea,#1e40af)">FI</span>
+          <div>
+            <p class="font-medium text-ink" id="article-author-name">By You</p>
+            <p class="text-xs text-muted">Draft • Just now</p>
+          </div>
+        </div>
+
+        <!-- Body Content -->
+        <div class="text-lg font-serif text-ink leading-relaxed outline-none min-h-[300px] break-words whitespace-pre-wrap article-editable" contenteditable="true" placeholder="Write your story..." data-placeholder="Write your story..." data-ph="Write your story..." id="article-body" role="textbox" aria-multiline="true" style="font-family:'Koh Santepheap','Merriweather',serif !important;"></div>
+      </div>
+    </main>
+
+    <!-- Footer / Action Area -->
+    <footer class="px-6 py-4 border-t border-line bg-surface rounded-b-2xl flex flex-col sm:flex-row items-center justify-between shrink-0 gap-4 sm:gap-0">
+      <!-- Left side: Status -->
+      <div class="flex items-center text-muted text-sm font-medium gap-2">
+        <i class="fa-solid fa-cloud text-muted" id="save-icon"></i>
+        <span id="save-status">Saved to draft</span>
+      </div>
+
+      <!-- Right side: Actions -->
+      <div class="flex items-center gap-3 w-full sm:w-auto">
+        <button type="button" class="flex-1 sm:flex-none px-5 py-2 text-sm font-medium text-muted hover:text-ink hover:bg-raised rounded-lg transition-colors border border-line" id="article-preview-btn">
+          <i class="fa-regular fa-eye mr-1.5"></i>Preview
+        </button>
+        <button type="button" class="flex-1 sm:flex-none px-6 py-2 text-sm font-medium text-white bg-brand hover:bg-brand-strong rounded-lg shadow-sm transition-all active:scale-95" id="article-publish-btn" style="background:#2563eb; color:#ffffff;">
+          Publish
+        </button>
+      </div>
+    </footer>
+  </div>
+
+  <!-- ================= PREVIEW VIEW ================= -->
+  <div id="article-preview-view" class="hidden flex flex-col h-full overflow-hidden flex-1">
+    <!-- Preview Header -->
+    <header class="flex items-center justify-between px-4 sm:px-6 py-3 border-b border-line bg-surface rounded-t-2xl z-10 shrink-0">
+      <div class="flex items-center gap-2">
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+          Article Preview
+        </span>
+        <span class="text-xs text-muted hidden sm:inline">• How readers will see your article</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <button type="button" id="article-back-to-edit" class="px-4 py-1.5 text-sm font-medium rounded-lg bg-raised hover:bg-line border border-line text-ink transition-colors flex items-center gap-1.5">
+          <i class="fa-solid fa-pen-to-square text-xs"></i> Back to Edit
+        </button>
+        <button type="button" id="article-preview-publish-btn" class="px-5 py-1.5 text-sm font-medium text-white bg-brand hover:bg-brand-strong rounded-lg transition-colors" style="background:#2563eb; color:#ffffff;">
+          Publish
+        </button>
+        <button type="button" class="w-8 h-8 flex items-center justify-center rounded-full text-muted hover:bg-raised hover:text-ink transition-colors shrink-0" data-close="" aria-label="Close Preview">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- Preview Content Area -->
+    <main class="flex-1 overflow-y-auto article-editor-content px-6 sm:px-16 py-8 sm:py-12 bg-surface">
+      <article class="max-w-3xl mx-auto" style="max-width: 48rem; margin: 0 auto;">
+        <!-- Preview Cover Image -->
+        <div id="pv-cover-wrap" class="mb-8 rounded-2xl overflow-hidden shadow-sm hidden">
+          <img id="pv-cover" src="" alt="Cover" class="w-full max-h-[380px] object-cover" />
+        </div>
+
+        <!-- Preview Title -->
+        <h1 id="pv-title" class="text-3xl sm:text-5xl font-serif font-bold text-ink leading-tight mb-6 break-words" style="font-family:'Koh Santepheap','Merriweather',serif !important;"></h1>
+
+        <!-- Preview Author Card -->
+        <div class="flex items-center gap-3.5 mb-8 pb-6 border-b border-line">
+          <span id="pv-author-avatar" class="avatar w-11 h-11 rounded-full text-sm font-semibold shadow-sm" style="background:linear-gradient(135deg,#2f5bea,#1e40af)">FI</span>
+          <div>
+            <div class="flex items-center gap-2">
+              <h4 id="pv-author-name" class="font-bold text-ink text-[15px]">By You</h4>
+              <span class="text-[11.5px] px-2 py-0.5 rounded-full bg-brand-soft text-brand font-medium">Author</span>
+            </div>
+            <p class="text-xs text-muted mt-0.5" id="pv-date">Published on Faith In • Just now</p>
+          </div>
+        </div>
+
+        <!-- Preview Body HTML -->
+        <div id="pv-body" class="article-preview-body text-[17px] sm:text-[18px] text-ink leading-[1.85] break-words whitespace-pre-wrap" style="font-family:'Koh Santepheap','Merriweather',serif !important;"></div>
+      </article>
+    </main>
+  </div>
 
 </div>
 <!-- story viewer -->

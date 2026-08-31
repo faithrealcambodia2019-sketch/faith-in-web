@@ -1060,3 +1060,54 @@ html.dark .format-btn.active {
   color: #93c5fd;
   border-color: #3b82f6;
 }
+
+/* Khmer font support and Article formatting */
+.font-serif,
+.article-serif,
+.article-editable,
+#article-headline,
+#article-body,
+.article-preview-body {
+  font-family: 'Koh Santepheap', 'Merriweather', 'Lora', Georgia, 'Noto Serif Khmer', serif !important;
+}
+.article-preview-body h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 1.5rem 0 1rem;
+  line-height: 1.3;
+}
+.article-preview-body h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 1.25rem 0 0.75rem;
+  line-height: 1.35;
+}
+.article-preview-body blockquote {
+  border-left: 4px solid #2563eb;
+  padding-left: 1rem;
+  margin: 1rem 0;
+  font-style: italic;
+  color: #4b5563;
+}
+html.dark .article-preview-body blockquote {
+  color: #9ca3af;
+  border-color: #3b82f6;
+}
+.article-preview-body ul {
+  list-style-type: disc;
+  padding-left: 1.5rem;
+  margin: 1rem 0;
+}
+.article-preview-body ol {
+  list-style-type: decimal;
+  padding-left: 1.5rem;
+  margin: 1rem 0;
+}
+.article-preview-body p {
+  margin-bottom: 1.25rem;
+  line-height: 1.8;
+}
+.article-preview-body a {
+  color: #2563eb;
+  text-decoration: underline;
+}

@@ -589,22 +589,71 @@
     el.addEventListener('input', triggerSaveStatus);
   });
 
-  $('#article-preview-btn')?.addEventListener('click', () => {
-    const title = (headlineEl?.innerText || headlineEl?.value || '').trim();
-    const text = (bodyEl?.innerText || '').trim();
-    if (!title && !text) return toast('Write a headline or article text first.');
-    toast('Draft preview: ' + (title || 'Untitled Story'));
+  const editView = $('#article-edit-view');
+  const previewView = $('#article-preview-view');
+  const pvTitle = $('#pv-title');
+  const pvBody = $('#pv-body');
+  const pvCover = $('#pv-cover');
+  const pvCoverWrap = $('#pv-cover-wrap');
+  const pvAuthorName = $('#pv-author-name');
+  const pvAuthorAvatar = $('#pv-author-avatar');
+
+  function showArticlePreview() {
+    const title = (headlineEl?.innerText || headlineEl?.textContent || '').trim();
+    const bodyHtml = bodyEl ? bodyEl.innerHTML : '';
+    const bodyText = (bodyEl?.innerText || bodyEl?.textContent || '').trim();
+    if (!title && !bodyText) {
+      return toast('Write a headline or some text first to preview.');
+    }
+
+    if (pvTitle) pvTitle.textContent = title || 'Untitled Article';
+    if (pvBody) pvBody.innerHTML = bodyHtml || `<p class="text-muted">No content written yet.</p>`;
+
+    const user = window.FILive?.user || null;
+    if (user && pvAuthorName) pvAuthorName.textContent = `By ${user.name || user.displayName || 'You'}`;
+    if (user && pvAuthorAvatar) {
+      const avatarUrl = user.avatar_url || user.avatar || user.photo_url;
+      if (avatarUrl) {
+        pvAuthorAvatar.innerHTML = `<img src="${esc(avatarUrl)}" class="w-full h-full object-cover rounded-full" alt="Author" />`;
+      } else {
+        pvAuthorAvatar.textContent = api.initials(user.name || 'You');
+      }
+    }
+
+    if (pendingArticleCoverFile && coverPreview && coverPreview.src) {
+      if (pvCover) pvCover.src = coverPreview.src;
+      pvCoverWrap?.classList.remove('hidden');
+    } else {
+      pvCoverWrap?.classList.add('hidden');
+    }
+
+    if (editView && previewView) {
+      editView.classList.add('hidden');
+      previewView.classList.remove('hidden');
+    }
+  }
+
+  function hideArticlePreview() {
+    if (editView && previewView) {
+      previewView.classList.add('hidden');
+      editView.classList.remove('hidden');
+      headlineEl?.focus();
+    }
+  }
+
+  $('#article-preview-btn')?.addEventListener('click', showArticlePreview);
+  $('#article-back-to-edit')?.addEventListener('click', hideArticlePreview);
+
+  document.addEventListener('fi:modalclose', () => {
+    hideArticlePreview();
   });
 
-  const articleButton = $('#article-publish-btn') || $$('#modal-article button').find(button => /publish/i.test(button.textContent));
-  articleButton?.removeAttribute('data-toast');
-  articleButton?.addEventListener('click', async event => {
-    event.stopPropagation();
+  const publishArticle = async (btn) => {
     if (!needUser()) return;
-    const title = (headlineEl?.innerText || headlineEl?.value || '').trim();
+    const title = (headlineEl?.innerText || headlineEl?.textContent || '').trim();
     const text = (bodyEl?.innerText || bodyEl?.textContent || '').trim();
     if (!title && !text) return toast('Add a headline and article text.');
-    busy(articleButton, true, 'Publishing');
+    busy(btn, true, 'Publishing');
     try {
       const files = pendingArticleCoverFile ? { 'post_media[]': [pendingArticleCoverFile] } : {};
       await api.request('cv_create_post', {
@@ -616,6 +665,7 @@
         visibility: 'public'
       }, files);
       closeModal();
+      hideArticlePreview();
       toast('Article published ✨');
       if (headlineEl) headlineEl.innerText = '';
       if (bodyEl) bodyEl.innerHTML = '';
@@ -626,9 +676,16 @@
     } catch (error) {
       toast(error.message);
     } finally {
-      busy(articleButton, false, 'Publish');
+      busy(btn, false, 'Publish');
     }
-  });
+  };
+
+  const articleButton = $('#article-publish-btn');
+  articleButton?.removeAttribute('data-toast');
+  articleButton?.addEventListener('click', (e) => { e.stopPropagation(); publishArticle(articleButton); });
+
+  const previewPublishBtn = $('#article-preview-publish-btn');
+  previewPublishBtn?.addEventListener('click', (e) => { e.stopPropagation(); publishArticle(previewPublishBtn); });
 
   // Patch a single post in place. Reloading the whole feed after a tap blanks
   // the list behind a "Loading your community…" spinner, loses scroll position
