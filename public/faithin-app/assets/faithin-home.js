@@ -318,20 +318,20 @@
       const result = await api.request('cv_find_users');
       const items = (result.items || []).slice(0, 8);
       if (items.length) {
-        list.innerHTML = items.map(user => `<li class="flex items-center justify-between py-1" data-user-uid="${esc(user.uid)}">
-          <div class="flex items-center space-x-3 min-w-0 pr-2">
-            ${window.FILive.avatarMarkup(user, 'w-[42px] h-[42px] rounded-full object-cover shrink-0 text-[14px]')}
-            <div class="flex flex-col min-w-0">
-              <a href="/profile?uid=${encodeURIComponent(user.uid)}" class="font-bold text-ink text-[14px] leading-tight truncate hover:text-brand transition">${esc(user.name)}</a>
-              <span class="text-[12px] text-muted font-normal leading-tight mt-0.5 truncate">Faithin</span>
+        list.innerHTML = items.map(user => `<li data-user-uid="${esc(user.uid)}">
+          <div class="flex items-center gap-3 min-w-0 flex-1">
+            ${window.FILive.avatarMarkup(user, 'avatar')}
+            <div class="contact-info">
+              <a href="/profile?uid=${encodeURIComponent(user.uid)}" class="contact-name hover:text-brand transition">${esc(user.name)}</a>
+              <span class="contact-subtitle">Faithin</span>
             </div>
           </div>
-          <div class="flex items-center space-x-2 shrink-0">
-            <button type="button" class="flex items-center justify-center min-w-[84px] h-[30px] px-3 rounded-full font-semibold text-[12.5px] transition-all border ${user.is_following ? 'border-line text-muted hover:bg-raised' : 'border-[#2554D7] text-[#2554D7] hover:bg-blue-50/70'}" data-contact-follow-btn data-following="${user.is_following ? 'true' : 'false'}">
+          <div class="contact-actions">
+            <button type="button" class="contact-follow-btn ${user.is_following ? 'is-following' : ''}" data-contact-follow-btn data-following="${user.is_following ? 'true' : 'false'}">
               <i class="fa-solid ${user.is_following ? 'fa-check' : 'fa-plus'} text-[10px] mr-1"></i> ${user.is_following ? 'Following' : 'Follow'}
             </button>
-            <button type="button" class="text-muted hover:text-brand p-1 transition-colors" data-live-message aria-label="Message ${esc(user.name)}">
-              <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <button type="button" class="contact-chat-btn" data-live-message aria-label="Message ${esc(user.name)}">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
                 <path d="M10 8.5h4" /><path d="M10 12h3" /><path d="M10 8.5v7" />
               </svg>
