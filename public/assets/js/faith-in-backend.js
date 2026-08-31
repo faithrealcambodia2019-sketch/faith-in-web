@@ -398,15 +398,52 @@
         );
     }
 
-    // Transitional compatibility for the safe two-phase rollout. Before the
-    // new rules are deployed, /publicProfiles is denied and the existing
-    // signed-in directory still lives in /users. After the rules deploy, the
-    // public query succeeds and the private /users fallback is never used.
+    function fallbackMemberSnapshot(b) {
+        var postQuery = b.dbMod.query(b.dbMod.collection(b.db, 'posts'), b.dbMod.limit(100));
+        return b.dbMod.getDocs(postQuery).then(function (postSnap) {
+            var membersByUid = {};
+            postSnap.forEach(function (d) {
+                var p = d.data() || {};
+                var author = p.author || {};
+                var uid = text(author.uid || p.authorUid || p.author_uid);
+                if (uid && !membersByUid[uid]) {
+                    membersByUid[uid] = {
+                        id: uid,
+                        data: function () {
+                            return {
+                                uid: uid,
+                                displayName: text(author.name || author.displayName || p.author_name || 'Faith In Member'),
+                                photoURL: text(author.avatar_url || author.avatar || p.author_avatar),
+                                role: text(author.role || p.author_role || 'Faith In member'),
+                                church: text(author.church || p.author_church),
+                                ministry: text(author.ministry || p.author_ministry),
+                                location: text(author.location || p.author_location),
+                                bio: text(author.bio || p.author_bio)
+                            };
+                        }
+                    };
+                }
+            });
+            var docs = Object.values(membersByUid);
+            return {
+                forEach: function (cb) { docs.forEach(cb); },
+                empty: docs.length === 0,
+                size: docs.length
+            };
+        }).catch(function () {
+            return { forEach: function () {}, empty: true, size: 0 };
+        });
+    }
+
     function getMemberSnapshot(b) {
         var publicQuery = b.dbMod.query(b.dbMod.collection(b.db, 'publicProfiles'), b.dbMod.limit(200));
-        return b.dbMod.getDocs(publicQuery).catch(function () {
-            var legacyQuery = b.dbMod.query(b.dbMod.collection(b.db, 'users'), b.dbMod.limit(200));
-            return b.dbMod.getDocs(legacyQuery);
+        return b.dbMod.getDocs(publicQuery).then(function (snap) {
+            var count = 0;
+            snap.forEach(function () { count++; });
+            if (count > 0) return snap;
+            return fallbackMemberSnapshot(b);
+        }).catch(function () {
+            return fallbackMemberSnapshot(b);
         });
     }
 
@@ -1580,6 +1617,11 @@
                         if (user && d.id === user.uid) return;
                         if (matcher && !matcher(data)) return;
                         items.push(shapeMember(d.id, data, user, following));
+                    });
+                    items.sort(function (a, b) {
+                        if (a.is_following && !b.is_following) return -1;
+                        if (!a.is_following && b.is_following) return 1;
+                        return String(a.name || '').localeCompare(String(b.name || ''));
                     });
                     return { items: items };
                 });

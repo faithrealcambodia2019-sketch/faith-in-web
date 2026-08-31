@@ -534,9 +534,12 @@
   function openNewMessage() {
     newModal.classList.remove('hidden');
     newModal.classList.add('flex');
-    $('#msg-people').value = '';
-    peopleList.innerHTML = '<p class="p-6 text-center text-[13px] text-muted">Type a name to find someone to message.</p>';
-    $('#msg-people').focus();
+    const msgInput = $('#msg-people');
+    if (msgInput) {
+      msgInput.value = '';
+      msgInput.focus();
+    }
+    searchPeople('');
   }
 
   function closeNewMessage() {
@@ -545,26 +548,31 @@
   }
 
   let peopleToken = 0;
-  async function searchPeople(term) {
+  async function searchPeople(term = '') {
     const token = ++peopleToken;
-    if (term.trim().length < 2) {
-      peopleList.innerHTML = '<p class="p-6 text-center text-[13px] text-muted">Type a name to find someone to message.</p>';
-      return;
-    }
-    peopleList.innerHTML = '<p class="p-6 text-center text-[13px] text-muted">Searching…</p>';
+    const query = String(term || '').trim();
+    peopleList.innerHTML = '<p class="p-6 text-center text-[13px] text-muted"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Loading members…</p>';
     try {
-      const result = await api.request('cv_social_search_message_users', { search: term.trim() });
+      const result = await api.request('cv_social_search_message_users', { search: query });
       if (token !== peopleToken) return;
       const items = result.items || result.users || [];
-      peopleList.innerHTML = items.length
-        ? items.map(person => `<button class="w-full flex items-center gap-3 p-2.5 rounded-xl row-hover text-left" type="button" data-person-uid="${esc(person.uid || '')}">
-            ${avatar(person, 'avatar w-10 h-10 text-[13px]')}
-            <span class="min-w-0">
-              <span class="block text-[14px] font-semibold truncate">${esc(person.name || 'Faith In Member')}</span>
-              <span class="block text-[12px] text-muted truncate">${esc(person.headline || person.role || 'Faith In member')}</span>
+      if (!items.length) {
+        peopleList.innerHTML = query
+          ? '<p class="p-6 text-center text-[13px] text-muted">No members matched that name.</p>'
+          : '<p class="p-6 text-center text-[13px] text-muted">No members found yet.</p>';
+        return;
+      }
+      peopleList.innerHTML = items.map(person => `<button class="w-full flex items-center gap-3 p-2.5 rounded-xl row-hover text-left transition" type="button" data-person-uid="${esc(person.uid || '')}">
+          ${avatar(person, 'avatar w-10 h-10 text-[13px]')}
+          <span class="min-w-0 flex-1">
+            <span class="flex items-center gap-1.5 flex-wrap">
+              <span class="text-[14px] font-semibold truncate">${esc(person.name || 'Faith In Member')}</span>
+              ${person.is_following ? '<span class="text-[10px] font-semibold uppercase px-1.5 py-0.5 rounded-full bg-brand-soft text-brand font-mono">Following</span>' : ''}
             </span>
-          </button>`).join('')
-        : '<p class="p-6 text-center text-[13px] text-muted">No members matched that name.</p>';
+            <span class="block text-[12px] text-muted truncate">${esc([person.role, person.church, person.ministry].filter(Boolean).join(' · ') || person.headline || 'Faith In member')}</span>
+          </span>
+          <i class="fa-solid fa-chevron-right text-[11px] text-faint ml-auto"></i>
+        </button>`).join('');
     } catch (error) {
       if (token !== peopleToken) return;
       peopleList.innerHTML = `<p class="p-6 text-center text-[13px] text-muted">${esc(error.message)}</p>`;
