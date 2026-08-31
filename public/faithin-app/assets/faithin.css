@@ -463,6 +463,14 @@ html.dark .chip.is-on{ color:#0b1120; }
   flex-direction: column !important;
   min-width: 0 !important;
   flex: 1 1 auto !important;
+  overflow: hidden !important;
+}
+
+#contacts .contact-name-row {
+  display: flex !important;
+  align-items: center !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
 }
 
 #contacts .contact-name {
@@ -473,6 +481,8 @@ html.dark .chip.is-on{ color:#0b1120; }
   white-space: nowrap !important;
   overflow: hidden !important;
   text-overflow: ellipsis !important;
+  min-width: 0 !important;
+  flex-shrink: 1 !important;
 }
 
 #contacts .contact-subtitle {

@@ -345,7 +345,10 @@
         <div class="flex items-center gap-3 min-w-0 flex-1">
           ${window.FILive.avatarMarkup(user, 'avatar')}
           <div class="contact-info">
-            <a href="/profile?uid=${encodeURIComponent(user.uid)}" class="contact-name hover:text-brand transition inline-flex items-center">${esc(user.name)}${window.FILive.verificationBadgeMarkup(user)}</a>
+            <div class="contact-name-row">
+              <a href="/profile?uid=${encodeURIComponent(user.uid)}" class="contact-name hover:text-brand transition" title="${esc(user.name)}">${esc(user.name)}</a>
+              ${window.FILive.verificationBadgeMarkup(user)}
+            </div>
             <span class="contact-subtitle">Faithin</span>
           </div>
         </div>

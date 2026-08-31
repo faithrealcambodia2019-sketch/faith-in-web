@@ -14,13 +14,11 @@
 
   function verificationBadgeMarkup(user, variant = 'inline') {
     const isProfile = variant === 'profile';
-    const isCurrent = !user || (session && (user.uid === session.uid || user.is_self)) || (!user?.uid && user?.name === session?.name);
-    const v = user?.verification || (isCurrent || user?.is_first_20 || (user?.id && Number(user.id) <= 20) || (user?.appUserId && Number(user.appUserId) <= 20) || (user?.uid && user.uid.length > 0) ? { show: true, type: 'purple', label: 'First 20', title: 'First 20 Member — Free Purple Tick' } : null);
-    if (!v || !v.show) return '';
+    const v = user?.verification || { show: true, type: 'purple', label: 'Verified Member', title: 'Verified Member — Purple Tick' };
     const type = v.type || 'purple';
     const tickClass = type === 'blue' ? 'fi-verified-tick fi-verified-tick--blue' : (type === 'yellow' || type === 'gold' ? 'fi-verified-tick fi-verified-tick--gold' : 'fi-verified-tick');
     const profileMod = isProfile ? ' fi-verified-tick--profile' : '';
-    const title = esc(v.title || 'First 20 Member (Free Purple Tick)');
+    const title = esc(v.title || 'Verified Member');
 
     return `<span class="${tickClass}${profileMod}" title="${title}" aria-label="${title}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"></polyline></svg></span>`;
   }
