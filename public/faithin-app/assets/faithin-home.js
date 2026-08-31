@@ -138,20 +138,25 @@
   }
 
   function postHTML(post) {
-    const author = post.author || { name: post.author_name || 'Faith In Member', uid: post.author_uid || '' };
-    const name = author.name || author.displayName || 'Faith In Member';
+    const author = post.author || {};
+    const uid = author.uid || post.author_uid || post.authorUid || '';
+    const name = author.name || author.displayName || post.author_name || post.authorName || 'Faith In Member';
     const current = window.FILive.user;
-    const avatar = author.uid && author.uid === current?.uid ? (current.avatar_url || current.avatar || current.photo_url || author.avatar_url || author.avatar || '') : (author.avatar_url || author.avatar || '');
+    const isSelf = !!(current && uid && uid === current.uid);
+    const avatar = isSelf
+      ? (current.avatar_url || current.avatar || current.photo_url || author.avatar_url || author.avatar || '')
+      : (author.avatar_url || author.avatar || author.photo_url || post.author_avatar || '');
+    const profileHref = uid ? `/profile?uid=${encodeURIComponent(uid)}` : '/profile';
     const selectedReaction = post.user_reaction || post.current_user_reaction || '';
     const selectedMeta = faithReactionMeta(selectedReaction || 'like');
     const saved = !!post.bookmarked;
-    const owner = !!post.can_delete;
+    const owner = !!(post.can_delete || isSelf);
     const body = post.content || post.excerpt || post.article_excerpt || '';
-    return `<article class="card overflow-hidden animate-fade-up" data-post-id="${esc(post.id)}" data-author-uid="${esc(author.uid || '')}">
+    return `<article class="card overflow-hidden animate-fade-up" data-post-id="${esc(post.id)}" data-author-uid="${esc(uid)}">
       <header class="flex items-start gap-3 p-4 pb-2.5">
-        <a href="/profile?uid=${encodeURIComponent(author.uid || '')}" class="shrink-0 block">${avatar ? `<img class="avatar w-11 h-11 object-cover" src="${esc(avatar)}" alt="${esc(name)}">` : `<span class="avatar w-11 h-11 text-[14px]">${esc(api.initials(name))}</span>`}</a>
-        <div class="min-w-0 flex-1"><div class="flex items-center gap-2 flex-wrap"><a href="/profile?uid=${encodeURIComponent(author.uid || '')}" class="text-[14.5px] font-semibold hover:text-brand">${esc(name)}</a>${post.type && post.type !== 'post' ? `<span class="text-[10.5px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-brand-soft text-brand-strong">${esc(post.type)}</span>` : ''}</div><p class="text-[12px] text-muted mt-0.5">${esc(post.time || 'just now')} · ${esc(post.visibility || 'Public')}</p></div>
-        ${!owner && author.uid ? `<button class="btn btn-outline !py-1 !px-3 !text-[13px]" data-live-follow><i class="fa-solid fa-plus text-[11px]"></i>Follow</button>` : ''}
+        <a href="${profileHref}" class="shrink-0 block">${avatar ? `<img class="avatar w-11 h-11 object-cover" src="${esc(avatar)}" alt="${esc(name)}">` : `<span class="avatar w-11 h-11 text-[14px]">${esc(api.initials(name))}</span>`}</a>
+        <div class="min-w-0 flex-1"><div class="flex items-center gap-2 flex-wrap"><a href="${profileHref}" class="text-[14.5px] font-semibold hover:text-brand">${esc(name)}</a>${post.type && post.type !== 'post' ? `<span class="text-[10.5px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-brand-soft text-brand-strong">${esc(post.type)}</span>` : ''}</div><p class="text-[12px] text-muted mt-0.5">${esc(post.time || 'just now')} · ${esc(post.visibility || 'Public')}</p></div>
+        ${!owner && uid ? `<button class="btn btn-outline !py-1 !px-3 !text-[13px]" data-live-follow><i class="fa-solid fa-plus text-[11px]"></i>Follow</button>` : ''}
         ${owner ? `<button class="icon-btn" data-live-delete aria-label="Delete post"><i class="fa-regular fa-trash-can"></i></button>` : ''}
       </header>
       ${post.article_title ? `<div class="px-4 pt-1"><h3 class="font-serif text-[22px] font-semibold">${esc(post.article_title)}</h3></div>` : ''}

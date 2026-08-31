@@ -562,6 +562,13 @@
         var media = Array.isArray(data.media_items) ? data.media_items : [];
         var cover = media.length ? (media[0].url || '') : text(data.cover_image_url);
 
+        var authorUid = text(author.uid || data.authorUid || data.author_uid);
+        var authorName = text(author.name || author.displayName || data.author_name || data.authorName || 'Faith In Member');
+        var authorAvatar = text(author.avatar_url || author.avatar || author.photo_url || data.author_avatar || data.authorAvatar);
+        var authorRole = text(author.role || data.author_role || data.authorRole);
+        var authorChurch = text(author.church || data.author_church || data.authorChurch);
+        var authorMinistry = text(author.ministry || data.author_ministry || data.authorMinistry);
+
         return {
             id: id,
             type: text(data.type || 'Text'),
@@ -576,17 +583,21 @@
             expires_at: blessingExpiry ? blessingExpiry.toISOString() : '',
             expires_in_seconds: blessingExpiry ? Math.max(0, Math.ceil((blessingExpiry.getTime() - Date.now()) / 1000)) : null,
             author: {
-                id: author.appUserId || numericId(author.uid),
-                uid: author.uid || '',
-                name: text(author.name || 'Faith In Member'),
-                avatar_url: text(author.avatar_url),
-                avatar: text(author.avatar_url),
-                role: text(author.role),
-                church: text(author.church),
-                ministry: text(author.ministry),
+                id: author.appUserId || data.appUserId || numericId(authorUid),
+                uid: authorUid,
+                name: authorName,
+                displayName: authorName,
+                avatar_url: authorAvatar,
+                avatar: authorAvatar,
+                role: authorRole,
+                church: authorChurch,
+                ministry: authorMinistry,
                 is_following: false,
                 counts: {}
             },
+            author_uid: authorUid,
+            author_name: authorName,
+            author_avatar: authorAvatar,
             media_items: media,
             cover_image_url: cover,
             cover_media_url: cover,
@@ -1536,27 +1547,106 @@
             throw new Error('Please specify a member.');
         }
         return currentUser(b).then(function (viewer) {
-            var resolveUid = targetUid
-                ? Promise.resolve(targetUid)
-                : getMemberSnapshot(b).then(function (snap) {
-                    var found = '';
-                    snap.forEach(function (d) {
-                        if (!found && String(d.data().appUserId) === targetId) found = d.id;
+            return followingMap(b, viewer).then(function (following) {
+                var resolveUid = targetUid
+                    ? Promise.resolve(targetUid)
+                    : getMemberSnapshot(b).then(function (snap) {
+                        var found = '';
+                        snap.forEach(function (d) {
+                            if (!found && String(d.data().appUserId) === targetId) found = d.id;
+                        });
+                        return found || targetId;
                     });
-                    if (!found) throw new Error('That member could not be found.');
-                    return found;
-                });
 
-            return resolveUid.then(function (uid) {
-                return followingMap(b, viewer).then(function (following) {
-                    return getMemberDocument(b, uid).then(function (snap) {
-                        if (!snap || !snap.exists()) throw new Error('That member could not be found.');
-                        var data = snap.data() || {};
-                        var member = shapeMember(uid, data, viewer, following);
-                        member.cover_url = text(data.coverURL);
-                        member.industry = text(data.industry);
-                        member.gender = text(data.gender);
-                        return member;
+                return resolveUid.then(function (uid) {
+                    var isSelf = !!(viewer && viewer.uid === uid);
+
+                    // 1. Try publicProfiles document
+                    var publicRef = b.dbMod.doc(b.db, 'publicProfiles', uid);
+                    return b.dbMod.getDoc(publicRef).then(function (snap) {
+                        if (snap && snap.exists && snap.exists()) {
+                            var data = snap.data() || {};
+                            var member = shapeMember(uid, data, viewer, following);
+                            member.cover_url = text(data.coverURL);
+                            member.industry = text(data.industry);
+                            member.gender = text(data.gender);
+                            return member;
+                        }
+                        if (isSelf) {
+                            return b.dbMod.getDoc(b.dbMod.doc(b.db, 'users', uid)).then(function (userSnap) {
+                                if (userSnap && userSnap.exists && userSnap.exists()) {
+                                    var udata = userSnap.data() || {};
+                                    var umember = shapeMember(uid, udata, viewer, following);
+                                    umember.cover_url = text(udata.coverURL);
+                                    umember.industry = text(udata.industry);
+                                    umember.gender = text(udata.gender);
+                                    return umember;
+                                }
+                                throw new Error('Not found');
+                            });
+                        }
+                        throw new Error('Not in publicProfiles');
+                    }).catch(function () {
+                        // 2. Query posts collection where authorUid == uid or author.uid == uid
+                        var postQuery = b.dbMod.query(
+                            b.dbMod.collection(b.db, 'posts'),
+                            b.dbMod.where('authorUid', '==', uid),
+                            b.dbMod.limit(1)
+                        );
+                        return b.dbMod.getDocs(postQuery).then(function (postSnap) {
+                            var foundPost = null;
+                            postSnap.forEach(function (d) { if (!foundPost) foundPost = d.data(); });
+                            if (foundPost) {
+                                var author = foundPost.author || {};
+                                var pName = text(author.name || author.displayName || foundPost.author_name || 'Faith In Member');
+                                var pAvatar = text(author.avatar_url || author.avatar || foundPost.author_avatar);
+                                return {
+                                    id: author.appUserId || numericId(uid),
+                                    uid: uid,
+                                    name: pName,
+                                    displayName: pName,
+                                    avatar_url: pAvatar,
+                                    avatar: pAvatar,
+                                    cover_url: '',
+                                    headline: text(author.role || foundPost.author_role || 'Faith In member'),
+                                    subtitle: text(author.role || foundPost.author_role),
+                                    role: text(author.role || foundPost.author_role),
+                                    church: text(author.church || foundPost.author_church),
+                                    ministry: text(author.ministry || foundPost.author_ministry),
+                                    location: text(author.location || foundPost.author_location),
+                                    bio: text(author.bio || foundPost.author_bio),
+                                    industry: '',
+                                    verification: null,
+                                    is_self: isSelf,
+                                    is_following: !!(following && following[uid]),
+                                    counts: {},
+                                    mutual_count: 0
+                                };
+                            }
+                            // 3. Fallback to basic profile shell with available information
+                            return {
+                                id: numericId(uid),
+                                uid: uid,
+                                name: 'Faith In Member',
+                                displayName: 'Faith In Member',
+                                avatar_url: '',
+                                avatar: '',
+                                cover_url: '',
+                                headline: 'Faith In member',
+                                subtitle: '',
+                                role: '',
+                                church: '',
+                                ministry: '',
+                                location: '',
+                                bio: '',
+                                industry: '',
+                                verification: null,
+                                is_self: isSelf,
+                                is_following: !!(following && following[uid]),
+                                counts: {},
+                                mutual_count: 0
+                            };
+                        });
                     });
                 });
             });

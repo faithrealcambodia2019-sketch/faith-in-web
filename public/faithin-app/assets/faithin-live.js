@@ -208,16 +208,18 @@
       notificationLink?.querySelector('span')?.classList.add('hidden');
       notificationLink?.setAttribute('aria-label', 'Notifications');
     }
-    $$('a, h1').filter(node => node.textContent.trim() === 'Hun Chet').forEach(node => { node.textContent = displayName; });
-    $$('p').filter(node => /Faith In member\s*·\s*Phnom Penh/i.test(node.textContent)).forEach(node => { node.textContent = session ? ['Faith In member', session.location].filter(Boolean).join(' · ') : 'Sign in to join the community'; });
-    $$('.avatar').filter(node => node.textContent.trim() === 'HC').forEach(node => { if (!node.closest('[data-post-id],[data-user-uid]')) node.textContent = api.initials(displayName); });
-    $$('[data-current-user-avatar]').forEach(el => {
-      const holder = document.createElement('span');
-      holder.innerHTML = avatarMarkup(session || { name: displayName }, `${el.className} object-cover`);
-      const next = holder.firstElementChild;
-      next.dataset.currentUserAvatar = '';
-      el.replaceWith(next);
-    });
+    if (page !== 'profile') {
+      $$('a, h1').filter(node => node.textContent.trim() === 'Hun Chet').forEach(node => { node.textContent = displayName; });
+      $$('p').filter(node => /Faith In member\s*·\s*Phnom Penh/i.test(node.textContent)).forEach(node => { node.textContent = session ? ['Faith In member', session.location].filter(Boolean).join(' · ') : 'Sign in to join the community'; });
+      $$('.avatar').filter(node => node.textContent.trim() === 'HC').forEach(node => { if (!node.closest('[data-post-id],[data-user-uid]')) node.textContent = api.initials(displayName); });
+      $$('[data-current-user-avatar]').forEach(el => {
+        const holder = document.createElement('span');
+        holder.innerHTML = avatarMarkup(session || { name: displayName }, `${el.className} object-cover`);
+        const next = holder.firstElementChild;
+        next.dataset.currentUserAvatar = '';
+        el.replaceWith(next);
+      });
+    }
     $$('a').forEach(link => {
       const label = link.textContent.trim().replace(/\s+\d+$/, '');
       const routes = { 'Home Feed': '/home', 'Profile': '/profile', 'Prayer Wall': '/home#prayer-wall', 'Find Jobs': '/jobs', 'Find Users': '/network', 'Library': '/library', 'Social Studio': '/bible-study' };
@@ -676,18 +678,19 @@
 
   async function loadProfile(currentUser) {
     const urlParams = new URLSearchParams(location.search);
-    const targetUid = urlParams.get('uid') || urlParams.get('member') || urlParams.get('user') || urlParams.get('id');
+    const rawTarget = urlParams.get('uid') || urlParams.get('member') || urlParams.get('user') || urlParams.get('id') || '';
+    const targetUid = (rawTarget === 'undefined' || rawTarget === 'null' || !rawTarget.trim()) ? '' : rawTarget.trim();
     const isSelf = !targetUid || (currentUser && (targetUid === currentUser.uid || String(currentUser.id) === targetUid));
 
-    let user = isSelf ? currentUser : null;
-    if (!isSelf && targetUid) {
+    let user = null;
+    if (isSelf) {
+      user = currentUser;
+    } else if (targetUid) {
       try {
         user = await api.request('cv_get_user', { uid: targetUid, id: targetUid });
       } catch (err) {
         user = null;
       }
-    } else if (!user) {
-      user = currentUser;
     }
 
     if (!user) {
@@ -696,7 +699,9 @@
         $('h1', hero).textContent = 'Member Not Found';
         const details = $$('p', hero);
         if (details[0]) details[0].textContent = 'This member profile is unavailable or private.';
+        if (details[1]) details[1].textContent = '';
       }
+      $$('.reveal, [aria-label^="Edit"]', '#main').forEach(el => el.remove());
       return;
     }
 
@@ -754,7 +759,10 @@
     const activity = $$('#main h2').find(node => node.textContent.trim() === 'Activity')?.closest('section');
     if (activity) {
       api.request('cv_get_posts').then(result => {
-        const memberPosts = (result.items || []).filter(post => (post.author || {}).uid === user.uid);
+        const memberPosts = (result.items || []).filter(post => {
+          const postUid = (post.author && post.author.uid) || post.author_uid || post.authorUid;
+          return (postUid && postUid === user.uid) || (user.id && String(post.author?.id) === String(user.id));
+        });
         const holder = $('.space-y-1', activity);
         const renderActivity = label => {
           const wanted = String(label || 'Posts').toLowerCase();
