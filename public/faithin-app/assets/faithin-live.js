@@ -643,18 +643,212 @@
   }
 
   function openResourceEditor(refresh) {
-    const modal = document.createElement('div'); modal.className = 'fixed inset-0 z-[240] bg-[#0b1120]/70 p-4 flex items-center justify-center';
-    modal.innerHTML = `<form class="card w-full max-w-2xl max-h-[92vh] overflow-y-auto p-5 space-y-4"><div class="flex justify-between"><div><h2 class="text-[20px] font-bold">Publish a resource</h2><p class="text-[12.5px] text-muted mt-1">Share a PDF, image, audio, video, or ZIP file with the community.</p></div><button type="button" class="icon-btn" data-close-resource aria-label="Close"><i class="fa-solid fa-xmark"></i></button></div><input class="field" name="title" placeholder="Resource title" required><textarea class="field" name="description" rows="3" placeholder="Description"></textarea><div class="grid sm:grid-cols-2 gap-3"><input class="field" name="contributor_name" placeholder="Author / Creator"><input class="field" name="translator_name" placeholder="Translated by"><input class="field" name="language" placeholder="Language, e.g. Khmer"><input class="field" name="category" placeholder="Category" value="Bible Study"></div><select class="field" name="format" aria-label="Resource format"><option value="pdf">PDF</option><option value="image">Image</option><option value="audio">Audio</option><option value="video">Video</option><option value="zip">ZIP bundle</option></select><label class="block text-[13px] font-semibold">Resource file<input class="field mt-1" name="resource_file" type="file" accept=".pdf,.zip,image/*,audio/*,video/*" required><span class="block text-[11.5px] text-muted mt-1">Maximum 50MB · stored in free Supabase Storage</span></label><div class="block text-[13px] font-semibold">Cover image<span class="block text-[11.5px] font-normal text-muted mt-1" data-thumb-hint>Videos get a thumbnail captured automatically. Upload your own image to use that instead.</span><div class="flex items-center gap-3 mt-2"><img class="fi-thumb-preview hidden" alt="" data-thumb-preview><input class="field" name="thumbnail" type="file" accept="image/*"></div></div><label class="flex items-center gap-2 text-[12.5px] text-muted"><input type="checkbox" name="allow_download" value="1" checked>Allow members to download this resource</label><p class="hidden rounded-xl border border-rose/30 bg-rose/10 px-3 py-2.5 text-[12.5px] text-rose" data-resource-error role="alert"></p><div class="hidden" data-resource-progress><div class="flex justify-between text-[11.5px] text-muted mb-1"><span>Uploading to FaithIn</span><strong data-resource-progress-label>0%</strong></div><div class="h-2 rounded-full bg-line overflow-hidden"><span class="block h-full bg-brand transition" data-resource-progress-bar style="width:0%"></span></div></div><button class="btn btn-primary w-full" data-resource-submit>Publish resource</button></form>`;
-    document.body.appendChild(modal); $('[data-close-resource]', modal).onclick = () => modal.remove();
-    const form = $('form', modal), fileInput = form.elements.namedItem('resource_file'), formatInput = form.elements.namedItem('format');
-    const thumbField = form.elements.namedItem('thumbnail'), thumbPreview = $('[data-thumb-preview]', form), thumbHint = $('[data-thumb-hint]', form);
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 z-[240] bg-black/60 backdrop-blur-sm p-4 flex items-center justify-center';
+    modal.innerHTML = `
+      <div class="w-full max-w-[600px] bg-white dark:bg-[#111827] rounded-xl shadow-[0_12px_28px_rgba(0,0,0,0.25)] flex flex-col max-h-[95vh] overflow-hidden border border-[#ccd0d5] dark:border-[#374151] animate-pop-in">
+        
+        <!-- Header -->
+        <div class="relative flex items-center justify-center px-6 py-4 border-b border-[#ced0d4] dark:border-[#374151] bg-white dark:bg-[#111827] z-10 shrink-0">
+          <h2 class="text-[20px] font-bold text-[#1c1e21] dark:text-white leading-tight text-center">Publish a resource</h2>
+          <button type="button" class="absolute right-4 top-3.5 w-9 h-9 flex items-center justify-center rounded-full bg-[#e4e6eb] dark:bg-gray-800 hover:bg-[#d8dadf] dark:hover:bg-gray-700 transition-colors text-[#65676b] dark:text-gray-300" data-close-resource aria-label="Close">
+            <i class="fa-solid fa-xmark text-lg"></i>
+          </button>
+        </div>
+
+        <!-- Scrollable Form Content -->
+        <form class="flex-1 overflow-y-auto p-6 space-y-4 text-[#1c1e21] dark:text-gray-200">
+          <p class="text-[14.5px] text-[#65676b] dark:text-gray-400 mb-2">
+            Share a PDF, image, audio, video, or ZIP file with the community.
+          </p>
+
+          <!-- Title -->
+          <div>
+            <input
+              type="text"
+              name="title"
+              placeholder="Resource title"
+              required
+              class="w-full px-3.5 py-2.5 bg-[#f0f2f5] dark:bg-[#1f2937] border border-[#ccd0d5] dark:border-[#374151] rounded-md text-[#1c1e21] dark:text-white placeholder-[#65676b] dark:placeholder-gray-400 focus:bg-white dark:focus:bg-[#111827] focus:outline-none focus:border-[#1877f2] focus:ring-1 focus:ring-[#1877f2] text-[15px] transition-colors"
+            />
+          </div>
+
+          <!-- Description -->
+          <div>
+            <textarea
+              name="description"
+              placeholder="Description"
+              rows="4"
+              class="w-full px-3.5 py-2.5 bg-[#f0f2f5] dark:bg-[#1f2937] border border-[#ccd0d5] dark:border-[#374151] rounded-md text-[#1c1e21] dark:text-white placeholder-[#65676b] dark:placeholder-gray-400 focus:bg-white dark:focus:bg-[#111827] focus:outline-none focus:border-[#1877f2] focus:ring-1 focus:ring-[#1877f2] text-[15px] transition-colors resize-none"
+            ></textarea>
+          </div>
+
+          <!-- Author & Translator -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <input
+              type="text"
+              name="contributor_name"
+              placeholder="Author / Creator"
+              class="w-full px-3.5 py-2.5 bg-[#f0f2f5] dark:bg-[#1f2937] border border-[#ccd0d5] dark:border-[#374151] rounded-md text-[#1c1e21] dark:text-white placeholder-[#65676b] dark:placeholder-gray-400 focus:bg-white dark:focus:bg-[#111827] focus:outline-none focus:border-[#1877f2] focus:ring-1 focus:ring-[#1877f2] text-[15px] transition-colors"
+            />
+            <input
+              type="text"
+              name="translator_name"
+              placeholder="Translated by"
+              class="w-full px-3.5 py-2.5 bg-[#f0f2f5] dark:bg-[#1f2937] border border-[#ccd0d5] dark:border-[#374151] rounded-md text-[#1c1e21] dark:text-white placeholder-[#65676b] dark:placeholder-gray-400 focus:bg-white dark:focus:bg-[#111827] focus:outline-none focus:border-[#1877f2] focus:ring-1 focus:ring-[#1877f2] text-[15px] transition-colors"
+            />
+          </div>
+
+          <!-- Language & Category -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <input
+              type="text"
+              name="language"
+              placeholder="Language, e.g. Khmer"
+              class="w-full px-3.5 py-2.5 bg-[#f0f2f5] dark:bg-[#1f2937] border border-[#ccd0d5] dark:border-[#374151] rounded-md text-[#1c1e21] dark:text-white placeholder-[#65676b] dark:placeholder-gray-400 focus:bg-white dark:focus:bg-[#111827] focus:outline-none focus:border-[#1877f2] focus:ring-1 focus:ring-[#1877f2] text-[15px] transition-colors"
+            />
+            <div class="relative">
+              <select
+                name="category"
+                class="w-full px-3.5 py-2.5 bg-[#f0f2f5] dark:bg-[#1f2937] border border-[#ccd0d5] dark:border-[#374151] rounded-md text-[#1c1e21] dark:text-white placeholder-[#65676b] dark:placeholder-gray-400 focus:bg-white dark:focus:bg-[#111827] focus:outline-none focus:border-[#1877f2] focus:ring-1 focus:ring-[#1877f2] text-[15px] transition-colors appearance-none pr-9 cursor-pointer"
+              >
+                <option value="Bible Study">Bible Study</option>
+                <option value="Sermon">Sermon</option>
+                <option value="Book">Book</option>
+                <option value="Devotional">Devotional</option>
+                <option value="Worship">Worship</option>
+              </select>
+              <i class="fa-solid fa-chevron-down absolute right-3.5 top-1/2 -translate-y-1/2 text-[#65676b] dark:text-gray-400 text-xs pointer-events-none"></i>
+            </div>
+          </div>
+
+          <!-- Format Dropdown -->
+          <div class="relative">
+            <select
+              name="format"
+              class="w-full px-3.5 py-2.5 bg-[#f0f2f5] dark:bg-[#1f2937] border border-[#ccd0d5] dark:border-[#374151] rounded-md text-[#1c1e21] dark:text-white placeholder-[#65676b] dark:placeholder-gray-400 focus:bg-white dark:focus:bg-[#111827] focus:outline-none focus:border-[#1877f2] focus:ring-1 focus:ring-[#1877f2] text-[15px] transition-colors appearance-none pr-9 cursor-pointer"
+            >
+              <option value="pdf">PDF</option>
+              <option value="image">Image</option>
+              <option value="audio">Audio</option>
+              <option value="video">Video</option>
+              <option value="zip">ZIP</option>
+            </select>
+            <i class="fa-solid fa-chevron-down absolute right-3.5 top-1/2 -translate-y-1/2 text-[#65676b] dark:text-gray-400 text-xs pointer-events-none"></i>
+          </div>
+
+          <!-- Resource File Upload -->
+          <div class="pt-1">
+            <label class="block text-[15px] font-bold text-[#1c1e21] dark:text-white mb-2">
+              Resource file
+            </label>
+            <label class="relative flex w-full border border-[#ccd0d5] dark:border-[#374151] rounded-md overflow-hidden cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors focus-within:border-[#1877f2] focus-within:ring-1 focus-within:ring-[#1877f2]">
+              <div class="bg-[#e4e6eb] dark:bg-gray-700 px-4 py-2.5 border-r border-[#ccd0d5] dark:border-[#374151] text-[#4b4f56] dark:text-gray-200 font-semibold text-[15px] whitespace-nowrap select-none">
+                Choose File
+              </div>
+              <div class="px-4 py-2.5 text-[#65676b] dark:text-gray-400 text-[15px] flex-1 truncate bg-white dark:bg-[#111827]" data-resource-file-label>
+                No file chosen
+              </div>
+              <input 
+                type="file" 
+                name="resource_file"
+                accept=".pdf,.zip,image/*,audio/*,video/*"
+                required
+                class="hidden" 
+              />
+            </label>
+            <p class="text-[13px] text-[#65676b] dark:text-gray-400 mt-1.5">
+              Maximum 50MB · stored in free Supabase Storage
+            </p>
+          </div>
+
+          <!-- Cover Image Upload -->
+          <div class="pt-1">
+            <label class="block text-[15px] font-bold text-[#1c1e21] dark:text-white mb-1">
+              Cover image
+            </label>
+            <p class="text-[13px] text-[#65676b] dark:text-gray-400 mb-2" data-thumb-hint>
+              Videos get a thumbnail captured automatically. Upload your own image to use that instead.
+            </p>
+            <label class="relative flex w-full border border-[#ccd0d5] dark:border-[#374151] rounded-md overflow-hidden cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors focus-within:border-[#1877f2] focus-within:ring-1 focus-within:ring-[#1877f2]">
+              <div class="bg-[#e4e6eb] dark:bg-gray-700 px-4 py-2.5 border-r border-[#ccd0d5] dark:border-[#374151] text-[#4b4f56] dark:text-gray-200 font-semibold text-[15px] whitespace-nowrap select-none">
+                Choose File
+              </div>
+              <div class="px-4 py-2.5 text-[#65676b] dark:text-gray-400 text-[15px] flex-1 truncate bg-white dark:bg-[#111827] flex items-center gap-2">
+                <img class="fi-thumb-preview hidden w-6 h-6 rounded object-cover" alt="" data-thumb-preview>
+                <span data-cover-file-label>No file chosen</span>
+              </div>
+              <input 
+                type="file" 
+                name="thumbnail"
+                accept="image/*"
+                class="hidden" 
+              />
+            </label>
+          </div>
+
+          <!-- Checkbox -->
+          <div class="flex items-center gap-3 pt-2">
+            <input
+              type="checkbox"
+              id="allow_download"
+              name="allow_download"
+              value="1"
+              checked
+              class="w-4 h-4 text-[#1877f2] bg-white dark:bg-gray-800 border-[#ccd0d5] dark:border-gray-600 rounded focus:ring-[#1877f2] focus:ring-2 cursor-pointer accent-[#1877f2]"
+            />
+            <label for="allow_download" class="text-[15px] text-[#1c1e21] dark:text-gray-200 cursor-pointer select-none">
+              Allow members to download this resource
+            </label>
+          </div>
+
+          <!-- Error & Progress -->
+          <p class="hidden rounded-xl border border-rose/30 bg-rose/10 px-3 py-2.5 text-[12.5px] text-rose" data-resource-error role="alert"></p>
+          
+          <div class="hidden" data-resource-progress>
+            <div class="flex justify-between text-[12.5px] text-muted mb-1">
+              <span>Uploading to FaithIn</span>
+              <strong data-resource-progress-label>0%</strong>
+            </div>
+            <div class="h-2 rounded-full bg-[#e4e6eb] dark:bg-gray-700 overflow-hidden">
+              <span class="block h-full bg-[#1877f2] transition-all duration-200" data-resource-progress-bar style="width:0%"></span>
+            </div>
+          </div>
+
+          <!-- Footer Button -->
+          <div class="pt-3">
+            <button type="submit" class="w-full bg-[#1877f2] hover:bg-[#166fe5] active:scale-[0.99] text-white font-bold text-[15px] py-2.5 rounded-md transition-all shadow-sm flex items-center justify-center gap-2" data-resource-submit>
+              Publish resource
+            </button>
+          </div>
+        </form>
+
+      </div>`;
+    document.body.appendChild(modal);
+    $('[data-close-resource]', modal).onclick = () => modal.remove();
+
+    const form = $('form', modal);
+    const fileInput = form.elements.namedItem('resource_file');
+    const formatInput = form.elements.namedItem('format');
+    const thumbField = form.elements.namedItem('thumbnail');
+    const thumbPreview = $('[data-thumb-preview]', form);
+    const thumbHint = $('[data-thumb-hint]', form);
+    const resourceFileLabel = $('[data-resource-file-label]', form);
+    const coverFileLabel = $('[data-cover-file-label]', form);
     const DEFAULT_THUMB_HINT = thumbHint.textContent;
     let autoThumb = null, autoThumbUrl = '', manualThumbUrl = '';
+
     const setThumbPreview = (url, note) => {
-      if (url) { thumbPreview.src = url; thumbPreview.classList.remove('hidden'); }
-      else { thumbPreview.removeAttribute('src'); thumbPreview.classList.add('hidden'); }
+      if (url) {
+        thumbPreview.src = url;
+        thumbPreview.classList.remove('hidden');
+      } else {
+        thumbPreview.removeAttribute('src');
+        thumbPreview.classList.add('hidden');
+      }
       thumbHint.textContent = note || DEFAULT_THUMB_HINT;
     };
+
     // Draw a frame out of the chosen video and keep it as the default cover.
     const captureVideoThumbnail = file => {
       const objectUrl = URL.createObjectURL(file), video = document.createElement('video');
@@ -674,7 +868,10 @@
             if (autoThumbUrl) URL.revokeObjectURL(autoThumbUrl);
             autoThumb = new File([blob], 'auto-thumbnail.jpg', { type: 'image/jpeg' });
             autoThumbUrl = URL.createObjectURL(blob);
-            if (!thumbField.files?.[0]) setThumbPreview(autoThumbUrl, 'Thumbnail captured from your video. Upload an image to use a different one.');
+            if (!thumbField.files?.[0]) {
+              setThumbPreview(autoThumbUrl, 'Thumbnail captured from your video. Upload an image to use a different one.');
+              if (coverFileLabel) coverFileLabel.textContent = 'Auto video thumbnail';
+            }
           }, 'image/jpeg', 0.85);
         } catch (_) { fail(); }
       }, { once: true });
@@ -682,38 +879,105 @@
       setThumbPreview(manualThumbUrl, 'Capturing a thumbnail from your video…');
       video.src = objectUrl;
     };
+
     thumbField.addEventListener('change', () => {
       const picked = thumbField.files?.[0];
       if (manualThumbUrl) { URL.revokeObjectURL(manualThumbUrl); manualThumbUrl = ''; }
-      if (!picked) { setThumbPreview(autoThumbUrl, autoThumbUrl ? 'Using the thumbnail captured from your video.' : ''); return; }
+      if (!picked) {
+        if (coverFileLabel) coverFileLabel.textContent = 'No file chosen';
+        setThumbPreview(autoThumbUrl, autoThumbUrl ? 'Using the thumbnail captured from your video.' : '');
+        return;
+      }
+      if (coverFileLabel) coverFileLabel.textContent = picked.name;
       manualThumbUrl = URL.createObjectURL(picked);
       setThumbPreview(manualThumbUrl, 'Using your uploaded cover image.');
     });
-    fileInput.addEventListener('change', () => { const file = fileInput.files?.[0]; if (!file) return; const type = String(file.type || '').toLowerCase(), ext = String(file.name || '').split('.').pop().toLowerCase(); if (type === 'application/pdf' || ext === 'pdf') formatInput.value = 'pdf'; else if (type.startsWith('video/')) formatInput.value = 'video'; else if (type.startsWith('audio/')) formatInput.value = 'audio'; else if (type.startsWith('image/')) formatInput.value = 'image'; else if (type === 'application/zip' || ext === 'zip') formatInput.value = 'zip'; else { fileInput.value = ''; toast('Choose a PDF, image, audio, video, or ZIP file.'); return; }
+
+    fileInput.addEventListener('change', () => {
+      const file = fileInput.files?.[0];
+      if (!file) {
+        if (resourceFileLabel) resourceFileLabel.textContent = 'No file chosen';
+        return;
+      }
+      if (resourceFileLabel) resourceFileLabel.textContent = `${file.name} (${(file.size / (1024 * 1024)).toFixed(1)} MB)`;
+      const type = String(file.type || '').toLowerCase(), ext = String(file.name || '').split('.').pop().toLowerCase();
+      if (type === 'application/pdf' || ext === 'pdf') formatInput.value = 'pdf';
+      else if (type.startsWith('video/')) formatInput.value = 'video';
+      else if (type.startsWith('audio/')) formatInput.value = 'audio';
+      else if (type.startsWith('image/')) formatInput.value = 'image';
+      else if (type === 'application/zip' || ext === 'zip') formatInput.value = 'zip';
+      else {
+        fileInput.value = '';
+        if (resourceFileLabel) resourceFileLabel.textContent = 'No file chosen';
+        toast('Choose a PDF, image, audio, video, or ZIP file.');
+        return;
+      }
+
       if (autoThumbUrl) { URL.revokeObjectURL(autoThumbUrl); autoThumbUrl = ''; }
       autoThumb = null;
       if (formatInput.value === 'video') captureVideoThumbnail(file);
       else if (!thumbField.files?.[0]) setThumbPreview(manualThumbUrl, '');
     });
+
     form.onsubmit = async event => {
       event.preventDefault();
-      const resourceFile = fileInput.files?.[0], thumbnailInput = form.elements.namedItem('thumbnail'), submit = $('[data-resource-submit]', form);
+      const resourceFile = fileInput.files?.[0];
+      const thumbnailInput = form.elements.namedItem('thumbnail');
+      const submit = $('[data-resource-submit]', form);
       if (!resourceFile) return toast('Choose a resource file to publish.');
       if (resourceFile.size > 50 * 1024 * 1024) return toast(`${resourceFile.name} is larger than the free 50MB limit.`);
-      const data = Object.fromEntries(new FormData(form)); data.allow_download = form.elements.namedItem('allow_download').checked ? '1' : '0'; delete data.resource_file; delete data.thumbnail;
+
+      const data = Object.fromEntries(new FormData(form));
+      data.allow_download = form.elements.namedItem('allow_download').checked ? '1' : '0';
+      delete data.resource_file;
+      delete data.thumbnail;
+
       const chosenThumbnail = thumbnailInput.files?.[0] || autoThumb;
       const files = { resource_file: [resourceFile], thumbnail: chosenThumbnail ? [chosenThumbnail] : [] };
-      const progress = $('[data-resource-progress]', form), label = $('[data-resource-progress-label]', form), bar = $('[data-resource-progress-bar]', form), errorBox = $('[data-resource-error]', form);
-      errorBox.classList.add('hidden'); errorBox.textContent = '';
-      const oldSubmitHtml = submit.innerHTML; progress.classList.remove('hidden'); submit.disabled = true; submit.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i>Uploading';
+      const progress = $('[data-resource-progress]', form);
+      const label = $('[data-resource-progress-label]', form);
+      const bar = $('[data-resource-progress-bar]', form);
+      const errorBox = $('[data-resource-error]', form);
+
+      errorBox.classList.add('hidden');
+      errorBox.textContent = '';
+      const oldSubmitHtml = submit.innerHTML;
+      progress.classList.remove('hidden');
+      submit.disabled = true;
+      submit.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin mr-1.5"></i>Publishing…';
+
       try {
-        await api.request('cv_upload_resource', data, files, fraction => { const percent = Math.max(1, Math.min(100, Math.round(fraction * 100))); label.textContent = `${percent}%`; bar.style.width = `${percent}%`; });
-        label.textContent = '100%'; bar.style.width = '100%'; await refresh();
-        form.innerHTML = `<div class="py-8 text-center"><span class="mx-auto grid h-16 w-16 place-items-center rounded-full bg-emerald-500 text-white text-[28px]"><i class="fa-solid fa-check"></i></span><h2 class="mt-5 text-[22px] font-bold">Published successfully</h2><p class="mt-2 text-[13.5px] text-muted">Your resource is now available in the FaithIn Library.</p><button type="button" class="btn btn-primary w-full mt-6" data-resource-done><i class="fa-solid fa-check"></i>Done</button></div>`;
-        $('[data-resource-done]', form).onclick = () => modal.remove(); toast('Resource published successfully');
+        await api.request('cv_upload_resource', data, files, fraction => {
+          const percent = Math.max(1, Math.min(100, Math.round(fraction * 100)));
+          label.textContent = `${percent}%`;
+          bar.style.width = `${percent}%`;
+        });
+        label.textContent = '100%';
+        bar.style.width = '100%';
+        await refresh();
+        form.innerHTML = `
+          <div class="py-8 text-center">
+            <span class="mx-auto grid h-16 w-16 place-items-center rounded-full bg-emerald-500 text-white text-[28px]">
+              <i class="fa-solid fa-check"></i>
+            </span>
+            <h2 class="mt-5 text-[22px] font-bold text-[#1c1e21] dark:text-white">Published successfully</h2>
+            <p class="mt-2 text-[14px] text-[#65676b] dark:text-gray-400">Your resource is now live in the FaithIn Library.</p>
+            <button type="button" class="w-full bg-[#1877f2] hover:bg-[#166fe5] text-white font-bold text-[15px] py-2.5 rounded-md transition-colors mt-6" data-resource-done>
+              Done
+            </button>
+          </div>`;
+        $('[data-resource-done]', form).onclick = () => modal.remove();
+        toast('Resource published successfully ✨');
+      } catch (error) {
+        const message = error.message || 'Upload failed. Please try again.';
+        errorBox.textContent = message;
+        errorBox.classList.remove('hidden');
+        toast(message);
+        progress.classList.add('hidden');
+      } finally {
+        submit.disabled = false;
+        submit.innerHTML = oldSubmitHtml;
       }
-      catch (error) { const message = error.message || 'Upload failed. Please try again.'; errorBox.textContent = message; errorBox.classList.remove('hidden'); toast(message); progress.classList.add('hidden'); }
-      finally { submit.disabled = false; submit.innerHTML = oldSubmitHtml; }
     };
   }
 
