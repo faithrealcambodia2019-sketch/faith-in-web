@@ -268,9 +268,140 @@ html.dark .chip.is-on{ color:#0b1120; }
 /* --- avatar -------------------------------------------------------------- */
 .avatar{
   display:inline-flex; align-items:center; justify-content:center; flex:none;
-  border-radius:999px; font-weight:600; letter-spacing:.01em; color:#fff; user-select:none;
+  width: 42px; height: 42px; border-radius:999px; font-weight:600; letter-spacing:.01em; color:#fff; user-select:none;
+  object-fit: cover;
 }
 .avatar-sq{ border-radius:10px; }
+
+/* --- contacts card & widget --------------------------------------------- */
+#contacts {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 12px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  list-style: none !important;
+}
+
+#contacts > li {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 10px !important;
+  padding: 2px 0 !important;
+  width: 100% !important;
+}
+
+#contacts img,
+#contacts .avatar,
+#contacts img.avatar,
+#contacts span.avatar {
+  width: 42px !important;
+  height: 42px !important;
+  min-width: 42px !important;
+  min-height: 42px !important;
+  max-width: 42px !important;
+  max-height: 42px !important;
+  border-radius: 9999px !important;
+  object-fit: cover !important;
+  flex-shrink: 0 !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+#contacts .contact-info {
+  display: flex !important;
+  flex-direction: column !important;
+  min-width: 0 !important;
+  flex: 1 1 auto !important;
+}
+
+#contacts .contact-name {
+  font-weight: 700 !important;
+  font-size: 14px !important;
+  line-height: 1.25 !important;
+  color: rgb(var(--ink)) !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+#contacts .contact-subtitle {
+  font-weight: 400 !important;
+  font-size: 12px !important;
+  line-height: 1.2 !important;
+  color: rgb(var(--muted)) !important;
+  margin-top: 2px !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+#contacts .contact-actions {
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  flex-shrink: 0 !important;
+}
+
+#contacts .contact-follow-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-width: 82px !important;
+  height: 30px !important;
+  padding: 0 10px !important;
+  border-radius: 9999px !important;
+  font-size: 12.5px !important;
+  font-weight: 600 !important;
+  line-height: 1 !important;
+  cursor: pointer !important;
+  transition: all .15s ease !important;
+  background: transparent !important;
+  border: 1.5px solid #2554D7 !important;
+  color: #2554D7 !important;
+}
+
+#contacts .contact-follow-btn.is-following,
+#contacts .contact-follow-btn[data-following="true"] {
+  border-color: rgb(var(--line)) !important;
+  color: rgb(var(--muted)) !important;
+  background: transparent !important;
+}
+
+#contacts .contact-follow-btn.is-following:hover,
+#contacts .contact-follow-btn[data-following="true"]:hover {
+  background: rgb(var(--raised)) !important;
+}
+
+#contacts .contact-chat-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 28px !important;
+  height: 28px !important;
+  padding: 0 !important;
+  border: none !important;
+  background: transparent !important;
+  color: rgb(var(--muted)) !important;
+  cursor: pointer !important;
+  border-radius: 9999px !important;
+  transition: color .15s ease, background .15s ease !important;
+}
+
+#contacts .contact-chat-btn:hover {
+  color: #2554D7 !important;
+  background: rgb(var(--raised)) !important;
+}
+
+#contacts .contact-chat-btn svg {
+  width: 18px !important;
+  height: 18px !important;
+  display: block !important;
+}
 
 /* --- rows that highlight on hover (jobs, notifications, invitations) ----- */
 .row-hover{ transition: background .15s ease; }
