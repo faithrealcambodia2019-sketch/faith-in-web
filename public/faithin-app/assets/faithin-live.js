@@ -646,19 +646,19 @@
     const modal = document.createElement('div');
     modal.className = 'fixed inset-0 z-[240] bg-black/60 backdrop-blur-sm p-4 flex items-center justify-center';
     modal.innerHTML = `
-      <div class="w-full max-w-[600px] bg-white dark:bg-[#111827] rounded-xl shadow-[0_12px_28px_rgba(0,0,0,0.25)] flex flex-col max-h-[95vh] overflow-hidden border border-[#ccd0d5] dark:border-[#374151] animate-pop-in">
+      <div class="fi-resource-modal animate-pop-in">
         
         <!-- Header -->
-        <div class="relative flex items-center justify-center px-6 py-4 border-b border-[#ced0d4] dark:border-[#374151] bg-white dark:bg-[#111827] z-10 shrink-0">
-          <h2 class="text-[20px] font-bold text-[#1c1e21] dark:text-white leading-tight text-center">Publish a resource</h2>
-          <button type="button" class="absolute right-4 top-3.5 w-9 h-9 flex items-center justify-center rounded-full bg-[#e4e6eb] dark:bg-gray-800 hover:bg-[#d8dadf] dark:hover:bg-gray-700 transition-colors text-[#65676b] dark:text-gray-300" data-close-resource aria-label="Close">
+        <div class="fi-resource-modal__header">
+          <h2 class="fi-resource-modal__title">Publish a resource</h2>
+          <button type="button" class="fi-resource-modal__close" data-close-resource aria-label="Close">
             <i class="fa-solid fa-xmark text-lg"></i>
           </button>
         </div>
 
         <!-- Scrollable Form Content -->
-        <form class="flex-1 overflow-y-auto p-6 space-y-4 text-[#1c1e21] dark:text-gray-200">
-          <p class="text-[14.5px] text-[#65676b] dark:text-gray-400 mb-2">
+        <form class="fi-resource-modal__body space-y-4">
+          <p class="fi-resource-modal__subtitle">
             Share a PDF, image, audio, video, or ZIP file with the community.
           </p>
 
@@ -669,7 +669,7 @@
               name="title"
               placeholder="Resource title"
               required
-              class="w-full px-3.5 py-2.5 bg-[#f0f2f5] dark:bg-[#1f2937] border border-[#ccd0d5] dark:border-[#374151] rounded-md text-[#1c1e21] dark:text-white placeholder-[#65676b] dark:placeholder-gray-400 focus:bg-white dark:focus:bg-[#111827] focus:outline-none focus:border-[#1877f2] focus:ring-1 focus:ring-[#1877f2] text-[15px] transition-colors"
+              class="fi-resource-input"
             />
           </div>
 
@@ -678,55 +678,52 @@
             <textarea
               name="description"
               placeholder="Description"
-              rows="4"
-              class="w-full px-3.5 py-2.5 bg-[#f0f2f5] dark:bg-[#1f2937] border border-[#ccd0d5] dark:border-[#374151] rounded-md text-[#1c1e21] dark:text-white placeholder-[#65676b] dark:placeholder-gray-400 focus:bg-white dark:focus:bg-[#111827] focus:outline-none focus:border-[#1877f2] focus:ring-1 focus:ring-[#1877f2] text-[15px] transition-colors resize-none"
+              rows="3"
+              class="fi-resource-textarea"
             ></textarea>
           </div>
 
           <!-- Author & Translator -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <input
               type="text"
               name="contributor_name"
               placeholder="Author / Creator"
-              class="w-full px-3.5 py-2.5 bg-[#f0f2f5] dark:bg-[#1f2937] border border-[#ccd0d5] dark:border-[#374151] rounded-md text-[#1c1e21] dark:text-white placeholder-[#65676b] dark:placeholder-gray-400 focus:bg-white dark:focus:bg-[#111827] focus:outline-none focus:border-[#1877f2] focus:ring-1 focus:ring-[#1877f2] text-[15px] transition-colors"
+              class="fi-resource-input"
             />
             <input
               type="text"
               name="translator_name"
               placeholder="Translated by"
-              class="w-full px-3.5 py-2.5 bg-[#f0f2f5] dark:bg-[#1f2937] border border-[#ccd0d5] dark:border-[#374151] rounded-md text-[#1c1e21] dark:text-white placeholder-[#65676b] dark:placeholder-gray-400 focus:bg-white dark:focus:bg-[#111827] focus:outline-none focus:border-[#1877f2] focus:ring-1 focus:ring-[#1877f2] text-[15px] transition-colors"
+              class="fi-resource-input"
             />
           </div>
 
           <!-- Language & Category -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <input
               type="text"
               name="language"
               placeholder="Language, e.g. Khmer"
-              class="w-full px-3.5 py-2.5 bg-[#f0f2f5] dark:bg-[#1f2937] border border-[#ccd0d5] dark:border-[#374151] rounded-md text-[#1c1e21] dark:text-white placeholder-[#65676b] dark:placeholder-gray-400 focus:bg-white dark:focus:bg-[#111827] focus:outline-none focus:border-[#1877f2] focus:ring-1 focus:ring-[#1877f2] text-[15px] transition-colors"
+              class="fi-resource-input"
             />
-            <div class="relative">
-              <select
-                name="category"
-                class="w-full px-3.5 py-2.5 bg-[#f0f2f5] dark:bg-[#1f2937] border border-[#ccd0d5] dark:border-[#374151] rounded-md text-[#1c1e21] dark:text-white placeholder-[#65676b] dark:placeholder-gray-400 focus:bg-white dark:focus:bg-[#111827] focus:outline-none focus:border-[#1877f2] focus:ring-1 focus:ring-[#1877f2] text-[15px] transition-colors appearance-none pr-9 cursor-pointer"
-              >
-                <option value="Bible Study">Bible Study</option>
-                <option value="Sermon">Sermon</option>
-                <option value="Book">Book</option>
-                <option value="Devotional">Devotional</option>
-                <option value="Worship">Worship</option>
-              </select>
-              <i class="fa-solid fa-chevron-down absolute right-3.5 top-1/2 -translate-y-1/2 text-[#65676b] dark:text-gray-400 text-xs pointer-events-none"></i>
-            </div>
+            <select
+              name="category"
+              class="fi-resource-select"
+            >
+              <option value="Bible Study">Bible Study</option>
+              <option value="Sermon">Sermon</option>
+              <option value="Book">Book</option>
+              <option value="Devotional">Devotional</option>
+              <option value="Worship">Worship</option>
+            </select>
           </div>
 
           <!-- Format Dropdown -->
-          <div class="relative">
+          <div>
             <select
               name="format"
-              class="w-full px-3.5 py-2.5 bg-[#f0f2f5] dark:bg-[#1f2937] border border-[#ccd0d5] dark:border-[#374151] rounded-md text-[#1c1e21] dark:text-white placeholder-[#65676b] dark:placeholder-gray-400 focus:bg-white dark:focus:bg-[#111827] focus:outline-none focus:border-[#1877f2] focus:ring-1 focus:ring-[#1877f2] text-[15px] transition-colors appearance-none pr-9 cursor-pointer"
+              class="fi-resource-select"
             >
               <option value="pdf">PDF</option>
               <option value="image">Image</option>
@@ -734,19 +731,18 @@
               <option value="video">Video</option>
               <option value="zip">ZIP</option>
             </select>
-            <i class="fa-solid fa-chevron-down absolute right-3.5 top-1/2 -translate-y-1/2 text-[#65676b] dark:text-gray-400 text-xs pointer-events-none"></i>
           </div>
 
           <!-- Resource File Upload -->
           <div class="pt-1">
-            <label class="block text-[15px] font-bold text-[#1c1e21] dark:text-white mb-2">
+            <label class="block text-[14px] font-bold text-[#1c1e21] dark:text-white mb-1.5">
               Resource file
             </label>
-            <label class="relative flex w-full border border-[#ccd0d5] dark:border-[#374151] rounded-md overflow-hidden cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors focus-within:border-[#1877f2] focus-within:ring-1 focus-within:ring-[#1877f2]">
-              <div class="bg-[#e4e6eb] dark:bg-gray-700 px-4 py-2.5 border-r border-[#ccd0d5] dark:border-[#374151] text-[#4b4f56] dark:text-gray-200 font-semibold text-[15px] whitespace-nowrap select-none">
+            <label class="fi-resource-file-box">
+              <div class="fi-resource-file-btn">
                 Choose File
               </div>
-              <div class="px-4 py-2.5 text-[#65676b] dark:text-gray-400 text-[15px] flex-1 truncate bg-white dark:bg-[#111827]" data-resource-file-label>
+              <div class="fi-resource-file-name" data-resource-file-label>
                 No file chosen
               </div>
               <input 
@@ -757,24 +753,24 @@
                 class="hidden" 
               />
             </label>
-            <p class="text-[13px] text-[#65676b] dark:text-gray-400 mt-1.5">
+            <p class="text-[12.5px] text-[#65676b] dark:text-gray-400 mt-1">
               Maximum 50MB · stored in free Supabase Storage
             </p>
           </div>
 
           <!-- Cover Image Upload -->
           <div class="pt-1">
-            <label class="block text-[15px] font-bold text-[#1c1e21] dark:text-white mb-1">
+            <label class="block text-[14px] font-bold text-[#1c1e21] dark:text-white mb-0.5">
               Cover image
             </label>
-            <p class="text-[13px] text-[#65676b] dark:text-gray-400 mb-2" data-thumb-hint>
+            <p class="text-[12.5px] text-[#65676b] dark:text-gray-400 mb-1.5" data-thumb-hint>
               Videos get a thumbnail captured automatically. Upload your own image to use that instead.
             </p>
-            <label class="relative flex w-full border border-[#ccd0d5] dark:border-[#374151] rounded-md overflow-hidden cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors focus-within:border-[#1877f2] focus-within:ring-1 focus-within:ring-[#1877f2]">
-              <div class="bg-[#e4e6eb] dark:bg-gray-700 px-4 py-2.5 border-r border-[#ccd0d5] dark:border-[#374151] text-[#4b4f56] dark:text-gray-200 font-semibold text-[15px] whitespace-nowrap select-none">
+            <label class="fi-resource-file-box">
+              <div class="fi-resource-file-btn">
                 Choose File
               </div>
-              <div class="px-4 py-2.5 text-[#65676b] dark:text-gray-400 text-[15px] flex-1 truncate bg-white dark:bg-[#111827] flex items-center gap-2">
+              <div class="fi-resource-file-name">
                 <img class="fi-thumb-preview hidden w-6 h-6 rounded object-cover" alt="" data-thumb-preview>
                 <span data-cover-file-label>No file chosen</span>
               </div>
@@ -788,16 +784,16 @@
           </div>
 
           <!-- Checkbox -->
-          <div class="flex items-center gap-3 pt-2">
+          <div class="flex items-center gap-2.5 pt-1">
             <input
               type="checkbox"
               id="allow_download"
               name="allow_download"
               value="1"
               checked
-              class="w-4 h-4 text-[#1877f2] bg-white dark:bg-gray-800 border-[#ccd0d5] dark:border-gray-600 rounded focus:ring-[#1877f2] focus:ring-2 cursor-pointer accent-[#1877f2]"
+              class="w-4 h-4 text-[#1877f2] bg-white dark:bg-gray-800 border-[#ccd0d5] dark:border-gray-600 rounded cursor-pointer accent-[#1877f2]"
             />
-            <label for="allow_download" class="text-[15px] text-[#1c1e21] dark:text-gray-200 cursor-pointer select-none">
+            <label for="allow_download" class="text-[14px] text-[#1c1e21] dark:text-gray-200 cursor-pointer select-none">
               Allow members to download this resource
             </label>
           </div>
@@ -816,8 +812,8 @@
           </div>
 
           <!-- Footer Button -->
-          <div class="pt-3">
-            <button type="submit" class="w-full bg-[#1877f2] hover:bg-[#166fe5] active:scale-[0.99] text-white font-bold text-[15px] py-2.5 rounded-md transition-all shadow-sm flex items-center justify-center gap-2" data-resource-submit>
+          <div class="pt-2">
+            <button type="submit" class="fi-resource-btn-primary" data-resource-submit>
               Publish resource
             </button>
           </div>
