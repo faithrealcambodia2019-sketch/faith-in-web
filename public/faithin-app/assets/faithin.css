@@ -268,10 +268,49 @@ html.dark .chip.is-on{ color:#0b1120; }
 /* --- avatar -------------------------------------------------------------- */
 .avatar{
   display:inline-flex; align-items:center; justify-content:center; flex:none;
-  width: 42px; height: 42px; border-radius:999px; font-weight:600; letter-spacing:.01em; color:#fff; user-select:none;
+  border-radius:9999px; font-weight:600; letter-spacing:.01em; color:#fff; user-select:none;
   object-fit: cover;
 }
 .avatar-sq{ border-radius:10px; }
+
+/* --- profile hero avatar ------------------------------------------------ */
+.profile-avatar-hero,
+#profile-avatar,
+[data-profile-hero-avatar] {
+  width: 140px !important;
+  height: 140px !important;
+  min-width: 140px !important;
+  min-height: 140px !important;
+  max-width: 140px !important;
+  max-height: 140px !important;
+  border-radius: 9999px !important;
+  object-fit: cover !important;
+  border: 4px solid rgb(var(--surface)) !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.14) !important;
+  margin-top: -70px !important;
+  font-size: 42px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  position: relative !important;
+  z-index: 20 !important;
+  background-color: rgb(var(--surface)) !important;
+}
+
+@media (max-width: 640px) {
+  .profile-avatar-hero,
+  #profile-avatar,
+  [data-profile-hero-avatar] {
+    width: 110px !important;
+    height: 110px !important;
+    min-width: 110px !important;
+    min-height: 110px !important;
+    max-width: 110px !important;
+    max-height: 110px !important;
+    margin-top: -55px !important;
+    font-size: 32px !important;
+  }
+}
 
 /* --- contacts card & widget --------------------------------------------- */
 #contacts {
