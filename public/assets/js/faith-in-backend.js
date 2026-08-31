@@ -340,11 +340,32 @@
         return isNaN(date.getTime()) ? null : date;
     }
 
+    function resolveVerification(verification, appUserId, createdOrder) {
+        if (verification && typeof verification === 'object' && verification.show) {
+            return verification;
+        }
+        var uidNum = parseInt(appUserId, 10);
+        var orderNum = parseInt(createdOrder, 10);
+        // Free purple tick for the first 20 registered community members:
+        if ((uidNum > 0 && uidNum <= 20) || (orderNum > 0 && orderNum <= 20)) {
+            return {
+                show: true,
+                type: 'purple',
+                label: 'First 20',
+                title: 'First 20 Member — Free Purple Tick',
+                badge: 'purple',
+                free_tier: true
+            };
+        }
+        return verification || null;
+    }
+
     function profileFor(user, doc) {
         var data = doc || {};
         var email = text(user.email || data.email);
         var name = text(data.displayName || user.displayName || (email ? email.split('@')[0] : '') || 'Faith In Member');
         var avatar = text(data.photoURL || user.photoURL);
+        var appId = parseInt(data.appUserId || numericId(user.uid), 10);
         return {
             id: numericId(user.uid),
             uid: user.uid,
@@ -371,7 +392,7 @@
             articles: [],
             resources: [],
             settings: data.settings || { theme: 'light', lang: 'English', notifications: true },
-            verification: data.verification || null
+            verification: resolveVerification(data.verification, appId, data.user_index || data.member_index)
         };
     }
 
@@ -379,6 +400,7 @@
         var source = data || {};
         var email = text(user.email || source.email);
         var name = text(source.displayName || user.displayName || (email ? email.split('@')[0] : '') || 'Faith In Member', 120);
+        var appId = parseInt(source.appUserId || numericId(user.uid), 10);
         return {
             uid: user.uid,
             displayName: name,
@@ -391,8 +413,8 @@
             industry: text(source.industry, 160),
             church: text(source.church, 200),
             ministry: text(source.ministry, 200),
-            appUserId: parseInt(source.appUserId || numericId(user.uid), 10),
-            verification: source.verification || null,
+            appUserId: appId,
+            verification: resolveVerification(source.verification, appId, source.user_index),
             createdAt: source.createdAt || b.dbMod.serverTimestamp(),
             updatedAt: b.dbMod.serverTimestamp()
         };
@@ -1640,8 +1662,9 @@
 
     function shapeMember(uid, data, viewer, following) {
         var name = text(data.displayName || 'Faith In Member');
+        var appId = parseInt(data.appUserId || numericId(uid), 10);
         return {
-            id: parseInt(data.appUserId || numericId(uid), 10),
+            id: appId,
             uid: uid,
             name: name,
             displayName: name,
@@ -1654,7 +1677,7 @@
             ministry: text(data.ministry),
             location: text(data.location),
             bio: text(data.bio),
-            verification: data.verification || null,
+            verification: resolveVerification(data.verification, appId, data.user_index || data.member_index),
             is_self: !!(viewer && viewer.uid === uid),
             is_following: !!(following && following[uid]),
             counts: {},

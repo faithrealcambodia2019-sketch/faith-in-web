@@ -162,7 +162,7 @@
     return `<article class="card animate-fade-up" data-post-id="${esc(post.id)}" data-author-uid="${esc(uid)}">
       <header class="flex items-start gap-3 p-4 pb-2.5">
         <a href="${profileHref}" class="shrink-0 block">${avatar ? `<img class="avatar w-11 h-11 object-cover" src="${esc(avatar)}" alt="${esc(name)}">` : `<span class="avatar w-11 h-11 text-[14px]">${esc(api.initials(name))}</span>`}</a>
-        <div class="min-w-0 flex-1"><div class="flex items-center gap-2 flex-wrap"><a href="${profileHref}" class="text-[14.5px] font-semibold hover:text-brand">${esc(name)}</a>${post.type && post.type !== 'post' ? `<span class="text-[10.5px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-brand-soft text-brand-strong">${esc(post.type)}</span>` : ''}</div><p class="text-[12px] text-muted mt-0.5">${esc(post.time || 'just now')} · ${esc(post.visibility || 'Public')}</p></div>
+        <div class="min-w-0 flex-1"><div class="flex items-center gap-2 flex-wrap"><a href="${profileHref}" class="text-[14.5px] font-semibold hover:text-brand inline-flex items-center">${esc(name)}${window.FILive.verificationBadgeMarkup(author || post)}</a>${post.type && post.type !== 'post' ? `<span class="text-[10.5px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-brand-soft text-brand-strong">${esc(post.type)}</span>` : ''}</div><p class="text-[12px] text-muted mt-0.5">${esc(post.time || 'just now')} · ${esc(post.visibility || 'Public')}</p></div>
         ${!owner && uid ? `<button class="btn ${isFollowing ? 'btn-neutral' : 'btn-outline'} !py-1 !px-3 !text-[13px]" data-live-follow><i class="fa-solid ${isFollowing ? 'fa-check' : 'fa-plus'} text-[11px] mr-1"></i>${isFollowing ? 'Following' : 'Follow'}</button>` : ''}
         ${owner ? `<button class="icon-btn" data-live-delete aria-label="Delete post"><i class="fa-regular fa-trash-can"></i></button>` : ''}
       </header>
@@ -345,7 +345,7 @@
         <div class="flex items-center gap-3 min-w-0 flex-1">
           ${window.FILive.avatarMarkup(user, 'avatar')}
           <div class="contact-info">
-            <a href="/profile?uid=${encodeURIComponent(user.uid)}" class="contact-name hover:text-brand transition">${esc(user.name)}</a>
+            <a href="/profile?uid=${encodeURIComponent(user.uid)}" class="contact-name hover:text-brand transition inline-flex items-center">${esc(user.name)}${window.FILive.verificationBadgeMarkup(user)}</a>
             <span class="contact-subtitle">Faithin</span>
           </div>
         </div>
@@ -679,8 +679,8 @@
             ${window.FILive.avatarMarkup(c.author || { name: c.author_name || 'Member' }, 'avatar w-7 h-7 text-[10px] object-cover')}
           </a>
           <div class="min-w-0 flex-1">
-            <a href="/profile?uid=${encodeURIComponent(c.author?.uid || c.author_uid || '')}" class="text-[12.5px] font-semibold hover:text-brand">
-              ${esc(c.author?.name || c.author_name || 'Member')}
+            <a href="/profile?uid=${encodeURIComponent(c.author?.uid || c.author_uid || '')}" class="text-[12.5px] font-semibold hover:text-brand inline-flex items-center">
+              ${esc(c.author?.name || c.author_name || 'Member')}${window.FILive.verificationBadgeMarkup(c.author)}
             </a>
             <p class="text-[13px] mt-0.5 text-ink/90">${esc(c.content)}</p>
           </div>
