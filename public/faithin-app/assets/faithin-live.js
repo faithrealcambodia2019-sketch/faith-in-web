@@ -802,16 +802,21 @@
         if (locSpan) locSpan.textContent = user.location || 'Phnom Penh, Cambodia';
         else if (details[1].firstChild) details[1].firstChild.textContent = `${user.location || ''} `;
       }
-      const avatar = $('.avatar', hero);
+      const avatar = $('[data-profile-hero-avatar], #profile-avatar, .profile-avatar-hero, .avatar', hero);
       if (avatar) {
         const photo = user.avatar_url || user.avatar || user.photo_url;
         if (photo) {
           const image = document.createElement('img');
-          image.className = avatar.className + ' object-cover';
+          image.id = 'profile-avatar';
+          image.dataset.profileHeroAvatar = '';
+          image.className = 'profile-avatar-hero avatar object-cover';
           image.src = photo;
           image.alt = user.name || 'Member';
           avatar.replaceWith(image);
         } else {
+          avatar.id = 'profile-avatar';
+          avatar.dataset.profileHeroAvatar = '';
+          avatar.className = 'profile-avatar-hero avatar';
           avatar.textContent = api.initials(user.name);
         }
       }
