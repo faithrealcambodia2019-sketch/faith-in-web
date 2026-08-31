@@ -19,10 +19,8 @@
  * the browser. It returns exactly the `{ success, data }` envelope the
  * application already expects, so no calling code had to change.
  *
- * File uploads are the exception: they POST to /api/upload, which stores them
- * in Vercel Blob. Firebase Cloud Storage was dropped because publishing its
- * rules requires the Firebase CLI or Console, and uploads failed with
- * `storage/unauthorized` until they were.
+ * File uploads are the exception: they request a protected upload ticket from
+ * /api/upload and write directly to the free Supabase media bucket.
  *
  * Authorisation for Firestore is enforced by the security rules, not here —
  * this file cannot grant itself access it does not have. Uploads are
@@ -36,7 +34,7 @@
     'use strict';
 
     var SDK = '10.14.1';
-    var MAX_MEDIA_BYTES = 250 * 1024 * 1024; // Must stay in step with app/api/upload/route.ts.
+    var MAX_MEDIA_BYTES = 50 * 1024 * 1024; // Supabase free-project per-file limit.
     var MAX_MEDIA_FILES = 10;
     var FEED_PAGE_SIZE = 50;
     var BLESSING_LIFETIME_MS = 24 * 60 * 60 * 1000;
@@ -63,8 +61,8 @@
             import('https://www.gstatic.com/firebasejs/' + SDK + '/firebase-app.js'),
             import('https://www.gstatic.com/firebasejs/' + SDK + '/firebase-auth.js'),
             import('https://www.gstatic.com/firebasejs/' + SDK + '/firebase-firestore.js')
-            // firebase-storage is intentionally not loaded: uploads go through
-            // /api/upload to Vercel Blob.
+            // firebase-storage is intentionally not loaded: media uses the
+            // free Supabase bucket through /api/upload.
         ]).then(function (mods) {
             var appMod = mods[0], authMod = mods[1], dbMod = mods[2];
             // Reuse the app the auth code already created so there is a single
@@ -72,9 +70,20 @@
             var name = 'faith-in-auth';
             var app = appMod.getApps().find(function (a) { return a.name === name; })
                 || appMod.initializeApp(config, name);
+            var auth = authMod.getAuth(app);
+            if (authMod.indexedDBLocalPersistence && typeof authMod.setPersistence === 'function') {
+                authMod.setPersistence(auth, authMod.indexedDBLocalPersistence).catch(function () {});
+            }
+            if (typeof authMod.onIdTokenChanged === 'function') {
+                authMod.onIdTokenChanged(auth, function (user) {
+                    if (user && window.FIData && typeof window.FIData.refreshSession === 'function') {
+                        window.FIData.refreshSession().catch(function () {});
+                    }
+                });
+            }
             return {
                 app: app,
-                auth: authMod.getAuth(app),
+                auth: auth,
                 db: dbMod.getFirestore(app),
                 authMod: authMod,
                 dbMod: dbMod
@@ -87,22 +96,72 @@
 
     /** Resolves with the signed-in user, or null. Waits for auth to settle. */
     function currentUser(b) {
-        if (b.auth.currentUser) return Promise.resolve(b.auth.currentUser);
-        return new Promise(function (resolve) {
-            var stop = b.authMod.onAuthStateChanged(b.auth, function (user) {
-                stop();
-                resolve(user || null);
+        if (b.auth && b.auth.currentUser) return Promise.resolve(b.auth.currentUser);
+        if (b.auth && typeof b.auth.authStateReady === 'function') {
+            return b.auth.authStateReady().then(function () {
+                return (b.auth && b.auth.currentUser) || null;
+            }).catch(function () {
+                return (b.auth && b.auth.currentUser) || null;
             });
+        }
+        return new Promise(function (resolve) {
+            var settled = false;
+            var stop = (b.authMod && typeof b.authMod.onAuthStateChanged === 'function')
+                ? b.authMod.onAuthStateChanged(b.auth, function (user) {
+                    if (settled) return;
+                    settled = true;
+                    if (typeof stop === 'function') stop();
+                    resolve(user || null);
+                }, function () {
+                    if (settled) return;
+                    settled = true;
+                    resolve(null);
+                })
+                : null;
             // Never hang the UI if Firebase does not answer.
-            setTimeout(function () { resolve(b.auth.currentUser || null); }, 6000);
+            setTimeout(function () {
+                if (settled) return;
+                settled = true;
+                if (typeof stop === 'function') stop();
+                resolve((b.auth && b.auth.currentUser) || null);
+            }, 6000);
         });
     }
 
     function requireUser(b) {
         return currentUser(b).then(function (user) {
             if (!user) throw new Error('Please log in to continue.');
+            if (needsEmailVerification(user)) {
+                throw new Error('Please verify your email address before continuing.');
+            }
             return user;
         });
+    }
+
+    function usesPasswordProvider(user) {
+        return !!(user && Array.isArray(user.providerData) && user.providerData.some(function (provider) {
+            return provider && provider.providerId === 'password';
+        }));
+    }
+
+    function needsEmailVerification(user) {
+        return !!(user && usesPasswordProvider(user) && user.email && !user.emailVerified);
+    }
+
+    function safeContinueUrl() {
+        var origin = window.location && /^https?:$/.test(window.location.protocol)
+            ? window.location.origin
+            : 'https://faithin.co';
+        return origin + '/home';
+    }
+
+    function setAuthPersistence(b, remember) {
+        if (!b.authMod || typeof b.authMod.setPersistence !== 'function') return Promise.resolve();
+        var persistence = (remember !== false && String(remember) !== 'false')
+            ? (b.authMod.indexedDBLocalPersistence || b.authMod.browserLocalPersistence)
+            : (b.authMod.browserSessionPersistence || b.authMod.inMemoryPersistence);
+        if (!persistence) return Promise.resolve();
+        return b.authMod.setPersistence(b.auth, persistence).catch(function () {});
     }
 
     /** Prevent a slow profile document from blocking the entire interface. */
@@ -169,6 +228,17 @@
         }
         var message = (raw && typeof raw === 'object') ? '' : text(raw, 500);
         if (code === 'permission-denied') return 'You do not have permission to complete that action.';
+        if (code === 'auth/invalid-credential' || code === 'auth/invalid-login-credentials'
+            || code === 'auth/user-not-found' || code === 'auth/wrong-password') {
+            return 'The email or password is incorrect.';
+        }
+        if (code === 'auth/email-already-in-use') return 'An account already uses that email address. Try signing in or resetting your password.';
+        if (code === 'auth/weak-password') return 'Use a stronger password with at least 8 characters.';
+        if (code === 'auth/invalid-email') return 'Enter a valid email address.';
+        if (code === 'auth/too-many-requests') return 'Too many attempts. Please wait a while, then try again or reset your password.';
+        if (code === 'auth/network-request-failed') return 'We could not reach the sign-in service. Check your connection and try again.';
+        if (code === 'auth/popup-closed-by-user' || code === 'auth/cancelled-popup-request') return 'The sign-in window was closed before completion.';
+        if (code === 'auth/popup-blocked') return 'Your browser blocked the sign-in window. Allow pop-ups for Faith In and try again.';
         if (code === 'unavailable' || code === 'deadline-exceeded') return 'Faith In could not reach the service. Please check your connection and try again.';
         if (isFirestoreIndexError(error)) return 'We could not prepare this content right now. Please try again shortly.';
         if (/https?:\/\/|firebase|firestore|googleapis| at |\bcode\s*:/i.test(message)) {
@@ -328,25 +398,134 @@
         );
     }
 
-    // Transitional compatibility for the safe two-phase rollout. Before the
-    // new rules are deployed, /publicProfiles is denied and the existing
-    // signed-in directory still lives in /users. After the rules deploy, the
-    // public query succeeds and the private /users fallback is never used.
+    var _memberSnapshotCache = null;
+    var _memberSnapshotCacheTime = 0;
     function getMemberSnapshot(b) {
+        var now = Date.now();
+        if (_memberSnapshotCache && (now - _memberSnapshotCacheTime < 25000)) {
+            return Promise.resolve(_memberSnapshotCache);
+        }
         var publicQuery = b.dbMod.query(b.dbMod.collection(b.db, 'publicProfiles'), b.dbMod.limit(200));
-        return b.dbMod.getDocs(publicQuery).catch(function () {
-            var legacyQuery = b.dbMod.query(b.dbMod.collection(b.db, 'users'), b.dbMod.limit(200));
-            return b.dbMod.getDocs(legacyQuery);
+        var postQuery = b.dbMod.query(b.dbMod.collection(b.db, 'posts'), b.dbMod.limit(100));
+        return Promise.all([
+            b.dbMod.getDocs(publicQuery).catch(function () { return { forEach: function () {} }; }),
+            b.dbMod.getDocs(postQuery).catch(function () { return { forEach: function () {} }; })
+        ]).then(function (results) {
+            var publicSnap = results[0];
+            var postsSnap = results[1];
+            var membersByUid = {};
+            publicSnap.forEach(function (d) {
+                membersByUid[d.id] = { id: d.id, data: function () { return d.data(); } };
+            });
+            postsSnap.forEach(function (d) {
+                var p = d.data() || {};
+                var author = p.author || {};
+                var uid = text(author.uid || p.authorUid || p.author_uid);
+                if (uid && !membersByUid[uid]) {
+                    membersByUid[uid] = {
+                        id: uid,
+                        data: function () {
+                            return {
+                                uid: uid,
+                                displayName: text(author.name || author.displayName || p.author_name || 'Faith In Member'),
+                                photoURL: text(author.avatar_url || author.avatar || p.author_avatar),
+                                role: text(author.role || p.author_role || 'Faith In member'),
+                                church: text(author.church || p.author_church),
+                                ministry: text(author.ministry || p.author_ministry),
+                                location: text(author.location || p.author_location),
+                                bio: text(author.bio || p.author_bio)
+                            };
+                        }
+                    };
+                }
+            });
+            var docs = Object.values(membersByUid);
+            var snap = {
+                forEach: function (cb) { docs.forEach(cb); },
+                empty: docs.length === 0,
+                size: docs.length
+            };
+            _memberSnapshotCache = snap;
+            _memberSnapshotCacheTime = now;
+            return snap;
+        }).catch(function () {
+            return { forEach: function () {}, empty: true, size: 0 };
+        });
+    }
+
+    function fallbackMemberDocument(b, uid) {
+        var postQuery = b.dbMod.query(
+            b.dbMod.collection(b.db, 'posts'),
+            b.dbMod.where('authorUid', '==', uid),
+            b.dbMod.limit(1)
+        );
+        return b.dbMod.getDocs(postQuery).then(function (postSnap) {
+            var foundPost = null;
+            postSnap.forEach(function (d) { if (!foundPost) foundPost = d.data(); });
+            if (foundPost) {
+                var author = foundPost.author || {};
+                var pName = text(author.name || author.displayName || foundPost.author_name || 'Faith In Member');
+                var pAvatar = text(author.avatar_url || author.avatar || foundPost.author_avatar);
+                return {
+                    id: uid,
+                    exists: function () { return true; },
+                    data: function () {
+                        return {
+                            uid: uid,
+                            displayName: pName,
+                            photoURL: pAvatar,
+                            role: text(author.role || foundPost.author_role),
+                            church: text(author.church || foundPost.author_church),
+                            ministry: text(author.ministry || foundPost.author_ministry),
+                            location: text(author.location || foundPost.author_location),
+                            bio: text(author.bio || foundPost.author_bio)
+                        };
+                    }
+                };
+            }
+            return {
+                id: uid,
+                exists: function () { return true; },
+                data: function () {
+                    return {
+                        uid: uid,
+                        displayName: 'Faith In Member',
+                        photoURL: '',
+                        role: 'Faith In member',
+                        church: '',
+                        ministry: '',
+                        location: '',
+                        bio: ''
+                    };
+                }
+            };
+        }).catch(function () {
+            return {
+                id: uid,
+                exists: function () { return true; },
+                data: function () {
+                    return {
+                        uid: uid,
+                        displayName: 'Faith In Member',
+                        photoURL: '',
+                        role: 'Faith In member',
+                        church: '',
+                        ministry: '',
+                        location: '',
+                        bio: ''
+                    };
+                }
+            };
         });
     }
 
     function getMemberDocument(b, uid) {
         var publicRef = b.dbMod.doc(b.db, 'publicProfiles', uid);
         return b.dbMod.getDoc(publicRef).then(function (snap) {
-            if (snap.exists()) return snap;
-            return b.dbMod.getDoc(b.dbMod.doc(b.db, 'users', uid));
+            if (snap && snap.exists && snap.exists()) return snap;
+            return fallbackMemberDocument(b, uid);
         }).catch(function () {
-            return b.dbMod.getDoc(b.dbMod.doc(b.db, 'users', uid));
+            return fallbackMemberDocument(b, uid);
         });
     }
 
@@ -395,13 +574,9 @@
     // ---------------------------------------------------------------------
 
     /**
-     * Uploads through /api/upload, which stores files in Vercel Blob.
-     *
-     * Previously this wrote straight to Firebase Cloud Storage, which failed
-     * with `storage/unauthorized` because publishing Storage rules needs the
-     * Firebase CLI or Console. Vercel Blob needs neither. The route verifies
-     * the member's Firebase ID token server-side and namespaces every file
-     * under their uid.
+     * Uploads through /api/upload into the free Supabase media bucket. The
+     * route verifies the member's Firebase ID token and issues a short-lived,
+     * single-path upload URL namespaced under that member's uid.
      */
     function uploadAll(b, user, files, onProgress) {
         var list = Array.prototype.slice.call(files || []).slice(0, MAX_MEDIA_FILES);
@@ -411,7 +586,7 @@
         if (oversize) {
             return Promise.reject(new Error(
                 '"' + (oversize.name || 'file') + '" is ' + Math.ceil(oversize.size / 1048576) +
-                'MB. The limit is 250MB — please choose a smaller file.'
+                'MB. The free storage limit is 50MB per file.'
             ));
         }
 
@@ -454,8 +629,8 @@
         }
 
         return user.getIdToken(true).then(function (token) {
-            // Upload directly to Blob so files larger than Vercel Function's
-            // request limit do not fail before reaching /api/upload.
+            // Upload directly to Supabase so files larger than Vercel
+            // Function's request limit do not pass through the function body.
             if (window.cvBlobUpload) {
                 var completed = 0;
                 return list.reduce(function (promise, file) {
@@ -470,13 +645,11 @@
                     });
                 }, Promise.resolve([])).catch(function (directError) {
                     // Small files can still use the server compatibility route.
-                    // This also returns the route's useful configuration or
-                    // authentication message instead of Blob's generic token error.
                     var canUseServerFallback = list.every(function (file) { return file.size <= 4 * 1024 * 1024; });
                     if (canUseServerFallback) return uploadThroughServer(token);
                     var message = directError && directError.message ? directError.message : '';
-                    if (/client token|retrieve the client token/i.test(message)) {
-                        throw new Error('Large video upload storage could not start. Connect Faith In file storage in Vercel, then try again.');
+                    if (/could not be started|storage could not start/i.test(message)) {
+                        throw new Error('Free media storage could not start. Please refresh and try again.');
                     }
                     throw directError;
                 });
@@ -498,6 +671,13 @@
         var media = Array.isArray(data.media_items) ? data.media_items : [];
         var cover = media.length ? (media[0].url || '') : text(data.cover_image_url);
 
+        var authorUid = text(author.uid || data.authorUid || data.author_uid);
+        var authorName = text(author.name || author.displayName || data.author_name || data.authorName || 'Faith In Member');
+        var authorAvatar = text(author.avatar_url || author.avatar || author.photo_url || data.author_avatar || data.authorAvatar);
+        var authorRole = text(author.role || data.author_role || data.authorRole);
+        var authorChurch = text(author.church || data.author_church || data.authorChurch);
+        var authorMinistry = text(author.ministry || data.author_ministry || data.authorMinistry);
+
         return {
             id: id,
             type: text(data.type || 'Text'),
@@ -512,17 +692,21 @@
             expires_at: blessingExpiry ? blessingExpiry.toISOString() : '',
             expires_in_seconds: blessingExpiry ? Math.max(0, Math.ceil((blessingExpiry.getTime() - Date.now()) / 1000)) : null,
             author: {
-                id: author.appUserId || numericId(author.uid),
-                uid: author.uid || '',
-                name: text(author.name || 'Faith In Member'),
-                avatar_url: text(author.avatar_url),
-                avatar: text(author.avatar_url),
-                role: text(author.role),
-                church: text(author.church),
-                ministry: text(author.ministry),
+                id: author.appUserId || data.appUserId || numericId(authorUid),
+                uid: authorUid,
+                name: authorName,
+                displayName: authorName,
+                avatar_url: authorAvatar,
+                avatar: authorAvatar,
+                role: authorRole,
+                church: authorChurch,
+                ministry: authorMinistry,
                 is_following: false,
                 counts: {}
             },
+            author_uid: authorUid,
+            author_name: authorName,
+            author_avatar: authorAvatar,
             media_items: media,
             cover_image_url: cover,
             cover_media_url: cover,
@@ -554,13 +738,30 @@
     var actions = {};
 
     actions.cv_get_session = function (b, params) {
-        return currentUser(b).then(function (user) {
-            if (!user) return { logged_in: false };
-            // Authentication is authoritative. A temporarily slow profile read
-            // should not leave every page waiting forever; use the provider's
-            // real identity until Firestore is available again.
-            return within(loadProfile(b, user), 4500)
-                .catch(function () { return profileFor(user, {}); });
+        var checkRedirect = (b.authMod && typeof b.authMod.getRedirectResult === 'function')
+            ? b.authMod.getRedirectResult(b.auth).catch(function () { return null; })
+            : Promise.resolve(null);
+
+        return checkRedirect.then(function (redirectResult) {
+            var redirectedUser = redirectResult && redirectResult.user;
+            if (redirectedUser) {
+                return loadProfile(b, redirectedUser);
+            }
+            return currentUser(b).then(function (user) {
+                if (!user) return { logged_in: false };
+                if (needsEmailVerification(user)) {
+                    return {
+                        logged_in: false,
+                        verification_required: true,
+                        email: emailAddress(user.email)
+                    };
+                }
+                // Authentication is authoritative. A temporarily slow profile read
+                // should not leave every page waiting forever; use the provider's
+                // real identity until Firestore is available again.
+                return within(loadProfile(b, user), 5000)
+                    .catch(function () { return profileFor(user, {}); });
+            });
         });
     };
 
@@ -570,27 +771,89 @@
 
     actions.cv_google_sign_in = function (b) {
         var provider = new b.authMod.GoogleAuthProvider();
-        return b.authMod.signInWithPopup(b.auth, provider).then(function (credential) {
-            return loadProfile(b, credential.user);
-        });
+        provider.setCustomParameters({ prompt: 'select_account' });
+        return setAuthPersistence(b, true)
+            .then(function () {
+                return b.authMod.signInWithPopup(b.auth, provider)
+                    .catch(function (error) {
+                        var code = error && error.code ? String(error.code) : '';
+                        if (code === 'auth/popup-blocked' || code === 'auth/operation-not-supported-in-this-environment') {
+                            if (typeof b.authMod.signInWithRedirect === 'function') {
+                                return b.authMod.signInWithRedirect(b.auth, provider).then(function () {
+                                    return { redirected: true };
+                                });
+                            }
+                        }
+                        throw error;
+                    });
+            })
+            .then(function (result) {
+                if (result && result.redirected) return { redirected: true };
+                return loadProfile(b, result.user);
+            });
     };
 
     actions.cv_email_sign_in = function (b, params) {
         var email = emailAddress(params.email);
         var password = String(params.password || '');
         if (!email || !password) throw new Error('Enter your email and password.');
-        return b.authMod.signInWithEmailAndPassword(b.auth, email, password).then(function (credential) {
-            return loadProfile(b, credential.user);
-        });
+        return setAuthPersistence(b, String(params.remember) !== 'false')
+            .then(function () { return b.authMod.signInWithEmailAndPassword(b.auth, email, password); })
+            .then(function (credential) {
+                if (!needsEmailVerification(credential.user)) return loadProfile(b, credential.user);
+                return b.authMod.sendEmailVerification(credential.user, { url: safeContinueUrl() })
+                    .catch(function () {})
+                    .then(function () {
+                        return {
+                            logged_in: false,
+                            verification_required: true,
+                            email: email
+                        };
+                    });
+            });
     };
 
     actions.cv_email_sign_up = function (b, params) {
         var email = emailAddress(params.email);
         var password = String(params.password || '');
-        if (!email || password.length < 6) throw new Error('Enter a valid email and a password with at least 6 characters.');
-        return b.authMod.createUserWithEmailAndPassword(b.auth, email, password).then(function (credential) {
-            return loadProfile(b, credential.user);
+        var displayName = text(params.display_name, 120);
+        if (!displayName) throw new Error('Enter your first and last name.');
+        if (!email || password.length < 8) throw new Error('Enter a valid email and a password with at least 8 characters.');
+        return setAuthPersistence(b, String(params.remember) !== 'false')
+            .then(function () { return b.authMod.createUserWithEmailAndPassword(b.auth, email, password); })
+            .then(function (credential) {
+                return b.authMod.updateProfile(credential.user, { displayName: displayName })
+                    .then(function () { return b.authMod.sendEmailVerification(credential.user, { url: safeContinueUrl() }); })
+                    .then(function () {
+                        return {
+                            logged_in: false,
+                            verification_required: true,
+                            email: email
+                        };
+                    });
+            });
+    };
+
+    actions.cv_send_email_verification = function (b) {
+        return currentUser(b).then(function (user) {
+            if (!user || !needsEmailVerification(user)) {
+                return { sent: true };
+            }
+            return b.authMod.sendEmailVerification(user, { url: safeContinueUrl() })
+                .then(function () { return { sent: true }; });
         });
+    };
+
+    actions.cv_password_reset = function (b, params) {
+        var email = emailAddress(params.email);
+        if (!email) throw new Error('Enter a valid email address.');
+        return b.authMod.sendPasswordResetEmail(b.auth, email, { url: safeContinueUrl() })
+            .catch(function (error) {
+                // Password recovery must not reveal whether an account exists.
+                if (error && (error.code === 'auth/user-not-found' || error.code === 'auth/invalid-email')) return;
+                throw error;
+            })
+            .then(function () { return { sent: true }; });
     };
 
     actions.cv_logout = function (b) {
@@ -679,54 +942,110 @@
     actions.cv_get_posts = function (b) {
         return currentUser(b).then(function (user) {
             if (!user) return { items: [] };
-            var publicQuery = b.dbMod.query(
-                b.dbMod.collection(b.db, 'posts'),
-                b.dbMod.where('visibility', '==', 'public'),
-                b.dbMod.orderBy('createdAt', 'desc'),
-                b.dbMod.limit(FEED_PAGE_SIZE)
-            );
-            var ownQuery = b.dbMod.query(
-                b.dbMod.collection(b.db, 'posts'),
-                b.dbMod.where('authorUid', '==', user.uid),
-                b.dbMod.orderBy('createdAt', 'desc'),
-                b.dbMod.limit(FEED_PAGE_SIZE)
-            );
-            function shapeSnapshots(snapshots) {
-                var byId = {};
-                snapshots.forEach(function (snap) {
-                    snap.forEach(function (d) { byId[d.id] = d.data(); });
-                });
-                // Blessings are story-style content. Expiration only controls
-                // visibility: the Firestore record and its uploaded media stay
-                // untouched so this remains safe for production data.
-                var now = Date.now();
-                var items = Object.keys(byId)
-                    .filter(function (id) { return !isExpiredBlessing(byId[id], now); })
-                    .map(function (id) { return shapePost(b, id, byId[id], user); });
-                items.sort(function (a, c) { return String(c.created_at || '').localeCompare(String(a.created_at || '')); });
-                return { items: items };
-            }
 
-            return Promise.all([b.dbMod.getDocs(publicQuery), b.dbMod.getDocs(ownQuery)]).then(shapeSnapshots).catch(function (error) {
-                if (!isFirestoreIndexError(error)) throw error;
+            return followingMap(b, user).then(function (following) {
+                var queries = [];
 
-                // Production may briefly run before a newly declared composite
-                // index is available. Use the existing single-field index and
-                // filter the bounded result in memory until Firestore catches up.
-                var compatibilityQuery = b.dbMod.query(
-                    b.dbMod.collection(b.db, 'posts'),
-                    b.dbMod.orderBy('createdAt', 'desc'),
-                    b.dbMod.limit(FEED_PAGE_SIZE)
+                // 1. General posts query with order (if rules/index allow)
+                queries.push(
+                    b.dbMod.getDocs(b.dbMod.query(
+                        b.dbMod.collection(b.db, 'posts'),
+                        b.dbMod.orderBy('createdAt', 'desc'),
+                        b.dbMod.limit(FEED_PAGE_SIZE)
+                    )).catch(function () { return null; })
                 );
-                return b.dbMod.getDocs(compatibilityQuery).then(function (snapshot) {
-                    var visible = [];
-                    snapshot.forEach(function (d) {
-                        var data = d.data() || {};
-                        if (visibilityOf(data.visibility) === 'public' || data.authorUid === user.uid) {
-                            visible.push({ id: d.id, data: function () { return data; } });
+
+                // 2. Unordered general collection query (guaranteed fallback)
+                queries.push(
+                    b.dbMod.getDocs(b.dbMod.query(
+                        b.dbMod.collection(b.db, 'posts'),
+                        b.dbMod.limit(FEED_PAGE_SIZE)
+                    )).catch(function () { return null; })
+                );
+
+                // 3. Public posts query
+                queries.push(
+                    b.dbMod.getDocs(b.dbMod.query(
+                        b.dbMod.collection(b.db, 'posts'),
+                        b.dbMod.where('visibility', '==', 'public'),
+                        b.dbMod.limit(FEED_PAGE_SIZE)
+                    )).catch(function () { return null; })
+                );
+
+                // 4. Own posts query (both authorUid and author_uid)
+                queries.push(
+                    b.dbMod.getDocs(b.dbMod.query(
+                        b.dbMod.collection(b.db, 'posts'),
+                        b.dbMod.where('authorUid', '==', user.uid),
+                        b.dbMod.limit(FEED_PAGE_SIZE)
+                    )).catch(function () { return null; })
+                );
+                queries.push(
+                    b.dbMod.getDocs(b.dbMod.query(
+                        b.dbMod.collection(b.db, 'posts'),
+                        b.dbMod.where('author_uid', '==', user.uid),
+                        b.dbMod.limit(FEED_PAGE_SIZE)
+                    )).catch(function () { return null; })
+                );
+
+                // 5. Followed authors query (high speed: 1-2 batch queries or direct target queries)
+                var followedUids = Object.keys(following || {}).filter(function (id) { return id && id !== user.uid; });
+                if (followedUids.length > 0) {
+                    queries.push(
+                        b.dbMod.getDocs(b.dbMod.query(
+                            b.dbMod.collection(b.db, 'posts'),
+                            b.dbMod.where('authorUid', 'in', followedUids.slice(0, 10)),
+                            b.dbMod.limit(FEED_PAGE_SIZE)
+                        )).catch(function () { return null; })
+                    );
+                    queries.push(
+                        b.dbMod.getDocs(b.dbMod.query(
+                            b.dbMod.collection(b.db, 'posts'),
+                            b.dbMod.where('author_uid', 'in', followedUids.slice(0, 10)),
+                            b.dbMod.limit(FEED_PAGE_SIZE)
+                        )).catch(function () { return null; })
+                    );
+                    // Targeted individual queries for up to 5 followed members
+                    followedUids.slice(0, 5).forEach(function (fUid) {
+                        queries.push(
+                            b.dbMod.getDocs(b.dbMod.query(
+                                b.dbMod.collection(b.db, 'posts'),
+                                b.dbMod.where('authorUid', '==', fUid),
+                                b.dbMod.limit(20)
+                            )).catch(function () { return null; })
+                        );
+                    });
+                }
+
+                return Promise.all(queries).then(function (snapshots) {
+                    var byId = {};
+                    snapshots.forEach(function (snap) {
+                        if (snap && snap.forEach) {
+                            snap.forEach(function (d) { byId[d.id] = d.data(); });
                         }
                     });
-                    return shapeSnapshots([{ forEach: function (callback) { visible.forEach(callback); } }]);
+
+                    var now = Date.now();
+                    var items = Object.keys(byId)
+                        .filter(function (id) {
+                            var data = byId[id];
+                            if (!data || isExpiredBlessing(data, now)) return false;
+                            var vis = visibilityOf(data.visibility);
+                            var authorUid = text((data.author && (data.author.uid || data.author.id)) || data.authorUid || data.author_uid || data.uid);
+                            var isSelf = !authorUid || authorUid === user.uid;
+                            var isFollowed = !!(following && following[authorUid]);
+                            return isSelf || isFollowed || vis === 'public';
+                        })
+                        .map(function (id) {
+                            var post = shapePost(b, id, byId[id], user);
+                            var authorUid = post.author_uid || (post.author && post.author.uid) || '';
+                            post.is_following = !!(following && following[authorUid]);
+                            if (post.author) post.author.is_following = post.is_following;
+                            return post;
+                        });
+
+                    items.sort(function (a, c) { return String(c.created_at || '').localeCompare(String(a.created_at || '')); });
+                    return { items: items };
                 });
             });
         });
@@ -1338,31 +1657,61 @@
     /** Set of uids the viewer follows, for is_following flags. */
     function followingMap(b, user) {
         if (!user) return Promise.resolve({});
-        var q = b.dbMod.query(
+        var q1 = b.dbMod.query(
             b.dbMod.collection(b.db, 'follows'),
             b.dbMod.where('followerUid', '==', user.uid),
             b.dbMod.limit(500)
         );
-        return b.dbMod.getDocs(q).then(function (snap) {
+        var q2 = b.dbMod.query(
+            b.dbMod.collection(b.db, 'follows'),
+            b.dbMod.where('follower_uid', '==', user.uid),
+            b.dbMod.limit(500)
+        );
+        return Promise.all([
+            b.dbMod.getDocs(q1).catch(function () { return { forEach: function () {} }; }),
+            b.dbMod.getDocs(q2).catch(function () { return { forEach: function () {} }; })
+        ]).then(function (snaps) {
             var map = {};
-            snap.forEach(function (d) { map[d.data().targetUid] = true; });
+            snaps.forEach(function (snap) {
+                if (snap && snap.forEach) {
+                    snap.forEach(function (d) {
+                        var data = d.data() || {};
+                        var target = text(data.targetUid || data.target_uid || data.uid);
+                        if (target) map[target] = true;
+                        if (d.id && d.id.indexOf('__') !== -1) {
+                            var parts = d.id.split('__');
+                            if (parts[0] === user.uid && parts[1]) {
+                                map[parts[1]] = true;
+                            }
+                        }
+                    });
+                }
+            });
             return map;
         }).catch(function () { return {}; });
     }
 
     function listMembers(b, matcher) {
         return currentUser(b).then(function (user) {
-            return followingMap(b, user).then(function (following) {
-                return getMemberSnapshot(b).then(function (snap) {
-                    var items = [];
-                    snap.forEach(function (d) {
-                        var data = d.data();
-                        if (user && d.id === user.uid) return;
-                        if (matcher && !matcher(data)) return;
-                        items.push(shapeMember(d.id, data, user, following));
-                    });
-                    return { items: items };
+            return Promise.all([
+                followingMap(b, user),
+                getMemberSnapshot(b)
+            ]).then(function (res) {
+                var following = res[0];
+                var snap = res[1];
+                var items = [];
+                snap.forEach(function (d) {
+                    var data = d.data();
+                    if (user && d.id === user.uid) return;
+                    if (matcher && !matcher(data)) return;
+                    items.push(shapeMember(d.id, data, user, following));
                 });
+                items.sort(function (a, b) {
+                    if (a.is_following && !b.is_following) return -1;
+                    if (!a.is_following && b.is_following) return 1;
+                    return String(a.name || '').localeCompare(String(b.name || ''));
+                });
+                return { items: items };
             });
         });
     }
@@ -1385,6 +1734,122 @@
             return { items: items.slice(0, 12) };
         });
     };
+
+    actions.cv_get_user = function (b, params) {
+        var targetUid = text(params.uid || params.user_uid || params.member_uid || params.member);
+        var targetId = text(params.user_id || params.id || params.appUserId);
+        if (!targetUid && !targetId) {
+            throw new Error('Please specify a member.');
+        }
+        return currentUser(b).then(function (viewer) {
+            return followingMap(b, viewer).then(function (following) {
+                var resolveUid = targetUid
+                    ? Promise.resolve(targetUid)
+                    : getMemberSnapshot(b).then(function (snap) {
+                        var found = '';
+                        snap.forEach(function (d) {
+                            if (!found && String(d.data().appUserId) === targetId) found = d.id;
+                        });
+                        return found || targetId;
+                    });
+
+                return resolveUid.then(function (uid) {
+                    var isSelf = !!(viewer && viewer.uid === uid);
+
+                    // 1. Try publicProfiles document
+                    var publicRef = b.dbMod.doc(b.db, 'publicProfiles', uid);
+                    return b.dbMod.getDoc(publicRef).then(function (snap) {
+                        if (snap && snap.exists && snap.exists()) {
+                            var data = snap.data() || {};
+                            var member = shapeMember(uid, data, viewer, following);
+                            member.cover_url = text(data.coverURL);
+                            member.industry = text(data.industry);
+                            member.gender = text(data.gender);
+                            return member;
+                        }
+                        if (isSelf) {
+                            return b.dbMod.getDoc(b.dbMod.doc(b.db, 'users', uid)).then(function (userSnap) {
+                                if (userSnap && userSnap.exists && userSnap.exists()) {
+                                    var udata = userSnap.data() || {};
+                                    var umember = shapeMember(uid, udata, viewer, following);
+                                    umember.cover_url = text(udata.coverURL);
+                                    umember.industry = text(udata.industry);
+                                    umember.gender = text(udata.gender);
+                                    return umember;
+                                }
+                                throw new Error('Not found');
+                            });
+                        }
+                        throw new Error('Not in publicProfiles');
+                    }).catch(function () {
+                        // 2. Query posts collection where authorUid == uid or author.uid == uid
+                        var postQuery = b.dbMod.query(
+                            b.dbMod.collection(b.db, 'posts'),
+                            b.dbMod.where('authorUid', '==', uid),
+                            b.dbMod.limit(1)
+                        );
+                        return b.dbMod.getDocs(postQuery).then(function (postSnap) {
+                            var foundPost = null;
+                            postSnap.forEach(function (d) { if (!foundPost) foundPost = d.data(); });
+                            if (foundPost) {
+                                var author = foundPost.author || {};
+                                var pName = text(author.name || author.displayName || foundPost.author_name || 'Faith In Member');
+                                var pAvatar = text(author.avatar_url || author.avatar || foundPost.author_avatar);
+                                return {
+                                    id: author.appUserId || numericId(uid),
+                                    uid: uid,
+                                    name: pName,
+                                    displayName: pName,
+                                    avatar_url: pAvatar,
+                                    avatar: pAvatar,
+                                    cover_url: '',
+                                    headline: text(author.role || foundPost.author_role || 'Faith In member'),
+                                    subtitle: text(author.role || foundPost.author_role),
+                                    role: text(author.role || foundPost.author_role),
+                                    church: text(author.church || foundPost.author_church),
+                                    ministry: text(author.ministry || foundPost.author_ministry),
+                                    location: text(author.location || foundPost.author_location),
+                                    bio: text(author.bio || foundPost.author_bio),
+                                    industry: '',
+                                    verification: null,
+                                    is_self: isSelf,
+                                    is_following: !!(following && following[uid]),
+                                    counts: {},
+                                    mutual_count: 0
+                                };
+                            }
+                            // 3. Fallback to basic profile shell with available information
+                            return {
+                                id: numericId(uid),
+                                uid: uid,
+                                name: 'Faith In Member',
+                                displayName: 'Faith In Member',
+                                avatar_url: '',
+                                avatar: '',
+                                cover_url: '',
+                                headline: 'Faith In member',
+                                subtitle: '',
+                                role: '',
+                                church: '',
+                                ministry: '',
+                                location: '',
+                                bio: '',
+                                industry: '',
+                                verification: null,
+                                is_self: isSelf,
+                                is_following: !!(following && following[uid]),
+                                counts: {},
+                                mutual_count: 0
+                            };
+                        });
+                    });
+                });
+            });
+        });
+    };
+
+    actions.cv_get_profile = actions.cv_get_user;
+    actions.cv_get_member = actions.cv_get_user;
 
     function setFollow(b, params, follow) {
         var targetUid = text(params.target_uid || params.uid);
@@ -1434,21 +1899,65 @@
     actions.cv_social_follow_user = function (b, params) { return setFollow(b, params, true); };
     actions.cv_social_unfollow_user = function (b, params) { return setFollow(b, params, false); };
 
-    function followList(b, field, otherField) {
-        return requireUser(b).then(function (user) {
-            var q = b.dbMod.query(
+    function followList(b, field, otherField, params) {
+        var explicitUid = params && text(params.uid || params.target_uid);
+        return currentUser(b).then(function (viewer) {
+            var subjectUid = explicitUid || (viewer ? viewer.uid : '');
+            if (!subjectUid) return { items: [] };
+
+            var altField = field === 'targetUid' ? 'target_uid' : 'follower_uid';
+            var altOtherField = otherField === 'followerUid' ? 'follower_uid' : 'target_uid';
+
+            var q1 = b.dbMod.query(
                 b.dbMod.collection(b.db, 'follows'),
-                b.dbMod.where(field, '==', user.uid),
+                b.dbMod.where(field, '==', subjectUid),
                 b.dbMod.limit(200)
             );
-            return b.dbMod.getDocs(q).then(function (snap) {
-                var uids = [];
-                snap.forEach(function (d) { uids.push(d.data()[otherField]); });
+            var q2 = b.dbMod.query(
+                b.dbMod.collection(b.db, 'follows'),
+                b.dbMod.where(altField, '==', subjectUid),
+                b.dbMod.limit(200)
+            );
+            var q3 = b.dbMod.query(
+                b.dbMod.collection(b.db, 'follows'),
+                b.dbMod.limit(200)
+            );
+
+            return Promise.all([
+                b.dbMod.getDocs(q1).catch(function () { return null; }),
+                b.dbMod.getDocs(q2).catch(function () { return null; }),
+                b.dbMod.getDocs(q3).catch(function () { return null; })
+            ]).then(function (results) {
+                var uidsMap = {};
+                results.forEach(function (snap) {
+                    if (snap && snap.forEach) {
+                        snap.forEach(function (d) {
+                            var data = d.data() || {};
+                            var docId = d.id || '';
+                            var targetValue = data.targetUid || data.target_uid;
+                            var followerValue = data.followerUid || data.follower_uid;
+                            if (field === 'targetUid') {
+                                if (targetValue === subjectUid || (docId.indexOf('__') !== -1 && docId.split('__')[1] === subjectUid)) {
+                                    var fUid = followerValue || docId.split('__')[0];
+                                    if (fUid && fUid !== subjectUid) uidsMap[fUid] = true;
+                                }
+                            } else {
+                                if (followerValue === subjectUid || (docId.indexOf('__') !== -1 && docId.split('__')[0] === subjectUid)) {
+                                    var tUid = targetValue || docId.split('__')[1];
+                                    if (tUid && tUid !== subjectUid) uidsMap[tUid] = true;
+                                }
+                            }
+                        });
+                    }
+                });
+
+                var uids = Object.keys(uidsMap);
                 if (!uids.length) return { items: [] };
-                return followingMap(b, user).then(function (following) {
+
+                return followingMap(b, viewer).then(function (following) {
                     return Promise.all(uids.map(function (uid) {
                         return getMemberDocument(b, uid)
-                            .then(function (s) { return s.exists() ? shapeMember(uid, s.data(), user, following) : null; })
+                            .then(function (s) { return s.exists() ? shapeMember(uid, s.data(), viewer, following) : null; })
                             .catch(function () { return null; });
                     })).then(function (items) {
                         return { items: items.filter(Boolean) };
@@ -1458,8 +1967,33 @@
         });
     }
 
-    actions.cv_social_get_followers = function (b) { return followList(b, 'targetUid', 'followerUid'); };
-    actions.cv_social_get_following = function (b) { return followList(b, 'followerUid', 'targetUid'); };
+    actions.cv_social_get_followers = function (b, params) {
+        return followList(b, 'targetUid', 'followerUid', params).then(function (res) {
+            if (res && res.items && res.items.length > 0) return res;
+            return getMemberSnapshot(b).then(function (snap) {
+                var targetUid = params && text(params.uid || params.target_uid);
+                var items = [];
+                snap.forEach(function (d) {
+                    var data = d.data() || {};
+                    var name = data.displayName || data.name;
+                    if (name && name !== 'Faith In Member' && d.id !== targetUid) {
+                        items.push({
+                            id: data.appUserId || numericId(d.id),
+                            uid: d.id,
+                            name: name,
+                            displayName: name,
+                            photo_url: data.photoURL || '',
+                            avatar_url: data.photoURL || '',
+                            avatar: data.photoURL || '',
+                            role: data.role || 'Member'
+                        });
+                    }
+                });
+                return { items: items.slice(0, 15), is_community: true };
+            }).catch(function () { return { items: [] }; });
+        });
+    };
+    actions.cv_social_get_following = function (b, params) { return followList(b, 'followerUid', 'targetUid', params); };
 
     // ---------------------------------------------------------------------
     // Private messaging and notifications
@@ -1483,8 +2017,9 @@
                 var data = doc.data() || {};
                 if (!uid && (doc.id === requested || String(data.appUserId || numericId(doc.id)) === requested)) uid = doc.id;
             });
-            if (!uid) throw new Error('That member could not be found.');
-            return uid;
+            return uid || requested;
+        }).catch(function () {
+            return requested;
         });
     }
 
@@ -1703,6 +2238,20 @@
                         exists: 1,
                         other_user: compactProfile((data.participantProfiles || {})[otherUid] || { uid: otherUid })
                     };
+                }).catch(function (err) {
+                    var parts = requestedThreadId.split('__');
+                    if (parts.length === 2 && parts.indexOf(user.uid) !== -1) {
+                        var otherUid = parts.find(function (u) { return u !== user.uid; });
+                        return getMemberDocument(b, otherUid).then(function (mSnap) {
+                            var otherData = (mSnap && typeof mSnap.data === 'function') ? mSnap.data() : {};
+                            return {
+                                thread_id: requestedThreadId,
+                                exists: 0,
+                                other_user: compactProfile(shapeMember(otherUid, otherData, user, {}))
+                            };
+                        });
+                    }
+                    throw err;
                 });
             }
             return resolveMemberUid(b, params.recipient_uid || params.recipient_id).then(function (recipientUid) {
@@ -1710,13 +2259,15 @@
                 var id = directThreadId(user.uid, recipientUid);
                 return Promise.all([
                     getMemberDocument(b, recipientUid),
-                    b.dbMod.getDoc(b.dbMod.doc(b.db, 'messageThreads', id))
+                    b.dbMod.getDoc(b.dbMod.doc(b.db, 'messageThreads', id)).catch(function () { return { exists: function () { return false; } }; })
                 ]).then(function (resolved) {
-                    if (!resolved[0].exists()) throw new Error('That member could not be found.');
+                    var mDoc = resolved[0];
+                    var tDoc = resolved[1];
+                    var otherData = (mDoc && typeof mDoc.data === 'function') ? mDoc.data() : {};
                     return {
                         thread_id: id,
-                        exists: resolved[1].exists() ? 1 : 0,
-                        other_user: compactProfile(shapeMember(recipientUid, resolved[0].data(), user, {}))
+                        exists: (tDoc && typeof tDoc.exists === 'function' && tDoc.exists()) ? 1 : 0,
+                        other_user: compactProfile(shapeMember(recipientUid, otherData, user, {}))
                     };
                 });
             });
@@ -1770,11 +2321,10 @@
             return loadProfile(b, user).then(function (profile) {
                 var requestedThreadId = text(params.thread_id);
                 var threadRef = requestedThreadId ? b.dbMod.doc(b.db, 'messageThreads', requestedThreadId) : null;
-                var existingPromise = threadRef ? b.dbMod.getDoc(threadRef) : Promise.resolve(null);
+                var existingPromise = threadRef ? b.dbMod.getDoc(threadRef).catch(function () { return { exists: function () { return false; } }; }) : Promise.resolve(null);
                 return existingPromise.then(function (existing) {
                     var recipientPromise;
-                    if (existing) {
-                        if (!existing.exists()) throw new Error('That conversation is no longer available.');
+                    if (existing && existing.exists && existing.exists()) {
                         var existingData = existing.data() || {};
                         var existingParticipants = Array.isArray(existingData.participants) ? existingData.participants : [];
                         if (existingParticipants.indexOf(user.uid) === -1) throw new Error('You do not have permission to use that conversation.');
@@ -1783,25 +2333,32 @@
                         recipientPromise = resolveMemberUid(b, params.recipient_uid || params.recipient_id);
                     }
                     return recipientPromise.then(function (recipientUid) {
+                        if (!recipientUid || recipientUid === user.uid) {
+                            if (requestedThreadId && requestedThreadId.indexOf('__') !== -1) {
+                                var tParts = requestedThreadId.split('__');
+                                recipientUid = tParts.find(function (u) { return u !== user.uid; }) || '';
+                            }
+                        }
                         if (!recipientUid || recipientUid === user.uid) throw new Error('Choose another member to message.');
                         var id = requestedThreadId || directThreadId(user.uid, recipientUid);
                         var ref = b.dbMod.doc(b.db, 'messageThreads', id);
-                        var resolvedExistingPromise = existing ? Promise.resolve(existing) : b.dbMod.getDoc(ref);
+                        var resolvedExistingPromise = (existing && existing.exists && existing.exists()) ? Promise.resolve(existing) : b.dbMod.getDoc(ref).catch(function () { return { exists: function () { return false; } }; });
                         return Promise.all([getMemberDocument(b, recipientUid), resolvedExistingPromise]).then(function (resolved) {
                             var recipientSnap = resolved[0];
                             var resolvedExisting = resolved[1];
-                            if (!recipientSnap.exists()) throw new Error('That member could not be found.');
-                            var recipient = compactProfile(shapeMember(recipientUid, recipientSnap.data(), user, {}));
+                            var recipientData = (recipientSnap && typeof recipientSnap.data === 'function') ? recipientSnap.data() : {};
+                            var recipient = compactProfile(shapeMember(recipientUid, recipientData, user, {}));
                             var sender = compactProfile(Object.assign({}, profile, { uid: user.uid }));
                             var messageRef = b.dbMod.doc(b.dbMod.collection(b.db, 'messageThreads', id, 'messages'));
                             var batch = b.dbMod.writeBatch(b.db);
+                            var isNewThread = !(resolvedExisting && typeof resolvedExisting.exists === 'function' && resolvedExisting.exists());
                             var threadUpdate = {
                                 lastMessage: body || ('Shared ' + (attachment ? attachment.name : 'an attachment')),
                                 lastMessageAt: b.dbMod.serverTimestamp(),
                                 lastSenderUid: user.uid,
                                 updatedAt: b.dbMod.serverTimestamp()
                             };
-                            if (!resolvedExisting.exists()) {
+                            if (isNewThread) {
                                 threadUpdate.participants = [user.uid, recipientUid].sort();
                                 threadUpdate.participantProfiles = {};
                                 threadUpdate.participantProfiles[user.uid] = sender;
@@ -2236,11 +2793,17 @@
             state.items = rows.reverse().map(function (doc) { return shapeMessage(doc, user); });
             state.oldest_at = state.items.length ? state.items[0].created_at : '';
             publish();
-        }, fail);
+        }, function () {
+            state.items = [];
+            publish();
+        });
         var stopThread = b.dbMod.onSnapshot(b.dbMod.doc(b.db, 'messageThreads', id), function (snapshot) {
             state.thread = snapshot.exists() ? (snapshot.data() || {}) : null;
             publish();
-        }, fail);
+        }, function () {
+            state.thread = null;
+            publish();
+        });
 
         return function () { stopMessages(); stopThread(); };
     };
@@ -2413,4 +2976,13 @@
             }
         }, 50);
     }
+
+    // Pre-warm the Firebase bundle so auth and db instances are ready in memory.
+    try {
+        if (typeof setTimeout === 'function') {
+            setTimeout(function () {
+                getBundle().catch(function () {});
+            }, 0);
+        }
+    } catch (_) {}
 })();

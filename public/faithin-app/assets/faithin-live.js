@@ -900,7 +900,14 @@
         api.request('cv_social_get_followers', { uid: user.uid }),
         api.request('cv_social_get_following', { uid: user.uid })
       ]).then(results => {
-        const followers = results[0].items || [];
+        const rawFollowers = results[0].items || [];
+        const seenUids = new Set();
+        const followers = rawFollowers.filter(f => {
+          const fid = f.uid || f.id;
+          if (!fid || seenUids.has(fid)) return false;
+          seenUids.add(fid);
+          return true;
+        });
         const following = results[1].items || [];
         const count = followers.length;
         const topFollowers = followers.slice(0, 3);
@@ -914,25 +921,23 @@
           return window.FILive.avatarMarkup(f, 'inline-flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-full ring-2 ring-surface text-[10px] font-bold text-white shadow-sm transition hover:scale-105');
         }).join('') : '';
 
+        // Extract distinct follower names for text display
+        const uniqueNames = [];
+        topFollowers.forEach(f => {
+          const name = f.name || f.displayName || 'Member';
+          if (!uniqueNames.includes(name)) uniqueNames.push(name);
+        });
+
         let textMarkup = `${count} ${count === 1 ? 'follower' : 'followers'}`;
-        if (count === 1) {
-          const n1 = topFollowers[0]?.name || topFollowers[0]?.displayName || '1 member';
-          textMarkup = `Followed by <strong class="font-semibold text-ink">${esc(n1)}</strong>`;
-        } else if (count === 2) {
-          const n1 = topFollowers[0]?.name || topFollowers[0]?.displayName || '1 member';
-          const n2 = topFollowers[1]?.name || topFollowers[1]?.displayName || '1 member';
-          textMarkup = `Followed by <strong class="font-semibold text-ink">${esc(n1)}</strong> and <strong class="font-semibold text-ink">${esc(n2)}</strong>`;
-        } else if (count === 3) {
-          const n1 = topFollowers[0]?.name || topFollowers[0]?.displayName || '1 member';
-          const n2 = topFollowers[1]?.name || topFollowers[1]?.displayName || '1 member';
-          const n3 = topFollowers[2]?.name || topFollowers[2]?.displayName || '1 member';
-          textMarkup = `Followed by <strong class="font-semibold text-ink">${esc(n1)}</strong>, <strong class="font-semibold text-ink">${esc(n2)}</strong> and <strong class="font-semibold text-ink">${esc(n3)}</strong>`;
-        } else if (count > 3) {
-          const n1 = topFollowers[0]?.name || topFollowers[0]?.displayName || '1 member';
-          const n2 = topFollowers[1]?.name || topFollowers[1]?.displayName || '1 member';
-          const n3 = topFollowers[2]?.name || topFollowers[2]?.displayName || '1 member';
-          const others = count - 3;
-          textMarkup = `Followed by <strong class="font-semibold text-ink">${esc(n1)}</strong>, <strong class="font-semibold text-ink">${esc(n2)}</strong>, <strong class="font-semibold text-ink">${esc(n3)}</strong> and <strong class="font-semibold text-ink">${others} other${others > 1 ? 's' : ''}</strong>`;
+        if (uniqueNames.length === 1) {
+          textMarkup = `Followed by <strong class="font-semibold text-ink">${esc(uniqueNames[0])}</strong>`;
+        } else if (uniqueNames.length === 2) {
+          textMarkup = `Followed by <strong class="font-semibold text-ink">${esc(uniqueNames[0])}</strong> and <strong class="font-semibold text-ink">${esc(uniqueNames[1])}</strong>`;
+        } else if (uniqueNames.length === 3) {
+          textMarkup = `Followed by <strong class="font-semibold text-ink">${esc(uniqueNames[0])}</strong>, <strong class="font-semibold text-ink">${esc(uniqueNames[1])}</strong> and <strong class="font-semibold text-ink">${esc(uniqueNames[2])}</strong>`;
+        } else if (uniqueNames.length > 3 || count > 3) {
+          const others = Math.max(0, count - uniqueNames.length);
+          textMarkup = `Followed by ${uniqueNames.map(n => `<strong class="font-semibold text-ink">${esc(n)}</strong>`).join(', ')}${others > 0 ? ` and <strong class="font-semibold text-ink">${others} other${others > 1 ? 's' : ''}</strong>` : ''}`;
         }
 
         // 1. Update Hero Connections & Followers row
