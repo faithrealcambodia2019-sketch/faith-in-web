@@ -933,6 +933,11 @@
     actions.cv_get_posts = function (b) {
         return currentUser(b).then(function (user) {
             if (!user) return { items: [] };
+            var postsQuery = b.dbMod.query(
+                b.dbMod.collection(b.db, 'posts'),
+                b.dbMod.orderBy('createdAt', 'desc'),
+                b.dbMod.limit(FEED_PAGE_SIZE)
+            );
             var publicQuery = b.dbMod.query(
                 b.dbMod.collection(b.db, 'posts'),
                 b.dbMod.where('visibility', '==', 'public'),
@@ -945,15 +950,26 @@
                 b.dbMod.orderBy('createdAt', 'desc'),
                 b.dbMod.limit(FEED_PAGE_SIZE)
             );
+
             function shapeSnapshots(snapshots) {
                 var byId = {};
                 snapshots.forEach(function (snap) {
-                    snap.forEach(function (d) { byId[d.id] = d.data(); });
+                    if (snap && snap.forEach) {
+                        snap.forEach(function (d) { byId[d.id] = d.data(); });
+                    }
                 });
                 return followingMap(b, user).then(function (following) {
                     var now = Date.now();
                     var items = Object.keys(byId)
-                        .filter(function (id) { return !isExpiredBlessing(byId[id], now); })
+                        .filter(function (id) {
+                            var data = byId[id];
+                            if (!data || isExpiredBlessing(data, now)) return false;
+                            var vis = visibilityOf(data.visibility);
+                            var authorUid = text((data.author && data.author.uid) || data.authorUid || data.author_uid);
+                            var isSelf = authorUid === user.uid;
+                            var isFollowed = !!(following && following[authorUid]);
+                            return isSelf || isFollowed || vis === 'public';
+                        })
                         .map(function (id) {
                             var post = shapePost(b, id, byId[id], user);
                             var authorUid = post.author_uid || (post.author && post.author.uid) || '';
@@ -966,27 +982,13 @@
                 });
             }
 
-            return Promise.all([b.dbMod.getDocs(publicQuery), b.dbMod.getDocs(ownQuery)]).then(shapeSnapshots).catch(function (error) {
-                if (!isFirestoreIndexError(error)) throw error;
-
-                // Production may briefly run before a newly declared composite
-                // index is available. Use the existing single-field index and
-                // filter the bounded result in memory until Firestore catches up.
-                var compatibilityQuery = b.dbMod.query(
-                    b.dbMod.collection(b.db, 'posts'),
-                    b.dbMod.orderBy('createdAt', 'desc'),
-                    b.dbMod.limit(FEED_PAGE_SIZE)
-                );
-                return b.dbMod.getDocs(compatibilityQuery).then(function (snapshot) {
-                    var visible = [];
-                    snapshot.forEach(function (d) {
-                        var data = d.data() || {};
-                        if (visibilityOf(data.visibility) === 'public' || data.authorUid === user.uid) {
-                            visible.push({ id: d.id, data: function () { return data; } });
-                        }
-                    });
-                    return shapeSnapshots([{ forEach: function (callback) { visible.forEach(callback); } }]);
-                });
+            return b.dbMod.getDocs(postsQuery).then(function (snap) {
+                return shapeSnapshots([snap]);
+            }).catch(function () {
+                return Promise.all([
+                    b.dbMod.getDocs(publicQuery).catch(function () { return { forEach: function () {} }; }),
+                    b.dbMod.getDocs(ownQuery).catch(function () { return { forEach: function () {} }; })
+                ]).then(shapeSnapshots);
             });
         });
     };

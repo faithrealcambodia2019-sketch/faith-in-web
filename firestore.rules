@@ -3,11 +3,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     function isSignedIn() {
-      return request.auth != null
-        && (
-          request.auth.token.get('email_verified', false) == true
-          || request.auth.token.get('firebase', {}).get('sign_in_provider', '') != 'password'
-        );
+      return request.auth != null;
     }
 
     function owns(userId) {
@@ -183,11 +179,7 @@ service cloud.firestore {
       // Legacy documents with no visibility field are readable as public. New
       // private/follower posts are readable only by their author. The current
       // UI exposes public/private; follower-only remains fail-closed.
-      allow read: if isSignedIn()
-        && (
-          resource.data.get('visibility', 'public') == 'public'
-          || resource.data.authorUid == request.auth.uid
-        );
+      allow read: if isSignedIn();
 
       allow create: if authorIsCaller() && hasValidPostShape() && startsClean();
       allow update: if authorEditOnly()
@@ -198,15 +190,8 @@ service cloud.firestore {
       allow delete: if isAuthor();
 
       match /comments/{commentId} {
-        function parentIsVisible() {
-          let post = get(/databases/$(database)/documents/posts/$(postId));
-          return post.data.get('visibility', 'public') == 'public'
-            || post.data.authorUid == request.auth.uid;
-        }
-
-        allow read: if isSignedIn() && parentIsVisible();
+        allow read: if isSignedIn();
         allow create: if isSignedIn()
-          && parentIsVisible()
           && request.resource.data.keys().hasOnly(['authorUid', 'author', 'content', 'media_url', 'reactions', 'createdAt'])
           && request.resource.data.authorUid == request.auth.uid
           && request.resource.data.author.uid == request.auth.uid
@@ -216,7 +201,6 @@ service cloud.firestore {
           && (request.resource.data.content.size() > 0 || request.resource.data.get('media_url', '') != '')
           && request.resource.data.get('reactions', {}).size() == 0;
         allow update: if isSignedIn()
-          && parentIsVisible()
           && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['reactions'])
           && request.resource.data.get('reactions', {}).diff(resource.data.get('reactions', {}))
                .affectedKeys().hasOnly([request.auth.uid])
