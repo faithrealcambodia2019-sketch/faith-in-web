@@ -14,8 +14,7 @@
 <link href="/faithin-app/assets/faithin-fonts.css" rel="stylesheet"/>
 <link href="/faithin-app/assets/faithin-icons.css" rel="stylesheet"/>
 <link href="/faithin-app/assets/faithin-tw.css" rel="stylesheet"/>
-<link href="/faithin-app/assets/faithin.css?v=20260831-v31" rel="stylesheet"/>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link href="/faithin-app/assets/faithin.css?v=20260831-v32" rel="stylesheet"/>
 <style>
   .metric-card {
     padding: 1.25rem;
@@ -81,13 +80,13 @@
 
 <main class="max-w-[1200px] mx-auto px-3 sm:px-4 py-5 grid gap-5 lg:grid-cols-[240px_minmax(0,1fr)] xl:grid-cols-[240px_minmax(0,1fr)_300px] items-start" id="main">
   
-  <!-- Left Sidebar: Studio Navigation -->
-  <aside class="space-y-4 lg:sticky lg:top-[72px]">
+  <!-- Left Sidebar: Studio Navigation (Desktop) -->
+  <aside class="hidden lg:block space-y-4 sticky top-[72px]">
     
     <div class="flex items-center gap-3 px-2 py-1">
       <span class="avatar w-12 h-12 text-[14px] shadow-sm" data-current-user-avatar style="background:linear-gradient(135deg,#2f5bea,#1e40af)">FI</span>
       <div class="min-w-0">
-        <h2 class="font-bold text-[15px] leading-tight truncate" data-current-user-name>Hun Chet</h2>
+        <h2 class="font-bold text-[15px] leading-tight truncate flex items-center" data-current-user-name>Hun Chet</h2>
         <p class="text-[12px] text-muted truncate" data-current-user-headline>Content Creator</p>
       </div>
     </div>
@@ -132,8 +131,17 @@
   </aside>
 
   <!-- Center Section -->
-  <section class="space-y-5 min-w-0">
+  <section class="space-y-5 min-w-0 flex-1 w-full">
     
+    <!-- Mobile Creator Bar (Hidden on Desktop) -->
+    <div class="lg:hidden flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
+      <a href="/studio" class="btn btn-primary !text-[12px] !py-1.5 !px-3 shrink-0"><i class="fa-solid fa-chart-line mr-1"></i> Dashboard</a>
+      <a href="#content-list" class="btn btn-neutral !text-[12px] !py-1.5 !px-3 shrink-0"><i class="fa-solid fa-layer-group mr-1"></i> Content</a>
+      <a href="#reach-chart" class="btn btn-neutral !text-[12px] !py-1.5 !px-3 shrink-0"><i class="fa-solid fa-chart-pie mr-1"></i> Analytics</a>
+      <a href="#latest-comments" class="btn btn-neutral !text-[12px] !py-1.5 !px-3 shrink-0"><i class="fa-regular fa-comments mr-1"></i> Comments</a>
+      <button class="btn btn-outline !text-[12px] !py-1.5 !px-3 shrink-0 ml-auto" data-studio-create-btn><i class="fa-solid fa-plus mr-1"></i> Post</button>
+    </div>
+
     <div class="flex items-center justify-between">
       <h1 class="text-[22px] font-bold text-ink">Channel Dashboard</h1>
       <span class="text-[12px] text-muted font-medium bg-raised px-2.5 py-1 rounded-pill border border-line">Live Analytics</span>
@@ -210,8 +218,8 @@
         </select>
       </div>
       
-      <div class="w-full h-[250px] relative">
-        <canvas id="analyticsChart"></canvas>
+      <div id="analyticsChartHost" class="w-full h-[230px] relative">
+        <!-- Injected dynamically by loadStudio() -->
       </div>
     </div>
 
@@ -234,7 +242,7 @@
   </section>
 
   <!-- Right Column: Quick Stats & News -->
-  <aside class="space-y-4 lg:sticky lg:top-[72px]" id="latest-comments">
+  <aside class="space-y-4 hidden xl:block sticky top-[72px]" id="latest-comments">
     
     <!-- Latest Comments -->
     <div class="card p-4">
