@@ -222,9 +222,11 @@
       notificationLink?.setAttribute('aria-label', 'Notifications');
     }
     if (page !== 'profile') {
-      $$('a, h1').filter(node => node.textContent.trim() === 'Hun Chet').forEach(node => { node.textContent = displayName; });
+      $$('a, h1, h2').filter(node => node.textContent.trim() === 'Hun Chet' || node.hasAttribute('data-current-user-name')).forEach(node => {
+        node.innerHTML = esc(displayName) + (session ? verificationBadgeMarkup(session) : '');
+      });
       $$('p').filter(node => /Faith In member\s*·\s*Phnom Penh/i.test(node.textContent)).forEach(node => { node.textContent = session ? ['Faith In member', session.location].filter(Boolean).join(' · ') : 'Sign in to join the community'; });
-      $$('.avatar').filter(node => node.textContent.trim() === 'HC').forEach(node => { if (!node.closest('[data-post-id],[data-user-uid]')) node.textContent = api.initials(displayName); });
+      $$('.avatar').filter(node => node.textContent.trim() === 'HC' || node.textContent.trim() === 'FI').forEach(node => { if (!node.closest('[data-post-id],[data-user-uid]')) node.textContent = api.initials(displayName); });
       $$('[data-current-user-avatar]').forEach(el => {
         const holder = document.createElement('span');
         holder.innerHTML = avatarMarkup(session || { name: displayName }, `${el.className} object-cover`);

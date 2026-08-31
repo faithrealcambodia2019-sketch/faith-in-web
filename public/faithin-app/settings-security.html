@@ -14,51 +14,7 @@
 <link href="/faithin-app/assets/faithin-fonts.css" rel="stylesheet"/>
 <link href="/faithin-app/assets/faithin-icons.css" rel="stylesheet"/>
 <link href="/faithin-app/assets/faithin-tw.css" rel="stylesheet"/>
-<link href="/faithin-app/assets/faithin.css?v=20260831-v30" rel="stylesheet"/>
-<style>
-  .settings-menu-item {
-    display: flex;
-    align-items: center;
-    padding: 0.75rem 1rem;
-    color: rgb(var(--muted));
-    transition: all 0.2s;
-    font-weight: 500;
-    font-size: 13.5px;
-    border-left: 3px solid transparent;
-    border-radius: 0 8px 8px 0;
-  }
-  .settings-menu-item:hover {
-    background-color: rgb(var(--raised));
-    color: rgb(var(--ink));
-  }
-  .settings-menu-item.active {
-    background-color: rgba(37, 99, 235, 0.08);
-    color: rgb(var(--brand));
-    border-left-color: rgb(var(--brand));
-    font-weight: 600;
-  }
-  .status-badge {
-    display: inline-flex;
-    align-items: center;
-    padding: 0.125rem 0.5rem;
-    border-radius: 9999px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    margin-left: 0.5rem;
-  }
-  .status-on {
-    background-color: #dcfce7;
-    color: #166534;
-  }
-  .dark .status-on {
-    background-color: rgba(22, 101, 52, 0.35);
-    color: #86efac;
-  }
-  .status-off {
-    background-color: rgb(var(--raised));
-    color: rgb(var(--muted));
-  }
-</style>
+<link href="/faithin-app/assets/faithin.css?v=20260831-v31" rel="stylesheet"/>
 </head>
 <body class="font-sans min-h-screen pb-16 lg:pb-0" data-page="settings-security" data-search="Search settings">
 <main class="max-w-[1200px] mx-auto px-3 sm:px-4 py-5 grid gap-5 lg:grid-cols-[288px_minmax(0,1fr)] items-start" id="main">
@@ -72,29 +28,29 @@
 <p class="text-[12px] text-muted mt-0.5">Manage your account</p>
 </div>
 </div>
-<nav class="py-2 space-y-0.5">
-<a class="settings-menu-item" href="/settings">
-  <i class="fa-solid fa-user-gear w-6 text-center text-[15px] mr-2"></i>
+<nav class="p-2 space-y-1">
+<a class="side-link" href="/settings">
+  <i class="fa-solid fa-user-gear"></i>
   <span>Account preferences</span>
 </a>
-<a class="settings-menu-item active" href="/settings-security">
-  <i class="fa-solid fa-shield-halved w-6 text-center text-[15px] mr-2"></i>
+<a class="side-link is-active" href="/settings-security">
+  <i class="fa-solid fa-shield-halved"></i>
   <span>Sign in &amp; security</span>
 </a>
-<a class="settings-menu-item" href="#" data-settings-notice="Visibility preferences are linked to your profile privacy.">
-  <i class="fa-solid fa-eye w-6 text-center text-[15px] mr-2"></i>
+<a class="side-link" href="#" data-settings-notice="Visibility preferences are linked to your profile privacy.">
+  <i class="fa-solid fa-eye"></i>
   <span>Visibility</span>
 </a>
-<a class="settings-menu-item" href="#" data-settings-notice="Manage email and push communication preferences under Account Preferences.">
-  <i class="fa-solid fa-comment-dots w-6 text-center text-[15px] mr-2"></i>
+<a class="side-link" href="#" data-settings-notice="Manage communication preferences under Account Preferences.">
+  <i class="fa-solid fa-comment-dots"></i>
   <span>Communications</span>
 </a>
-<a class="settings-menu-item" href="/privacy">
-  <i class="fa-solid fa-database w-6 text-center text-[15px] mr-2"></i>
+<a class="side-link" href="/privacy">
+  <i class="fa-solid fa-database"></i>
   <span>Data privacy</span>
 </a>
-<a class="settings-menu-item" href="#" data-settings-notice="Faithin does not sell or share your personal data for third-party advertising.">
-  <i class="fa-solid fa-rectangle-ad w-6 text-center text-[15px] mr-2"></i>
+<a class="side-link" href="#" data-settings-notice="Faithin does not sell or share your personal data for advertising.">
+  <i class="fa-solid fa-rectangle-ad"></i>
   <span>Advertising data</span>
 </a>
 </nav>
@@ -260,9 +216,9 @@
 </div>
 </main>
 
-<script src="/faithin-app/assets/faithin-runtime.js?v=20260831-v30"></script>
-<script src="/assets/js/faith-in-backend.js?v=20260831-v30"></script>
-<script src="/faithin-app/assets/faithin.js?v=20260831-v30"></script>
-<script src="/faithin-app/assets/faithin-live.js?v=20260831-v30"></script>
+<script src="/faithin-app/assets/faithin-runtime.js?v=20260831-v31"></script>
+<script src="/assets/js/faith-in-backend.js?v=20260831-v31"></script>
+<script src="/faithin-app/assets/faithin.js?v=20260831-v31"></script>
+<script src="/faithin-app/assets/faithin-live.js?v=20260831-v31"></script>
 </body>
 </html>
