@@ -503,10 +503,132 @@
   prayerButton?.removeAttribute('data-toast');
   prayerButton?.addEventListener('click', async event => { event.stopPropagation(); if (!needUser()) return; const modal = $('#modal-prayer'), title = $('input[type="text"]', modal).value.trim(), body = $('textarea', modal).value.trim(); if (!body) return toast('Write your prayer request first.'); busy(prayerButton, true, 'Sharing'); try { await api.request('cv_create_prayer', { content: title ? `${title}\n${body}` : body }); closeModal(); toast('Prayer request shared 🙏'); $('textarea', modal).value = ''; await loadPrayers(); } catch (error) { toast(error.message); } finally { busy(prayerButton, false, 'Request Prayer'); } });
 
-  $$('#editor-tools [data-cmd]').forEach(button => button.addEventListener('mousedown', event => { event.preventDefault(); document.execCommand(button.dataset.cmd, false, button.dataset.arg || null); $('#article-body').focus(); }));
-  const articleButton = $$('#modal-article button').find(button => /publish/i.test(button.textContent));
+  // Article composer
+  const headlineEl = $('#article-headline');
+  const bodyEl = $('#article-body');
+  const coverInput = $('#article-cover-input');
+  const coverPreview = $('#article-cover-preview');
+  const coverPrompt = $('#article-cover-prompt');
+  const authorNameEl = $('#article-author-name');
+  const authorAvatarEl = $('#article-author-avatar');
+  const saveIcon = $('#save-icon');
+  const saveStatus = $('#save-status');
+  let pendingArticleCoverFile = null;
+
+  function refreshArticleAuthor() {
+    const user = window.FILive?.user || null;
+    if (user && authorNameEl) authorNameEl.textContent = `By ${user.name || user.displayName || 'You'}`;
+    if (user && authorAvatarEl) {
+      const avatarUrl = user.avatar_url || user.avatar || user.photo_url;
+      if (avatarUrl) {
+        authorAvatarEl.innerHTML = `<img src="${esc(avatarUrl)}" class="w-full h-full object-cover rounded-full" alt="Author" />`;
+      } else {
+        authorAvatarEl.textContent = api.initials(user.name || 'You');
+      }
+    }
+  }
+
+  document.addEventListener('click', e => {
+    if (e.target.closest('[data-modal-open="modal-article"]')) {
+      refreshArticleAuthor();
+      setTimeout(() => headlineEl?.focus(), 100);
+    }
+  });
+
+  if (coverInput && coverPreview) {
+    coverInput.addEventListener('change', function() {
+      const file = this.files && this.files[0];
+      if (file) {
+        pendingArticleCoverFile = file;
+        coverPreview.src = URL.createObjectURL(file);
+        coverPreview.classList.remove('hidden');
+        if (coverPrompt) coverPrompt.classList.add('hidden');
+      }
+    });
+  }
+
+  $$('#editor-tools [data-cmd]').forEach(button => {
+    button.addEventListener('mousedown', event => {
+      event.preventDefault();
+      document.execCommand(button.dataset.cmd, false, button.dataset.arg || null);
+      bodyEl?.focus();
+      button.classList.toggle('active');
+    });
+  });
+
+  $('[data-insert-link]')?.addEventListener('mousedown', event => {
+    event.preventDefault();
+    const url = prompt('Enter link URL (e.g. https://example.com):');
+    if (url) {
+      document.execCommand('createLink', false, url);
+      bodyEl?.focus();
+    }
+  });
+
+  $('[data-insert-image]')?.addEventListener('mousedown', event => {
+    event.preventDefault();
+    coverInput?.click();
+  });
+
+  let saveTimeout;
+  const triggerSaveStatus = () => {
+    if (!saveStatus || !saveIcon) return;
+    saveStatus.textContent = 'Saving…';
+    saveIcon.className = 'fa-solid fa-spinner fa-spin text-muted';
+    clearTimeout(saveTimeout);
+    saveTimeout = setTimeout(() => {
+      saveStatus.textContent = 'Saved to draft';
+      saveIcon.className = 'fa-solid fa-cloud text-emerald-500';
+      setTimeout(() => {
+        if (saveIcon) saveIcon.className = 'fa-solid fa-cloud text-muted';
+      }, 2000);
+    }, 800);
+  };
+
+  [headlineEl, bodyEl].filter(Boolean).forEach(el => {
+    el.addEventListener('input', triggerSaveStatus);
+  });
+
+  $('#article-preview-btn')?.addEventListener('click', () => {
+    const title = (headlineEl?.innerText || headlineEl?.value || '').trim();
+    const text = (bodyEl?.innerText || '').trim();
+    if (!title && !text) return toast('Write a headline or article text first.');
+    toast('Draft preview: ' + (title || 'Untitled Story'));
+  });
+
+  const articleButton = $('#article-publish-btn') || $$('#modal-article button').find(button => /publish/i.test(button.textContent));
   articleButton?.removeAttribute('data-toast');
-  articleButton?.addEventListener('click', async event => { event.stopPropagation(); if (!needUser()) return; const modal = $('#modal-article'), title = $('input', modal).value.trim(), text = $('#article-body').textContent.trim(); if (!title || !text) return toast('Add a headline and article text.'); busy(articleButton, true, 'Publishing'); try { await api.request('cv_create_post', { type: 'article', title, article_title: title, article_body: $('#article-body').innerHTML, content: text, visibility: 'public' }); closeModal(); toast('Article published ✨'); await loadPosts(); } catch (error) { toast(error.message); } finally { busy(articleButton, false, 'Publish'); } });
+  articleButton?.addEventListener('click', async event => {
+    event.stopPropagation();
+    if (!needUser()) return;
+    const title = (headlineEl?.innerText || headlineEl?.value || '').trim();
+    const text = (bodyEl?.innerText || bodyEl?.textContent || '').trim();
+    if (!title && !text) return toast('Add a headline and article text.');
+    busy(articleButton, true, 'Publishing');
+    try {
+      const files = pendingArticleCoverFile ? { 'post_media[]': [pendingArticleCoverFile] } : {};
+      await api.request('cv_create_post', {
+        type: 'article',
+        title: title || 'Untitled Article',
+        article_title: title || 'Untitled Article',
+        article_body: bodyEl ? bodyEl.innerHTML : text,
+        content: text || title,
+        visibility: 'public'
+      }, files);
+      closeModal();
+      toast('Article published ✨');
+      if (headlineEl) headlineEl.innerText = '';
+      if (bodyEl) bodyEl.innerHTML = '';
+      if (coverPreview) { coverPreview.src = ''; coverPreview.classList.add('hidden'); }
+      if (coverPrompt) coverPrompt.classList.remove('hidden');
+      pendingArticleCoverFile = null;
+      await loadPosts();
+    } catch (error) {
+      toast(error.message);
+    } finally {
+      busy(articleButton, false, 'Publish');
+    }
+  });
 
   // Patch a single post in place. Reloading the whole feed after a tap blanks
   // the list behind a "Loading your community…" spinner, loses scroll position

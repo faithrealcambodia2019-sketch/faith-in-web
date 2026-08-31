@@ -42,6 +42,7 @@ const nextConfig: NextConfig = {
       { source: "/faithin-app/network.html", destination: "/network", permanent: true },
       { source: "/faithin-app/notifications.html", destination: "/notifications", permanent: true },
       { source: "/faithin-app/profile.html", destination: "/profile", permanent: true },
+      { source: "/faithin-app/article.html", destination: "/article", permanent: true },
       { source: "/faithin-app/settings.html", destination: "/settings", permanent: true },
       { source: "/faithin-app/settings-security.html", destination: "/settings-security", permanent: true },
       { source: "/faithin-app/studio.html", destination: "/studio", permanent: true },
@@ -55,6 +56,8 @@ const nextConfig: NextConfig = {
       beforeFiles: [
         { source: "/", destination: "/faithin-app/index.html" },
         { source: "/home", destination: "/faithin-app/index.html" },
+        { source: "/article", destination: "/faithin-app/article.html" },
+        { source: "/write", destination: "/faithin-app/article.html" },
         { source: "/jobs", destination: "/faithin-app/jobs.html" },
         { source: "/library", destination: "/faithin-app/library.html" },
         { source: "/messages", destination: "/faithin-app/messaging.html" },

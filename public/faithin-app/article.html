@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Faith In — Article Editor</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg"/>
+  <link href="/faithin-app/assets/faithin-fonts.css" rel="stylesheet"/>
+  <link href="/faithin-app/assets/faithin-icons.css" rel="stylesheet"/>
+  <link href="/faithin-app/assets/faithin-tw.css" rel="stylesheet"/>
+  <link href="/faithin-app/assets/faithin.css?v=20260831-v34" rel="stylesheet"/>
+  <style>
+    .editor-content::-webkit-scrollbar { width: 8px; }
+    .editor-content::-webkit-scrollbar-track { background: transparent; }
+    .editor-content::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 20px; }
+    [contenteditable]:empty:before { content: attr(placeholder); color: #9ca3af; pointer-events: none; display: block; }
+    [contenteditable]:focus { outline: none; }
+  </style>
+</head>
+<body class="bg-[#f3f4f6] dark:bg-[#0b1120] min-h-screen flex items-center justify-center p-2 sm:p-6 font-sans antialiased text-[#1f2937] dark:text-[#f3f4f6]">
+
+  <div class="bg-white dark:bg-[#111827] w-full max-w-5xl h-screen sm:h-[90vh] rounded-2xl shadow-2xl flex flex-col relative border border-[#e5e7eb] dark:border-[#374151] overflow-hidden">
+    
+    <!-- Header / Formatting Toolbar -->
+    <header class="flex items-center justify-between px-4 sm:px-6 py-3 border-b border-[#e5e7eb] dark:border-[#374151] bg-white dark:bg-[#111827] rounded-t-2xl z-10 shrink-0">
+      
+      <!-- Left side: Formatting tools -->
+      <div class="flex items-center gap-1 sm:gap-2 overflow-x-auto pb-1 sm:pb-0" id="editor-tools" style="-ms-overflow-style: none; scrollbar-width: none;">
+        
+        <!-- Text Formatting Group -->
+        <div class="flex items-center bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-1">
+          <button type="button" class="format-btn article-tooltip" data-cmd="bold" aria-label="Bold">
+            <i class="fa-solid fa-bold text-sm"></i>
+            <span class="tooltiptext">Bold (Cmd+B)</span>
+          </button>
+          <button type="button" class="format-btn article-tooltip" data-cmd="italic" aria-label="Italic">
+            <i class="fa-solid fa-italic text-sm"></i>
+            <span class="tooltiptext">Italic (Cmd+I)</span>
+          </button>
+          <button type="button" class="format-btn article-tooltip" data-cmd="underline" aria-label="Underline">
+            <i class="fa-solid fa-underline text-sm"></i>
+            <span class="tooltiptext">Underline (Cmd+U)</span>
+          </button>
+          <button type="button" class="format-btn article-tooltip" data-cmd="strikeThrough" aria-label="Strikethrough">
+            <i class="fa-solid fa-strikethrough text-sm"></i>
+            <span class="tooltiptext">Strikethrough</span>
+          </button>
+        </div>
+
+        <div class="w-px h-6 bg-gray-200 dark:bg-gray-700 mx-1"></div>
+
+        <!-- Lists & Quotes Group -->
+        <div class="flex items-center bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-1">
+          <button type="button" class="format-btn article-tooltip" data-cmd="insertUnorderedList" aria-label="Bullet List">
+            <i class="fa-solid fa-list-ul text-sm"></i>
+            <span class="tooltiptext">Bulleted List</span>
+          </button>
+          <button type="button" class="format-btn article-tooltip" data-cmd="insertOrderedList" aria-label="Numbered List">
+            <i class="fa-solid fa-list-ol text-sm"></i>
+            <span class="tooltiptext">Numbered List</span>
+          </button>
+          <button type="button" class="format-btn article-tooltip" data-cmd="formatBlock" data-arg="blockquote" aria-label="Blockquote">
+            <i class="fa-solid fa-quote-right text-sm"></i>
+            <span class="tooltiptext">Quote</span>
+          </button>
+        </div>
+
+        <div class="w-px h-6 bg-gray-200 dark:bg-gray-700 mx-1"></div>
+
+        <!-- Headings Group -->
+        <div class="flex items-center bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-1">
+          <button type="button" class="format-btn article-tooltip font-serif font-bold text-sm" data-cmd="formatBlock" data-arg="h1" aria-label="Heading 1">
+            H1
+            <span class="tooltiptext">Heading 1</span>
+          </button>
+          <button type="button" class="format-btn article-tooltip font-serif font-semibold text-xs" data-cmd="formatBlock" data-arg="h2" aria-label="Heading 2">
+            H2
+            <span class="tooltiptext">Heading 2</span>
+          </button>
+        </div>
+         
+        <div class="w-px h-6 bg-gray-200 dark:bg-gray-700 mx-1 hidden sm:block"></div>
+
+        <!-- Insert Media Group -->
+        <div class="hidden sm:flex items-center bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-1">
+          <button type="button" class="format-btn article-tooltip" data-insert-image aria-label="Insert Image">
+            <i class="fa-regular fa-image text-sm"></i>
+            <span class="tooltiptext">Add Image</span>
+          </button>
+          <button type="button" class="format-btn article-tooltip" data-insert-link aria-label="Insert Link">
+            <i class="fa-solid fa-link text-sm"></i>
+            <span class="tooltiptext">Add Link</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Right side: Close button -->
+      <a href="/home" class="w-8 h-8 flex items-center justify-center rounded-full text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors shrink-0" aria-label="Close Editor">
+        <i class="fa-solid fa-xmark text-lg"></i>
+      </a>
+    </header>
+
+    <!-- Main Editor Area -->
+    <main class="flex-1 overflow-y-auto editor-content px-6 sm:px-16 py-8 sm:py-12 bg-white dark:bg-[#111827]">
+      <div class="max-w-3xl mx-auto">
+        <!-- Cover Image Placeholder -->
+        <div class="mb-8 relative group cursor-pointer" id="cover-image-area">
+          <label class="w-full h-44 sm:h-64 bg-gray-50 dark:bg-gray-800/60 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-700 flex flex-col items-center justify-center text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 hover:border-gray-400 transition-colors cursor-pointer overflow-hidden block">
+            <img id="article-cover-preview" src="" class="w-full h-full object-cover hidden" alt="Cover" />
+            <div id="article-cover-prompt" class="flex flex-col items-center justify-center h-full py-6">
+              <i class="fa-regular fa-image text-3xl mb-2"></i>
+              <span class="font-medium text-sm">Add a cover image</span>
+            </div>
+            <input type="file" id="article-cover-input" accept="image/*" class="hidden" />
+          </label>
+        </div>
+
+        <!-- Headline -->
+        <h1 class="text-4xl sm:text-5xl font-serif font-bold text-gray-900 dark:text-white mb-6 leading-tight outline-none break-words min-h-[56px]" contenteditable="true" placeholder="Headline" data-placeholder="Headline" id="article-headline"></h1>
+
+        <!-- Article Metadata -->
+        <div class="flex items-center gap-3 mb-8 text-sm text-gray-500 dark:text-gray-400 border-b border-gray-100 dark:border-gray-800 pb-4">
+          <span id="article-author-avatar" class="avatar w-8 h-8 rounded-full text-xs font-semibold" style="background:linear-gradient(135deg,#2f5bea,#1e40af)">FI</span>
+          <div>
+            <p class="font-medium text-gray-900 dark:text-white" id="article-author-name">By You</p>
+            <p class="text-xs">Draft • Just now</p>
+          </div>
+        </div>
+
+        <!-- Body Content -->
+        <div class="text-lg font-serif text-gray-800 dark:text-gray-200 leading-relaxed outline-none min-h-[300px] break-words whitespace-pre-wrap" contenteditable="true" placeholder="Write your story..." id="article-body"></div>
+      </div>
+    </main>
+
+    <!-- Footer / Action Area -->
+    <footer class="px-6 py-4 border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-[#111827] rounded-b-2xl flex flex-col sm:flex-row items-center justify-between shrink-0 gap-4 sm:gap-0">
+      
+      <!-- Left side: Status -->
+      <div class="flex items-center text-gray-500 text-sm font-medium gap-2">
+        <i class="fa-solid fa-cloud text-gray-400" id="save-icon"></i>
+        <span id="save-status">Saved to draft</span>
+      </div>
+
+      <!-- Right side: Actions -->
+      <div class="flex items-center gap-3 w-full sm:w-auto">
+        <button type="button" id="article-preview-btn" class="flex-1 sm:flex-none px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors border border-transparent">
+          Preview
+        </button>
+        <button type="button" id="article-publish-btn" class="flex-1 sm:flex-none px-6 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-sm shadow-blue-500/30 transition-all active:scale-95">
+          Publish
+        </button>
+      </div>
+    </footer>
+
+  </div>
+
+  <script src="/faithin-app/assets/faithin-runtime.js?v=20260831-v34"></script>
+  <script src="/assets/js/faith-in-backend.js?v=20260831-v34"></script>
+  <script src="/faithin-app/assets/faithin.js?v=20260831-v34"></script>
+  <script src="/faithin-app/assets/faithin-live.js?v=20260831-v34"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const headlineEl = document.getElementById('article-headline');
+      const bodyEl = document.getElementById('article-body');
+      const coverInput = document.getElementById('article-cover-input');
+      const coverPreview = document.getElementById('article-cover-preview');
+      const coverPrompt = document.getElementById('article-cover-prompt');
+      const saveStatus = document.getElementById('save-status');
+      const saveIcon = document.getElementById('save-icon');
+      const publishBtn = document.getElementById('article-publish-btn');
+      const authorNameEl = document.getElementById('article-author-name');
+      const authorAvatarEl = document.getElementById('article-author-avatar');
+      let coverFile = null;
+
+      // Focus headline
+      headlineEl?.focus();
+
+      // Populate user info
+      setTimeout(() => {
+        const user = window.FILive?.user || null;
+        if (user) {
+          if (authorNameEl) authorNameEl.textContent = `By ${user.name || user.displayName || 'You'}`;
+          if (authorAvatarEl) {
+            const pic = user.avatar_url || user.avatar || user.photo_url;
+            if (pic) authorAvatarEl.innerHTML = `<img src="${pic}" class="w-full h-full object-cover rounded-full" />`;
+            else authorAvatarEl.textContent = (user.name || 'You').charAt(0).toUpperCase();
+          }
+        }
+      }, 300);
+
+      // Cover image upload
+      if (coverInput && coverPreview) {
+        coverInput.addEventListener('change', function() {
+          const file = this.files && this.files[0];
+          if (file) {
+            coverFile = file;
+            coverPreview.src = URL.createObjectURL(file);
+            coverPreview.classList.remove('hidden');
+            if (coverPrompt) coverPrompt.classList.add('hidden');
+          }
+        });
+      }
+
+      // Formatting tools
+      document.querySelectorAll('#editor-tools [data-cmd]').forEach(button => {
+        button.addEventListener('mousedown', event => {
+          event.preventDefault();
+          document.execCommand(button.dataset.cmd, false, button.dataset.arg || null);
+          bodyEl?.focus();
+          button.classList.toggle('active');
+        });
+      });
+
+      document.querySelector('[data-insert-link]')?.addEventListener('mousedown', event => {
+        event.preventDefault();
+        const url = prompt('Enter URL:');
+        if (url) {
+          document.execCommand('createLink', false, url);
+          bodyEl?.focus();
+        }
+      });
+
+      document.querySelector('[data-insert-image]')?.addEventListener('mousedown', event => {
+        event.preventDefault();
+        coverInput?.click();
+      });
+
+      // Simulated auto-save
+      let saveTimeout;
+      const triggerSave = () => {
+        saveStatus.textContent = 'Saving…';
+        saveIcon.className = 'fa-solid fa-spinner fa-spin text-gray-400';
+        clearTimeout(saveTimeout);
+        saveTimeout = setTimeout(() => {
+          saveStatus.textContent = 'Saved to draft';
+          saveIcon.className = 'fa-solid fa-cloud text-emerald-500';
+          setTimeout(() => {
+            saveIcon.className = 'fa-solid fa-cloud text-gray-400';
+          }, 2000);
+        }, 800);
+      };
+
+      [headlineEl, bodyEl].forEach(el => el?.addEventListener('input', triggerSave));
+
+      // Publish
+      publishBtn?.addEventListener('click', async () => {
+        const title = (headlineEl?.innerText || '').trim();
+        const text = (bodyEl?.innerText || '').trim();
+        if (!title && !text) {
+          alert('Please enter a headline or write something first.');
+          return;
+        }
+        publishBtn.disabled = true;
+        publishBtn.textContent = 'Publishing…';
+        try {
+          const files = coverFile ? { 'post_media[]': [coverFile] } : {};
+          await window.FILive.api.request('cv_create_post', {
+            type: 'article',
+            title: title || 'Untitled Article',
+            article_title: title || 'Untitled Article',
+            article_body: bodyEl ? bodyEl.innerHTML : text,
+            content: text || title,
+            visibility: 'public'
+          }, files);
+          alert('Article published successfully! ✨');
+          location.href = '/home';
+        } catch (err) {
+          alert(err.message || 'Failed to publish article.');
+          publishBtn.disabled = false;
+          publishBtn.textContent = 'Publish';
+        }
+      });
+    });
+  </script>
+</body>
+</html>

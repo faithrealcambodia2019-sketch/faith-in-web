@@ -959,3 +959,104 @@ body.fi-auth-locked{ overflow:hidden; }
   .fi-auth__names{ grid-template-columns:1fr; }
   .fi-auth__options{ font-size:14px; }
 }
+
+/* --- Article Editor Modal ---------------------------------------------- */
+.article-editor-modal {
+  width: 100%;
+  max-width: 960px;
+  height: 90vh;
+  max-height: 90vh;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+  border: 1px solid #e5e7eb;
+}
+html.dark .article-editor-modal {
+  background: #111827;
+  border-color: #374151;
+}
+.article-editor-content::-webkit-scrollbar {
+  width: 8px;
+}
+.article-editor-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+.article-editor-content::-webkit-scrollbar-thumb {
+  background-color: #cbd5e1;
+  border-radius: 20px;
+}
+html.dark .article-editor-content::-webkit-scrollbar-thumb {
+  background-color: #4b5563;
+}
+.article-editable:empty:before {
+  content: attr(placeholder);
+  color: #9ca3af;
+  pointer-events: none;
+  display: block;
+}
+.article-editable:focus {
+  outline: none;
+}
+.article-tooltip {
+  position: relative;
+  display: inline-flex;
+}
+.article-tooltip .tooltiptext {
+  visibility: hidden;
+  width: max-content;
+  background-color: #374151;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 4px 8px;
+  position: absolute;
+  z-index: 50;
+  bottom: 125%;
+  left: 50%;
+  transform: translateX(-50%);
+  opacity: 0;
+  transition: opacity 0.2s;
+  font-size: 0.75rem;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  pointer-events: none;
+}
+.article-tooltip:hover .tooltiptext {
+  visibility: visible;
+  opacity: 1;
+}
+.format-btn {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  color: #6b7280;
+  border: 1px solid transparent;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.format-btn:hover {
+  background-color: #e5e7eb;
+  color: #1f2937;
+}
+html.dark .format-btn:hover {
+  background-color: #374151;
+  color: #f9fafb;
+}
+.format-btn.active {
+  background-color: #eff6ff;
+  color: #2563eb;
+  border-color: #bfdbfe;
+}
+html.dark .format-btn.active {
+  background-color: #1e3a8a;
+  color: #93c5fd;
+  border-color: #3b82f6;
+}

@@ -2057,27 +2057,14 @@
   function wireArticleComposer() {
     const modal = $('#modal-article');
     if (!modal) return;
-    const publish = $$('button', modal).find(button => /^publish$/i.test(button.textContent.trim()));
-    if (!publish) return;
-    publish.removeAttribute('data-toast');
-    publish.addEventListener('click', async () => {
-      if (!requireUser()) return;
-      const headline = $('input[type="text"]', modal);
-      const body = $('[aria-multiline="true"]', modal);
-      const title = headline?.value.trim() || '';
-      const content = (body?.innerText || '').trim();
-      if (!title && !content) return toast('Write a headline or some text first.');
-      publish.disabled = true;
-      try {
-        await api.request('cv_create_post', { title, content });
-        if (headline) headline.value = '';
-        if (body) body.innerHTML = '';
-        $('[data-close]', modal)?.click();
-        toast('Article published');
-        if (typeof window.FIHome?.reload === 'function') window.FIHome.reload();
-      } catch (error) { toast(error.message); }
-      finally { publish.disabled = false; }
-    });
+    const authorName = $('#article-author-name', modal);
+    const authorAvatar = $('#article-author-avatar', modal);
+    if (session && authorName) authorName.textContent = `By ${session.name || session.displayName || 'You'}`;
+    if (session && authorAvatar) {
+      const pic = session.avatar_url || session.avatar || session.photo_url;
+      if (pic) authorAvatar.innerHTML = `<img src="${esc(pic)}" class="w-full h-full object-cover rounded-full" alt="Author" />`;
+      else authorAvatar.textContent = api.initials(session.name || 'You');
+    }
   }
 
   window.FILive = { api, get user() { return session; }, requireUser, avatarMarkup, verificationBadgeMarkup, openMessenger };
