@@ -32,18 +32,20 @@ window.cv_ajax = window.cv_ajax || {
   let cacheEpoch = 0;
   const readTtl = {
     cv_get_session: 24 * 60 * 60 * 1000,
-    cv_get_posts: 30 * 1000,
+    cv_get_posts: 60 * 1000,
+    cv_find_users: 60 * 1000,
     cv_get_jobs: 60 * 1000,
     cv_get_resources: 60 * 1000,
     cv_get_suggested_users: 60 * 1000,
-    cv_get_prayers: 20 * 1000,
-    cv_get_post_comments: 15 * 1000,
-    cv_social_get_followers: 5 * 1000,
-    cv_social_get_following: 5 * 1000,
-    cv_social_get_notifications: 20 * 1000,
-    cv_social_get_notification_count: 15 * 1000,
-    cv_social_get_message_threads: 15 * 1000,
-    cv_social_get_message_thread: 10 * 1000,
+    cv_get_bookmarks: 60 * 1000,
+    cv_get_prayers: 30 * 1000,
+    cv_get_post_comments: 30 * 1000,
+    cv_social_get_followers: 15 * 1000,
+    cv_social_get_following: 15 * 1000,
+    cv_social_get_notifications: 30 * 1000,
+    cv_social_get_notification_count: 20 * 1000,
+    cv_social_get_message_threads: 20 * 1000,
+    cv_social_get_message_thread: 15 * 1000,
     cv_get_user: 60 * 1000,
     cv_get_profile: 60 * 1000,
     cv_get_member: 60 * 1000,
@@ -166,7 +168,8 @@ window.cv_ajax = window.cv_ajax || {
         return Promise.resolve(cached.value);
       }
 
-      if (!ttl) clearRecords();
+      const isMutation = !ttl && !/^(cv_find_|cv_get_|cv_social_get_|cv_bible_)/.test(action);
+      if (isMutation) clearRecords();
       const epoch = cacheEpoch;
       return requestNetwork(action, values, files, onProgress, key)
         .then(value => {
