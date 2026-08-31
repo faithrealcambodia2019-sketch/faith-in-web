@@ -45,6 +45,9 @@ window.cv_ajax = window.cv_ajax || {
     cv_social_get_notification_count: 15 * 1000,
     cv_social_get_message_threads: 15 * 1000,
     cv_social_get_message_thread: 10 * 1000,
+    cv_get_user: 60 * 1000,
+    cv_get_profile: 60 * 1000,
+    cv_get_member: 60 * 1000,
     cv_bible_get_verses: 24 * 60 * 60 * 1000
   };
 

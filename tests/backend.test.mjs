@@ -324,6 +324,10 @@ r = await call({ action:'cv_social_get_following' });
 check('following list', r.data.items.length === 1 && r.data.items[0].uid === 'uid-friend', r.data.items);
 r = await call({ action:'cv_social_unfollow_user', target_uid:'uid-friend' });
 check('unfollow ok', r.data.following === false && !store['follows/uid-abc__uid-friend']);
+r = await call({ action:'cv_get_user', uid:'uid-friend' });
+check('get user by uid', r.success === true && r.data.name === 'Sok Dara' && r.data.church === 'Grace Church');
+r = await call({ action:'cv_get_user', id:'4242' });
+check('get user by numeric id', r.success === true && r.data.uid === 'uid-friend');
 
 console.log('\n15) Bookmarks, settings, verification, notes');
 const bpid = postIds()[0];

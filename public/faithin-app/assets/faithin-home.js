@@ -149,7 +149,7 @@
     const body = post.content || post.excerpt || post.article_excerpt || '';
     return `<article class="card overflow-hidden animate-fade-up" data-post-id="${esc(post.id)}" data-author-uid="${esc(author.uid || '')}">
       <header class="flex items-start gap-3 p-4 pb-2.5">
-        ${avatar ? `<img class="avatar w-11 h-11 object-cover" src="${esc(avatar)}" alt="${esc(name)}">` : `<span class="avatar w-11 h-11 text-[14px]">${esc(api.initials(name))}</span>`}
+        <a href="/profile?uid=${encodeURIComponent(author.uid || '')}" class="shrink-0 block">${avatar ? `<img class="avatar w-11 h-11 object-cover" src="${esc(avatar)}" alt="${esc(name)}">` : `<span class="avatar w-11 h-11 text-[14px]">${esc(api.initials(name))}</span>`}</a>
         <div class="min-w-0 flex-1"><div class="flex items-center gap-2 flex-wrap"><a href="/profile?uid=${encodeURIComponent(author.uid || '')}" class="text-[14.5px] font-semibold hover:text-brand">${esc(name)}</a>${post.type && post.type !== 'post' ? `<span class="text-[10.5px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-brand-soft text-brand-strong">${esc(post.type)}</span>` : ''}</div><p class="text-[12px] text-muted mt-0.5">${esc(post.time || 'just now')} · ${esc(post.visibility || 'Public')}</p></div>
         ${!owner && author.uid ? `<button class="btn btn-outline !py-1 !px-3 !text-[13px]" data-live-follow><i class="fa-solid fa-plus text-[11px]"></i>Follow</button>` : ''}
         ${owner ? `<button class="icon-btn" data-live-delete aria-label="Delete post"><i class="fa-regular fa-trash-can"></i></button>` : ''}
@@ -409,7 +409,7 @@
       }
       return;
     }
-    if (event.target.closest('[data-comment-toggle]')) { event.preventDefault(); const box = $('[data-comments]', article); box.classList.toggle('hidden'); if (!box.classList.contains('hidden')) { $('input', box).focus(); try { const result = await api.request('cv_get_post_comments', { post_id: id }); $('[data-comment-list]', box).innerHTML = (result.items || []).map(comment => `<div class="rounded-xl bg-raised p-2.5"><strong class="text-[12.5px]">${esc(comment.author?.name || comment.author_name || 'Member')}</strong><p class="text-[13px] mt-1">${esc(comment.content)}</p></div>`).join(''); } catch (_) {} } return; }
+    if (event.target.closest('[data-comment-toggle]')) { event.preventDefault(); const box = $('[data-comments]', article); box.classList.toggle('hidden'); if (!box.classList.contains('hidden')) { $('input', box).focus(); try { const result = await api.request('cv_get_post_comments', { post_id: id }); $('[data-comment-list]', box).innerHTML = (result.items || []).map(comment => `<div class="rounded-xl bg-raised p-2.5 flex items-start gap-2.5"><a href="/profile?uid=${encodeURIComponent(comment.author?.uid || comment.author_uid || '')}" class="shrink-0 block mt-0.5">${window.FILive.avatarMarkup(comment.author || { name: comment.author_name || 'Member' }, 'avatar w-7 h-7 text-[10px] object-cover')}</a><div class="min-w-0 flex-1"><a href="/profile?uid=${encodeURIComponent(comment.author?.uid || comment.author_uid || '')}" class="text-[12.5px] font-semibold hover:text-brand">${esc(comment.author?.name || comment.author_name || 'Member')}</a><p class="text-[13px] mt-0.5 text-ink/90">${esc(comment.content)}</p></div></div>`).join(''); } catch (_) {} } return; }
     if (event.target.closest('[data-live-share]')) {
       if (!needUser()) return;
       try {

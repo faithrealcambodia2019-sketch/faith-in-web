@@ -1529,6 +1529,43 @@
         });
     };
 
+    actions.cv_get_user = function (b, params) {
+        var targetUid = text(params.uid || params.user_uid || params.member_uid || params.member);
+        var targetId = text(params.user_id || params.id || params.appUserId);
+        if (!targetUid && !targetId) {
+            throw new Error('Please specify a member.');
+        }
+        return currentUser(b).then(function (viewer) {
+            var resolveUid = targetUid
+                ? Promise.resolve(targetUid)
+                : getMemberSnapshot(b).then(function (snap) {
+                    var found = '';
+                    snap.forEach(function (d) {
+                        if (!found && String(d.data().appUserId) === targetId) found = d.id;
+                    });
+                    if (!found) throw new Error('That member could not be found.');
+                    return found;
+                });
+
+            return resolveUid.then(function (uid) {
+                return followingMap(b, viewer).then(function (following) {
+                    return getMemberDocument(b, uid).then(function (snap) {
+                        if (!snap || !snap.exists()) throw new Error('That member could not be found.');
+                        var data = snap.data() || {};
+                        var member = shapeMember(uid, data, viewer, following);
+                        member.cover_url = text(data.coverURL);
+                        member.industry = text(data.industry);
+                        member.gender = text(data.gender);
+                        return member;
+                    });
+                });
+            });
+        });
+    };
+
+    actions.cv_get_profile = actions.cv_get_user;
+    actions.cv_get_member = actions.cv_get_user;
+
     function setFollow(b, params, follow) {
         var targetUid = text(params.target_uid || params.uid);
         var targetId = text(params.user_id || params.id);

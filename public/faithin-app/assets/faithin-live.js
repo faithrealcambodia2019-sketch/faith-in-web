@@ -674,36 +674,211 @@
     };
   }
 
-  function loadProfile(user) {
-    if (!user) return;
+  async function loadProfile(currentUser) {
+    const urlParams = new URLSearchParams(location.search);
+    const targetUid = urlParams.get('uid') || urlParams.get('member') || urlParams.get('user') || urlParams.get('id');
+    const isSelf = !targetUid || (currentUser && (targetUid === currentUser.uid || String(currentUser.id) === targetUid));
+
+    let user = isSelf ? currentUser : null;
+    if (!isSelf && targetUid) {
+      try {
+        user = await api.request('cv_get_user', { uid: targetUid, id: targetUid });
+      } catch (err) {
+        user = null;
+      }
+    } else if (!user) {
+      user = currentUser;
+    }
+
+    if (!user) {
+      const hero = $$('#main section').find(section => section.querySelector('h1'));
+      if (hero) {
+        $('h1', hero).textContent = 'Member Not Found';
+        const details = $$('p', hero);
+        if (details[0]) details[0].textContent = 'This member profile is unavailable or private.';
+      }
+      return;
+    }
+
     const hero = $$('#main section').find(section => section.querySelector('h1'));
-    if (hero) { const h1 = $('h1', hero); h1.textContent = user.name; const details = $$('p', hero); if (details[0]) details[0].textContent = [user.role, user.ministry, user.church].filter(Boolean).join(' · ') || 'Faith In member'; if (details[1]) details[1].firstChild.textContent = `${user.location || ''} `; const avatar = $('.avatar', hero); if (avatar) { if (user.avatar_url) { const image = document.createElement('img'); image.className = avatar.className + ' object-cover'; image.src = user.avatar_url; image.alt = user.name; avatar.replaceWith(image); } else avatar.textContent = api.initials(user.name); } const cover = $('.media-plate', hero); if (cover && user.cover_url) { cover.style.backgroundImage = `url("${String(user.cover_url).replace(/["\\]/g, '')}")`; cover.style.backgroundSize = 'cover'; cover.style.backgroundPosition = 'center'; const label = $('span', cover); if (label) label.remove(); } }
-    const about = $$('#main h2').find(node => node.textContent.trim() === 'About')?.closest('section'); if (about) { const paragraphs = $$('div.space-y-3 p', about); if (paragraphs[0]) paragraphs[0].textContent = user.bio || 'This member has not added a biography yet.'; paragraphs.slice(1).forEach(node => node.remove()); }
+    if (hero) {
+      const h1 = $('h1', hero);
+      h1.textContent = user.name || user.displayName || 'Faith In Member';
+      const details = $$('p', hero);
+      if (details[0]) details[0].textContent = [user.role, user.ministry, user.church].filter(Boolean).join(' · ') || 'Faith In member';
+      if (details[1]) details[1].firstChild.textContent = `${user.location || ''} `;
+      const avatar = $('.avatar', hero);
+      if (avatar) {
+        const photo = user.avatar_url || user.avatar || user.photo_url;
+        if (photo) {
+          const image = document.createElement('img');
+          image.className = avatar.className + ' object-cover';
+          image.src = photo;
+          image.alt = user.name || 'Member';
+          avatar.replaceWith(image);
+        } else {
+          avatar.textContent = api.initials(user.name);
+        }
+      }
+      const cover = $('.media-plate', hero);
+      if (cover) {
+        if (user.cover_url) {
+          cover.style.backgroundImage = `url("${String(user.cover_url).replace(/["\\]/g, '')}")`;
+          cover.style.backgroundSize = 'cover';
+          cover.style.backgroundPosition = 'center';
+          const label = $('span', cover);
+          if (label) label.remove();
+        } else {
+          cover.style.backgroundImage = '';
+        }
+      }
+    }
+
+    const about = $$('#main h2').find(node => node.textContent.trim() === 'About')?.closest('section');
+    if (about) {
+      const paragraphs = $$('div.space-y-3 p', about);
+      if (paragraphs[0]) paragraphs[0].textContent = user.bio || (isSelf ? 'Tell the community about your faith journey and ministry.' : 'This member has not added a biography yet.');
+      paragraphs.slice(1).forEach(node => node.remove());
+    }
+
+    const services = $$('#main h2').find(node => /providing ministry services/i.test(node.textContent))?.closest('div.rounded-xl');
+    if (services) {
+      if (user.ministry || user.role) {
+        const line = $('p', services);
+        if (line) line.textContent = [user.role, user.ministry, user.church].filter(Boolean).join(' · ');
+      } else {
+        services.remove();
+      }
+    }
+
     const activity = $$('#main h2').find(node => node.textContent.trim() === 'Activity')?.closest('section');
-    if (activity) api.request('cv_get_posts').then(result => {
-      const mine = (result.items || []).filter(post => (post.author || {}).uid === user.uid);
-      const holder = $('.space-y-1', activity);
-      const renderActivity = label => {
-        const wanted = String(label || 'Posts').toLowerCase();
-        const filtered = mine.filter(post => wanted === 'posts' || (wanted === 'videos' && (post.media_items || []).some(item => item.type === 'video')) || (wanted === 'articles' && String(post.type).toLowerCase() === 'article'));
-        if (holder) holder.innerHTML = wanted === 'comments' ? emptyState('Your comment history is shown with each post in Home.') : (filtered.slice(0, 12).length ? filtered.slice(0, 12).map(post => `<a href="/home?post=${encodeURIComponent(post.id)}" class="block p-3 -mx-2 rounded-xl row-hover border-b border-line"><span class="block text-[11.5px] text-muted">${esc(user.name)} posted · ${esc(post.time || '')}</span><span class="block text-[14px] mt-1 line-clamp-2">${esc(post.content || post.article_title || 'Shared media')}</span><span class="block text-[12px] text-muted mt-2">${Number(post.reaction_count || 0)} reactions · ${Number(post.comment_count || 0)} comments</span></a>`).join('') : emptyState(`No ${wanted} yet.`));
-      };
-      renderActivity('Posts');
-      $('[data-chip-group]', activity)?.addEventListener('click', event => { const chip = event.target.closest('.chip'); if (chip) renderActivity(chip.textContent.trim()); });
-    }).catch(() => {});
+    if (activity) {
+      api.request('cv_get_posts').then(result => {
+        const memberPosts = (result.items || []).filter(post => (post.author || {}).uid === user.uid);
+        const holder = $('.space-y-1', activity);
+        const renderActivity = label => {
+          const wanted = String(label || 'Posts').toLowerCase();
+          const filtered = memberPosts.filter(post => wanted === 'posts' || (wanted === 'videos' && (post.media_items || []).some(item => item.type === 'video')) || (wanted === 'articles' && String(post.type).toLowerCase() === 'article'));
+          if (holder) {
+            holder.innerHTML = wanted === 'comments'
+              ? emptyState('Comment history is shown with each post on the home feed.')
+              : (filtered.slice(0, 12).length
+                ? filtered.slice(0, 12).map(post => `<a href="/home?post=${encodeURIComponent(post.id)}" class="block p-3 -mx-2 rounded-xl row-hover border-b border-line"><span class="block text-[11.5px] text-muted">${esc(user.name)} posted · ${esc(post.time || '')}</span><span class="block text-[14px] mt-1 line-clamp-2">${esc(post.content || post.article_title || 'Shared media')}</span><span class="block text-[12px] text-muted mt-2">${Number(post.reaction_count || 0)} reactions · ${Number(post.comment_count || 0)} comments</span></a>`).join('')
+                : emptyState(`No ${wanted} from ${esc(user.name)} yet.`));
+          }
+        };
+        renderActivity('Posts');
+        $('[data-chip-group]', activity)?.addEventListener('click', event => {
+          const chip = event.target.closest('.chip');
+          if (chip) renderActivity(chip.textContent.trim());
+        });
+      }).catch(() => {});
+    }
+
     $$('#main section').filter(item => /ministry experience|spiritual gifts|people also viewed/i.test(item.querySelector('h2')?.textContent || '')).forEach(item => item.remove());
-    const services = $$('#main h2').find(node => /providing ministry services/i.test(node.textContent))?.closest('div.rounded-xl'); if (services) { if (user.ministry || user.role) { const line = $('p', services); if (line) line.textContent = [user.role, user.ministry, user.church].filter(Boolean).join(' · '); } else services.remove(); }
-    Promise.all([api.request('cv_social_get_followers'), api.request('cv_social_get_following')]).then(results => { const connection = $$('a', hero).find(link => /connections/i.test(link.textContent)); if (connection) connection.textContent = `${results[1].items?.length || 0} following`; const follower = $$('a', activity).find(link => /followers/i.test(link.textContent)); if (follower) follower.textContent = `${results[0].items?.length || 0} followers`; }).catch(() => {});
-    $$('[aria-label="Edit profile"],[aria-label="Edit services"]', hero || document).forEach(button => { button.onclick = () => openProfileEditor(user, button.getAttribute('aria-label') === 'Edit services' ? 'ministry' : 'display_name'); });
-    $('[aria-label="Edit cover photo"]', hero || document)?.addEventListener('click', () => openProfileEditor(user, 'profile_cover'));
-    $('[aria-label="Edit about"]')?.addEventListener('click', () => openProfileEditor(user, 'bio'));
-    const openTo = $$('#main button').find(button => /^open to$/i.test(button.textContent.trim())); if (openTo) { openTo.removeAttribute('data-toast'); openTo.onclick = () => openProfileEditor(user, 'role'); }
-    const addSection = $$('#main button').find(button => /add profile section/i.test(button.textContent)); if (addSection) { addSection.removeAttribute('data-toast'); addSection.onclick = () => openProfileEditor(user, 'ministry'); }
-    const more = $$('#main button').find(button => /^more$/i.test(button.textContent.trim())); if (more) more.onclick = async () => { try { await navigator.clipboard.writeText(location.href); toast('Profile link copied'); } catch (_) { toast('Profile link: ' + location.href); } };
-    const detailsButton = $$('#main button').find(button => /show details/i.test(button.textContent)); if (detailsButton) detailsButton.onclick = () => { const line = detailsButton.previousElementSibling; line?.classList.toggle('line-clamp-1'); detailsButton.textContent = /show/i.test(detailsButton.textContent) ? 'Hide details' : 'Show details'; };
+
+    if (isSelf) {
+      Promise.all([api.request('cv_social_get_followers'), api.request('cv_social_get_following')]).then(results => {
+        const connection = $$('a', hero).find(link => /connections/i.test(link.textContent));
+        if (connection) connection.textContent = `${results[1].items?.length || 0} following`;
+        const follower = $$('a', activity).find(link => /followers/i.test(link.textContent));
+        if (follower) follower.textContent = `${results[0].items?.length || 0} followers`;
+      }).catch(() => {});
+
+      $$('[aria-label="Edit profile"],[aria-label="Edit services"]', hero || document).forEach(button => {
+        button.onclick = () => openProfileEditor(user, button.getAttribute('aria-label') === 'Edit services' ? 'ministry' : 'display_name');
+      });
+      $('[aria-label="Edit cover photo"]', hero || document)?.addEventListener('click', () => openProfileEditor(user, 'profile_cover'));
+      $('[aria-label="Edit about"]')?.addEventListener('click', () => openProfileEditor(user, 'bio'));
+      const openTo = $$('#main button').find(button => /^open to$/i.test(button.textContent.trim()));
+      if (openTo) { openTo.removeAttribute('data-toast'); openTo.onclick = () => openProfileEditor(user, 'role'); }
+      const addSection = $$('#main button').find(button => /add profile section/i.test(button.textContent));
+      if (addSection) { addSection.removeAttribute('data-toast'); addSection.onclick = () => openProfileEditor(user, 'ministry'); }
+      const more = $$('#main button').find(button => /^more$/i.test(button.textContent.trim()));
+      if (more) more.onclick = async () => {
+        try { await navigator.clipboard.writeText(location.href); toast('Profile link copied'); }
+        catch (_) { toast('Profile link: ' + location.href); }
+      };
+    } else {
+      // Visiting another member's profile
+      $$('.reveal, [aria-label^="Edit"]', '#main').forEach(el => el.remove());
+      $$('a', activity).find(link => /create a post/i.test(link.textContent))?.remove();
+
+      const btnGroup = $$('#main .flex.flex-wrap.gap-2', hero)[0];
+      if (btnGroup) {
+        btnGroup.innerHTML = `
+          <button class="btn ${user.is_following ? 'btn-outline' : 'btn-primary'}" data-profile-connect>
+            ${user.is_following ? 'Following' : '<i class="fa-solid fa-user-plus text-[11px] mr-1.5"></i>Connect'}
+          </button>
+          <button class="btn btn-neutral" data-profile-message>
+            <i class="fa-regular fa-comment-dots text-[13px] mr-1.5"></i>Message
+          </button>
+          <button class="btn btn-ghost border border-line" data-profile-share>
+            <i class="fa-solid fa-share-nodes text-[12px] mr-1.5"></i>Share
+          </button>
+        `;
+
+        const connectBtn = $('[data-profile-connect]', btnGroup);
+        if (connectBtn) {
+          connectBtn.onclick = async () => {
+            if (!requireUser()) return;
+            const following = /following/i.test(connectBtn.textContent);
+            connectBtn.disabled = true;
+            try {
+              await api.request(following ? 'cv_social_unfollow_user' : 'cv_social_follow_user', { target_uid: user.uid });
+              const nowFollowing = !following;
+              connectBtn.textContent = nowFollowing ? 'Following' : 'Connect';
+              connectBtn.className = `btn ${nowFollowing ? 'btn-outline' : 'btn-primary'}`;
+              if (!nowFollowing) connectBtn.innerHTML = '<i class="fa-solid fa-user-plus text-[11px] mr-1.5"></i>Connect';
+              toast(nowFollowing ? `Following ${user.name}` : `Unfollowed ${user.name}`);
+            } catch (err) {
+              toast(err.message);
+            } finally {
+              connectBtn.disabled = false;
+            }
+          };
+        }
+
+        const messageBtn = $('[data-profile-message]', btnGroup);
+        if (messageBtn) {
+          messageBtn.onclick = () => openMessenger(user.uid);
+        }
+
+        const shareBtn = $('[data-profile-share]', btnGroup);
+        if (shareBtn) {
+          shareBtn.onclick = async () => {
+            try { await navigator.clipboard.writeText(location.href); toast('Profile link copied'); }
+            catch (_) { toast('Profile link: ' + location.href); }
+          };
+        }
+      }
+
+      const connection = $$('a', hero).find(link => /connections/i.test(link.textContent));
+      if (connection) connection.textContent = `Faith In Member`;
+      const follower = $$('a', activity).find(link => /followers/i.test(link.textContent));
+      if (follower) follower.textContent = `Member Activity`;
+    }
+
+    const detailsButton = $$('#main button').find(button => /show details/i.test(button.textContent));
+    if (detailsButton) {
+      detailsButton.onclick = () => {
+        const line = detailsButton.previousElementSibling;
+        line?.classList.toggle('line-clamp-1');
+        detailsButton.textContent = /show/i.test(detailsButton.textContent) ? 'Hide details' : 'Show details';
+      };
+    }
+
+    const urlDisplay = $$('#main aside p').find(node => /faithin\.co\/in\//i.test(node.textContent));
+    if (urlDisplay) {
+      const slug = String(user.name || 'member').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || user.uid;
+      urlDisplay.textContent = `faithin.co/in/${slug}`;
+    }
     $('[aria-label="Edit activity"]')?.remove();
     $('[aria-label="Edit profile language"]')?.addEventListener('click', () => { location.href = '/settings'; });
-    $('[aria-label="Edit public URL"]')?.addEventListener('click', async () => { try { await navigator.clipboard.writeText(location.href); toast('Public profile URL copied'); } catch (_) {} });
+    $('[aria-label="Edit public URL"]')?.addEventListener('click', async () => {
+      try { await navigator.clipboard.writeText(location.href); toast('Public profile URL copied'); }
+      catch (_) {}
+    });
   }
 
   function loadSettings(user) {
