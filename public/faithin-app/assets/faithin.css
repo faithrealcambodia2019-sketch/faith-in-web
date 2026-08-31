@@ -312,6 +312,67 @@ html.dark .chip.is-on{ color:#0b1120; }
   }
 }
 
+/* --- verified tick badge (Purple Tick) ---------------------------------- */
+.fi-verified-tick {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 17px !important;
+  height: 17px !important;
+  min-width: 17px !important;
+  min-height: 17px !important;
+  border-radius: 9999px !important;
+  background-color: #7C3AED !important;
+  background: #7C3AED !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 1px 3px rgba(124, 58, 237, 0.45) !important;
+  margin-left: 5px !important;
+  vertical-align: middle !important;
+  flex-shrink: 0 !important;
+  border: 1.5px solid #FFFFFF !important;
+}
+
+.dark .fi-verified-tick {
+  border-color: #1e293b !important;
+}
+
+.fi-verified-tick svg {
+  width: 10px !important;
+  height: 10px !important;
+  stroke: #FFFFFF !important;
+  stroke-width: 3.2 !important;
+  fill: none !important;
+  display: block !important;
+}
+
+.fi-verified-tick--profile {
+  width: 22px !important;
+  height: 22px !important;
+  min-width: 22px !important;
+  min-height: 22px !important;
+  margin-left: 8px !important;
+  border-width: 2px !important;
+  box-shadow: 0 2px 8px rgba(124, 58, 237, 0.5) !important;
+}
+
+.fi-verified-tick--profile svg {
+  width: 13px !important;
+  height: 13px !important;
+  stroke-width: 3.2 !important;
+}
+
+.fi-verified-tick--blue {
+  background-color: #2563EB !important;
+  background: #2563EB !important;
+  box-shadow: 0 1px 3px rgba(37, 99, 235, 0.45) !important;
+}
+
+.fi-verified-tick--gold {
+  background-color: #F59E0B !important;
+  background: #F59E0B !important;
+  box-shadow: 0 1px 3px rgba(245, 158, 11, 0.45) !important;
+}
+
 /* --- contacts card & widget --------------------------------------------- */
 #contacts {
   display: flex !important;
