@@ -38,8 +38,8 @@ export const browserRuntimeConfig = Object.freeze({
   rest_nonce: "firebase",
   asset_base_url: "/",
   auth: {
-    mode: "firebase",
-    backend_mode: "firebase",
+    mode: "nextjs",
+    backend_mode: "nextjs",
     // When empty, the Google sign-in option is hidden rather than showing setup
     // instructions to visitors. Set NEXT_PUBLIC_GOOGLE_CLIENT_ID in Vercel and
     // add https://faithin.co as an authorised JavaScript origin to enable it.
