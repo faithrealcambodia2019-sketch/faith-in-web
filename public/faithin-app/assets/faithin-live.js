@@ -13,31 +13,16 @@
   }
 
   function verificationBadgeMarkup(user, variant = 'inline') {
+    const isProfile = variant === 'profile';
     const isCurrent = !user || (session && (user.uid === session.uid || user.is_self)) || (!user?.uid && user?.name === session?.name);
     const v = user?.verification || (isCurrent || user?.is_first_20 || (user?.id && Number(user.id) <= 20) || (user?.appUserId && Number(user.appUserId) <= 20) || (user?.uid && user.uid.length > 0) ? { show: true, type: 'purple', label: 'First 20', title: 'First 20 Member — Free Purple Tick' } : null);
     if (!v || !v.show) return '';
     const type = v.type || 'purple';
-    const isPurple = type === 'purple';
-    const isBlue = type === 'blue';
-    
-    const bgClass = isPurple 
-      ? 'bg-[#7C3AED] text-white ring-purple-200' 
-      : (isBlue ? 'bg-[#2563EB] text-white ring-blue-200' : 'bg-[#F59E0B] text-white ring-amber-200');
-    const title = esc(v.title || (isPurple ? 'First 20 Member (Free Purple Tick)' : 'Verified Member'));
+    const tickClass = type === 'blue' ? 'fi-verified-tick fi-verified-tick--blue' : (type === 'yellow' || type === 'gold' ? 'fi-verified-tick fi-verified-tick--gold' : 'fi-verified-tick');
+    const profileMod = isProfile ? ' fi-verified-tick--profile' : '';
+    const title = esc(v.title || 'First 20 Member (Free Purple Tick)');
 
-    if (variant === 'profile') {
-      return `<span class="inline-flex items-center justify-center w-[22px] h-[22px] rounded-full ${bgClass} shadow-sm ml-2 align-middle ring-2 ring-surface" title="${title}" aria-label="${title}">
-        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="20 6 9 17 4 12"></polyline>
-        </svg>
-      </span>`;
-    }
-    
-    return `<span class="inline-flex items-center justify-center w-4 h-4 rounded-full ${bgClass} shadow-xs ml-1 align-middle ring-1 ring-surface shrink-0" title="${title}" aria-label="${title}">
-      <svg class="w-2.5 h-2.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-        <polyline points="20 6 9 17 4 12"></polyline>
-      </svg>
-    </span>`;
+    return `<span class="${tickClass}${profileMod}" title="${title}" aria-label="${title}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"></polyline></svg></span>`;
   }
 
   function mountAuth() {
