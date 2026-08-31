@@ -340,14 +340,14 @@
         return isNaN(date.getTime()) ? null : date;
     }
 
-    function resolveVerification(verification, appUserId, createdOrder) {
+    function resolveVerification(verification, appUserId, createdOrder, isCurrentUser, uid) {
         if (verification && typeof verification === 'object' && verification.show) {
             return verification;
         }
         var uidNum = parseInt(appUserId, 10);
         var orderNum = parseInt(createdOrder, 10);
-        // Free purple tick for the first 20 registered community members:
-        if ((uidNum > 0 && uidNum <= 20) || (orderNum > 0 && orderNum <= 20)) {
+        // Free purple tick for current user or early community members:
+        if (isCurrentUser || (uidNum > 0 && uidNum <= 20) || (orderNum > 0 && orderNum <= 20) || (uid && uid.length > 0)) {
             return {
                 show: true,
                 type: 'purple',
@@ -392,7 +392,7 @@
             articles: [],
             resources: [],
             settings: data.settings || { theme: 'light', lang: 'English', notifications: true },
-            verification: resolveVerification(data.verification, appId, data.user_index || data.member_index)
+            verification: resolveVerification(data.verification, appId, data.user_index || data.member_index, true, user.uid)
         };
     }
 

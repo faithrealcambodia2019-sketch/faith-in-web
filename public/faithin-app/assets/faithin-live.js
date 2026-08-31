@@ -13,7 +13,8 @@
   }
 
   function verificationBadgeMarkup(user, variant = 'inline') {
-    const v = user?.verification || (user?.is_first_20 || (user?.id && Number(user.id) <= 20) || (user?.appUserId && Number(user.appUserId) <= 20) ? { show: true, type: 'purple', label: 'First 20', title: 'First 20 Member — Free Purple Tick' } : null);
+    const isCurrent = !user || (session && (user.uid === session.uid || user.is_self)) || (!user?.uid && user?.name === session?.name);
+    const v = user?.verification || (isCurrent || user?.is_first_20 || (user?.id && Number(user.id) <= 20) || (user?.appUserId && Number(user.appUserId) <= 20) || (user?.uid && user.uid.length > 0) ? { show: true, type: 'purple', label: 'First 20', title: 'First 20 Member — Free Purple Tick' } : null);
     if (!v || !v.show) return '';
     const type = v.type || 'purple';
     const isPurple = type === 'purple';

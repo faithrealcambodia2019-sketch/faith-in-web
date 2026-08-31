@@ -764,7 +764,7 @@
     const left = $('#main > aside');
     if (left && user) {
       const name = $$('a', left).find(link => link.textContent.trim() === 'Faith In Member' || link.textContent.trim() === 'Hun Chet' || link.hasAttribute('data-current-user-name'));
-      if (name) name.textContent = user.name;
+      if (name) name.innerHTML = esc(user.name) + window.FILive.verificationBadgeMarkup(user);
     }
     if (user && loadedPosts.length) {
       renderBlessings(loadedPosts);
