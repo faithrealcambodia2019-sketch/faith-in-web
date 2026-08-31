@@ -934,7 +934,12 @@
         return currentUser(b).then(function (user) {
             if (!user) return { items: [] };
 
-            return followingMap(b, user).then(function (following) {
+            return Promise.all([
+                followingMap(b, user),
+                getMemberSnapshot(b)
+            ]).then(function (results) {
+                var following = results[0] || {};
+                var memberSnap = results[1] || { forEach: function () {} };
                 var queries = [];
 
                 // 1. General posts query with order (if rules/index allow)
@@ -946,7 +951,7 @@
                     )).catch(function () { return null; })
                 );
 
-                // 2. Unordered general collection query (never requires composite index)
+                // 2. Unordered general collection query
                 queries.push(
                     b.dbMod.getDocs(b.dbMod.query(
                         b.dbMod.collection(b.db, 'posts'),
@@ -954,7 +959,7 @@
                     )).catch(function () { return null; })
                 );
 
-                // 3. Public posts query without composite order
+                // 3. Public posts query
                 queries.push(
                     b.dbMod.getDocs(b.dbMod.query(
                         b.dbMod.collection(b.db, 'posts'),
@@ -963,7 +968,7 @@
                     )).catch(function () { return null; })
                 );
 
-                // 4. Own posts query
+                // 4. Own posts query (both authorUid and author_uid)
                 queries.push(
                     b.dbMod.getDocs(b.dbMod.query(
                         b.dbMod.collection(b.db, 'posts'),
@@ -971,16 +976,33 @@
                         b.dbMod.limit(FEED_PAGE_SIZE)
                     )).catch(function () { return null; })
                 );
+                queries.push(
+                    b.dbMod.getDocs(b.dbMod.query(
+                        b.dbMod.collection(b.db, 'posts'),
+                        b.dbMod.where('author_uid', '==', user.uid),
+                        b.dbMod.limit(FEED_PAGE_SIZE)
+                    )).catch(function () { return null; })
+                );
 
-                // 5. Explicit queries for every user followed
-                var followedUids = Object.keys(following || {});
-                followedUids.slice(0, 30).forEach(function (fUid) {
+                // 5. Query for every candidate member and followed author
+                var candidateUids = {};
+                Object.keys(following).forEach(function (uid) { if (uid) candidateUids[uid] = true; });
+                memberSnap.forEach(function (m) { if (m.id && m.id !== user.uid) candidateUids[m.id] = true; });
+
+                Object.keys(candidateUids).slice(0, 50).forEach(function (fUid) {
                     if (fUid && fUid !== user.uid) {
                         queries.push(
                             b.dbMod.getDocs(b.dbMod.query(
                                 b.dbMod.collection(b.db, 'posts'),
                                 b.dbMod.where('authorUid', '==', fUid),
-                                b.dbMod.limit(50)
+                                b.dbMod.limit(30)
+                            )).catch(function () { return null; })
+                        );
+                        queries.push(
+                            b.dbMod.getDocs(b.dbMod.query(
+                                b.dbMod.collection(b.db, 'posts'),
+                                b.dbMod.where('author_uid', '==', fUid),
+                                b.dbMod.limit(30)
                             )).catch(function () { return null; })
                         );
                     }
@@ -1626,14 +1648,36 @@
     /** Set of uids the viewer follows, for is_following flags. */
     function followingMap(b, user) {
         if (!user) return Promise.resolve({});
-        var q = b.dbMod.query(
+        var q1 = b.dbMod.query(
             b.dbMod.collection(b.db, 'follows'),
             b.dbMod.where('followerUid', '==', user.uid),
             b.dbMod.limit(500)
         );
-        return b.dbMod.getDocs(q).then(function (snap) {
+        var q2 = b.dbMod.query(
+            b.dbMod.collection(b.db, 'follows'),
+            b.dbMod.where('follower_uid', '==', user.uid),
+            b.dbMod.limit(500)
+        );
+        return Promise.all([
+            b.dbMod.getDocs(q1).catch(function () { return { forEach: function () {} }; }),
+            b.dbMod.getDocs(q2).catch(function () { return { forEach: function () {} }; })
+        ]).then(function (snaps) {
             var map = {};
-            snap.forEach(function (d) { map[d.data().targetUid] = true; });
+            snaps.forEach(function (snap) {
+                if (snap && snap.forEach) {
+                    snap.forEach(function (d) {
+                        var data = d.data() || {};
+                        var target = text(data.targetUid || data.target_uid || data.uid);
+                        if (target) map[target] = true;
+                        if (d.id && d.id.indexOf('__') !== -1) {
+                            var parts = d.id.split('__');
+                            if (parts[0] === user.uid && parts[1]) {
+                                map[parts[1]] = true;
+                            }
+                        }
+                    });
+                }
+            });
             return map;
         }).catch(function () { return {}; });
     }

@@ -143,11 +143,9 @@
     const name = author.name || author.displayName || post.author_name || post.authorName || 'Faith In Member';
     const current = window.FILive.user;
     const isSelf = !!(
-      post.can_delete ||
       post.is_self ||
       author.is_self ||
-      (current && uid && (uid === current.uid || String(current.id) === String(uid))) ||
-      (current && (current.name === name || current.displayName === name))
+      (current && uid && (uid === current.uid || String(current.id) === String(uid)))
     );
     const isFollowing = !isSelf && !!(post.is_following || author.is_following);
     const avatar = isSelf
