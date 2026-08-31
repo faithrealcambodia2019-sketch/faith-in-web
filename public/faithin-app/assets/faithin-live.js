@@ -896,33 +896,63 @@
         const connection = $$('a', hero).find(link => /connections|following/i.test(link.textContent));
         if (connection) connection.textContent = `${following.length} following`;
         
-        const follower = $$('a', activity).find(link => /followers/i.test(link.textContent));
-        if (follower) {
+        const followerSummary = activity.querySelector('[data-follower-summary]') || $$('a', activity).find(link => /followers|followed by/i.test(link.textContent));
+        if (followerSummary) {
           const count = followers.length;
-          follower.textContent = `${count} ${count === 1 ? 'follower' : 'followers'}`;
+          const topFollowers = followers.slice(0, 3);
           
           let avatarCluster = activity.querySelector('[data-follower-avatars]');
+          let followerText = activity.querySelector('[data-follower-text]');
+          
           if (!avatarCluster) {
             avatarCluster = document.createElement('div');
             avatarCluster.setAttribute('data-follower-avatars', '');
-            avatarCluster.className = 'flex -space-x-2 overflow-hidden py-0.5 items-center';
-            follower.parentNode.insertBefore(avatarCluster, follower);
-            follower.parentNode.classList.add('flex', 'items-center', 'gap-2');
+            avatarCluster.className = 'flex -space-x-2 overflow-hidden py-0.5 items-center shrink-0';
+            followerSummary.prepend(avatarCluster);
+          }
+          if (!followerText) {
+            followerText = document.createElement('span');
+            followerText.setAttribute('data-follower-text', '');
+            followerText.className = 'leading-tight';
+            followerSummary.appendChild(followerText);
           }
           
-          if (followers.length > 0) {
-            avatarCluster.innerHTML = followers.slice(0, 4).map(f => {
+          if (count > 0) {
+            avatarCluster.innerHTML = topFollowers.map(f => {
               const photo = f.photo_url || f.avatar_url || f.avatar;
               const name = f.name || f.displayName || 'Member';
               if (photo) {
-                return `<img class="inline-block w-6 h-6 rounded-full ring-2 ring-surface object-cover hover:z-10 hover:scale-110 transition shadow-sm" src="${esc(photo)}" alt="${esc(name)}" title="${esc(name)}">`;
+                return `<img class="inline-block w-7 h-7 sm:w-8 sm:h-8 rounded-full ring-2 ring-surface object-cover shadow-sm transition hover:scale-105" src="${esc(photo)}" alt="${esc(name)}" title="${esc(name)}">`;
               }
-              return window.FILive.avatarMarkup(f, 'inline-flex items-center justify-center w-6 h-6 rounded-full ring-2 ring-surface text-[9px] font-bold text-white shadow-sm hover:z-10 hover:scale-110 transition');
+              return window.FILive.avatarMarkup(f, 'inline-flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-full ring-2 ring-surface text-[10px] font-bold text-white shadow-sm transition hover:scale-105');
             }).join('');
             avatarCluster.style.display = 'flex';
+            
+            let textMarkup = `${count} ${count === 1 ? 'follower' : 'followers'}`;
+            if (count === 1) {
+              const n1 = topFollowers[0]?.name || topFollowers[0]?.displayName || '1 member';
+              textMarkup = `Followed by <strong class="font-semibold text-ink">${esc(n1)}</strong>`;
+            } else if (count === 2) {
+              const n1 = topFollowers[0]?.name || topFollowers[0]?.displayName || '1 member';
+              const n2 = topFollowers[1]?.name || topFollowers[1]?.displayName || '1 member';
+              textMarkup = `Followed by <strong class="font-semibold text-ink">${esc(n1)}</strong> and <strong class="font-semibold text-ink">${esc(n2)}</strong>`;
+            } else if (count === 3) {
+              const n1 = topFollowers[0]?.name || topFollowers[0]?.displayName || '1 member';
+              const n2 = topFollowers[1]?.name || topFollowers[1]?.displayName || '1 member';
+              const n3 = topFollowers[2]?.name || topFollowers[2]?.displayName || '1 member';
+              textMarkup = `Followed by <strong class="font-semibold text-ink">${esc(n1)}</strong>, <strong class="font-semibold text-ink">${esc(n2)}</strong>, and <strong class="font-semibold text-ink">${esc(n3)}</strong>`;
+            } else if (count > 3) {
+              const n1 = topFollowers[0]?.name || topFollowers[0]?.displayName || '1 member';
+              const n2 = topFollowers[1]?.name || topFollowers[1]?.displayName || '1 member';
+              const n3 = topFollowers[2]?.name || topFollowers[2]?.displayName || '1 member';
+              const others = count - 3;
+              textMarkup = `Followed by <strong class="font-semibold text-ink">${esc(n1)}</strong>, <strong class="font-semibold text-ink">${esc(n2)}</strong>, <strong class="font-semibold text-ink">${esc(n3)}</strong> and <strong class="font-semibold text-ink">${others} other${others > 1 ? 's' : ''}</strong>`;
+            }
+            followerText.innerHTML = textMarkup;
           } else {
             avatarCluster.innerHTML = '';
             avatarCluster.style.display = 'none';
+            followerText.textContent = '0 followers';
           }
         }
       }).catch(() => {});
