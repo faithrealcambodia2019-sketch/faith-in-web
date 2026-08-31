@@ -184,19 +184,55 @@
   }
 
   function renderFeed() {
-    let items = loadedPosts.filter(post => !feedQuery || [post.content, post.title, post.article_title, post.author?.name].some(value => String(value || '').toLowerCase().includes(feedQuery)));
-    if (sortMode === 'Recent') items.sort((a, b) => String(b.created_at || '').localeCompare(String(a.created_at || '')));
-    if (sortMode === 'Top') items.sort((a, b) => (Number(b.reaction_count || 0) + Number(b.comment_count || 0) + Number(b.share_count || 0)) - (Number(a.reaction_count || 0) + Number(a.comment_count || 0) + Number(a.share_count || 0)));
-    if (sortMode === 'Following') items = items.filter(post => followingIds.has(post.author?.uid) || post.author?.uid === window.FILive.user?.uid);
-    feed.innerHTML = items.length ? items.map(postHTML).join('') : `<section class="card p-8 text-center"><h2 class="font-bold">${feedQuery || sortMode === 'Following' ? 'No matching posts' : 'Your community feed is ready'}</h2><p class="text-muted text-[13.5px] mt-1">${sortMode === 'Following' ? 'Follow members from Network to build this feed.' : 'Be the first to share a blessing or testimony.'}</p></section>`;
+    const current = window.FILive.user;
+    let items = loadedPosts.filter(post => {
+      if (!feedQuery) return true;
+      const textFields = [post.content, post.title, post.article_title, post.author?.name, post.author_name];
+      return textFields.some(value => String(value || '').toLowerCase().includes(feedQuery.toLowerCase()));
+    });
+
+    if (sortMode === 'Recent') {
+      items.sort((a, b) => String(b.created_at || '').localeCompare(String(a.created_at || '')));
+    } else if (sortMode === 'Top') {
+      items.sort((a, b) => {
+        const aFollowed = (a.is_following || a.author?.is_following || (a.author_uid && followingIds.has(a.author_uid))) ? 1 : 0;
+        const bFollowed = (b.is_following || b.author?.is_following || (b.author_uid && followingIds.has(b.author_uid))) ? 1 : 0;
+        if (bFollowed !== aFollowed) return bFollowed - aFollowed;
+        const bScore = (Number(b.reaction_count || 0) + Number(b.comment_count || 0) + Number(b.share_count || 0));
+        const aScore = (Number(a.reaction_count || 0) + Number(a.comment_count || 0) + Number(a.share_count || 0));
+        if (bScore !== aScore) return bScore - aScore;
+        return String(b.created_at || '').localeCompare(String(a.created_at || ''));
+      });
+    } else if (sortMode === 'Following') {
+      items = items.filter(post => {
+        const authorUid = post.author?.uid || post.author_uid || post.authorUid || '';
+        const isSelf = !!(current && authorUid && (authorUid === current.uid || String(current.id) === String(authorUid)));
+        const isFollowing = !!(post.is_following || post.author?.is_following || (authorUid && followingIds.has(authorUid)));
+        return isFollowing || isSelf;
+      });
+      items.sort((a, b) => String(b.created_at || '').localeCompare(String(a.created_at || '')));
+    }
+
+    feed.innerHTML = items.length ? items.map(postHTML).join('') : `<section class="card p-8 text-center"><h2 class="font-bold">${feedQuery || sortMode === 'Following' ? 'No matching posts' : 'Your community feed is ready'}</h2><p class="text-muted text-[13.5px] mt-1">${sortMode === 'Following' ? 'Follow members from Network or Contacts to build this feed.' : 'Be the first to share a blessing or testimony.'}</p></section>`;
     watchForStall(feed);
   }
 
   async function loadPosts() {
     feed.innerHTML = `<section class="card p-8 text-center text-muted"><i class="fa-solid fa-circle-notch fa-spin mr-2"></i>Loading your community…</section>`;
     try {
-      const result = await api.request('cv_get_posts');
-      loadedPosts = result.items || []; renderFeed(); renderBlessings(loadedPosts);
+      const [result, followResult] = await Promise.all([
+        api.request('cv_get_posts'),
+        api.request('cv_social_get_following').catch(() => ({ items: [] }))
+      ]);
+      if (followResult && Array.isArray(followResult.items)) {
+        followResult.items.forEach(item => {
+          if (item.uid) followingIds.add(item.uid);
+          if (item.id) followingIds.add(String(item.id));
+        });
+      }
+      loadedPosts = result.items || [];
+      renderFeed();
+      renderBlessings(loadedPosts);
     } catch (error) { feed.innerHTML = `<section class="card p-6 text-rose">${esc(error.message)}</section>`; }
     $('#load-more')?.classList.add('hidden');
   }

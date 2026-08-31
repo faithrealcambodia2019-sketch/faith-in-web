@@ -1000,8 +1000,8 @@
                             var data = byId[id];
                             if (!data || isExpiredBlessing(data, now)) return false;
                             var vis = visibilityOf(data.visibility);
-                            var authorUid = text((data.author && data.author.uid) || data.authorUid || data.author_uid);
-                            var isSelf = authorUid === user.uid;
+                            var authorUid = text((data.author && (data.author.uid || data.author.id)) || data.authorUid || data.author_uid || data.uid);
+                            var isSelf = !authorUid || authorUid === user.uid;
                             var isFollowed = !!(following && following[authorUid]);
                             return isSelf || isFollowed || vis === 'public';
                         })
