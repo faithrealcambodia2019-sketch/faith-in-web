@@ -398,7 +398,13 @@
         );
     }
 
+    var _memberSnapshotCache = null;
+    var _memberSnapshotCacheTime = 0;
     function getMemberSnapshot(b) {
+        var now = Date.now();
+        if (_memberSnapshotCache && (now - _memberSnapshotCacheTime < 25000)) {
+            return Promise.resolve(_memberSnapshotCache);
+        }
         var publicQuery = b.dbMod.query(b.dbMod.collection(b.db, 'publicProfiles'), b.dbMod.limit(200));
         var postQuery = b.dbMod.query(b.dbMod.collection(b.db, 'posts'), b.dbMod.limit(100));
         return Promise.all([
@@ -434,11 +440,14 @@
                 }
             });
             var docs = Object.values(membersByUid);
-            return {
+            var snap = {
                 forEach: function (cb) { docs.forEach(cb); },
                 empty: docs.length === 0,
                 size: docs.length
             };
+            _memberSnapshotCache = snap;
+            _memberSnapshotCacheTime = now;
+            return snap;
         }).catch(function () {
             return { forEach: function () {}, empty: true, size: 0 };
         });
@@ -934,12 +943,7 @@
         return currentUser(b).then(function (user) {
             if (!user) return { items: [] };
 
-            return Promise.all([
-                followingMap(b, user),
-                getMemberSnapshot(b)
-            ]).then(function (results) {
-                var following = results[0] || {};
-                var memberSnap = results[1] || { forEach: function () {} };
+            return followingMap(b, user).then(function (following) {
                 var queries = [];
 
                 // 1. General posts query with order (if rules/index allow)
@@ -951,7 +955,7 @@
                     )).catch(function () { return null; })
                 );
 
-                // 2. Unordered general collection query
+                // 2. Unordered general collection query (guaranteed fallback)
                 queries.push(
                     b.dbMod.getDocs(b.dbMod.query(
                         b.dbMod.collection(b.db, 'posts'),
@@ -984,29 +988,34 @@
                     )).catch(function () { return null; })
                 );
 
-                // 5. Query for every candidate member and followed author
-                var candidateUids = {};
-                Object.keys(following).forEach(function (uid) { if (uid) candidateUids[uid] = true; });
-                memberSnap.forEach(function (m) { if (m.id && m.id !== user.uid) candidateUids[m.id] = true; });
-
-                Object.keys(candidateUids).slice(0, 50).forEach(function (fUid) {
-                    if (fUid && fUid !== user.uid) {
+                // 5. Followed authors query (high speed: 1-2 batch queries or direct target queries)
+                var followedUids = Object.keys(following || {}).filter(function (id) { return id && id !== user.uid; });
+                if (followedUids.length > 0) {
+                    queries.push(
+                        b.dbMod.getDocs(b.dbMod.query(
+                            b.dbMod.collection(b.db, 'posts'),
+                            b.dbMod.where('authorUid', 'in', followedUids.slice(0, 10)),
+                            b.dbMod.limit(FEED_PAGE_SIZE)
+                        )).catch(function () { return null; })
+                    );
+                    queries.push(
+                        b.dbMod.getDocs(b.dbMod.query(
+                            b.dbMod.collection(b.db, 'posts'),
+                            b.dbMod.where('author_uid', 'in', followedUids.slice(0, 10)),
+                            b.dbMod.limit(FEED_PAGE_SIZE)
+                        )).catch(function () { return null; })
+                    );
+                    // Targeted individual queries for up to 5 followed members
+                    followedUids.slice(0, 5).forEach(function (fUid) {
                         queries.push(
                             b.dbMod.getDocs(b.dbMod.query(
                                 b.dbMod.collection(b.db, 'posts'),
                                 b.dbMod.where('authorUid', '==', fUid),
-                                b.dbMod.limit(30)
+                                b.dbMod.limit(20)
                             )).catch(function () { return null; })
                         );
-                        queries.push(
-                            b.dbMod.getDocs(b.dbMod.query(
-                                b.dbMod.collection(b.db, 'posts'),
-                                b.dbMod.where('author_uid', '==', fUid),
-                                b.dbMod.limit(30)
-                            )).catch(function () { return null; })
-                        );
-                    }
-                });
+                    });
+                }
 
                 return Promise.all(queries).then(function (snapshots) {
                     var byId = {};

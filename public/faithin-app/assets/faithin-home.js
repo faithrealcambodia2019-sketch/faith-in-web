@@ -236,8 +236,41 @@
     }
   }
 
+  function getCachedFeed() {
+    try {
+      const cached = sessionStorage.getItem('FI_FEED_CACHE');
+      return cached ? JSON.parse(cached) : null;
+    } catch (_) { return null; }
+  }
+
+  function setCachedFeed(items) {
+    try {
+      sessionStorage.setItem('FI_FEED_CACHE', JSON.stringify((items || []).slice(0, 30)));
+    } catch (_) {}
+  }
+
   async function loadPosts() {
-    feed.innerHTML = `<section class="card p-8 text-center text-muted"><i class="fa-solid fa-circle-notch fa-spin mr-2"></i>Loading your community…</section>`;
+    // Instant display from session cache if available (0ms load time)
+    const cached = getCachedFeed();
+    if (cached && cached.length && !loadedPosts.length) {
+      loadedPosts = cached;
+      renderFeed();
+      renderBlessings(loadedPosts);
+    } else if (!loadedPosts.length) {
+      feed.innerHTML = `
+        <div class="card p-4 space-y-3 animate-pulse">
+          <div class="flex items-center gap-3">
+            <div class="w-11 h-11 rounded-full bg-raised"></div>
+            <div class="space-y-1.5 flex-1">
+              <div class="h-3.5 bg-raised rounded w-1/3"></div>
+              <div class="h-2.5 bg-raised rounded w-1/4"></div>
+            </div>
+          </div>
+          <div class="h-4 bg-raised rounded w-3/4"></div>
+          <div class="h-24 bg-raised rounded w-full"></div>
+        </div>`;
+    }
+
     try {
       const [result, followResult] = await Promise.all([
         api.request('cv_get_posts'),
@@ -250,9 +283,14 @@
         });
       }
       loadedPosts = result.items || [];
+      setCachedFeed(loadedPosts);
       renderFeed();
       renderBlessings(loadedPosts);
-    } catch (error) { feed.innerHTML = `<section class="card p-6 text-rose">${esc(error.message)}</section>`; }
+    } catch (error) {
+      if (!loadedPosts.length) {
+        feed.innerHTML = `<section class="card p-6 text-rose">${esc(error.message)}</section>`;
+      }
+    }
     $('#load-more')?.classList.add('hidden');
   }
 

@@ -91,12 +91,12 @@ const nextConfig: NextConfig = {
         headers: [{ key: "Cache-Control", value: "public, max-age=0, must-revalidate" }],
       },
       {
-        source: "/faithin-app/:path*",
-        headers: [{ key: "Cache-Control", value: "public, max-age=0, must-revalidate" }],
+        source: "/faithin-app/:file*\\.(?:js|css|woff2|woff|ttf|png|svg|ico|jpg|jpeg|webp)",
+        headers: [{ key: "Cache-Control", value: "public, max-age=86400, stale-while-revalidate=604800" }],
       },
       {
-        source: "/assets/:path*",
-        headers: [{ key: "Cache-Control", value: "public, max-age=0, must-revalidate" }],
+        source: "/assets/:file*\\.(?:js|css|woff2|woff|ttf|png|svg|ico|jpg|jpeg|webp)",
+        headers: [{ key: "Cache-Control", value: "public, max-age=86400, stale-while-revalidate=604800" }],
       },
       {
         source: "/app/:path*",
