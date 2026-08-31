@@ -12,6 +12,33 @@
     return `<span class="${classes}" style="background:linear-gradient(135deg,#2f5bea,#1e40af)">${esc(api.initials(name))}</span>`;
   }
 
+  function verificationBadgeMarkup(user, variant = 'inline') {
+    const v = user?.verification || (user?.is_first_20 || (user?.id && Number(user.id) <= 20) || (user?.appUserId && Number(user.appUserId) <= 20) ? { show: true, type: 'purple', label: 'First 20', title: 'First 20 Member — Free Purple Tick' } : null);
+    if (!v || !v.show) return '';
+    const type = v.type || 'purple';
+    const isPurple = type === 'purple';
+    const isBlue = type === 'blue';
+    
+    const bgClass = isPurple 
+      ? 'bg-[#7C3AED] text-white ring-purple-200' 
+      : (isBlue ? 'bg-[#2563EB] text-white ring-blue-200' : 'bg-[#F59E0B] text-white ring-amber-200');
+    const title = esc(v.title || (isPurple ? 'First 20 Member (Free Purple Tick)' : 'Verified Member'));
+
+    if (variant === 'profile') {
+      return `<span class="inline-flex items-center justify-center w-[22px] h-[22px] rounded-full ${bgClass} shadow-sm ml-2 align-middle ring-2 ring-surface" title="${title}" aria-label="${title}">
+        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+      </span>`;
+    }
+    
+    return `<span class="inline-flex items-center justify-center w-4 h-4 rounded-full ${bgClass} shadow-xs ml-1 align-middle ring-1 ring-surface shrink-0" title="${title}" aria-label="${title}">
+      <svg class="w-2.5 h-2.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="20 6 9 17 4 12"></polyline>
+      </svg>
+    </span>`;
+  }
+
   function mountAuth() {
     const host = document.createElement('div');
     host.id = 'fi-auth';
@@ -609,7 +636,7 @@
             <div class="h-16 bg-[linear-gradient(110deg,#60a5fa,#4f46e5)]"></div>
             <div class="px-3 pb-4 -mt-8 flex flex-col items-center text-center flex-1">
               ${avatarMarkup(user, 'avatar w-16 h-16 text-[17px] ring-4 ring-surface object-cover')}
-              <a href="/profile?uid=${encodeURIComponent(user.uid)}" class="mt-2 text-[14.5px] font-semibold hover:text-brand transition">${esc(user.name)}</a>
+              <a href="/profile?uid=${encodeURIComponent(user.uid)}" class="mt-2 text-[14.5px] font-semibold hover:text-brand transition inline-flex items-center justify-center">${esc(user.name)}${verificationBadgeMarkup(user)}</a>
               <p class="text-[12.5px] text-muted mt-1 line-clamp-2">${esc(user.role || user.bio || user.church || 'Faith In member')}</p>
               <p class="text-[11.5px] text-faint mt-2">${esc(user.location || user.ministry || '')}</p>
               <button class="btn ${user.is_following ? 'btn-neutral' : 'btn-outline'} w-full mt-3 !py-2" data-connect>
@@ -794,7 +821,7 @@
     const hero = $$('#main section').find(section => section.querySelector('h1'));
     if (hero) {
       const h1 = $('h1', hero);
-      h1.textContent = user.name || user.displayName || 'Faith In Member';
+      h1.innerHTML = esc(user.name || user.displayName || 'Faith In Member') + verificationBadgeMarkup(user, 'profile');
       const details = $$('p', hero);
       if (details[0]) details[0].textContent = [user.role, user.ministry, user.church].filter(Boolean).join(' · ') || 'Faith In member';
       if (details[1]) {
@@ -1225,7 +1252,7 @@
     });
   }
 
-  window.FILive = { api, get user() { return session; }, requireUser, avatarMarkup, openMessenger };
+  window.FILive = { api, get user() { return session; }, requireUser, avatarMarkup, verificationBadgeMarkup, openMessenger };
   mountAuth();
   const page = document.body.dataset.page;
 
