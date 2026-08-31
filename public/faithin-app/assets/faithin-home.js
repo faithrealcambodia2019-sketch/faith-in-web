@@ -317,18 +317,29 @@
     try {
       const result = await api.request('cv_find_users');
       const items = (result.items || []).slice(0, 8);
-      list.innerHTML = items.length ? items.map(user => `<li class="flex items-center gap-3 p-2 rounded-xl hover:bg-raised transition" data-user-uid="${esc(user.uid)}">
-        ${window.FILive.avatarMarkup(user, 'avatar w-10 h-10 text-[13px] object-cover')}
-        <span class="min-w-0 flex-1">
-          <a href="/profile?uid=${encodeURIComponent(user.uid)}" class="block text-[13.5px] font-semibold truncate hover:text-brand transition">${esc(user.name)}</a>
-          <span class="block text-[12px] text-muted truncate">${esc([user.role, user.church, user.ministry].filter(Boolean).join(' · ') || user.headline || 'Faithin')}</span>
-        </span>
-        <button class="btn ${user.is_following ? 'btn-neutral' : 'btn-outline'} !px-2.5 !py-1 !text-[12px]" data-contact-follow>
-          <i class="fa-solid ${user.is_following ? 'fa-check' : 'fa-plus'} text-[10px] mr-1"></i>${user.is_following ? 'Following' : 'Follow'}
-        </button>
-        <button class="icon-btn !w-7 !h-7 text-muted hover:text-brand" data-live-message aria-label="Message ${esc(user.name)}"><i class="fa-regular fa-paper-plane text-[12px]"></i></button>
-      </li>`).join('') : '<li class="text-[13px] text-muted p-2">No other members yet.</li>';
-    } catch (_) { list.innerHTML = '<li class="text-[13px] text-muted p-2">Sign in to see members.</li>'; }
+      if (items.length) {
+        list.innerHTML = items.map(user => `<li class="flex items-center justify-between py-1" data-user-uid="${esc(user.uid)}">
+          <div class="flex items-center space-x-3 min-w-0 pr-2">
+            ${window.FILive.avatarMarkup(user, 'w-[42px] h-[42px] rounded-full object-cover shrink-0 text-[14px]')}
+            <div class="flex flex-col min-w-0">
+              <a href="/profile?uid=${encodeURIComponent(user.uid)}" class="font-bold text-ink text-[14px] leading-tight truncate hover:text-brand transition">${esc(user.name)}</a>
+              <span class="text-[12px] text-muted font-normal leading-tight mt-0.5 truncate">Faithin</span>
+            </div>
+          </div>
+          <div class="flex items-center space-x-2 shrink-0">
+            <button type="button" class="flex items-center justify-center min-w-[84px] h-[30px] px-3 rounded-full font-semibold text-[12.5px] transition-all border ${user.is_following ? 'border-line text-muted hover:bg-raised' : 'border-[#2554D7] text-[#2554D7] hover:bg-blue-50/70'}" data-contact-follow-btn data-following="${user.is_following ? 'true' : 'false'}">
+              <i class="fa-solid ${user.is_following ? 'fa-check' : 'fa-plus'} text-[10px] mr-1"></i> ${user.is_following ? 'Following' : 'Follow'}
+            </button>
+            <button type="button" class="text-muted hover:text-brand p-1 transition-colors" data-live-message aria-label="Message ${esc(user.name)}">
+              <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
+                <path d="M10 8.5h4" /><path d="M10 12h3" /><path d="M10 8.5v7" />
+              </svg>
+            </button>
+          </div>
+        </li>`).join('');
+      }
+    } catch (_) { /* Keep default Faithin contacts on guest mode */ }
   }
 
   async function loadPrayers() {
@@ -653,14 +664,43 @@
   $('[data-share-verse]')?.addEventListener('click', async () => { const text = 'For God so loved the world, that he gave his only begotten Son. — John 3:16'; try { if (navigator.share) await navigator.share({ title: 'Verse of the Day', text, url: location.origin + '/bible-study?passage=John%203%3A16' }); else { await navigator.clipboard.writeText(text); toast('Verse copied to share'); } } catch (_) {} });
   $('[data-save-verse]')?.addEventListener('click', async event => { if (!needUser()) return; try { await api.request('cv_toggle_bookmark', { object_id: 'John-3-16', object_type: 'verse' }); event.currentTarget.classList.toggle('!text-brand'); const icon = $('i', event.currentTarget); if (icon) icon.className = event.currentTarget.classList.contains('!text-brand') ? 'fa-solid fa-bookmark mr-1.5' : 'fa-regular fa-bookmark mr-1.5'; toast(event.currentTarget.classList.contains('!text-brand') ? 'Verse saved' : 'Verse removed'); } catch (error) { toast(error.message); } });
   $('[data-show-contacts]')?.addEventListener('click', () => { location.href = '/network'; });
-  $('[data-search-contacts]')?.addEventListener('click', () => { location.href = '/network'; });
+  $('[data-search-contacts]')?.addEventListener('click', () => {
+    const wrap = $('#contacts-search-wrap');
+    if (wrap) {
+      wrap.classList.toggle('hidden');
+      if (!wrap.classList.contains('hidden')) $('#contacts-search-input')?.focus();
+    }
+  });
+  $('#contacts-search-input')?.addEventListener('input', (e) => {
+    const q = (e.target.value || '').toLowerCase().trim();
+    $$('#contacts > li').forEach(li => {
+      const text = li.textContent.toLowerCase();
+      li.style.display = !q || text.includes(q) ? 'flex' : 'none';
+    });
+  });
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-contact-follow-btn]');
+    if (!btn) return;
+    const isFollowing = btn.dataset.following === 'true';
+    const nextState = !isFollowing;
+    btn.dataset.following = nextState ? 'true' : 'false';
+    if (nextState) {
+      btn.className = 'flex items-center justify-center min-w-[84px] h-[30px] px-3 rounded-full font-semibold text-[12.5px] transition-all border border-line text-muted hover:bg-raised';
+      btn.innerHTML = '<i class="fa-solid fa-check text-[10px] mr-1"></i> Following';
+      toast('Following');
+    } else {
+      btn.className = 'flex items-center justify-center min-w-[84px] h-[30px] px-3 rounded-full font-semibold text-[12.5px] transition-all border border-[#2554D7] text-[#2554D7] hover:bg-blue-50/70';
+      btn.innerHTML = '<i class="fa-solid fa-plus text-[10px] mr-1"></i> Follow';
+      toast('Unfollowed');
+    }
+  });
   $('[data-add-verse]')?.addEventListener('click', () => { if (ta) { ta.value += `${ta.value ? '\n' : ''}John 3:16 — “For God so loved the world…”`; ta.dispatchEvent(new Event('input')); ta.focus(); } });
   $('[data-add-emoji]')?.addEventListener('click', () => { if (ta) { ta.value += ' 🙏'; ta.dispatchEvent(new Event('input')); ta.focus(); } });
   $$('[data-prayer-category]').forEach(button => button.addEventListener('click', () => { const title = $('#modal-prayer input[type="text"]'); if (title) { title.value = button.textContent.trim(); title.focus(); } }));
   $$('[data-sort]').forEach(button => button.addEventListener('click', () => { sortMode = button.dataset.sort; $('[data-sort-label]').textContent = sortMode; renderFeed(); }));
   document.addEventListener('fi:search', event => { feedQuery = event.detail.query.toLowerCase(); renderFeed(); });
   document.addEventListener('click', event => { const blessing = event.target.closest('[data-blessing-post]'); if (!blessing) return; const post = $(`[data-post-id="${CSS.escape(blessing.dataset.blessingPost)}"]`, feed); if (post) { post.scrollIntoView({ behavior: 'smooth', block: 'center' }); post.classList.add('ring-2', 'ring-brand'); setTimeout(() => post.classList.remove('ring-2', 'ring-brand'), 1600); } });
-  document.addEventListener('fi:session', event => { const user = event.detail.user; const left = $('#main > aside'); if (left) { const metrics = $$('a span:last-child', left); metrics.filter(node => /^\d/.test(node.textContent.trim())).forEach(node => { if (/480/.test(node.textContent)) node.textContent = '0'; }); left.querySelector('section:last-child')?.remove(); if (user) { const name = $$('a', left).find(link => link.textContent.trim() === 'Faith In Member' || link.textContent.trim() === 'Hun Chet'); if (name) name.textContent = user.name; } } if (user) { loadPosts(); loadMembers(); loadPrayers(); } else { feed.innerHTML = `<section class="card p-8 text-center"><i class="fa-solid fa-lock text-2xl text-faint"></i><h2 class="font-bold mt-3">Sign in to open your community</h2><p class="text-muted text-[13.5px] mt-1">Your real posts, prayers, members, and messages appear here.</p><button class="btn btn-primary mt-3" data-open-auth>Sign in</button></section>`; $('#load-more')?.classList.add('hidden'); renderBlessings([]); const contacts = $('#contacts'); if (contacts) contacts.innerHTML = '<li class="text-[13px] text-muted p-2">Sign in to see members.</li>'; const prayer = $$('#main h2').find(node => node.textContent.trim() === 'Prayer Wall')?.closest('section'); if (prayer) { const intro = $('p', prayer); if (intro) intro.textContent = 'Sign in to see real prayer requests.'; const holder = $('.space-y-2\\.5', prayer); if (holder) holder.innerHTML = ''; } } });
+  document.addEventListener('fi:session', event => { const user = event.detail.user; const left = $('#main > aside'); if (left) { const metrics = $$('a span:last-child', left); metrics.filter(node => /^\d/.test(node.textContent.trim())).forEach(node => { if (/480/.test(node.textContent)) node.textContent = '0'; }); left.querySelector('section:last-child')?.remove(); if (user) { const name = $$('a', left).find(link => link.textContent.trim() === 'Faith In Member' || link.textContent.trim() === 'Hun Chet'); if (name) name.textContent = user.name; } } if (user) { loadPosts(); loadMembers(); loadPrayers(); } else { feed.innerHTML = `<section class="card p-8 text-center"><i class="fa-solid fa-lock text-2xl text-faint"></i><h2 class="font-bold mt-3">Sign in to open your community</h2><p class="text-muted text-[13.5px] mt-1">Your real posts, prayers, members, and messages appear here.</p><button class="btn btn-primary mt-3" data-open-auth>Sign in</button></section>`; $('#load-more')?.classList.add('hidden'); renderBlessings([]); const prayer = $$('#main h2').find(node => node.textContent.trim() === 'Prayer Wall')?.closest('section'); if (prayer) { const intro = $('p', prayer); if (intro) intro.textContent = 'Sign in to see real prayer requests.'; const holder = $('.space-y-2\\.5', prayer); if (holder) holder.innerHTML = ''; } } });
   async function loadVerse() { try { const result = await api.request('cv_bible_get_verses', { book: 'John', chapter: 3, version: 'KJV' }); const verse = (result.items || []).find(item => item.v === 16); if (!verse) return; const card = $$('#main h2').find(node => node.textContent.trim() === 'Verse of the Day')?.closest('section'); const english = card ? $$('blockquote p', card)[1] : null; if (english) english.textContent = `“${verse.text.trim()}”`; } catch (_) {} }
   document.addEventListener('click', event => { if (event.target.closest('[data-open-auth]')) window.FI.openAuth(); });
   // Start real home data in parallel with session initialization. FIData

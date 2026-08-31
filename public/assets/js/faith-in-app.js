@@ -5440,11 +5440,20 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
 
     function cvRenderFeedRightSidebar() {
         const verse = cvSidebarVerseOfDay();
-        const visibleCount = Math.max(4, parseInt(state.suggestedVisibleCount || 4, 10));
-        const contacts = cvGetSuggestedConnections(visibleCount).slice(0, 4);
+        const visibleCount = Math.max(5, parseInt(state.suggestedVisibleCount || 5, 10));
+        let contacts = cvGetSuggestedConnections(visibleCount).slice(0, 5);
+        if (!contacts.length) {
+            contacts = [
+                { id: 1, name: 'Bible Verse', subtitle: 'Faithin', role: 'Faithin', avatar_url: '', initials: 'BV', bgColor: '#2554D7', is_following: false },
+                { id: 2, name: 'Chhoun P...', subtitle: 'Faithin', role: 'Faithin', avatar_url: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&auto=format&fit=crop&q=80', is_following: false },
+                { id: 3, name: 'Heng Sok', subtitle: 'Faithin', role: 'Faithin', avatar_url: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=150&auto=format&fit=crop&q=80', is_following: true },
+                { id: 4, name: 'Heng S...', subtitle: 'Faithin', role: 'Faithin', avatar_url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80', is_following: true },
+                { id: 5, name: 'Hun Sen', subtitle: 'Faithin', role: 'Faithin', avatar_url: '', initials: 'H', bgColor: '#6B72C2', is_following: false }
+            ];
+        }
         const renderContactHeadline = user => {
-            const headline = user.role || user.headline || user.subtitle || user.ministry || user.church || user.handle || 'Faith In member';
-            return String(headline || '').trim() || 'Faith In member';
+            const headline = user.subtitle || user.role || user.headline || user.ministry || user.church || user.handle || 'Faithin';
+            return String(headline || '').trim() || 'Faithin';
         };
         const renderContactMessagePayload = user => JSON.stringify({
             id: parseInt(user.id || 0, 10),
@@ -5478,20 +5487,31 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
                         ${contacts.map(user => {
                             const id = parseInt(user.id || 0, 10);
                             const messagePayload = renderContactMessagePayload(user);
+                            const isFollow = !!user.is_following;
+                            const customAvatar = user.initials ? `<span class="w-full h-full rounded-full flex items-center justify-center text-white font-bold text-[12px]" style="background:${user.bgColor || '#2554D7'}">${escapeHtml(user.initials)}</span>` : renderProfileAvatar({ name: user.name, avatar_url: user.avatar_url }, 'w-full h-full', 'text-[10px]');
                             return `
                                 <article class="cv-react-contact-item cv-ui-contact-row" aria-label="${escapeAttr(user.name || 'Faith In member')}">
                                     <button type="button" class="cv-ui-contact-avatar cv-plain-button" ${id > 0 ? `onclick="cvOpenUserProfile(${id})"` : `onclick="cvComingSoon('Contacts')"`} aria-label="Open ${escapeAttr(user.name || 'member')} profile">
-                                        ${renderProfileAvatar({ name: user.name, avatar_url: user.avatar_url }, 'w-full h-full', 'text-[10px]')}<i aria-hidden="true"></i>
+                                        ${customAvatar}<i aria-hidden="true"></i>
                                     </button>
                                     <div class="cv-ui-contact-body">
                                         <button type="button" class="cv-ui-contact-name cv-plain-button" ${id > 0 ? `onclick="cvOpenUserProfile(${id})"` : `onclick="cvComingSoon('Contacts')"`}>${escapeHtml(user.name || 'Faith In Member')}</button>
                                         <span class="cv-ui-contact-headline">${escapeHtml(renderContactHeadline(user))}</span>
                                     </div>
-                                    <button type="button" class="cv-ui-contact-message" ${id > 0 ? `onclick="cvOpenFaithInChat(${escapeAttr(messagePayload)})"` : `onclick="cvComingSoon('Messaging')"`} aria-label="Message ${escapeAttr(user.name || 'member')}" title="Message ${escapeAttr(user.name || 'member')}"><i data-lucide="message-circle"></i><span>Message</span></button>
+                                    <div class="flex items-center gap-1.5 shrink-0">
+                                        <button type="button" class="cv-contact-follow-btn ${isFollow ? 'is-following' : ''}" onclick="toggleFollowUser(${id}, this)" style="border-radius:9999px; font-size:12px; font-weight:600; padding:4px 10px; border:1px solid ${isFollow ? '#e5e7eb' : '#2554D7'}; color:${isFollow ? '#6b7280' : '#2554D7'}; background:transparent;">
+                                            ${isFollow ? '<i class="fa-solid fa-check mr-1 text-[10px]"></i>Following' : '<i class="fa-solid fa-plus mr-1 text-[10px]"></i>Follow'}
+                                        </button>
+                                        <button type="button" class="cv-ui-contact-message" ${id > 0 ? `onclick="cvOpenFaithInChat(${escapeAttr(messagePayload)})"` : `onclick="cvComingSoon('Messaging')"`} aria-label="Message ${escapeAttr(user.name || 'member')}" title="Message ${escapeAttr(user.name || 'member')}">
+                                            <svg style="width:17px;height:17px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
+                                                <path d="M10 8.5h4" /><path d="M10 12h3" /><path d="M10 8.5v7" />
+                                            </svg>
+                                        </button>
+                                    </div>
                                 </article>
                             `;
                         }).join('')}
-                        ${!contacts.length && !state.suggestedUsersLoading ? '<div class="cv-suggested-empty cv-ui-contact-empty">Contacts will appear here as members join.</div>' : ''}
                     </div>
                 </section>
                 <div class="cv-ui-rail-footer" aria-label="Faith In footer">
