@@ -71,19 +71,47 @@
 
         <nav class="hidden lg:flex items-stretch h-[56px] mx-auto" aria-label="Primary">${topNav}</nav>
 
-        <div class="flex items-center gap-1 ml-auto lg:ml-0">
+        <div class="flex items-center gap-1.5 ml-auto lg:ml-0">
           <button class="icon-btn md:hidden" data-search-toggle aria-label="Search"><i class="fa-solid fa-magnifying-glass"></i></button>
-          <button class="icon-btn" id="theme-toggle" aria-label="Toggle dark mode">
-            <i class="fa-solid fa-moon dark:hidden"></i><i class="fa-solid fa-sun hidden dark:inline"></i>
+          
+          <!-- Modern Theme Toggle (Moon / Sun) -->
+          <button class="icon-btn icon-hover-bounce group" id="theme-toggle" aria-label="Toggle dark mode">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="dark:hidden group-hover:text-indigo-600 transition-colors">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="hidden dark:inline group-hover:text-amber-400 transition-colors">
+              <circle cx="12" cy="12" r="5"></circle>
+              <line x1="12" y1="1" x2="12" y2="3"></line>
+              <line x1="12" y1="21" x2="12" y2="23"></line>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+              <line x1="1" y1="12" x2="3" y2="12"></line>
+              <line x1="21" y1="12" x2="23" y2="12"></line>
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+            </svg>
           </button>
+
           <button class="icon-btn hidden sm:inline-flex" aria-label="Apps"><i class="fa-solid fa-table-cells"></i></button>
-          <a href="/messages" class="icon-btn relative${page === 'messaging' ? ' !bg-brand !text-white dark:!text-[#0b1120]' : ''}" aria-label="Messages"${page === 'messaging' ? ' aria-current="page"' : ''}>
-            <i class="fa-${page === 'messaging' ? 'solid' : 'regular'} fa-comment-dots"></i>
-            <span class="hidden absolute top-1.5 right-1.5 min-w-[16px] h-4 px-1 rounded-full bg-rose text-white text-[10px] font-bold grid place-items-center ring-2 ring-surface" data-msg-badge>0</span>
+
+          <!-- Custom Faithin Chat (Modern Line with stylized F monogram) -->
+          <a href="/messages" class="icon-btn icon-hover-bounce relative group ${page === 'messaging' ? '!bg-brand !text-white dark:!text-[#0b1120]' : ''}" aria-label="Messages"${page === 'messaging' ? ' aria-current="page"' : ''}>
+            <svg width="22" height="22" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="transition-colors group-hover:text-blue-600 dark:group-hover:text-blue-400">
+              <path d="M22 13.5a9.5 9.5 0 0 1-1.02 4.3 9.63 9.63 0 0 1-8.62 5.33 9.5 9.5 0 0 1-4.3-.1L4 24l2.15-6.46A9.5 9.5 0 0 1 5.12 13.2a9.63 9.63 0 0 1 5.33-8.62A9.5 9.5 0 0 1 14.75 4h.57a9.61 9.61 0 0 1 9.07 9.07v.43z"></path>
+              <path d="M11 9.5h6" stroke-width="2"></path>
+              <path d="M11 14.5h4" stroke-width="2"></path>
+              <path d="M11 9.5v8" stroke-width="2"></path>
+            </svg>
+            <span class="hidden absolute -top-1 -right-1 min-w-[16px] h-4 px-1 rounded-full bg-blue-600 text-white text-[10px] font-bold grid place-items-center ring-2 ring-surface shadow-sm notification-badge" data-msg-badge>0</span>
           </a>
-          <a href="/notifications" class="icon-btn relative ${bellActive ? '!bg-brand !text-white dark:!text-[#0b1120]' : ''}" aria-label="Notifications, 3 unread"${bellActive ? ' aria-current="page"' : ''}>
-            <i class="fa-${bellActive ? 'solid' : 'regular'} fa-bell"></i>
-            <span class="absolute top-1.5 right-1.5 min-w-[16px] h-4 px-1 rounded-full bg-rose text-white text-[10px] font-bold grid place-items-center ring-2 ring-surface">3</span>
+
+          <!-- Modern Bell with pulsing notification badge -->
+          <a href="/notifications" class="icon-btn icon-hover-bounce relative group ${bellActive ? '!bg-brand !text-white dark:!text-[#0b1120]' : ''}" aria-label="Notifications"${bellActive ? ' aria-current="page"' : ''}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="transition-colors group-hover:text-red-500">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+            </svg>
+            <span class="hidden absolute -top-1 -right-1 min-w-[16px] h-4 px-1 rounded-full bg-red-500 text-[10px] font-bold grid place-items-center text-white ring-2 ring-surface shadow-sm notification-badge" data-notif-badge>0</span>
           </a>
 
           <div class="relative ml-1" data-menu-root>
