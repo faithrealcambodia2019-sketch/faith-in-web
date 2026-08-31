@@ -797,7 +797,11 @@
       h1.textContent = user.name || user.displayName || 'Faith In Member';
       const details = $$('p', hero);
       if (details[0]) details[0].textContent = [user.role, user.ministry, user.church].filter(Boolean).join(' · ') || 'Faith In member';
-      if (details[1]) details[1].firstChild.textContent = `${user.location || ''} `;
+      if (details[1]) {
+        const locSpan = details[1].querySelector('[data-profile-location]') || details[1].querySelector('span');
+        if (locSpan) locSpan.textContent = user.location || 'Phnom Penh, Cambodia';
+        else if (details[1].firstChild) details[1].firstChild.textContent = `${user.location || ''} `;
+      }
       const avatar = $('.avatar', hero);
       if (avatar) {
         const photo = user.avatar_url || user.avatar || user.photo_url;

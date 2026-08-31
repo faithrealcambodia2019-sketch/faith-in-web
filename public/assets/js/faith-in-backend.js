@@ -1964,7 +1964,32 @@
         });
     }
 
-    actions.cv_social_get_followers = function (b, params) { return followList(b, 'targetUid', 'followerUid', params); };
+    actions.cv_social_get_followers = function (b, params) {
+        return followList(b, 'targetUid', 'followerUid', params).then(function (res) {
+            if (res && res.items && res.items.length > 0) return res;
+            return getMemberSnapshot(b).then(function (snap) {
+                var targetUid = params && text(params.uid || params.target_uid);
+                var items = [];
+                snap.forEach(function (d) {
+                    var data = d.data() || {};
+                    var name = data.displayName || data.name;
+                    if (name && name !== 'Faith In Member' && d.id !== targetUid) {
+                        items.push({
+                            id: data.appUserId || numericId(d.id),
+                            uid: d.id,
+                            name: name,
+                            displayName: name,
+                            photo_url: data.photoURL || '',
+                            avatar_url: data.photoURL || '',
+                            avatar: data.photoURL || '',
+                            role: data.role || 'Member'
+                        });
+                    }
+                });
+                return { items: items.slice(0, 15), is_community: true };
+            }).catch(function () { return { items: [] }; });
+        });
+    };
     actions.cv_social_get_following = function (b, params) { return followList(b, 'followerUid', 'targetUid', params); };
 
     // ---------------------------------------------------------------------
