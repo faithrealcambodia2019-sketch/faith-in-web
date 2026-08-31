@@ -312,50 +312,105 @@
     }).join('');
   }
 
-  async function loadMembers() {
-    const list = $('#contacts'); if (!list) return;
+  function getCachedMembers() {
     try {
-      const result = await api.request('cv_find_users');
-      const current = window.FILive?.user;
-      const items = (result.items || []).filter(u => !current?.uid || u.uid !== current.uid).slice(0, 8);
-      if (items.length) {
-        list.innerHTML = items.map(user => `<li data-user-uid="${esc(user.uid)}">
-          <div class="flex items-center gap-3 min-w-0 flex-1">
-            ${window.FILive.avatarMarkup(user, 'avatar')}
-            <div class="contact-info">
-              <a href="/profile?uid=${encodeURIComponent(user.uid)}" class="contact-name hover:text-brand transition">${esc(user.name)}</a>
-              <span class="contact-subtitle">Faithin</span>
-            </div>
+      const cached = sessionStorage.getItem('FI_MEMBERS_CACHE');
+      return cached ? JSON.parse(cached) : null;
+    } catch (_) { return null; }
+  }
+
+  function setCachedMembers(items) {
+    try {
+      sessionStorage.setItem('FI_MEMBERS_CACHE', JSON.stringify((items || []).slice(0, 16)));
+    } catch (_) {}
+  }
+
+  function getCachedPrayers() {
+    try {
+      const cached = sessionStorage.getItem('FI_PRAYERS_CACHE');
+      return cached ? JSON.parse(cached) : null;
+    } catch (_) { return null; }
+  }
+
+  function setCachedPrayers(items) {
+    try {
+      sessionStorage.setItem('FI_PRAYERS_CACHE', JSON.stringify((items || []).slice(0, 8)));
+    } catch (_) {}
+  }
+
+  function renderMembersList(items) {
+    const list = $('#contacts'); if (!list) return;
+    if (items.length) {
+      list.innerHTML = items.map(user => `<li data-user-uid="${esc(user.uid)}">
+        <div class="flex items-center gap-3 min-w-0 flex-1">
+          ${window.FILive.avatarMarkup(user, 'avatar')}
+          <div class="contact-info">
+            <a href="/profile?uid=${encodeURIComponent(user.uid)}" class="contact-name hover:text-brand transition">${esc(user.name)}</a>
+            <span class="contact-subtitle">Faithin</span>
           </div>
-          <div class="contact-actions">
-            <button type="button" class="contact-follow-btn ${user.is_following ? 'is-following' : ''}" data-contact-follow-btn data-following="${user.is_following ? 'true' : 'false'}">
-              <i class="fa-solid ${user.is_following ? 'fa-check' : 'fa-plus'} text-[10px] mr-1"></i> ${user.is_following ? 'Following' : 'Follow'}
-            </button>
-            <button type="button" class="contact-chat-btn" data-live-message aria-label="Message ${esc(user.name)}">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
-                <path d="M10 8.5h4" /><path d="M10 12h3" /><path d="M10 8.5v7" />
-              </svg>
-            </button>
-          </div>
-        </li>`).join('');
-      } else {
-        list.innerHTML = '<li class="text-[12.5px] text-muted py-3 px-1 text-center">No other members yet</li>';
-      }
-    } catch (_) {
+        </div>
+        <div class="contact-actions">
+          <button type="button" class="contact-follow-btn ${user.is_following ? 'is-following' : ''}" data-contact-follow-btn data-following="${user.is_following ? 'true' : 'false'}">
+            <i class="fa-solid ${user.is_following ? 'fa-check' : 'fa-plus'} text-[10px] mr-1"></i> ${user.is_following ? 'Following' : 'Follow'}
+          </button>
+          <button type="button" class="contact-chat-btn" data-live-message aria-label="Message ${esc(user.name)}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
+              <path d="M10 8.5h4" /><path d="M10 12h3" /><path d="M10 8.5v7" />
+            </svg>
+          </button>
+        </div>
+      </li>`).join('');
+    } else {
       list.innerHTML = '<li class="text-[12.5px] text-muted py-3 px-1 text-center">No other members yet</li>';
     }
+  }
+
+  async function loadMembers() {
+    const list = $('#contacts'); if (!list) return;
+    const current = window.FILive?.user;
+    const cached = getCachedMembers();
+    if (cached && cached.length) {
+      const items = cached.filter(u => !current?.uid || u.uid !== current.uid).slice(0, 8);
+      renderMembersList(items);
+    }
+    try {
+      const result = await api.request('cv_find_users');
+      const items = (result.items || []).filter(u => !current?.uid || u.uid !== current.uid).slice(0, 8);
+      setCachedMembers(result.items || []);
+      renderMembersList(items);
+    } catch (_) {
+      if (!cached || !cached.length) {
+        list.innerHTML = '<li class="text-[12.5px] text-muted py-3 px-1 text-center">No other members yet</li>';
+      }
+    }
+  }
+
+  function renderPrayersList(items, section) {
+    if (!section) return;
+    const intro = $('p', section); if (intro) intro.textContent = `${items.length} requests waiting for prayer today.`;
+    const prayerLink = $$('a', $('#main > aside')).find(link => /Prayer Wall/.test(link.textContent)); const badge = prayerLink ? $('span', prayerLink) : null; if (badge) badge.textContent = items.length;
+    const holder = $('.space-y-2\\.5', section); if (holder) holder.innerHTML = items.slice(0, 3).map(prayer => `<div class="rounded-xl bg-raised border border-line p-3" data-prayer-id="${esc(prayer.id)}"><p class="text-[13px]">${esc(prayer.content)}</p><div class="mt-2 flex items-center justify-between"><span class="text-[11.5px] text-muted">${esc(prayer.author)} · ${esc(prayer.time)}</span><span class="flex items-center gap-2"><button class="text-[12px] font-semibold ${prayer.has_prayed ? 'text-rose' : 'text-brand'}" data-live-pray>${prayer.has_prayed ? '🙏 Praying' : '🙏 Pray'} ${prayer.prayed_count || ''}</button>${prayer.can_delete ? '<button class="text-rose" data-prayer-delete aria-label="Delete prayer"><i class="fa-regular fa-trash-can"></i></button>' : ''}</span></div></div>`).join('') || '<p class="text-[13px] text-muted">No prayer requests yet.</p>';
   }
 
   async function loadPrayers() {
     const heading = $$('#main h2').find(el => el.textContent.trim() === 'Prayer Wall');
     const section = heading?.closest('section'); if (!section) return;
+    const cached = getCachedPrayers();
+    if (cached && cached.length) {
+      renderPrayersList(cached, section);
+    }
     try {
-      const result = await api.request('cv_get_prayers'), items = (result.items || []).slice(0, 3);
-      const intro = $('p', section); if (intro) intro.textContent = `${result.items?.length || 0} requests waiting for prayer today.`;
-      const prayerLink = $$('a', $('#main > aside')).find(link => /Prayer Wall/.test(link.textContent)); const badge = prayerLink ? $('span', prayerLink) : null; if (badge) badge.textContent = result.items?.length || 0;
-      const holder = $('.space-y-2\\.5', section); if (holder) holder.innerHTML = items.map(prayer => `<div class="rounded-xl bg-raised border border-line p-3" data-prayer-id="${esc(prayer.id)}"><p class="text-[13px]">${esc(prayer.content)}</p><div class="mt-2 flex items-center justify-between"><span class="text-[11.5px] text-muted">${esc(prayer.author)} · ${esc(prayer.time)}</span><span class="flex items-center gap-2"><button class="text-[12px] font-semibold ${prayer.has_prayed ? 'text-rose' : 'text-brand'}" data-live-pray>${prayer.has_prayed ? '🙏 Praying' : '🙏 Pray'} ${prayer.prayed_count || ''}</button>${prayer.can_delete ? '<button class="text-rose" data-prayer-delete aria-label="Delete prayer"><i class="fa-regular fa-trash-can"></i></button>' : ''}</span></div></div>`).join('') || '<p class="text-[13px] text-muted">No prayer requests yet.</p>';
-    } catch (error) { const holder = $('.space-y-2\\.5', section); if (holder) holder.innerHTML = `<p class="text-[13px] text-muted">Sign in to see community prayer requests.</p>`; }
+      const result = await api.request('cv_get_prayers');
+      const items = result.items || [];
+      setCachedPrayers(items);
+      renderPrayersList(items, section);
+    } catch (error) {
+      if (!cached || !cached.length) {
+        const holder = $('.space-y-2\\.5', section);
+        if (holder) holder.innerHTML = `<p class="text-[13px] text-muted">Sign in to see community prayer requests.</p>`;
+      }
+    }
   }
 
   const ta = $('#blessing-text'), postBtn = $('#blessing-post'), count = $('#blessing-count');

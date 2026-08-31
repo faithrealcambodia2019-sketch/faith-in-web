@@ -1693,22 +1693,25 @@
 
     function listMembers(b, matcher) {
         return currentUser(b).then(function (user) {
-            return followingMap(b, user).then(function (following) {
-                return getMemberSnapshot(b).then(function (snap) {
-                    var items = [];
-                    snap.forEach(function (d) {
-                        var data = d.data();
-                        if (user && d.id === user.uid) return;
-                        if (matcher && !matcher(data)) return;
-                        items.push(shapeMember(d.id, data, user, following));
-                    });
-                    items.sort(function (a, b) {
-                        if (a.is_following && !b.is_following) return -1;
-                        if (!a.is_following && b.is_following) return 1;
-                        return String(a.name || '').localeCompare(String(b.name || ''));
-                    });
-                    return { items: items };
+            return Promise.all([
+                followingMap(b, user),
+                getMemberSnapshot(b)
+            ]).then(function (res) {
+                var following = res[0];
+                var snap = res[1];
+                var items = [];
+                snap.forEach(function (d) {
+                    var data = d.data();
+                    if (user && d.id === user.uid) return;
+                    if (matcher && !matcher(data)) return;
+                    items.push(shapeMember(d.id, data, user, following));
                 });
+                items.sort(function (a, b) {
+                    if (a.is_following && !b.is_following) return -1;
+                    if (!a.is_following && b.is_following) return 1;
+                    return String(a.name || '').localeCompare(String(b.name || ''));
+                });
+                return { items: items };
             });
         });
     }
