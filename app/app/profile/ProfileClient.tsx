@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import EditProfileModal from '@/components/EditProfileModal';
 
-export default function ProfilePageClient({ user, postCount }) {
+export default function ProfilePageClient({ user, postCount }: { user: any, postCount: number }) {
   const [isEditing, setIsEditing] = useState(false);
 
   return (

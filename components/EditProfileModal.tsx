@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { X, Camera } from 'lucide-react';
 
-export default function EditProfileModal({ onClose }) {
+export default function EditProfileModal({ onClose }: { onClose: () => void }) {
   const [formData, setFormData] = useState({
     displayName: 'Hun Chet',
     role: '',
@@ -20,7 +20,7 @@ export default function EditProfileModal({ onClose }) {
     cover: null
   });
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
@@ -28,8 +28,8 @@ export default function EditProfileModal({ onClose }) {
     }));
   };
 
-  const handleImageChange = (e, type) => {
-    const file = e.target.files[0];
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>, type: 'profile' | 'cover') => {
+    const file = e.target.files?.[0];
     if (file) {
       setFormData(prev => ({ 
         ...prev, 
