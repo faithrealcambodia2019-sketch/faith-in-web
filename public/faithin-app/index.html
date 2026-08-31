@@ -23,9 +23,9 @@
 <section class="card overflow-hidden">
 <div class="h-[62px] bg-[linear-gradient(120deg,#2f5bea,#5b7cf5_45%,#1e3a8a)]"></div>
 <div class="px-4 pb-4 -mt-8 flex flex-col items-center text-center">
-<span class="avatar w-16 h-16 text-[20px] ring-4 ring-surface" data-current-user-avatar style="background:linear-gradient(135deg,#2f5bea,#1e40af)">HC</span>
-<a class="mt-2.5 font-bold text-[15px] hover:underline" href="/profile">Hun Chet</a>
-<p class="text-[12.5px] text-muted mt-0.5">Faith In member · Phnom Penh</p>
+<span class="avatar w-16 h-16 text-[20px] ring-4 ring-surface" data-current-user-avatar style="background:linear-gradient(135deg,#2f5bea,#1e40af)">FI</span>
+<a class="mt-2.5 font-bold text-[15px] hover:underline" href="/profile" data-current-user-name>Faith In</a>
+<p class="text-[12.5px] text-muted mt-0.5" data-current-user-headline>Christian community</p>
 </div>
 <div class="border-t border-line grid grid-cols-2 divide-x divide-line">
 <a class="px-3 py-3 hover:bg-raised transition text-center" href="/profile">
@@ -55,7 +55,7 @@
 <div class="flex gap-3 overflow-x-auto no-scrollbar pb-1 snap-x" data-rail="">
 <button class="snap-start shrink-0 w-[112px] h-[172px] rounded-card overflow-hidden card text-left hover:shadow-lift transition group" data-modal-open="modal-blessing">
 <div class="h-[108px] bg-[linear-gradient(160deg,#e6ecfb,#c9d7f7)] dark:bg-[linear-gradient(160deg,#1d2a4f,#111827)] grid place-items-center">
-<span class="avatar w-11 h-11 text-[13px] opacity-90" data-current-user-avatar style="background:linear-gradient(135deg,#2f5bea,#1e40af)">HC</span>
+<span class="avatar w-11 h-11 text-[13px] opacity-90" data-current-user-avatar style="background:linear-gradient(135deg,#2f5bea,#1e40af)">FI</span>
 </div>
 <div class="relative h-[64px] grid place-items-end pb-3">
 <span class="absolute -top-4 left-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-brand text-white dark:text-[#0b1120] grid place-items-center ring-4 ring-surface group-hover:scale-110 transition">
@@ -72,7 +72,7 @@
 <!-- composer -->
 <section class="card p-3.5">
 <div class="flex items-center gap-3">
-<span class="avatar w-11 h-11 text-[14px]" data-current-user-avatar style="background:linear-gradient(135deg,#2f5bea,#1e40af)">HC</span>
+<span class="avatar w-11 h-11 text-[14px]" data-current-user-avatar style="background:linear-gradient(135deg,#2f5bea,#1e40af)">FI</span>
 <button class="flex-1 text-left rounded-pill bg-raised hover:bg-line/60 border border-line px-4 py-2.5 text-[14px] text-muted transition" data-modal-open="modal-blessing">
           Share a blessing, testimony, or encouragement…
         </button>
@@ -297,14 +297,19 @@
 <div class="h-full bg-white w-0" id="story-bar"></div>
 </div>
 <div class="absolute top-7 left-3 right-3 flex items-center gap-2.5">
-<span class="avatar w-9 h-9 text-[11px] ring-2 ring-white/80" id="story-initials" style="background:#2f5bea">HC</span>
-<span class="text-[13px] font-semibold text-white" id="story-name">Hun Chet</span>
+<span class="avatar w-9 h-9 text-[11px] ring-2 ring-white/80" id="story-initials" style="background:#2f5bea"></span>
+<span class="text-[13px] font-semibold text-white" id="story-name">Member</span>
 <button aria-label="Close" class="ml-auto icon-btn text-white/90 hover:bg-white/15 hover:text-white" data-close=""><i class="fa-solid fa-xmark"></i></button>
 </div>
-<p class="absolute inset-x-8 top-1/2 -translate-y-1/2 text-center text-white text-[22px] leading-snug font-khmer" id="story-text">ព្រះទ្រង់ល្អ</p>
+<p class="absolute inset-x-8 top-1/2 -translate-y-1/2 text-center text-white text-[20px] leading-snug" id="story-text"></p>
 <div class="absolute bottom-4 inset-x-4 flex items-center gap-2">
 <input class="flex-1 rounded-pill bg-white/15 border border-white/25 px-4 py-2.5 text-[13.5px] text-white placeholder:text-white/60 outline-none focus:bg-white/25" placeholder="Send a word of encouragement…"/>
-<button aria-label="Send" class="icon-btn text-white hover:bg-white/20"><i class="fa-regular fa-paper-plane"></i></button>
+<button aria-label="Send" class="icon-btn text-white hover:bg-white/20">
+  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
+    <path d="M10 8.5h4" /><path d="M10 12h3" /><path d="M10 8.5v7" />
+  </svg>
+</button>
 </div>
 </div>
 </div>
