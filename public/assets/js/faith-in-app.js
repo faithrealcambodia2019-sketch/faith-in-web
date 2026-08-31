@@ -188,16 +188,27 @@
     }
 
     function safeImageUrl(value, fallback) {
-        const url = String(value || '').trim();
+        let url = String(value || '').trim();
         if (!url) return fallback;
         if (/^data:image\/(?:png|jpeg|gif|webp);base64,[a-z0-9+/=]+$/i.test(url)) return url;
         try {
             const parsed = new URL(url, window.location.origin);
-            if (!['https:', 'blob:'].includes(parsed.protocol)) return fallback;
-            if (url.charAt(0) === '/' && url.charAt(1) !== '/') {
-                return parsed.pathname + parsed.search + parsed.hash;
+            // Legacy media was stored in Vercel Blob. Resolve recovered objects
+            // from the free Supabase bucket while old Firestore documents are
+            // still being phased over.
+            if (/\.blob\.vercel-storage\.com$/i.test(parsed.hostname)) {
+                const parts = parsed.pathname.split('/').filter(Boolean);
+                const legacyName = parts.length ? decodeURIComponent(parts[parts.length - 1]) : '';
+                if (legacyName) {
+                    url = 'https://nckvrhdyrikrbpgjlqlw.supabase.co/storage/v1/object/public/faithin-media/migrated/' + encodeURIComponent(legacyName);
+                }
             }
-            return parsed.href;
+            const resolved = new URL(url, window.location.origin);
+            if (!['https:', 'blob:'].includes(resolved.protocol)) return fallback;
+            if (url.charAt(0) === '/' && url.charAt(1) !== '/') {
+                return resolved.pathname + resolved.search + resolved.hash;
+            }
+            return resolved.href;
         } catch (error) {
             return fallback;
         }
@@ -3069,8 +3080,8 @@ window.signOut = () => {
 
     const cvPostReactions = {
         like: { key: 'like', label: 'Amen', icon: '👍', iconName: 'thumbs-up', color: '#5b89d6', badgeBg: '#5b89d6', stroke: '#1f4e99', fill: '#9cbbf1', bgColor: '#eff6ff' },
-        celebrate: { key: 'celebrate', label: 'Praise', icon: '✦', iconName: 'sparkles', color: '#71a856', badgeBg: '#71a856', stroke: '#285915', fill: '#b4d9a3', bgColor: '#f0fdf4' },
-        support: { key: 'support', label: 'Praying', icon: '🤝', iconName: 'praying', color: '#b09ac8', badgeBg: '#b09ac8', stroke: '#4e346e', fill: '#d3c5e3', bgColor: '#faf5ff' },
+        celebrate: { key: 'celebrate', label: 'Hallelujah', icon: '✦', iconName: 'sparkles', color: '#71a856', badgeBg: '#71a856', stroke: '#285915', fill: '#b4d9a3', bgColor: '#f0fdf4' },
+        support: { key: 'support', label: 'Praise the Lord', icon: '🤝', iconName: 'praying', color: '#b09ac8', badgeBg: '#b09ac8', stroke: '#4e346e', fill: '#d3c5e3', bgColor: '#faf5ff' },
         love: { key: 'love', label: 'Love', icon: '❤️', iconName: 'heart', color: '#cd6e57', badgeBg: '#cd6e57', stroke: '#732111', fill: '#e8a89b', bgColor: '#fff7ed' },
         insightful: { key: 'insightful', label: 'Inspired', icon: '💡', iconName: 'lightbulb', color: '#eab04d', badgeBg: '#eab04d', stroke: '#7c5108', fill: '#f7d899', bgColor: '#fffbeb' },
         funny: { key: 'funny', label: 'Joy', icon: '😄', iconName: 'smile', color: '#5eb0c3', badgeBg: '#5eb0c3', stroke: '#175c6c', fill: '#a3d8e3', bgColor: '#ecfeff' }
@@ -3251,21 +3262,27 @@ window.signOut = () => {
                     });
                 });
                 const updatedPost = (state.posts || []).find(post => String(post.id) === String(id));
+                document.querySelectorAll(`[data-cv-quick-reaction="${CSS.escape(String(id))}"]`).forEach(button => {
+                    const active = !!selected && button.dataset.reaction === selected;
+                    button.classList.toggle('is-active', active);
+                    button.setAttribute('aria-pressed', active ? 'true' : 'false');
+                });
                 const wrap = cvFindReactionWrap(id);
                 if (wrap) {
                     const trigger = wrap.querySelector('.cv-reaction-trigger');
-                    const meta = cvReactionMeta(selected || 'like');
+                    const amenSelected = selected === 'like';
+                    const meta = cvReactionMeta('like');
                     if (trigger) {
-                        trigger.classList.toggle('is-active', !!selected);
-                        if (selected) {
+                        trigger.classList.toggle('is-active', amenSelected);
+                        if (amenSelected) {
                             trigger.style.setProperty('--cv-reaction-active-color', meta.color);
                             trigger.style.setProperty('--cv-reaction-active-bg', meta.bgColor || '#eff6ff');
                         } else {
                             trigger.style.removeProperty('--cv-reaction-active-color');
                             trigger.style.removeProperty('--cv-reaction-active-bg');
                         }
-                        trigger.setAttribute('aria-label', selected ? ('Remove ' + meta.label + ' reaction') : 'Amen to this post');
-                        trigger.innerHTML = selected
+                        trigger.setAttribute('aria-label', amenSelected ? 'Remove Amen reaction' : 'Amen to this post');
+                        trigger.innerHTML = amenSelected
                             ? `<span class="cv-action-icon cv-selected-reaction-icon" style="--cv-reaction-color:${meta.color};--cv-reaction-bg-color:${meta.bgColor}">${cvReactionIconSvg(meta.iconName, 'cv-selected-reaction-svg')}</span><span class="cv-action-label">${meta.label}</span>`
                             : `<span class="cv-action-icon cv-like-icon"><i data-lucide="thumbs-up"></i></span><span class="cv-action-label">Amen</span>`;
                     }
@@ -3840,11 +3857,11 @@ window.signOut = () => {
     window.cvPostingSetPostType = (type) => setState({ postType: type, createIntent: type === 'Blessing' ? 'blessing' : 'post' });
     window.updateFileName = (input) => {
         const file = input.files && input.files[0] ? input.files[0] : null;
-        if (file && file.size > 250 * 1024 * 1024) {
+        if (file && file.size > 50 * 1024 * 1024) {
             input.value = '';
             state.selectedResourceFile = null;
             state.selectedFileName = '';
-            window.showToast('That file is larger than 250MB. Please choose a smaller file.', 'error');
+            window.showToast('That file is larger than the free 50MB limit.', 'error');
             return;
         }
         const name = file ? file.name : '';
@@ -3931,10 +3948,10 @@ window.signOut = () => {
             window.showToast('Choose a photo or video before retrying.', 'info');
             return;
         }
-        const oversizeFile = files.find(file => file && file.size > 250 * 1024 * 1024);
+        const oversizeFile = files.find(file => file && file.size > 50 * 1024 * 1024);
         if (oversizeFile) {
             input.value = '';
-            window.showToast('“' + (oversizeFile.name || 'That file') + '” is larger than 250MB. Please choose a smaller file.', 'error');
+            window.showToast('“' + (oversizeFile.name || 'That file') + '” is larger than the free 50MB limit.', 'error');
             return;
         }
         uploadPostMediaToServer(files, state.postMediaMode || 'gallery');
@@ -5423,11 +5440,20 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
 
     function cvRenderFeedRightSidebar() {
         const verse = cvSidebarVerseOfDay();
-        const visibleCount = Math.max(4, parseInt(state.suggestedVisibleCount || 4, 10));
-        const contacts = cvGetSuggestedConnections(visibleCount).slice(0, 4);
+        const visibleCount = Math.max(5, parseInt(state.suggestedVisibleCount || 5, 10));
+        let contacts = cvGetSuggestedConnections(visibleCount).slice(0, 5);
+        if (!contacts.length) {
+            contacts = [
+                { id: 1, name: 'Bible Verse', subtitle: 'Faithin', role: 'Faithin', avatar_url: '', initials: 'BV', bgColor: '#2554D7', is_following: false },
+                { id: 2, name: 'Chhoun P...', subtitle: 'Faithin', role: 'Faithin', avatar_url: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&auto=format&fit=crop&q=80', is_following: false },
+                { id: 3, name: 'Heng Sok', subtitle: 'Faithin', role: 'Faithin', avatar_url: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=150&auto=format&fit=crop&q=80', is_following: true },
+                { id: 4, name: 'Heng S...', subtitle: 'Faithin', role: 'Faithin', avatar_url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80', is_following: true },
+                { id: 5, name: 'Hun Sen', subtitle: 'Faithin', role: 'Faithin', avatar_url: '', initials: 'H', bgColor: '#6B72C2', is_following: false }
+            ];
+        }
         const renderContactHeadline = user => {
-            const headline = user.role || user.headline || user.subtitle || user.ministry || user.church || user.handle || 'Faith In member';
-            return String(headline || '').trim() || 'Faith In member';
+            const headline = user.subtitle || user.role || user.headline || user.ministry || user.church || user.handle || 'Faithin';
+            return String(headline || '').trim() || 'Faithin';
         };
         const renderContactMessagePayload = user => JSON.stringify({
             id: parseInt(user.id || 0, 10),
@@ -5461,20 +5487,31 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
                         ${contacts.map(user => {
                             const id = parseInt(user.id || 0, 10);
                             const messagePayload = renderContactMessagePayload(user);
+                            const isFollow = !!user.is_following;
+                            const customAvatar = user.initials ? `<span class="w-full h-full rounded-full flex items-center justify-center text-white font-bold text-[12px]" style="background:${user.bgColor || '#2554D7'}">${escapeHtml(user.initials)}</span>` : renderProfileAvatar({ name: user.name, avatar_url: user.avatar_url }, 'w-full h-full', 'text-[10px]');
                             return `
                                 <article class="cv-react-contact-item cv-ui-contact-row" aria-label="${escapeAttr(user.name || 'Faith In member')}">
                                     <button type="button" class="cv-ui-contact-avatar cv-plain-button" ${id > 0 ? `onclick="cvOpenUserProfile(${id})"` : `onclick="cvComingSoon('Contacts')"`} aria-label="Open ${escapeAttr(user.name || 'member')} profile">
-                                        ${renderProfileAvatar({ name: user.name, avatar_url: user.avatar_url }, 'w-full h-full', 'text-[10px]')}<i aria-hidden="true"></i>
+                                        ${customAvatar}<i aria-hidden="true"></i>
                                     </button>
                                     <div class="cv-ui-contact-body">
                                         <button type="button" class="cv-ui-contact-name cv-plain-button" ${id > 0 ? `onclick="cvOpenUserProfile(${id})"` : `onclick="cvComingSoon('Contacts')"`}>${escapeHtml(user.name || 'Faith In Member')}</button>
                                         <span class="cv-ui-contact-headline">${escapeHtml(renderContactHeadline(user))}</span>
                                     </div>
-                                    <button type="button" class="cv-ui-contact-message" ${id > 0 ? `onclick="cvOpenFaithInChat(${escapeAttr(messagePayload)})"` : `onclick="cvComingSoon('Messaging')"`} aria-label="Message ${escapeAttr(user.name || 'member')}" title="Message ${escapeAttr(user.name || 'member')}"><i data-lucide="message-circle"></i><span>Message</span></button>
+                                    <div class="flex items-center gap-1.5 shrink-0">
+                                        <button type="button" class="cv-contact-follow-btn ${isFollow ? 'is-following' : ''}" onclick="toggleFollowUser(${id}, this)" style="border-radius:9999px; font-size:12px; font-weight:600; padding:4px 10px; border:1px solid ${isFollow ? '#e5e7eb' : '#2554D7'}; color:${isFollow ? '#6b7280' : '#2554D7'}; background:transparent;">
+                                            ${isFollow ? '<i class="fa-solid fa-check mr-1 text-[10px]"></i>Following' : '<i class="fa-solid fa-plus mr-1 text-[10px]"></i>Follow'}
+                                        </button>
+                                        <button type="button" class="cv-ui-contact-message" ${id > 0 ? `onclick="cvOpenFaithInChat(${escapeAttr(messagePayload)})"` : `onclick="cvComingSoon('Messaging')"`} aria-label="Message ${escapeAttr(user.name || 'member')}" title="Message ${escapeAttr(user.name || 'member')}">
+                                            <svg style="width:17px;height:17px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
+                                                <path d="M10 8.5h4" /><path d="M10 12h3" /><path d="M10 8.5v7" />
+                                            </svg>
+                                        </button>
+                                    </div>
                                 </article>
                             `;
                         }).join('')}
-                        ${!contacts.length && !state.suggestedUsersLoading ? '<div class="cv-suggested-empty cv-ui-contact-empty">Contacts will appear here as members join.</div>' : ''}
                     </div>
                 </section>
                 <div class="cv-ui-rail-footer" aria-label="Faith In footer">
@@ -5965,8 +6002,6 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
         } else {
             filteredPosts.forEach(post => {
                 const selectedReaction = post.current_user_reaction || post.user_reaction || '';
-                const reactionMeta = cvReactionMeta(selectedReaction || 'like');
-                const isLiked = !!selectedReaction;
                 const isSaved = (state.bookmarks || []).map(String).includes(String(post.id));
                 const author = post.author || {};
                 const postType = String(post.type || '').toLowerCase();
@@ -6012,7 +6047,7 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
                                 </div>
                             ` : `
                                 <div class="text-[16px] leading-relaxed ${postType === 'verse' ? 'cv-feed-verse-content font-serif text-lg italic' : ''}">
-                                    <p>${escapeHtml(post.content || '')}</p>
+                                    <p class="${hasKhmerText(post.content || '') ? 'cv-article-body cv-article-khmer' : ''}">${renderLocalizedText(post.content || '')}</p>
                                     ${cvRenderPostMedia(post, isDark)}
                                 </div>
                             `}
@@ -6020,14 +6055,22 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
 
                         <div class="cv-linkedin-post-shell" id="post-${post.id}">
                             ${cvPostCountLine(post)}
-                            <div class="cv-linkedin-actions ${isDark ? 'cv-linkedin-actions-dark' : ''}">
+                            <div class="cv-faith-reaction-actions ${isDark ? 'is-dark' : ''}">
                                 <div class="cv-reaction-wrap" data-post-id="${post.id}" onmouseenter="cvOpenReactionPicker('${post.id}')" onmouseleave="cvScheduleReactionClose('${post.id}', 320)" onfocusin="cvOpenReactionPicker('${post.id}')" onfocusout="cvScheduleReactionClose('${post.id}', 320)">
                                     ${cvRenderReactionPicker(post.id)}
-                                    <button type="button" onclick="likePost('${post.id}')" onpointerdown="cvStartReactionLongPress(event, '${post.id}')" onpointerup="cvCancelReactionLongPress()" onpointerleave="cvCancelReactionLongPress()" oncontextmenu="event.preventDefault(); cvOpenReactionPicker('${post.id}')" class="cv-linkedin-action cv-reaction-trigger ${isLiked ? 'is-active' : ''}" style="${isLiked ? `--cv-reaction-active-color:${reactionMeta.color};--cv-reaction-active-bg:${reactionMeta.bgColor}` : ''}" aria-label="${isLiked ? 'Remove ' + reactionMeta.label + ' reaction' : 'Amen to this post'}" aria-haspopup="menu">
-                                        <span class="cv-action-icon ${isLiked ? 'cv-selected-reaction-icon' : 'cv-like-icon'}" style="${isLiked ? `--cv-reaction-color:${reactionMeta.color};--cv-reaction-bg-color:${reactionMeta.bgColor}` : ''}">${isLiked ? cvReactionIconSvg(reactionMeta.iconName, 'cv-selected-reaction-svg') : '<i data-lucide="thumbs-up"></i>'}</span>
-                                        <span class="cv-action-label">${isLiked ? reactionMeta.label : 'Amen'}</span>
+                                    <button type="button" data-cv-quick-reaction="${post.id}" data-reaction="like" onclick="likePost('${post.id}')" onpointerdown="cvStartReactionLongPress(event, '${post.id}')" onpointerup="cvCancelReactionLongPress()" onpointerleave="cvCancelReactionLongPress()" oncontextmenu="event.preventDefault(); cvOpenReactionPicker('${post.id}')" class="cv-linkedin-action cv-reaction-trigger ${selectedReaction === 'like' ? 'is-active' : ''}" aria-label="${selectedReaction === 'like' ? 'Remove Amen reaction' : 'Amen to this post'}" aria-pressed="${selectedReaction === 'like' ? 'true' : 'false'}" aria-haspopup="menu">
+                                        <span class="cv-action-icon ${selectedReaction === 'like' ? 'cv-selected-reaction-icon' : 'cv-like-icon'}" style="${selectedReaction === 'like' ? `--cv-reaction-color:${cvPostReactions.like.color};--cv-reaction-bg-color:${cvPostReactions.like.bgColor}` : ''}">${selectedReaction === 'like' ? cvReactionIconSvg('thumbs-up', 'cv-selected-reaction-svg') : '<i data-lucide="thumbs-up"></i>'}</span>
+                                        <span class="cv-action-label">Amen</span>
                                     </button>
                                 </div>
+                                <button type="button" data-cv-quick-reaction="${post.id}" data-reaction="celebrate" onclick="cvSetPostReaction(event, '${post.id}', 'celebrate')" class="cv-linkedin-action cv-faith-reaction-button ${selectedReaction === 'celebrate' ? 'is-active' : ''}" aria-label="Hallelujah reaction" aria-pressed="${selectedReaction === 'celebrate' ? 'true' : 'false'}">
+                                    <span class="cv-action-icon">${cvReactionIconSvg('sparkles')}</span><span class="cv-action-label">Hallelujah</span>
+                                </button>
+                                <button type="button" data-cv-quick-reaction="${post.id}" data-reaction="support" onclick="cvSetPostReaction(event, '${post.id}', 'support')" class="cv-linkedin-action cv-faith-reaction-button ${selectedReaction === 'support' ? 'is-active' : ''}" aria-label="Praise the Lord reaction" aria-pressed="${selectedReaction === 'support' ? 'true' : 'false'}">
+                                    <span class="cv-action-icon">${cvReactionIconSvg('praying')}</span><span class="cv-action-label">Praise the Lord</span>
+                                </button>
+                            </div>
+                            <div class="cv-linkedin-actions cv-post-utility-actions ${isDark ? 'cv-linkedin-actions-dark' : ''}">
                                 <button type="button" onclick="cvFocusPostComment('${post.id}')" class="cv-linkedin-action" aria-label="Comment on this post">
                                     <span class="cv-action-icon"><i data-lucide="message-circle"></i></span>
                                     <span class="cv-action-label">Comment</span>
@@ -6656,7 +6699,7 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
                                         class="px-4 py-1.5 border border-[rgba(0,0,0,0.6)] text-[rgba(0,0,0,0.6)] text-sm font-semibold rounded-full group-hover:border-[#0A66C2] group-hover:text-[#0A66C2] transition-colors mb-3"
                                     >Select File</button>
                                     <h4 id="file-name-display" class="text-sm font-semibold text-[rgba(0,0,0,0.9)]">${state.selectedFileName || 'No file selected'}</h4>
-                                    <p class="text-xs text-[rgba(0,0,0,0.6)] mt-1">PDF, image, audio, video, or ZIP • up to 250MB • stored in Vercel Blob</p>
+                                    <p class="text-xs text-[rgba(0,0,0,0.6)] mt-1">PDF, image, audio, video, or ZIP • up to 50MB • free Supabase Storage</p>
                                 </div>
                             </div>
                         </form>
@@ -6701,7 +6744,7 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
             const hasMedia = mediaCount > 0;
             const isReel = state.postMediaMode === 'reel';
             const mediaTitle = isReel ? 'Video selected' : (hasMedia ? (mediaCount + ' image' + (mediaCount > 1 ? 's' : '') + ' selected') : 'Add images or video');
-            const mediaHelp = isReel ? 'Publish one video up to 250MB. Supported files: MP4, MOV, M4V, WEBM, OGV.' : (hasMedia ? 'Upload up to 10 images, or switch to one video.' : 'Choose up to 10 images or one video. Files upload directly to Vercel storage.');
+            const mediaHelp = isReel ? 'Publish one video up to 50MB. Supported files: MP4, MOV, M4V, WEBM, OGV.' : (hasMedia ? 'Upload up to 10 images, or switch to one video.' : 'Choose up to 10 images or one video. Files upload to free Supabase Storage.');
             const mediaLabel = hasMedia ? (isReel ? 'Video selected' : state.selectedPostCoverName) : 'No media selected';
             const mediaReadyPercent = hasMedia ? Math.max(0, Math.min(100, parseInt(state.postMediaReadyPercent || 0, 10))) : 0;
             const mediaReady = !hasMedia || mediaReadyPercent >= 100;
@@ -6955,7 +6998,7 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
                                 <i data-lucide="folder-open" class="w-5 h-5"></i> Select File
                             </button>
                             <span id="file-name-display" class="text-lg font-bold mb-1">${state.selectedFileName || 'No file selected'}</span>
-                            <span class="text-sm opacity-60 font-medium">Max upload size: 250MB</span>
+                            <span class="text-sm opacity-60 font-medium">Max upload size: 50MB</span>
                         </div>
                     </div>
                 </div>

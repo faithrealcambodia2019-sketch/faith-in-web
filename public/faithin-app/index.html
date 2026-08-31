@@ -7,11 +7,14 @@
 <meta content="#ffffff" media="(prefers-color-scheme: light)" name="theme-color"/>
 <meta content="#0b1120" media="(prefers-color-scheme: dark)" name="theme-color"/>
 <meta content="Faith In — a place for believers to share blessings, testimonies and prayer." name="description"/>
-<title>Faith In — Home</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg"/>
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/images/favicon-32x32.png"/>
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/images/favicon-16x16.png"/>
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/images/favicon-180x180.png"/>
 <link href="/faithin-app/assets/faithin-fonts.css" rel="stylesheet"/>
 <link href="/faithin-app/assets/faithin-icons.css" rel="stylesheet"/>
 <link href="/faithin-app/assets/faithin-tw.css" rel="stylesheet"/>
-<link href="/faithin-app/assets/faithin.css?v=20260828-5" rel="stylesheet"/>
+<link href="/faithin-app/assets/faithin.css?v=20260831-v20" rel="stylesheet"/>
 </head>
 <body class="font-sans min-h-screen pb-16 lg:pb-0" data-page="home" data-search="Search Faith In">
 <main class="max-w-[1200px] mx-auto px-3 sm:px-4 py-5 grid gap-5 lg:grid-cols-[232px_minmax(0,1fr)] xl:grid-cols-[232px_minmax(0,600px)_312px] items-start" id="main">
@@ -43,7 +46,6 @@
 <a class="nav-item" href="/jobs"><i class="fa-solid fa-briefcase text-emerald-600"></i>Find Jobs</a>
 <a class="nav-item" href="/network"><i class="fa-solid fa-globe text-indigo-500"></i>Find Users</a>
 <a class="nav-item" href="/library"><i class="fa-solid fa-book-open text-amber-500"></i>Library</a>
-<a class="nav-item" href="/bible-study"><i class="fa-solid fa-table-cells-large text-violet-500"></i>Social Studio</a>
 </nav>
 </aside>
 <!-- ───── CENTER ───── -->
@@ -130,15 +132,125 @@
 <button class="py-2.5 hover:bg-raised hover:text-ink transition" data-save-verse><i class="fa-regular fa-bookmark mr-1.5"></i>Save</button>
 </div>
 </section>
-<section class="card p-4">
-<div class="flex items-center justify-between mb-3">
-<h2 class="font-semibold text-[15px]">Contacts</h2>
-<div class="flex text-muted">
-<button aria-label="Search contacts" class="icon-btn w-8 h-8" data-search-contacts><i class="fa-solid fa-magnifying-glass text-[13px]"></i></button>
-<button aria-label="Contact options" class="icon-btn w-8 h-8"><i class="fa-solid fa-ellipsis text-[13px]"></i></button>
+<section class="card p-5 rounded-[24px]">
+<div class="flex items-center justify-between mb-4">
+<h2 class="font-bold text-[18px] text-ink tracking-tight">Contacts</h2>
+<div class="flex items-center space-x-1.5 text-muted">
+<button aria-label="Search contacts" class="icon-btn w-8 h-8 hover:text-ink transition" data-search-contacts><i class="fa-solid fa-magnifying-glass text-[13px]"></i></button>
+<button aria-label="Contact options" class="icon-btn w-8 h-8 hover:text-ink transition"><i class="fa-solid fa-ellipsis text-[14px]"></i></button>
 </div>
 </div>
-<ul class="space-y-1" id="contacts"></ul>
+<div class="hidden mb-3" id="contacts-search-wrap">
+<input type="text" id="contacts-search-input" placeholder="Search contacts..." class="w-full px-3 py-1.5 text-xs bg-raised border border-line rounded-lg focus:outline-none focus:border-brand" />
+</div>
+<ul class="space-y-3" id="contacts">
+<li class="flex items-center justify-between py-1" data-contact-id="1">
+<div class="flex items-center space-x-3 min-w-0 pr-2">
+<div class="w-[42px] h-[42px] rounded-full flex items-center justify-center text-white font-semibold text-[15px] shrink-0 bg-[#2554D7]">BV</div>
+<div class="flex flex-col min-w-0">
+<span class="font-bold text-ink text-[14px] leading-tight truncate">Bible Verse</span>
+<span class="text-[12px] text-muted font-normal leading-tight mt-0.5 truncate">Faithin</span>
+</div>
+</div>
+<div class="flex items-center space-x-2 shrink-0">
+<button type="button" class="flex items-center justify-center min-w-[84px] h-[30px] px-3 rounded-full font-semibold text-[12.5px] transition-all border border-[#2554D7] text-[#2554D7] hover:bg-blue-50/70" data-contact-follow-btn>
+<i class="fa-solid fa-plus text-[10px] mr-1"></i> Follow
+</button>
+<button type="button" class="text-muted hover:text-brand p-1 transition-colors" aria-label="Chat with Bible Verse" data-contact-chat>
+<svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+<path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
+<path d="M10 8.5h4" /><path d="M10 12h3" /><path d="M10 8.5v7" />
+</svg>
+</button>
+</div>
+</li>
+<li class="flex items-center justify-between py-1" data-contact-id="2">
+<div class="flex items-center space-x-3 min-w-0 pr-2">
+<div class="w-[42px] h-[42px] rounded-full overflow-hidden shrink-0 bg-raised">
+<img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&auto=format&fit=crop&q=80" alt="Chhoun P..." class="w-full h-full object-cover" />
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-bold text-ink text-[14px] leading-tight truncate">Chhoun P...</span>
+<span class="text-[12px] text-muted font-normal leading-tight mt-0.5 truncate">Faithin</span>
+</div>
+</div>
+<div class="flex items-center space-x-2 shrink-0">
+<button type="button" class="flex items-center justify-center min-w-[84px] h-[30px] px-3 rounded-full font-semibold text-[12.5px] transition-all border border-[#2554D7] text-[#2554D7] hover:bg-blue-50/70" data-contact-follow-btn>
+<i class="fa-solid fa-plus text-[10px] mr-1"></i> Follow
+</button>
+<button type="button" class="text-muted hover:text-brand p-1 transition-colors" aria-label="Chat with Chhoun P..." data-contact-chat>
+<svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+<path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
+<path d="M10 8.5h4" /><path d="M10 12h3" /><path d="M10 8.5v7" />
+</svg>
+</button>
+</div>
+</li>
+<li class="flex items-center justify-between py-1" data-contact-id="3">
+<div class="flex items-center space-x-3 min-w-0 pr-2">
+<div class="w-[42px] h-[42px] rounded-full overflow-hidden shrink-0 bg-raised">
+<img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=150&auto=format&fit=crop&q=80" alt="Heng Sok" class="w-full h-full object-cover" />
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-bold text-ink text-[14px] leading-tight truncate">Heng Sok</span>
+<span class="text-[12px] text-muted font-normal leading-tight mt-0.5 truncate">Faithin</span>
+</div>
+</div>
+<div class="flex items-center space-x-2 shrink-0">
+<button type="button" class="flex items-center justify-center min-w-[84px] h-[30px] px-3 rounded-full font-semibold text-[12.5px] transition-all border border-line text-muted hover:bg-raised" data-contact-follow-btn data-following="true">
+<i class="fa-solid fa-check text-[10px] mr-1"></i> Following
+</button>
+<button type="button" class="text-muted hover:text-brand p-1 transition-colors" aria-label="Chat with Heng Sok" data-contact-chat>
+<svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+<path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
+<path d="M10 8.5h4" /><path d="M10 12h3" /><path d="M10 8.5v7" />
+</svg>
+</button>
+</div>
+</li>
+<li class="flex items-center justify-between py-1" data-contact-id="4">
+<div class="flex items-center space-x-3 min-w-0 pr-2">
+<div class="w-[42px] h-[42px] rounded-full overflow-hidden shrink-0 bg-raised">
+<img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80" alt="Heng S..." class="w-full h-full object-cover" />
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-bold text-ink text-[14px] leading-tight truncate">Heng S...</span>
+<span class="text-[12px] text-muted font-normal leading-tight mt-0.5 truncate">Faithin</span>
+</div>
+</div>
+<div class="flex items-center space-x-2 shrink-0">
+<button type="button" class="flex items-center justify-center min-w-[84px] h-[30px] px-3 rounded-full font-semibold text-[12.5px] transition-all border border-line text-muted hover:bg-raised" data-contact-follow-btn data-following="true">
+<i class="fa-solid fa-check text-[10px] mr-1"></i> Following
+</button>
+<button type="button" class="text-muted hover:text-brand p-1 transition-colors" aria-label="Chat with Heng S..." data-contact-chat>
+<svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+<path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
+<path d="M10 8.5h4" /><path d="M10 12h3" /><path d="M10 8.5v7" />
+</svg>
+</button>
+</div>
+</li>
+<li class="flex items-center justify-between py-1" data-contact-id="5">
+<div class="flex items-center space-x-3 min-w-0 pr-2">
+<div class="w-[42px] h-[42px] rounded-full flex items-center justify-center text-white font-semibold text-[15px] shrink-0 bg-[#6B72C2]">H</div>
+<div class="flex flex-col min-w-0">
+<span class="font-bold text-ink text-[14px] leading-tight truncate">Hun Sen</span>
+<span class="text-[12px] text-muted font-normal leading-tight mt-0.5 truncate">Faithin</span>
+</div>
+</div>
+<div class="flex items-center space-x-2 shrink-0">
+<button type="button" class="flex items-center justify-center min-w-[84px] h-[30px] px-3 rounded-full font-semibold text-[12.5px] transition-all border border-[#2554D7] text-[#2554D7] hover:bg-blue-50/70" data-contact-follow-btn>
+<i class="fa-solid fa-plus text-[10px] mr-1"></i> Follow
+</button>
+<button type="button" class="text-muted hover:text-brand p-1 transition-colors" aria-label="Chat with Hun Sen" data-contact-chat>
+<svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+<path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
+<path d="M10 8.5h4" /><path d="M10 12h3" /><path d="M10 8.5v7" />
+</svg>
+</button>
+</div>
+</li>
+</ul>
 <button class="w-full mt-3 py-2 text-[13px] font-semibold text-muted hover:text-ink hover:bg-raised rounded-lg transition" data-show-contacts>Show all contacts <i class="fa-solid fa-arrow-right text-[11px] ml-1"></i></button>
 </section>
 <section class="card p-4" id="prayer-wall">
@@ -209,7 +321,7 @@
 <label class="flex flex-col items-center justify-center h-[240px] rounded-xl border-2 border-dashed border-line bg-raised hover:border-brand hover:bg-brand-soft/40 transition cursor-pointer text-center px-6" id="dropzone">
 <i class="fa-regular fa-images text-3xl text-faint mb-3" id="media-picker-icon"></i>
 <p class="font-semibold text-[15px]" id="media-picker-title">Select photos or a video to share</p>
-<p class="text-[13px] text-muted mt-1" id="media-picker-help">Up to 10 images or one video · maximum 250MB per file</p>
+<p class="text-[13px] text-muted mt-1" id="media-picker-help">Up to 10 images or one video · maximum 50MB per file on the free plan</p>
 <input accept="image/*,video/*,.mp4,.m4v,.mov,.qt,.webm,.ogv" class="hidden" id="file-input" multiple="" type="file"/>
 </label>
 <div class="grid grid-cols-4 gap-2 mt-3 hidden" id="preview"></div>
@@ -287,11 +399,11 @@
 </div>
 </div>
 </div>
-<script src="/faithin-app/assets/faithin-runtime.js?v=20260828-5"></script>
-<script src="/faithin-app/assets/faithin-blob-upload.js?v=20260828-7"></script>
-<script src="/assets/js/faith-in-backend.js?v=20260828-3"></script>
-<script src="/faithin-app/assets/faithin.js?v=20260828-3"></script>
-<script src="/faithin-app/assets/faithin-live.js?v=20260828-5"></script>
-<script src="/faithin-app/assets/faithin-home.js?v=20260828-5"></script>
+<script src="/faithin-app/assets/faithin-runtime.js?v=20260831-v20"></script>
+<script src="/faithin-app/assets/faithin-blob-upload.js?v=20260831-v20"></script>
+<script src="/assets/js/faith-in-backend.js?v=20260831-v20"></script>
+<script src="/faithin-app/assets/faithin.js?v=20260831-v20"></script>
+<script src="/faithin-app/assets/faithin-live.js?v=20260831-v20"></script>
+<script src="/faithin-app/assets/faithin-home.js?v=20260831-v20"></script>
 </body>
 </html>
