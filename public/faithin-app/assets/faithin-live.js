@@ -222,7 +222,7 @@
     }
     $$('a').forEach(link => {
       const label = link.textContent.trim().replace(/\s+\d+$/, '');
-      const routes = { 'Home Feed': '/home', 'Profile': '/profile', 'Prayer Wall': '/home#prayer-wall', 'Find Jobs': '/jobs', 'Find Users': '/network', 'Library': '/library', 'Social Studio': '/bible-study' };
+      const routes = { 'Home Feed': '/home', 'Profile': '/profile', 'Prayer Wall': '/home#prayer-wall', 'Find Jobs': '/jobs', 'Find Users': '/network', 'Library': '/library' };
       if (routes[label]) link.href = routes[label];
     });
     document.dispatchEvent(new CustomEvent('fi:session', { detail: { user: session } }));
