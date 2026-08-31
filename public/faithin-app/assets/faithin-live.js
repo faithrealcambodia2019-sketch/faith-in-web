@@ -30,13 +30,62 @@
     host.innerHTML = `<div class="fi-auth__page" role="dialog" aria-modal="true" aria-labelledby="fi-auth-title">
       <header class="fi-auth__brand"><span>FaithIn</span><i class="fa-solid fa-globe" aria-hidden="true"></i></header>
       <main class="fi-auth__main">
-        <div class="fi-auth__intro"><h1>Welcome to your professional<br>faith community</h1><p>Connect with believers, discover ministry opportunities, and grow your professional network.</p></div>
+        <div class="fi-auth__intro"><h1>Welcome to your professional<br>faith community</h1><p>Connect with believers, discover ministry opportunities, and grow your spiritual network.</p></div>
         <section class="fi-auth__card">
           <button class="fi-auth__close" data-auth-close aria-label="Close sign in"><i class="fa-solid fa-xmark"></i></button>
 
+          <div class="fi-auth__tabs" data-auth-tabs>
+            <button type="button" class="fi-auth__tab-btn is-active" data-tab="email"><i class="fa-solid fa-envelope"></i> Email / Gmail</button>
+            <button type="button" class="fi-auth__tab-btn" data-tab="phone"><i class="fa-solid fa-mobile-screen"></i> Phone</button>
+          </div>
+
+          <!-- PHONE SIGN IN -->
+          <div data-auth-view="phone" hidden>
+            <h2 id="fi-auth-title">Sign in with Phone</h2>
+            <p class="fi-auth__subtitle">Fast and secure login via SMS verification code.</p>
+            <form data-auth-form="phone-send" class="fi-auth__form">
+              <div class="fi-auth__phone-row">
+                <select name="country_code" class="fi-auth__country-select" aria-label="Country Code">
+                  <option value="+855">🇰🇭 +855 (Cambodia)</option>
+                  <option value="+1">🇺🇸 +1 (USA/CA)</option>
+                  <option value="+66">🇹🇭 +66 (Thailand)</option>
+                  <option value="+95">🇲🇲 +95 (Myanmar)</option>
+                  <option value="+84">🇻🇳 +84 (Vietnam)</option>
+                  <option value="+82">🇰🇷 +82 (S. Korea)</option>
+                  <option value="+81">🇯🇵 +81 (Japan)</option>
+                  <option value="+65">🇸🇬 +65 (Singapore)</option>
+                  <option value="+61">🇦🇺 +61 (Australia)</option>
+                  <option value="+44">🇬🇧 +44 (UK)</option>
+                  <option value="+33">🇫🇷 +33 (France)</option>
+                </select>
+                <input name="phone" type="tel" autocomplete="tel-national" inputmode="tel" placeholder="Phone number (e.g. 12345678)" required>
+              </div>
+              <div id="fi-recaptcha-container"></div>
+              <p class="fi-auth__error" data-auth-error hidden role="alert"></p>
+              <button class="fi-auth__primary" name="intent" value="phone-send"><span>Send SMS Code</span><i class="fi-auth__spinner" aria-hidden="true"></i></button>
+            </form>
+            <div class="fi-auth__divider"><span>or</span></div>
+            <button class="fi-auth__social" data-auth-google><span class="fi-auth__google" aria-hidden="true">G</span>Continue with Google</button>
+          </div>
+
+          <!-- PHONE VERIFY CODE -->
+          <div data-auth-view="phone-verify" hidden>
+            <button class="fi-auth__back" data-auth-show="phone"><i class="fa-solid fa-arrow-left"></i> Change phone number</button>
+            <h2>Enter SMS Code</h2>
+            <p class="fi-auth__subtitle">We sent a 6-digit code to <strong data-phone-display></strong>.</p>
+            <form data-auth-form="phone-verify" class="fi-auth__form">
+              <label class="sr-only" for="fi-phone-code">Verification Code</label>
+              <input id="fi-phone-code" name="code" type="text" autocomplete="one-time-code" inputmode="numeric" placeholder="6-digit verification code" maxlength="6" required style="letter-spacing: 4px; font-size: 22px; text-align: center;">
+              <p class="fi-auth__error" data-auth-error hidden role="alert"></p>
+              <button class="fi-auth__primary" name="intent" value="phone-verify"><span>Verify &amp; Sign in</span><i class="fi-auth__spinner" aria-hidden="true"></i></button>
+            </form>
+            <button class="fi-auth__text-button" data-auth-resend-sms>Resend SMS Code</button>
+          </div>
+
+          <!-- EMAIL SIGN IN -->
           <div data-auth-view="signin">
-            <h2 id="fi-auth-title">Sign in</h2>
-            <p class="fi-auth__subtitle">Stay updated on your professional world.</p>
+            <h2>Sign in with Email</h2>
+            <p class="fi-auth__subtitle">Stay updated on your Christian community.</p>
             <form data-auth-form="signin" class="fi-auth__form">
               <label class="sr-only" for="fi-signin-email">Email address</label>
               <input id="fi-signin-email" name="email" type="email" autocomplete="email" inputmode="email" placeholder="Email address" required>
@@ -50,9 +99,10 @@
             <p class="fi-auth__switch">New to Faith In? <button data-auth-show="signup">Join now</button></p>
           </div>
 
+          <!-- EMAIL SIGN UP -->
           <div data-auth-view="signup" hidden>
             <h2>Join Faith In</h2>
-            <p class="fi-auth__subtitle">Create your secure member account.</p>
+            <p class="fi-auth__subtitle">Create your free member account in seconds.</p>
             <form data-auth-form="signup" class="fi-auth__form">
               <div class="fi-auth__names"><label><span class="sr-only">First name</span><input name="first_name" autocomplete="given-name" placeholder="First name" required maxlength="60"></label><label><span class="sr-only">Last name</span><input name="last_name" autocomplete="family-name" placeholder="Last name" required maxlength="60"></label></div>
               <label class="sr-only" for="fi-signup-email">Email address</label>
@@ -67,6 +117,7 @@
             <p class="fi-auth__switch">Already on Faith In? <button data-auth-show="signin">Sign in</button></p>
           </div>
 
+          <!-- FORGOT PASSWORD -->
           <div data-auth-view="forgot" hidden>
             <button class="fi-auth__back" data-auth-show="signin"><i class="fa-solid fa-arrow-left"></i> Back to sign in</button>
             <h2>Reset your password</h2>
@@ -80,6 +131,7 @@
             </form>
           </div>
 
+          <!-- VERIFY EMAIL -->
           <div data-auth-view="verify" hidden>
             <div class="fi-auth__verify-icon"><i class="fa-regular fa-envelope"></i></div>
             <h2>Verify your email</h2>
@@ -94,6 +146,8 @@
     </div>`;
     document.body.appendChild(host);
     let verificationEmail = '';
+    let lastEnteredPhone = '';
+
     const close = () => {
       if (host.dataset.locked === 'true') return;
       host.classList.add('hidden');
@@ -106,7 +160,17 @@
     const showView = name => {
       $$('[data-auth-view]', host).forEach(view => { view.hidden = view.dataset.authView !== name; });
       $$('[data-auth-error], [data-auth-success]', host).forEach(message => { message.hidden = true; message.textContent = ''; });
-      const input = $(`[data-auth-view="${name}"] input`, host);
+      
+      const tabs = $('[data-auth-tabs]', host);
+      if (tabs) {
+        tabs.hidden = (name !== 'phone' && name !== 'signin' && name !== 'signup');
+        const isPhone = (name === 'phone');
+        $$('.fi-auth__tab-btn', tabs).forEach(btn => {
+          btn.classList.toggle('is-active', (btn.dataset.tab === 'phone') === isPhone);
+        });
+      }
+      
+      const input = $(`[data-auth-view="${name}"] input:not([type="hidden"])`, host);
       window.setTimeout(() => input?.focus(), 0);
     };
     const showAuthError = (scope, error) => {
@@ -114,10 +178,19 @@
       el.textContent = error.message || 'Sign-in failed. Please try again.';
       el.hidden = false;
     };
+
     host.addEventListener('click', async event => {
       if (event.target === host || event.target.closest('[data-auth-close]')) close();
+
+      const tabBtn = event.target.closest('.fi-auth__tab-btn');
+      if (tabBtn) {
+        showView(tabBtn.dataset.tab === 'phone' ? 'phone' : 'signin');
+        return;
+      }
+
       const switcher = event.target.closest('[data-auth-show]');
       if (switcher) { showView(switcher.dataset.authShow); return; }
+      
       const toggle = event.target.closest('[data-password-toggle]');
       if (toggle) {
         const input = toggle.closest('.fi-auth__password').querySelector('input');
@@ -150,8 +223,22 @@
         try { await api.request('cv_send_email_verification'); status.textContent = 'Verification email sent. Check your inbox and spam folder.'; status.hidden = false; }
         catch (error) { status.textContent = error.message || 'Please wait before trying again.'; status.hidden = false; }
         finally { setBusy(resend, false); }
+        return;
+      }
+      const resendSms = event.target.closest('[data-auth-resend-sms]');
+      if (resendSms && lastEnteredPhone) {
+        setBusy(resendSms, true);
+        try {
+          await api.request('cv_phone_send_code', { phone: lastEnteredPhone });
+          alert('New verification code sent via SMS!');
+        } catch (error) {
+          showAuthError(resendSms.closest('[data-auth-view]'), error);
+        } finally {
+          setBusy(resendSms, false);
+        }
       }
     });
+
     $$('[data-auth-form]', host).forEach(form => form.addEventListener('submit', async event => {
       event.preventDefault();
       const mode = form.dataset.authForm;
@@ -159,6 +246,27 @@
       const submitter = event.submitter || $('button[type="submit"], button:not([type])', form);
       setBusy(submitter, true);
       try {
+        if (mode === 'phone-send') {
+          const country = String(data.get('country_code') || '+855').trim();
+          let local = String(data.get('phone') || '').trim().replace(/^0+/, '');
+          const fullPhone = `${country}${local}`;
+          lastEnteredPhone = fullPhone;
+          await api.request('cv_phone_send_code', { phone: fullPhone });
+          const displayEl = $('[data-phone-display]', host);
+          if (displayEl) displayEl.textContent = fullPhone;
+          showView('phone-verify');
+          return;
+        }
+
+        if (mode === 'phone-verify') {
+          const code = String(data.get('code') || '').trim();
+          const result = await api.request('cv_phone_verify_code', { code });
+          session = result;
+          applySession(session);
+          window.location.reload();
+          return;
+        }
+
         if (mode === 'forgot') {
           await api.request('cv_password_reset', { email: data.get('email') });
           const success = $('[data-auth-success]', form);
@@ -167,6 +275,7 @@
           $('[data-auth-error]', form).hidden = true;
           return;
         }
+
         const action = mode === 'signup' ? 'cv_email_sign_up' : 'cv_email_sign_in';
         const values = { email: data.get('email'), password: data.get('password'), remember: data.get('remember') === 'on' };
         if (mode === 'signup') values.display_name = `${data.get('first_name') || ''} ${data.get('last_name') || ''}`.trim();
@@ -183,6 +292,7 @@
       } catch (error) { showAuthError(form, error); }
       finally { setBusy(submitter, false); }
     }));
+
     window.FI.openAuth = options => {
       const locked = !!options?.locked;
       host.dataset.locked = String(locked);
@@ -191,7 +301,7 @@
       document.body.classList.toggle('fi-auth-locked', locked);
       const main = $('#main');
       if (main) { main.inert = locked; main.setAttribute('aria-hidden', String(locked)); }
-      showView(options?.verificationRequired ? 'verify' : 'signin');
+      showView(options?.verificationRequired ? 'verify' : (options?.mode || 'phone'));
       if (options?.email) { verificationEmail = options.email; $('[data-auth-email]', host).textContent = verificationEmail; }
       if (options?.verificationRequired) showView('verify');
     };

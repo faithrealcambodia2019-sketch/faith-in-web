@@ -5,17 +5,14 @@ const contentSecurityPolicy = [
   "base-uri 'self'",
   "object-src 'none'",
   "frame-ancestors 'none'",
-  "form-action 'self'",
-  "script-src 'self' 'unsafe-inline' https://code.jquery.com https://unpkg.com https://www.gstatic.com https://accounts.google.com https://apis.google.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com",
-  "style-src 'self' 'unsafe-inline' https://accounts.google.com https://cdnjs.cloudflare.com",
+  "form-action 'self' https://accounts.google.com https://*.firebaseapp.com https://auth.faithin.co",
+  "script-src 'self' 'unsafe-inline' https://code.jquery.com https://unpkg.com https://www.gstatic.com https://accounts.google.com https://apis.google.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://www.google.com",
+  "style-src 'self' 'unsafe-inline' https://accounts.google.com https://cdnjs.cloudflare.com https://fonts.googleapis.com",
   "img-src 'self' data: blob: https:",
   "font-src 'self' data: https:",
   "media-src 'self' blob: https:",
-  // wss://*.googleapis.com covers the Firestore listen channel used by the
-  // realtime messaging screen when the SDK negotiates a socket rather than
-  // long polling.
-  "connect-src 'self' https://*.googleapis.com wss://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com https://*.supabase.co https://*.storage.supabase.co https://accounts.google.com https://bible-api.com https://auth.faithin.co",
-  "frame-src https://accounts.google.com https://*.firebaseapp.com https://auth.faithin.co",
+  "connect-src 'self' https://*.googleapis.com wss://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com https://*.firebaseapp.com https://*.supabase.co https://*.storage.supabase.co https://accounts.google.com https://*.google.com https://bible-api.com https://auth.faithin.co",
+  "frame-src 'self' https://accounts.google.com https://*.firebaseapp.com https://auth.faithin.co https://*.google.com",
   "worker-src 'self' blob:",
   "manifest-src 'self'",
   "upgrade-insecure-requests",
@@ -47,6 +44,15 @@ const nextConfig: NextConfig = {
       { source: "/faithin-app/settings-security.html", destination: "/settings-security", permanent: true },
       { source: "/faithin-app/studio.html", destination: "/studio", permanent: true },
       { source: "/faithin-app/dashboard.html", destination: "/dashboard", permanent: true },
+      { source: "/privacy", destination: "/settings-security", permanent: false },
+      { source: "/privacy-policy", destination: "/settings-security", permanent: false },
+      { source: "/terms", destination: "/settings-security", permanent: false },
+      { source: "/terms-of-service", destination: "/settings-security", permanent: false },
+      { source: "/bible-study", destination: "/studio", permanent: false },
+      { source: "/about", destination: "/home", permanent: false },
+      { source: "/features", destination: "/home", permanent: false },
+      { source: "/for-churches", destination: "/home", permanent: false },
+      { source: "/contact", destination: "/home", permanent: false },
     ];
   },
   async rewrites() {

@@ -57,10 +57,10 @@
       // for an actual play. Use a poster when the item carries one.
       if (item.type === 'video') {
         const poster = esc(mediaUrl(item.thumbnail_url || item.poster_url || ''));
-        return `<video class="fi-feed-video" controls playsinline preload="none"${poster ? ` poster="${poster}"` : ''} src="${url}"></video>`;
+        return `<video class="fi-feed-video w-full max-h-[280px] sm:max-h-[420px] object-cover" controls playsinline preload="none"${poster ? ` poster="${poster}"` : ''} src="${url}"></video>`;
       }
       if (item.type === 'audio') return `<div class="p-5"><audio class="w-full" controls src="${url}"></audio></div>`;
-      return `<img class="w-full max-h-[620px] object-cover" src="${url}" alt="Shared media" loading="lazy" decoding="async">`;
+      return `<img class="w-full max-h-[280px] sm:max-h-[420px] object-cover" src="${url}" alt="Shared media" loading="lazy" decoding="async">`;
     }).join('')}</div>`;
   }
 
@@ -160,26 +160,26 @@
     const owner = !!(post.can_delete || isSelf);
     const body = post.content || post.excerpt || post.article_excerpt || '';
     return `<article class="card animate-fade-up" data-post-id="${esc(post.id)}" data-author-uid="${esc(uid)}">
-      <header class="flex items-start gap-3 p-4 pb-2.5">
-        <a href="${profileHref}" class="shrink-0 block">${avatar ? `<img class="avatar w-11 h-11 object-cover" src="${esc(avatar)}" alt="${esc(name)}">` : `<span class="avatar w-11 h-11 text-[14px]">${esc(api.initials(name))}</span>`}</a>
-        <div class="min-w-0 flex-1"><div class="flex items-center gap-2 flex-wrap"><a href="${profileHref}" class="text-[14.5px] font-semibold hover:text-brand inline-flex items-center">${esc(name)}${window.FILive.verificationBadgeMarkup(author || post)}</a>${post.type && post.type !== 'post' ? `<span class="text-[10.5px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-brand-soft text-brand-strong">${esc(post.type)}</span>` : ''}</div><p class="text-[12px] text-muted mt-0.5">${esc(post.time || 'just now')} · ${esc(post.visibility || 'Public')}</p></div>
-        ${!owner && uid ? `<button class="btn ${isFollowing ? 'btn-neutral' : 'btn-outline'} !py-1 !px-3 !text-[13px]" data-live-follow><i class="fa-solid ${isFollowing ? 'fa-check' : 'fa-plus'} text-[11px] mr-1"></i>${isFollowing ? 'Following' : 'Follow'}</button>` : ''}
-        ${owner ? `<button class="icon-btn" data-live-delete aria-label="Delete post"><i class="fa-regular fa-trash-can"></i></button>` : ''}
+      <header class="flex items-start gap-2.5 p-3 pb-2 sm:p-4 sm:pb-2.5">
+        <a href="${profileHref}" class="shrink-0 block">${avatar ? `<img class="avatar w-9 h-9 sm:w-11 sm:h-11 object-cover" src="${esc(avatar)}" alt="${esc(name)}">` : `<span class="avatar w-9 h-9 sm:w-11 sm:h-11 text-[13px]">${esc(api.initials(name))}</span>`}</a>
+        <div class="min-w-0 flex-1"><div class="flex items-center gap-1.5 flex-wrap"><a href="${profileHref}" class="text-[13.5px] sm:text-[14.5px] font-semibold hover:text-brand inline-flex items-center">${esc(name)}${window.FILive.verificationBadgeMarkup(author || post)}</a>${post.type && post.type !== 'post' ? `<span class="text-[9.5px] sm:text-[10.5px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-brand-soft text-brand-strong">${esc(post.type)}</span>` : ''}</div><p class="text-[11px] sm:text-[12px] text-muted mt-0.5">${esc(post.time || 'just now')} · ${esc(post.visibility || 'Public')}</p></div>
+        ${!owner && uid ? `<button class="btn ${isFollowing ? 'btn-neutral' : 'btn-outline'} !py-0.5 !px-2.5 !text-[12px] sm:!text-[13px]" data-live-follow><i class="fa-solid ${isFollowing ? 'fa-check' : 'fa-plus'} text-[10px] mr-1"></i>${isFollowing ? 'Following' : 'Follow'}</button>` : ''}
+        ${owner ? `<button class="icon-btn !w-8 !h-8" data-live-delete aria-label="Delete post"><i class="fa-regular fa-trash-can text-[13px]"></i></button>` : ''}
       </header>
-      ${post.article_title ? `<div class="px-4 pt-1"><h3 class="font-serif text-[22px] font-semibold">${esc(post.article_title)}</h3></div>` : ''}
-      ${body ? `<div class="px-4 pb-3"><p class="text-[14.5px] leading-relaxed whitespace-pre-wrap">${esc(body)}</p></div>` : ''}
+      ${post.article_title ? `<div class="px-3 pt-1 sm:px-4"><h3 class="font-serif text-[18px] sm:text-[22px] font-semibold">${esc(post.article_title)}</h3></div>` : ''}
+      ${body ? `<div class="px-3 pb-2 sm:px-4 sm:pb-3"><p class="text-[13.5px] sm:text-[14.5px] leading-relaxed whitespace-pre-wrap">${esc(body)}</p></div>` : ''}
       ${mediaHTML(post)}
-      <div class="px-4 py-2 flex items-center justify-between text-[12px] text-muted border-b border-line"><span class="flex items-center gap-1.5"><span class="w-[18px] h-[18px] rounded-full bg-brand text-white grid place-items-center text-[9px]"><i class="fa-solid fa-hands-praying"></i></span><span data-likecount>${Number(post.reaction_count || 0)}</span></span><span class="flex gap-3"><button type="button" data-comment-toggle>${Number(post.comment_count || 0)} comments</button><span data-sharecount>${Number(post.share_count || 0)} shares</span></span></div>
-      <div class="flex items-center gap-1 px-2 py-1">
+      <div class="px-3 py-1.5 sm:px-4 sm:py-2 flex items-center justify-between text-[11px] sm:text-[12px] text-muted border-b border-line"><span class="flex items-center gap-1.5"><span class="w-[16px] h-[16px] sm:w-[18px] sm:h-[18px] rounded-full bg-brand text-white grid place-items-center text-[8px] sm:text-[9px]"><i class="fa-solid fa-hands-praying"></i></span><span data-likecount>${Number(post.reaction_count || 0)}</span></span><span class="flex gap-3"><button type="button" data-comment-toggle>${Number(post.comment_count || 0)} comments</button><span data-sharecount>${Number(post.share_count || 0)} shares</span></span></div>
+      <div class="flex items-center gap-1 px-1.5 py-0.5 sm:px-2 sm:py-1">
         <div class="faith-reaction-wrap" data-faith-reaction-wrap>
           <div class="faith-reaction-popup" role="menu" aria-label="Choose a faith reaction">
             ${Object.entries(faithReactions).map(([key, reaction]) => `<button type="button" class="faith-reaction-option ${reaction.tone} ${selectedReaction === key ? 'is-selected' : ''}" data-live-reaction="${key}" role="menuitem" aria-label="${reaction.label}" aria-pressed="${selectedReaction === key}"><span class="faith-reaction-bubble"><i class="fa-solid ${reaction.icon}"></i></span><span class="faith-reaction-tooltip">${reaction.label}</span></button>`).join('')}
           </div>
-          <button type="button" class="action-btn faith-reaction-trigger ${selectedReaction ? `is-on ${selectedMeta.tone}` : ''}" data-live-reaction-trigger data-selected-reaction="${selectedReaction}" aria-pressed="${!!selectedReaction}" aria-haspopup="menu"><i class="fa-solid ${selectedMeta.icon}"></i><span>${selectedReaction ? selectedMeta.label : 'Amen'}</span></button>
+          <button type="button" class="action-btn faith-reaction-trigger !text-[12px] sm:!text-[13px] ${selectedReaction ? `is-on ${selectedMeta.tone}` : ''}" data-live-reaction-trigger data-selected-reaction="${selectedReaction}" aria-pressed="${!!selectedReaction}" aria-haspopup="menu"><i class="fa-solid ${selectedMeta.icon}"></i><span>${selectedReaction ? selectedMeta.label : 'Amen'}</span></button>
         </div>
-        <button type="button" class="action-btn" data-comment-toggle><i class="fa-regular fa-comment"></i>Comment</button><button type="button" class="action-btn" data-live-share><i class="fa-solid fa-share-nodes"></i>Share</button><button type="button" class="action-btn ${saved ? '!text-brand' : ''}" data-live-save aria-pressed="${saved}"><i class="fa-${saved ? 'solid' : 'regular'} fa-bookmark"></i><span class="hidden sm:inline">Save</span></button>
+        <button type="button" class="action-btn !text-[12px] sm:!text-[13px]" data-comment-toggle><i class="fa-regular fa-comment"></i>Comment</button><button type="button" class="action-btn !text-[12px] sm:!text-[13px]" data-live-share><i class="fa-solid fa-share-nodes"></i>Share</button><button type="button" class="action-btn !text-[12px] sm:!text-[13px] ${saved ? '!text-brand' : ''}" data-live-save aria-pressed="${saved}"><i class="fa-${saved ? 'solid' : 'regular'} fa-bookmark"></i><span class="hidden sm:inline">Save</span></button>
       </div>
-      <div class="hidden border-t border-line p-3.5" data-comments><div class="space-y-2 mb-3" data-comment-list></div><form class="flex items-center gap-2.5" data-comment-form>${window.FILive.avatarMarkup(current || { name: 'Me' }, 'avatar w-9 h-9 text-[11px] object-cover')}<input name="content" class="field !rounded-pill" placeholder="Write a thoughtful comment…" required><button class="icon-btn text-brand"><i class="fa-solid fa-paper-plane"></i></button></form></div>
+      <div class="hidden border-t border-line p-3" data-comments><div class="space-y-2 mb-2.5" data-comment-list></div><form class="flex items-center gap-2" data-comment-form>${window.FILive.avatarMarkup(current || { name: 'Me' }, 'avatar w-8 h-8 text-[10px] object-cover')}<input name="content" class="field !rounded-pill !py-1.5 !text-[13px]" placeholder="Write a thoughtful comment…" required><button class="icon-btn text-brand !w-8 !h-8"><i class="fa-solid fa-paper-plane text-[13px]"></i></button></form></div>
     </article>`;
   }
 
@@ -296,19 +296,29 @@
 
   function renderBlessings(items) {
     const rail = $('[data-rail]'); if (!rail) return;
-    const blessings = items.filter(post => post.type === 'blessing').slice(0, 8);
+    const blessings = items.filter(post => post.type === 'blessing').slice(0, 10);
     const current = window.FILive.user || { name: 'Me' };
     const currentPhoto = current.avatar_url || current.avatar || current.photo_url || '';
-    const addVisual = currentPhoto ? `<img class="w-full h-full object-cover" src="${esc(currentPhoto)}" alt="${esc(current.name || 'Your profile')}">` : window.FILive.avatarMarkup(current, 'avatar w-14 h-14 text-[15px] object-cover');
-    const add = `<button class="snap-start shrink-0 w-[112px] h-[172px] rounded-card overflow-hidden card text-left" data-modal-open="modal-blessing"><div class="h-[108px] bg-brand-soft grid place-items-center overflow-hidden">${addVisual}</div><div class="h-[64px] grid place-items-center text-[12.5px] font-semibold">+ Add Blessing</div></button>`;
+    const addVisual = currentPhoto ? `<img class="w-full h-full object-cover" src="${esc(currentPhoto)}" alt="${esc(current.name || 'Your profile')}">` : window.FILive.avatarMarkup(current, 'avatar w-full h-full text-[12px] object-cover');
+    
+    const add = `<button class="snap-start shrink-0 flex flex-col items-center text-center group cursor-pointer" data-modal-open="modal-blessing">
+      <div class="relative w-[50px] h-[50px] sm:w-[56px] sm:h-[56px] rounded-full p-[2px] bg-gradient-to-tr from-brand to-indigo-400">
+        <div class="w-full h-full rounded-full overflow-hidden bg-surface ring-2 ring-surface flex items-center justify-center">${addVisual}</div>
+        <span class="absolute bottom-0 right-0 w-4 h-4 rounded-full bg-brand text-white text-[8px] font-black grid place-items-center ring-2 ring-surface shadow-sm"><i class="fa-solid fa-plus"></i></span>
+      </div>
+      <span class="text-[10.5px] font-medium text-ink mt-1 truncate max-w-[60px]">Add Blessing</span>
+    </button>`;
+    
     rail.innerHTML = add + blessings.map((post, index) => {
       const author = post.author || {};
-      const colors = ['#3730a3','#065f46','#92400e','#6b21a8','#1e40af'];
-      const media = Array.isArray(post.media_items) ? post.media_items.find(item => item.type === 'image') : null;
-      const blessingImage = mediaUrl(media?.url || media?.preview_url || post.cover_image_url || '');
       const authorPhoto = author.uid === current.uid ? currentPhoto : (author.avatar_url || author.avatar || '');
-      const avatar = authorPhoto ? `<img class="absolute top-2.5 left-2.5 avatar w-9 h-9 object-cover ring-[3px] ring-white/80" src="${esc(authorPhoto)}" alt="${esc(author.name || 'Faith In member')}">` : `<span class="absolute top-2.5 left-2.5 avatar w-9 h-9 text-[11px] ring-[3px] ring-white/80">${esc(api.initials(author.name))}</span>`;
-      return `<button class="snap-start shrink-0 w-[112px] h-[172px] rounded-card overflow-hidden relative text-left text-white" style="background:linear-gradient(180deg,${colors[index % colors.length]},#111827)" data-blessing-post="${esc(post.id)}">${blessingImage ? `<img class="absolute inset-0 w-full h-full object-cover" src="${esc(blessingImage)}" alt="Blessing image"><span class="absolute inset-0" style="background:linear-gradient(180deg,rgba(0,0,0,.2),rgba(0,0,0,.35) 48%,rgba(0,0,0,.78))"></span>` : ''}${avatar}<span class="absolute inset-x-3 top-1/2 -translate-y-1/2 text-center font-serif italic text-[13px] line-clamp-4">${esc(post.content || 'Shared a blessing')}</span><span class="absolute bottom-2.5 left-3 right-3 text-[11.5px] font-semibold truncate">${esc(author.name || 'Faith In Member')}</span></button>`;
+      const avatar = authorPhoto ? `<img class="w-full h-full object-cover" src="${esc(authorPhoto)}" alt="${esc(author.name || 'Member')}">` : `<span class="avatar w-full h-full text-[12px] font-bold">${esc(api.initials(author.name))}</span>`;
+      return `<button class="snap-start shrink-0 flex flex-col items-center text-center group cursor-pointer" data-blessing-post="${esc(post.id)}">
+        <div class="relative w-[50px] h-[50px] sm:w-[56px] sm:h-[56px] rounded-full p-[2px] bg-gradient-to-tr from-amber-400 via-rose-500 to-purple-600">
+          <div class="w-full h-full rounded-full overflow-hidden bg-surface ring-2 ring-surface flex items-center justify-center">${avatar}</div>
+        </div>
+        <span class="text-[10.5px] font-medium text-ink mt-1 truncate max-w-[60px]">${esc(author.name ? author.name.split(' ')[0] : 'Member')}</span>
+      </button>`;
     }).join('');
   }
 

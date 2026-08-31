@@ -20,8 +20,8 @@
 <link href="/faithin-app/assets/faithin-tw.css" rel="stylesheet"/>
 <link href="/faithin-app/assets/faithin.css?v=20260831-v32" rel="stylesheet"/>
 </head>
-<body class="font-sans min-h-screen pb-16 lg:pb-0" data-page="home" data-search="Search Faith In">
-<main class="max-w-[1200px] mx-auto px-3 sm:px-4 py-5 grid gap-5 lg:grid-cols-[232px_minmax(0,1fr)] xl:grid-cols-[232px_minmax(0,600px)_312px] items-start" id="main">
+<body class="font-sans min-h-screen pb-14 lg:pb-0" data-page="home" data-search="Search Faith In">
+<main class="max-w-[1200px] mx-auto px-2 sm:px-4 py-2 sm:py-5 grid gap-2 sm:gap-5 lg:grid-cols-[232px_minmax(0,1fr)] xl:grid-cols-[232px_minmax(0,600px)_312px] items-start" id="main">
 <!-- ───── LEFT RAIL ───── -->
 <aside class="hidden lg:block sticky top-[72px] space-y-4">
 <section class="card overflow-hidden">
@@ -56,38 +56,32 @@
 <!-- ───── CENTER ───── -->
 <section class="space-y-4 min-w-0" id="feed">
 <!-- blessings rail -->
-<div class="relative group/rail">
-<div class="flex gap-3 overflow-x-auto no-scrollbar pb-1 snap-x" data-rail="">
-<button class="snap-start shrink-0 w-[112px] h-[172px] rounded-card overflow-hidden card text-left hover:shadow-lift transition group" data-modal-open="modal-blessing">
-<div class="h-[108px] bg-[linear-gradient(160deg,#e6ecfb,#c9d7f7)] dark:bg-[linear-gradient(160deg,#1d2a4f,#111827)] grid place-items-center">
-<span class="avatar w-11 h-11 text-[13px] opacity-90" data-current-user-avatar style="background:linear-gradient(135deg,#2f5bea,#1e40af)">FI</span>
+<div class="relative overflow-x-auto no-scrollbar py-0.5">
+<div class="flex gap-3.5 overflow-x-auto no-scrollbar pb-0.5 px-1 snap-x items-center" data-rail="">
+<button class="snap-start shrink-0 flex flex-col items-center text-center group cursor-pointer" data-modal-open="modal-blessing">
+<div class="relative w-[50px] h-[50px] sm:w-[56px] sm:h-[56px] rounded-full p-[2px] bg-gradient-to-tr from-brand to-indigo-400">
+<div class="w-full h-full rounded-full overflow-hidden bg-surface ring-2 ring-surface flex items-center justify-center">
+<span class="avatar w-full h-full text-[12px] opacity-90" data-current-user-avatar style="background:linear-gradient(135deg,#2f5bea,#1e40af)">FI</span>
 </div>
-<div class="relative h-[64px] grid place-items-end pb-3">
-<span class="absolute -top-4 left-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-brand text-white dark:text-[#0b1120] grid place-items-center ring-4 ring-surface group-hover:scale-110 transition">
-<i class="fa-solid fa-plus text-[13px]"></i>
-</span>
-<span class="text-[12.5px] font-semibold">Add Blessing</span>
+<span class="absolute bottom-0 right-0 w-4 h-4 rounded-full bg-brand text-white text-[8px] font-black grid place-items-center ring-2 ring-surface shadow-sm"><i class="fa-solid fa-plus"></i></span>
 </div>
+<span class="text-[10.5px] font-medium text-ink mt-1 truncate max-w-[60px]">Add Blessing</span>
 </button>
 </div>
-<button aria-label="Scroll blessings" class="hidden md:grid place-items-center absolute right-0 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-surface border border-line shadow-lift opacity-0 group-hover/rail:opacity-100 transition" data-rail-next="">
-<i class="fa-solid fa-chevron-right text-[12px]"></i>
-</button>
 </div>
 <!-- composer -->
-<section class="card p-3.5">
-<div class="flex items-center gap-3">
-<span class="avatar w-11 h-11 text-[14px]" data-current-user-avatar style="background:linear-gradient(135deg,#2f5bea,#1e40af)">FI</span>
-<button class="flex-1 text-left rounded-pill bg-raised hover:bg-line/60 border border-line px-4 py-2.5 text-[14px] text-muted transition" data-modal-open="modal-blessing">
-          Share a blessing, testimony, or encouragement…
-        </button>
+<section class="card p-3 shadow-xs">
+<div class="flex items-center gap-2.5">
+<span class="avatar w-9 h-9 text-[12px] shrink-0" data-current-user-avatar style="background:linear-gradient(135deg,#2f5bea,#1e40af)">FI</span>
+<button class="flex-1 text-left rounded-pill bg-raised hover:bg-line/60 border border-line px-3.5 py-2 text-[13px] sm:text-[14px] text-muted transition truncate" data-modal-open="modal-blessing">
+  Share a blessing, testimony, or prayer…
+</button>
 </div>
-<div class="mt-2.5 pt-2.5 border-t border-line flex items-center gap-1">
-<button class="action-btn !text-[12.5px] sm:!text-[14px]" data-modal-open="modal-blessing"><i class="fa-solid fa-hands-praying text-brand"></i>Blessing</button>
-<button class="action-btn !text-[12.5px] sm:!text-[14px]" data-media-mode="image" data-modal-open="modal-photo"><i class="fa-regular fa-image text-emerald-500"></i>Photo</button>
-<button class="action-btn !text-[12.5px] sm:!text-[14px]" data-media-mode="video" data-modal-open="modal-photo"><i class="fa-solid fa-video text-rose"></i>Video</button>
-<button class="action-btn !text-[12.5px] sm:!text-[14px]" data-modal-open="modal-prayer"><i class="fa-regular fa-heart text-rose"></i>Prayer</button>
-<button class="action-btn !text-[12.5px] sm:!text-[14px]" data-modal-open="modal-article"><i class="fa-regular fa-file-lines text-violet-500"></i>Article</button>
+<div class="mt-2.5 pt-2 border-t border-line flex items-center justify-around text-center">
+<button class="action-btn !text-[12px] sm:!text-[13.5px] px-2 py-1" data-modal-open="modal-blessing"><i class="fa-solid fa-hands-praying text-brand text-[13px]"></i><span class="ml-1">Blessing</span></button>
+<button class="action-btn !text-[12px] sm:!text-[13.5px] px-2 py-1" data-media-mode="image" data-modal-open="modal-photo"><i class="fa-regular fa-image text-emerald-500 text-[13px]"></i><span class="ml-1">Photo</span></button>
+<button class="action-btn !text-[12px] sm:!text-[13.5px] px-2 py-1" data-media-mode="video" data-modal-open="modal-photo"><i class="fa-solid fa-video text-rose text-[13px]"></i><span class="ml-1">Video</span></button>
+<button class="action-btn !text-[12px] sm:!text-[13.5px] px-2 py-1" data-modal-open="modal-prayer"><i class="fa-regular fa-heart text-rose text-[13px]"></i><span class="ml-1">Prayer</span></button>
 </div>
 </section>
 <!-- sort -->
