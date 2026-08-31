@@ -857,7 +857,22 @@
             holder.innerHTML = wanted === 'comments'
               ? emptyState('Comment history is shown with each post on the home feed.')
               : (filtered.slice(0, 12).length
-                ? filtered.slice(0, 12).map(post => `<a href="/home?post=${encodeURIComponent(post.id)}" class="block p-3 -mx-2 rounded-xl row-hover border-b border-line"><span class="block text-[11.5px] text-muted">${esc(user.name)} posted · ${esc(post.time || '')}</span><span class="block text-[14px] mt-1 line-clamp-2">${esc(post.content || post.article_title || 'Shared media')}</span><span class="block text-[12px] text-muted mt-2">${Number(post.reaction_count || 0)} reactions · ${Number(post.comment_count || 0)} comments</span></a>`).join('')
+                ? filtered.slice(0, 12).map(post => {
+                    const avatarImg = user.avatar_url || user.avatar || user.photo_url;
+                    const avatarHtml = avatarImg
+                      ? `<img class="w-9 h-9 rounded-full object-cover shrink-0 ring-2 ring-surface" src="${esc(avatarImg)}" alt="${esc(user.name)}">`
+                      : window.FILive.avatarMarkup(user, 'avatar w-9 h-9 text-[12px] shrink-0 ring-2 ring-surface');
+                    return `
+                      <a href="/home?post=${encodeURIComponent(post.id)}" class="flex gap-3 p-3 -mx-2 rounded-xl row-hover border-b border-line items-start">
+                        ${avatarHtml}
+                        <div class="flex-1 min-w-0">
+                          <span class="block text-[11.5px] text-muted">${esc(user.name)} posted · ${esc(post.time || '')}</span>
+                          <span class="block text-[14px] mt-0.5 line-clamp-2">${esc(post.content || post.article_title || 'Shared media')}</span>
+                          <span class="block text-[12px] text-muted mt-1.5">${Number(post.reaction_count || 0)} reactions · ${Number(post.comment_count || 0)} comments</span>
+                        </div>
+                      </a>
+                    `;
+                  }).join('')
                 : emptyState(`No ${wanted} from ${esc(user.name)} yet.`));
           }
         };
@@ -876,10 +891,40 @@
         api.request('cv_social_get_followers', { uid: user.uid }),
         api.request('cv_social_get_following', { uid: user.uid })
       ]).then(results => {
+        const followers = results[0].items || [];
+        const following = results[1].items || [];
         const connection = $$('a', hero).find(link => /connections|following/i.test(link.textContent));
-        if (connection) connection.textContent = `${results[1].items?.length || 0} following`;
+        if (connection) connection.textContent = `${following.length} following`;
+        
         const follower = $$('a', activity).find(link => /followers/i.test(link.textContent));
-        if (follower) follower.textContent = `${results[0].items?.length || 0} followers`;
+        if (follower) {
+          const count = followers.length;
+          follower.textContent = `${count} ${count === 1 ? 'follower' : 'followers'}`;
+          
+          let avatarCluster = activity.querySelector('[data-follower-avatars]');
+          if (!avatarCluster) {
+            avatarCluster = document.createElement('div');
+            avatarCluster.setAttribute('data-follower-avatars', '');
+            avatarCluster.className = 'flex -space-x-2 overflow-hidden py-0.5 items-center';
+            follower.parentNode.insertBefore(avatarCluster, follower);
+            follower.parentNode.classList.add('flex', 'items-center', 'gap-2');
+          }
+          
+          if (followers.length > 0) {
+            avatarCluster.innerHTML = followers.slice(0, 4).map(f => {
+              const photo = f.photo_url || f.avatar_url || f.avatar;
+              const name = f.name || f.displayName || 'Member';
+              if (photo) {
+                return `<img class="inline-block w-6 h-6 rounded-full ring-2 ring-surface object-cover hover:z-10 hover:scale-110 transition shadow-sm" src="${esc(photo)}" alt="${esc(name)}" title="${esc(name)}">`;
+              }
+              return window.FILive.avatarMarkup(f, 'inline-flex items-center justify-center w-6 h-6 rounded-full ring-2 ring-surface text-[9px] font-bold text-white shadow-sm hover:z-10 hover:scale-110 transition');
+            }).join('');
+            avatarCluster.style.display = 'flex';
+          } else {
+            avatarCluster.innerHTML = '';
+            avatarCluster.style.display = 'none';
+          }
+        }
       }).catch(() => {});
     };
     refreshProfileCounts();
