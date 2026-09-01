@@ -24,7 +24,7 @@
       id: 'mock-1',
       name: 'Sophea Sok',
       avatar: 'SS',
-      color: 'bg-blue-600',
+      color: '#1877f2', // Facebook Blue
       unread: 2,
       status: 'Active now',
       role: 'Worship Leader',
@@ -38,7 +38,7 @@
       id: 'mock-2',
       name: 'Dara Chhan',
       avatar: 'DC',
-      color: 'bg-emerald-600',
+      color: '#10b981', // Green
       unread: 0,
       status: 'Active 5m ago',
       role: 'Youth Pastor',
@@ -65,7 +65,7 @@
       id: 'mock-3',
       name: 'Youth Ministry Team',
       avatar: 'YM',
-      color: 'bg-purple-600',
+      color: '#8b5cf6', // Purple
       unread: 0,
       status: '3 members',
       role: 'Ministry Group',
@@ -81,7 +81,7 @@
       const stored = localStorage.getItem('fi_conversations');
       if (stored) {
         const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed) && parsed.length >= 3 && parsed.some(c => c.id === 'mock-2')) {
+        if (Array.isArray(parsed) && parsed.length >= 3 && parsed.some(c => c.id === 'mock-2' && c.color && c.color.startsWith('#'))) {
           return parsed;
         }
       }
@@ -136,7 +136,7 @@
   }
 
   function getAvatarColor(name = '') {
-    const colors = ['bg-blue-600', 'bg-emerald-600', 'bg-purple-600', 'bg-rose-600', 'bg-amber-600', 'bg-indigo-600'];
+    const colors = ['#1877f2', '#10b981', '#8b5cf6', '#f59e0b', '#ec4899', '#06b6d4', '#ef4444'];
     let hash = 0;
     for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
     return colors[Math.abs(hash) % colors.length];
@@ -153,7 +153,7 @@
     });
 
     if (!list.length) {
-      inbox.innerHTML = `<div class="p-8 text-center text-[13.5px] text-[#65676b] dark:text-gray-400">
+      inbox.innerHTML = `<div style="padding: 32px 16px; text-align: center; font-size: 13.5px; color: #65676b;">
         No conversations found.
       </div>`;
       return;
@@ -166,31 +166,31 @@
       const lastText = lastMsg ? (lastMsg.sender === 'me' ? 'You: ' + lastMsg.text : lastMsg.text) : 'Started a conversation';
       const lastTime = lastMsg?.time || 'New';
       const isOnline = (chat.status || '').toLowerCase().includes('active now');
-      const avatarBg = chat.color || getAvatarColor(chat.name);
+      const avatarBg = chat.color && chat.color.startsWith('#') ? chat.color : getAvatarColor(chat.name);
       const initials = chat.avatar || getInitials(chat.name);
 
       return `
-        <button class="msg-thread ${isActive ? 'is-active' : ''} ${unread ? 'is-unread' : ''}" data-chat-id="${esc(chat.id)}" type="button">
-          <div class="relative shrink-0">
-            <div class="w-12 h-12 rounded-full text-white flex items-center justify-center text-base font-semibold ${avatarBg}">
+        <button class="msg-thread ${isActive ? 'is-active' : ''} ${unread ? 'is-unread' : ''}" data-chat-id="${esc(chat.id)}" type="button" style="padding: 10px 12px; margin: 2px 8px; border-radius: 10px; display: flex; align-items: center; gap: 12px; border: none; cursor: pointer; text-align: left; width: calc(100% - 16px); background: ${isActive ? '#eaf3ff' : 'transparent'};">
+          <div style="position: relative; flex-shrink: 0;">
+            <div style="width: 48px; height: 48px; min-width: 48px; min-height: 48px; border-radius: 50%; background-color: ${avatarBg}; color: #ffffff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 15px;">
               ${esc(initials)}
             </div>
-            ${isOnline ? '<span class="msg-dot"></span>' : ''}
+            ${isOnline ? '<span style="position: absolute; right: 0; bottom: 0; width: 12px; height: 12px; border-radius: 50%; background: #31a24c; border: 2px solid #ffffff;"></span>' : ''}
           </div>
-          <div class="flex-1 min-w-0 text-left">
-            <div class="flex items-center justify-between gap-1">
-              <span class="msg-thread__name text-[14.5px] truncate ${unread ? 'font-bold text-[#1c1e21] dark:text-white' : 'font-semibold text-[#1c1e21] dark:text-gray-200'}">
+          <div style="flex: 1; min-width: 0; text-align: left;">
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 4px;">
+              <span style="font-size: 14.5px; font-weight: ${unread ? '700' : '600'}; color: #1c1e21; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
                 ${esc(chat.name)}
               </span>
-              <span class="text-[11.5px] shrink-0 ${unread ? 'font-bold text-[#1877f2]' : 'text-[#65676b] dark:text-gray-400'}">
+              <span style="font-size: 11.5px; font-weight: ${unread ? '700' : '400'}; color: ${unread ? '#1877f2' : '#65676b'}; flex-shrink: 0;">
                 ${esc(lastTime)}
               </span>
             </div>
-            <div class="flex items-center justify-between gap-1 mt-0.5">
-              <span class="msg-thread__preview text-[13px] truncate ${unread ? 'font-bold text-[#1c1e21] dark:text-white' : 'text-[#65676b] dark:text-gray-400'}">
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 4px; margin-top: 2px;">
+              <span style="font-size: 13px; font-weight: ${unread ? '700' : '400'}; color: ${unread ? '#1c1e21' : '#65676b'}; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
                 ${esc(lastText)}
               </span>
-              ${unread ? '<span class="w-2.5 h-2.5 rounded-full bg-[#1877f2] shrink-0 ml-1.5"></span>' : ''}
+              ${unread ? '<span style="width: 9px; height: 9px; border-radius: 50%; background: #1877f2; flex-shrink: 0; margin-left: 6px;"></span>' : ''}
             </div>
           </div>
         </button>
@@ -223,12 +223,12 @@
       $('[data-conversation-header]').style.display = 'none';
       $('[data-composer]').style.display = 'none';
       messagesHost.innerHTML = `
-        <div class="m-auto text-center px-6 py-12">
-          <div class="w-16 h-16 rounded-full bg-[#f0f2f5] dark:bg-[#242526] text-[#8d949e] flex items-center justify-center text-3xl mx-auto mb-3">
+        <div style="margin: auto; text-align: center; padding: 48px 24px;">
+          <div style="width: 64px; height: 64px; border-radius: 50%; background: #f0f2f5; color: #8d949e; display: flex; align-items: center; justify-content: center; font-size: 28px; margin: 0 auto 12px;">
             <i class="fa-regular fa-comments"></i>
           </div>
-          <p class="text-[15px] font-semibold text-[#1c1e21] dark:text-white">Choose a conversation</p>
-          <p class="text-[13px] text-[#65676b] dark:text-gray-400 mt-1">Select someone from the left or start a new message.</p>
+          <p style="font-size: 15px; font-weight: 600; color: #1c1e21;">Choose a conversation</p>
+          <p style="font-size: 13px; color: #65676b; margin-top: 4px;">Select someone from the left or start a new message.</p>
         </div>
       `;
       return;
@@ -238,28 +238,30 @@
     $('[data-composer]').style.display = 'flex';
 
     // Header
-    const avatarBg = chat.color || getAvatarColor(chat.name);
+    const avatarBg = chat.color && chat.color.startsWith('#') ? chat.color : getAvatarColor(chat.name);
     const initials = chat.avatar || getInitials(chat.name);
     const isOnline = (chat.status || '').toLowerCase().includes('active now');
 
     $('[data-partner-name]').textContent = chat.name;
     $('[data-partner-status]').textContent = chat.status || 'Active now';
     $('[data-partner-avatar]').innerHTML = `
-      <div class="w-10 h-10 rounded-full text-white flex items-center justify-center text-sm font-semibold ${avatarBg}">
-        ${esc(initials)}
+      <div style="position: relative;">
+        <div style="width: 36px; height: 36px; min-width: 36px; min-height: 36px; border-radius: 50%; background-color: ${avatarBg}; color: #ffffff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px;">
+          ${esc(initials)}
+        </div>
+        ${isOnline ? '<span style="position: absolute; right: 0; bottom: 0; width: 10px; height: 10px; border-radius: 50%; background: #31a24c; border: 2px solid #ffffff;"></span>' : ''}
       </div>
-      ${isOnline ? '<span class="msg-dot"></span>' : ''}
     `;
 
     // Messages
     if (!chat.messages || !chat.messages.length) {
       messagesHost.innerHTML = `
-        <div class="m-auto text-center py-10">
-          <div class="w-20 h-20 rounded-full text-white flex items-center justify-center text-3xl font-bold ${avatarBg} mx-auto mb-3 shadow-md">
+        <div style="margin: auto; text-align: center; padding: 40px 16px;">
+          <div style="width: 72px; height: 72px; border-radius: 50%; background-color: ${avatarBg}; color: #ffffff; display: flex; align-items: center; justify-content: center; font-size: 26px; font-weight: 700; margin: 0 auto 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
             ${esc(initials)}
           </div>
-          <h3 class="text-[18px] font-bold text-[#1c1e21] dark:text-white">${esc(chat.name)}</h3>
-          <p class="text-[13px] text-[#65676b] dark:text-gray-400 mt-1">You're connected on Faith In.</p>
+          <h3 style="font-size: 18px; font-weight: 700; color: #1c1e21;">${esc(chat.name)}</h3>
+          <p style="font-size: 13px; color: #65676b; margin-top: 4px;">You're connected on Faith In.</p>
         </div>
       `;
       return;
@@ -268,7 +270,7 @@
     let html = '';
 
     // Date header pill
-    html += `<div class="msg-day">Yesterday</div>`;
+    html += `<div style="align-self: center; padding: 3px 12px; border-radius: 999px; color: #65676b; font-size: 11px; font-weight: 600; margin: 12px 0 6px;">Yesterday</div>`;
 
     chat.messages.forEach((msg, idx) => {
       const isMe = msg.sender === 'me';
@@ -280,16 +282,16 @@
       let attachHtml = '';
       if (msg.attachment) {
         if (msg.attachment.type && msg.attachment.type.startsWith('image')) {
-          attachHtml = `<img src="${esc(msg.attachment.dataUrl || msg.attachment.url || '')}" class="rounded-xl max-h-64 object-cover mb-1.5" alt="Attachment"/>`;
+          attachHtml = `<img src="${esc(msg.attachment.dataUrl || msg.attachment.url || '')}" style="border-radius: 12px; max-height: 240px; object-fit: cover; margin-bottom: 6px;" alt="Attachment"/>`;
         } else {
           attachHtml = `
-            <div class="msg-attachment-card">
-              <div class="p-2 rounded bg-[#f0f2f5] dark:bg-[#242526] text-[#1877f2]">
-                <i class="fa-solid fa-file-lines text-lg"></i>
+            <div style="display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 8px; margin-bottom: 6px; background: ${isMe ? '#166fe5' : '#ffffff'}; border: 1px solid ${isMe ? '#1460c5' : '#ccd0d5'}; color: ${isMe ? '#ffffff' : '#1c1e21'}; text-decoration: none;">
+              <div style="width: 36px; height: 36px; border-radius: 6px; background-color: #0e5cce; display: flex; align-items: center; justify-content: center; color: #ffffff; font-size: 16px; flex-shrink: 0;">
+                <i class="fa-solid fa-file-pdf"></i>
               </div>
-              <div class="flex-1 min-w-0 pr-2">
-                <p class="text-[13.5px] font-semibold truncate ${isMe ? 'text-white' : 'text-[#1c1e21] dark:text-white'}">${esc(msg.attachment.name)}</p>
-                <p class="text-[11.5px] ${isMe ? 'text-blue-100' : 'text-[#65676b] dark:text-gray-400'}">${esc(msg.attachment.size || 'Attachment')}</p>
+              <div style="flex: 1; min-width: 0; padding-right: 8px;">
+                <p style="font-size: 14px; font-weight: 600; color: ${isMe ? '#ffffff' : '#1c1e21'}; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin: 0;">${esc(msg.attachment.name)}</p>
+                <p style="font-size: 12px; color: ${isMe ? '#dbeafe' : '#65676b'}; margin: 2px 0 0;">${esc(msg.attachment.size || 'Attachment')}</p>
               </div>
             </div>
           `;
@@ -297,11 +299,11 @@
       }
 
       html += `
-        <div class="msg-row ${isMe ? 'is-mine' : ''} ${isFirst ? 'mt-2' : 'mt-0.5'}" data-msg-id="${esc(msg.id)}">
+        <div class="msg-row ${isMe ? 'is-mine' : ''} ${isFirst ? 'mt-2' : 'mt-0.5'}" data-msg-id="${esc(msg.id)}" style="display: flex; align-items: flex-end; gap: 6px; justify-content: ${isMe ? 'flex-end' : 'flex-start'};">
           ${!isMe ? `
-            <div class="w-7 mr-1 flex-shrink-0 flex items-end">
+            <div style="width: 28px; margin-right: 2px; flex-shrink: 0; display: flex; align-items: flex-end;">
               ${isLast ? `
-                <div class="w-7 h-7 rounded-full text-white flex items-center justify-center text-[10.5px] font-bold ${avatarBg}">
+                <div style="width: 28px; height: 28px; min-width: 28px; min-height: 28px; border-radius: 50%; background-color: ${avatarBg}; color: #ffffff; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700;">
                   ${esc(initials)}
                 </div>
               ` : ''}
@@ -309,21 +311,21 @@
           ` : ''}
 
           ${isMe ? `
-            <div class="msg-actions pr-1">
+            <div class="msg-actions" style="display: flex; align-items: center; gap: 2px; opacity: 0; padding-right: 4px;">
               <button class="msg-action-btn" title="React" data-msg-react="${esc(msg.id)}" type="button"><i class="fa-regular fa-face-smile text-sm"></i></button>
               <button class="msg-action-btn" title="Reply" data-msg-reply="${esc(msg.id)}" type="button"><i class="fa-solid fa-reply text-sm"></i></button>
               <button class="msg-action-btn" title="More" data-msg-more="${esc(msg.id)}" type="button"><i class="fa-solid fa-ellipsis-vertical text-sm"></i></button>
             </div>
           ` : ''}
 
-          <div class="msg-bubble ${isMe ? 'is-mine' : ''}">
+          <div style="position: relative; background-color: ${isMe ? '#1877f2' : '#f0f2f5'}; color: ${isMe ? '#ffffff' : '#1c1e21'}; border-radius: 18px; padding: 9px 14px; max-width: 68%; font-size: 14.5px; line-height: 1.38; box-shadow: 0 1px 2px rgba(0,0,0,0.05); word-break: break-word;">
             ${attachHtml}
             ${msg.text ? `<div>${esc(msg.text)}</div>` : ''}
-            ${msg.reaction ? `<span class="absolute -bottom-2 -right-1 bg-white dark:bg-[#242526] border border-[#ccd0d5] dark:border-[#3e4042] rounded-full px-1.5 py-0.5 text-xs shadow-sm">${esc(msg.reaction)}</span>` : ''}
+            ${msg.reaction ? `<span style="position: absolute; bottom: -8px; right: -4px; background: #ffffff; border: 1px solid #ccd0d5; border-radius: 999px; padding: 2px 6px; font-size: 11px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">${esc(msg.reaction)}</span>` : ''}
           </div>
 
           ${!isMe ? `
-            <div class="msg-actions pl-1">
+            <div class="msg-actions" style="display: flex; align-items: center; gap: 2px; opacity: 0; padding-left: 4px;">
               <button class="msg-action-btn" title="React" data-msg-react="${esc(msg.id)}" type="button"><i class="fa-regular fa-face-smile text-sm"></i></button>
               <button class="msg-action-btn" title="Reply" data-msg-reply="${esc(msg.id)}" type="button"><i class="fa-solid fa-reply text-sm"></i></button>
               <button class="msg-action-btn" title="More" data-msg-more="${esc(msg.id)}" type="button"><i class="fa-solid fa-ellipsis-vertical text-sm"></i></button>
@@ -335,8 +337,8 @@
 
     // Read Receipt indicator at the bottom right
     html += `
-      <div class="flex justify-end mt-1 pr-1">
-        <div class="w-3.5 h-3.5 rounded-full text-white flex items-center justify-center text-[7px] font-bold ${avatarBg}">
+      <div style="display: flex; justify-content: flex-end; margin-top: 4px; padding-right: 4px;">
+        <div style="width: 14px; height: 14px; border-radius: 50%; background-color: ${avatarBg}; color: #ffffff; display: flex; align-items: center; justify-content: center; font-size: 7px; font-weight: 700;">
           ${esc(initials)}
         </div>
       </div>
@@ -355,13 +357,13 @@
     const chat = getActiveChat();
     if (!chat) return;
 
-    const avatarBg = chat.color || getAvatarColor(chat.name);
+    const avatarBg = chat.color && chat.color.startsWith('#') ? chat.color : getAvatarColor(chat.name);
     const initials = chat.avatar || getInitials(chat.name);
 
     $('[data-info-name]').textContent = chat.name;
     $('[data-info-role]').textContent = chat.status || 'Active now';
     $('[data-info-avatar]').innerHTML = `
-      <div class="w-20 h-20 rounded-full text-white flex items-center justify-center text-3xl font-bold ${avatarBg} shadow-md">
+      <div style="width: 72px; height: 72px; min-width: 72px; min-height: 72px; border-radius: 50%; background-color: ${avatarBg}; color: #ffffff; display: flex; align-items: center; justify-content: center; font-size: 26px; font-weight: 700; box-shadow: 0 4px 12px rgba(0,0,0,0.08); margin-bottom: 12px;">
         ${esc(initials)}
       </div>
     `;
@@ -374,10 +376,12 @@
     const muteLabel = $('[data-mute-label]');
     if (muteWrap && muteLabel) {
       if (state.isMuted) {
-        muteWrap.classList.add('bg-blue-50', 'text-[#1877f2]');
+        muteWrap.style.background = '#eaf3ff';
+        muteWrap.style.color = '#1877f2';
         muteLabel.textContent = 'Unmute';
       } else {
-        muteWrap.classList.remove('bg-blue-50', 'text-[#1877f2]');
+        muteWrap.style.background = '#f0f2f5';
+        muteWrap.style.color = '#1c1e21';
         muteLabel.textContent = 'Mute';
       }
     }
@@ -418,7 +422,7 @@
     renderInbox();
     scrollToBottom();
 
-    // Async backend echo (optional sync)
+    // Async backend echo
     api.request('cv_social_send_message', {
       thread_id: chat.id,
       body: text,
@@ -463,19 +467,20 @@
     const chat = getActiveChat();
     if (!chat) return;
     state.activeCall = type;
-    const avatarBg = chat.color || getAvatarColor(chat.name);
+    const avatarBg = chat.color && chat.color.startsWith('#') ? chat.color : getAvatarColor(chat.name);
     const initials = chat.avatar || getInitials(chat.name);
 
-    $('[data-call-avatar]').className = `w-28 h-28 rounded-full text-white flex items-center justify-center text-4xl font-bold mb-4 shadow-2xl ${avatarBg} animate-pulse`;
+    $('[data-call-avatar]').className = `w-24 h-24 rounded-full text-white flex items-center justify-center text-3xl font-bold mb-4 shadow-2xl animate-pulse`;
+    $('[data-call-avatar]').style.backgroundColor = avatarBg;
     $('[data-call-initials]').textContent = initials;
     $('[data-call-name]').textContent = chat.name;
     $('[data-call-type]').textContent = type === 'video' ? 'Calling video…' : 'Calling…';
-    callOverlay.classList.remove('hidden');
+    callOverlay.classList.add('is-active');
   }
 
   function endCall() {
     state.activeCall = null;
-    callOverlay.classList.add('hidden');
+    callOverlay.classList.remove('is-active');
     toast('Call ended');
   }
 
@@ -498,39 +503,9 @@
     }
   });
 
-  searchInput.addEventListener('input', e => {
-    state.searchQuery = e.target.value;
-    renderInbox();
-  });
+  $('[data-back]')?.addEventListener('click', showInboxPane);
+  $('[data-info-toggle]')?.addEventListener('click', toggleInfoPanel);
 
-  $('[data-filter-unread]').addEventListener('click', () => {
-    state.unreadOnly = !state.unreadOnly;
-    $('[data-filter-unread]').classList.toggle('!bg-blue-100', state.unreadOnly);
-    $('[data-filter-unread]').classList.toggle('!text-[#1877f2]', state.unreadOnly);
-    renderInbox();
-  });
-
-  $('[data-back]').addEventListener('click', showInboxPane);
-  $('[data-info-toggle]').addEventListener('click', toggleInfoPanel);
-  $('[data-header-profile]').addEventListener('click', e => {
-    if (e.target.closest('[data-back]') || e.target.closest('button')) return;
-    toggleInfoPanel();
-  });
-
-  // Call actions
-  $('[data-call-voice]').addEventListener('click', () => startCall('audio'));
-  $('[data-call-video]').addEventListener('click', () => startCall('video'));
-  $('[data-call-end]').addEventListener('click', endCall);
-  $('[data-call-mic]').addEventListener('click', function() {
-    this.classList.toggle('bg-red-600');
-    toast(this.classList.contains('bg-red-600') ? 'Microphone muted' : 'Microphone unmuted');
-  });
-  $('[data-call-cam]').addEventListener('click', function() {
-    this.classList.toggle('bg-red-600');
-    toast(this.classList.contains('bg-red-600') ? 'Camera turned off' : 'Camera turned on');
-  });
-
-  // Form submit
   form.addEventListener('submit', e => {
     e.preventDefault();
     sendMessage();
@@ -543,17 +518,35 @@
     }
   });
 
+  $('[data-filter-unread]')?.addEventListener('click', () => {
+    state.unreadOnly = !state.unreadOnly;
+    $('[data-filter-unread]').classList.toggle('text-[#1877f2]', state.unreadOnly);
+    renderInbox();
+  });
+
+  searchInput.addEventListener('input', e => {
+    state.searchQuery = e.target.value;
+    renderInbox();
+  });
+
+  // Calling
+  $('[data-call-voice]')?.addEventListener('click', () => startCall('audio'));
+  $('[data-call-video]')?.addEventListener('click', () => startCall('video'));
+  $('[data-call-end]')?.addEventListener('click', endCall);
+  $('[data-call-mic]')?.addEventListener('click', () => toast('Microphone toggled'));
+  $('[data-call-cam]')?.addEventListener('click', () => toast('Camera toggled'));
+
   // Attachments
-  $('[data-attach-file]').addEventListener('click', () => fileInput.click());
-  $('[data-attach-photo]').addEventListener('click', () => photoInput.click());
-  $('[data-btn-emoji]').addEventListener('click', () => {
+  $('[data-attach-file]')?.addEventListener('click', () => fileInput.click());
+  $('[data-attach-photo]')?.addEventListener('click', () => photoInput.click());
+  $('[data-btn-emoji]')?.addEventListener('click', () => {
     input.value += ' 😊 ';
     input.focus();
   });
 
   fileInput.addEventListener('change', e => setAttachment(e.target.files[0]));
   photoInput.addEventListener('change', e => setAttachment(e.target.files[0]));
-  $('[data-attach-clear]').addEventListener('click', clearAttachment);
+  $('[data-attach-clear]')?.addEventListener('click', clearAttachment);
 
   // Message Reactions & Actions
   messagesHost.addEventListener('click', e => {
@@ -630,7 +623,7 @@
   $('[data-action-report]')?.addEventListener('click', () => toast('Report submitted to church moderators'));
 
   // New message modal
-  $('[data-new-message]').addEventListener('click', () => {
+  $('[data-new-message]')?.addEventListener('click', () => {
     newModal.classList.remove('hidden');
     newModal.classList.add('flex');
     const qInput = $('#msg-people');
@@ -641,12 +634,12 @@
     searchPeople('');
   });
 
-  $('[data-new-close]').addEventListener('click', () => {
+  $('[data-new-close]')?.addEventListener('click', () => {
     newModal.classList.add('hidden');
     newModal.classList.remove('flex');
   });
 
-  newModal.addEventListener('click', e => {
+  newModal?.addEventListener('click', e => {
     if (e.target === newModal) {
       newModal.classList.add('hidden');
       newModal.classList.remove('flex');
@@ -662,13 +655,13 @@
     ];
     const filtered = members.filter(m => !query || m.name.toLowerCase().includes(query.toLowerCase()));
     peopleList.innerHTML = filtered.map(m => `
-      <button class="w-full flex items-center gap-3 p-2.5 rounded-xl hover:bg-[#f0f2f5] dark:hover:bg-[#242526] transition text-left" data-create-chat="${esc(m.name)}" type="button">
-        <div class="w-10 h-10 rounded-full text-white flex items-center justify-center text-sm font-semibold ${getAvatarColor(m.name)}">
+      <button class="w-full flex items-center gap-3 p-2.5 rounded-xl hover:bg-[#f0f2f5] dark:hover:bg-[#242526] transition text-left" data-create-chat="${esc(m.name)}" type="button" style="border: none; background: transparent; cursor: pointer;">
+        <div style="width: 40px; height: 40px; border-radius: 50%; background-color: ${getAvatarColor(m.name)}; color: #ffffff; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600;">
           ${esc(getInitials(m.name))}
         </div>
-        <div class="flex-1 min-w-0">
-          <p class="text-[14.5px] font-semibold text-[#1c1e21] dark:text-white truncate">${esc(m.name)}</p>
-          <p class="text-[12px] text-[#65676b] dark:text-gray-400 truncate">${esc(m.role)} · ${esc(m.church)}</p>
+        <div style="flex: 1; min-width: 0; text-align: left;">
+          <p style="font-size: 14.5px; font-weight: 600; color: #1c1e21; margin: 0;">${esc(m.name)}</p>
+          <p style="font-size: 12px; color: #65676b; margin: 2px 0 0;">${esc(m.role)} · ${esc(m.church)}</p>
         </div>
         <i class="fa-solid fa-chevron-right text-xs text-[#8d949e]"></i>
       </button>
@@ -677,7 +670,7 @@
 
   $('#msg-people')?.addEventListener('input', e => searchPeople(e.target.value));
 
-  peopleList.addEventListener('click', e => {
+  peopleList?.addEventListener('click', e => {
     const btn = e.target.closest('[data-create-chat]');
     if (btn) {
       const name = btn.dataset.createChat;
@@ -712,9 +705,6 @@
             const idx = state.conversations.findIndex(c => c.id === backendThread.id || c.name === backendThread.other_user?.name);
             if (idx >= 0) {
               state.conversations[idx].id = backendThread.id;
-              if (backendThread.last_message) {
-                // keep local up to date
-              }
             }
           });
           renderInbox();

@@ -16,7 +16,7 @@
 <link href="/faithin-app/assets/faithin-fonts.css" rel="stylesheet"/>
 <link href="/faithin-app/assets/faithin-icons.css" rel="stylesheet"/>
 <link href="/faithin-app/assets/faithin-tw.css" rel="stylesheet"/>
-<link href="/faithin-app/assets/faithin.css?v=20260901-v1" rel="stylesheet"/>
+<link href="/faithin-app/assets/faithin.css?v=20260901-v2" rel="stylesheet"/>
 </head>
 <body class="font-sans min-h-screen pb-16 lg:pb-0" data-page="messaging" data-search="Search messages">
 <main class="fi-msg-wrapper" id="main">
@@ -167,24 +167,24 @@
 </div>
 
 <!-- 3 Quick Action Circles -->
-<div class="flex justify-center gap-6 pb-5 border-b border-[#ccd0d5] dark:border-[#3a3b3c]">
-<a class="flex flex-col items-center gap-1 cursor-pointer group text-decoration-none" data-info-profile href="/profile">
-<div class="w-9 h-9 bg-[#f0f2f5] dark:bg-[#242526] group-hover:bg-[#e4e6eb] dark:group-hover:bg-[#3a3b3c] rounded-full flex items-center justify-center transition text-[#1c1e21] dark:text-white">
-<i class="fa-regular fa-user text-sm"></i>
+<div style="display: flex; justify-content: center; gap: 24px; padding: 14px 0 18px; border-bottom: 1px solid #ccd0d5;">
+<a class="flex flex-col items-center gap-1 cursor-pointer no-underline text-[#1c1e21] dark:text-white" data-info-profile href="/profile">
+<div style="width: 36px; height: 36px; border-radius: 50%; background-color: #f0f2f5; display: flex; align-items: center; justify-content: center; color: #1c1e21;">
+<i class="fa-solid fa-user text-sm"></i>
 </div>
-<span class="text-[12px] text-[#1c1e21] dark:text-gray-300">Profile</span>
+<span style="font-size: 12px; font-weight: 500; color: #1c1e21;">Profile</span>
 </a>
-<button class="flex flex-col items-center gap-1 cursor-pointer group bg-transparent border-none" data-action-mute type="button">
-<div class="w-9 h-9 bg-[#f0f2f5] dark:bg-[#242526] group-hover:bg-[#e4e6eb] dark:group-hover:bg-[#3a3b3c] rounded-full flex items-center justify-center transition text-[#1c1e21] dark:text-white" data-mute-icon-wrap>
-<i class="fa-regular fa-bell text-sm"></i>
+<button class="flex flex-col items-center gap-1 cursor-pointer bg-transparent border-none text-[#1c1e21] dark:text-white" data-action-mute type="button">
+<div style="width: 36px; height: 36px; border-radius: 50%; background-color: #f0f2f5; display: flex; align-items: center; justify-content: center; color: #1c1e21;" data-mute-icon-wrap>
+<i class="fa-solid fa-bell text-sm"></i>
 </div>
-<span class="text-[12px] text-[#1c1e21] dark:text-gray-300" data-mute-label>Mute</span>
+<span style="font-size: 12px; font-weight: 500; color: #1c1e21;" data-mute-label>Mute</span>
 </button>
-<button class="flex flex-col items-center gap-1 cursor-pointer group bg-transparent border-none" data-action-search type="button">
-<div class="w-9 h-9 bg-[#f0f2f5] dark:bg-[#242526] group-hover:bg-[#e4e6eb] dark:group-hover:bg-[#3a3b3c] rounded-full flex items-center justify-center transition text-[#1c1e21] dark:text-white">
+<button class="flex flex-col items-center gap-1 cursor-pointer bg-transparent border-none text-[#1c1e21] dark:text-white" data-action-search type="button">
+<div style="width: 36px; height: 36px; border-radius: 50%; background-color: #f0f2f5; display: flex; align-items: center; justify-content: center; color: #1c1e21;">
 <i class="fa-solid fa-magnifying-glass text-sm"></i>
 </div>
-<span class="text-[12px] text-[#1c1e21] dark:text-gray-300">Search</span>
+<span style="font-size: 12px; font-weight: 500; color: #1c1e21;">Search</span>
 </button>
 </div>
 
@@ -192,21 +192,21 @@
 <div class="px-2 py-2 space-y-1">
 <!-- Customize Chat -->
 <div class="border-b border-[#ccd0d5] dark:border-[#3a3b3c] pb-2">
-<button class="w-full flex items-center justify-between p-2 rounded-lg hover:bg-[#f0f2f5] dark:hover:bg-[#242526] transition font-semibold text-[#1c1e21] dark:text-white text-[14px]" data-acc-toggle="customize" type="button">
+<button class="w-full flex items-center justify-between p-2 rounded-lg hover:bg-[#f0f2f5] dark:hover:bg-[#242526] transition font-semibold text-[#1c1e21] dark:text-white text-[14px]" style="border: none; background: transparent; cursor: pointer;" data-acc-toggle="customize" type="button">
 <span>Customize chat</span>
 <i class="fa-solid fa-chevron-down text-xs text-[#65676b] dark:text-gray-400 transition-transform" data-acc-arrow="customize"></i>
 </button>
 <div class="px-1 py-1 flex flex-col gap-1" data-acc-content="customize">
-<button class="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-[#f0f2f5] dark:hover:bg-[#242526] transition text-[14px] text-[#1c1e21] dark:text-white font-medium text-left" data-action-theme type="button">
-<div class="w-7 h-7 rounded-full bg-[#1877f2] flex items-center justify-center text-white"><i class="fa-solid fa-palette text-xs"></i></div>
+<button class="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-[#f0f2f5] dark:hover:bg-[#242526] transition text-[14px] text-[#1c1e21] dark:text-white font-medium text-left" style="border: none; background: transparent; cursor: pointer;" data-action-theme type="button">
+<div style="width: 30px; height: 30px; border-radius: 50%; background-color: #f0f2f5; display: flex; align-items: center; justify-content: center; color: #1877f2; flex-shrink: 0;"><i class="fa-solid fa-palette text-xs"></i></div>
 <span>Change theme</span>
 </button>
-<button class="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-[#f0f2f5] dark:hover:bg-[#242526] transition text-[14px] text-[#1c1e21] dark:text-white font-medium text-left" data-action-emoji type="button">
-<div class="w-7 h-7 rounded-full bg-[#f0f2f5] dark:bg-[#242526] flex items-center justify-center text-[#1877f2]"><i class="fa-solid fa-thumbs-up text-xs"></i></div>
+<button class="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-[#f0f2f5] dark:hover:bg-[#242526] transition text-[14px] text-[#1c1e21] dark:text-white font-medium text-left" style="border: none; background: transparent; cursor: pointer;" data-action-emoji type="button">
+<div style="width: 30px; height: 30px; border-radius: 50%; background-color: #f0f2f5; display: flex; align-items: center; justify-content: center; color: #1877f2; flex-shrink: 0;"><i class="fa-solid fa-thumbs-up text-xs"></i></div>
 <span>Change emoji</span>
 </button>
-<button class="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-[#f0f2f5] dark:hover:bg-[#242526] transition text-[14px] text-[#1c1e21] dark:text-white font-medium text-left" data-action-nickname type="button">
-<div class="w-7 h-7 rounded-full bg-[#f0f2f5] dark:bg-[#242526] flex items-center justify-center text-[#1c1e21] dark:text-white"><i class="fa-solid fa-font text-xs"></i></div>
+<button class="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-[#f0f2f5] dark:hover:bg-[#242526] transition text-[14px] text-[#1c1e21] dark:text-white font-medium text-left" style="border: none; background: transparent; cursor: pointer;" data-action-nickname type="button">
+<div style="width: 30px; height: 30px; border-radius: 50%; background-color: #f0f2f5; display: flex; align-items: center; justify-content: center; color: #1c1e21; flex-shrink: 0;"><i class="fa-solid fa-font text-xs"></i></div>
 <span>Edit nicknames</span>
 </button>
 </div>
@@ -214,21 +214,21 @@
 
 <!-- Media, files and links -->
 <div class="border-b border-[#ccd0d5] dark:border-[#3a3b3c] pb-2">
-<button class="w-full flex items-center justify-between p-2 rounded-lg hover:bg-[#f0f2f5] dark:hover:bg-[#242526] transition font-semibold text-[#1c1e21] dark:text-white text-[14px]" data-acc-toggle="media" type="button">
+<button class="w-full flex items-center justify-between p-2 rounded-lg hover:bg-[#f0f2f5] dark:hover:bg-[#242526] transition font-semibold text-[#1c1e21] dark:text-white text-[14px]" style="border: none; background: transparent; cursor: pointer;" data-acc-toggle="media" type="button">
 <span>Media, files and links</span>
 <i class="fa-solid fa-chevron-right text-xs text-[#65676b] dark:text-gray-400 transition-transform" data-acc-arrow="media"></i>
 </button>
 <div class="hidden px-1 py-1 flex flex-col gap-1" data-acc-content="media">
-<button class="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-[#f0f2f5] dark:hover:bg-[#242526] transition text-[14px] text-[#1c1e21] dark:text-white font-medium text-left" type="button">
-<div class="w-7 h-7 rounded-full bg-[#f0f2f5] dark:bg-[#242526] flex items-center justify-center text-[#1c1e21] dark:text-white"><i class="fa-regular fa-image text-xs"></i></div>
+<button class="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-[#f0f2f5] dark:hover:bg-[#242526] transition text-[14px] text-[#1c1e21] dark:text-white font-medium text-left" style="border: none; background: transparent; cursor: pointer;" type="button">
+<div style="width: 30px; height: 30px; border-radius: 50%; background-color: #f0f2f5; display: flex; align-items: center; justify-content: center; color: #1c1e21; flex-shrink: 0;"><i class="fa-regular fa-image text-xs"></i></div>
 <span>Media</span>
 </button>
-<button class="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-[#f0f2f5] dark:hover:bg-[#242526] transition text-[14px] text-[#1c1e21] dark:text-white font-medium text-left" type="button">
-<div class="w-7 h-7 rounded-full bg-[#f0f2f5] dark:bg-[#242526] flex items-center justify-center text-[#1c1e21] dark:text-white"><i class="fa-regular fa-file-lines text-xs"></i></div>
+<button class="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-[#f0f2f5] dark:hover:bg-[#242526] transition text-[14px] text-[#1c1e21] dark:text-white font-medium text-left" style="border: none; background: transparent; cursor: pointer;" type="button">
+<div style="width: 30px; height: 30px; border-radius: 50%; background-color: #f0f2f5; display: flex; align-items: center; justify-content: center; color: #1c1e21; flex-shrink: 0;"><i class="fa-regular fa-file-lines text-xs"></i></div>
 <span>Files</span>
 </button>
-<button class="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-[#f0f2f5] dark:hover:bg-[#242526] transition text-[14px] text-[#1c1e21] dark:text-white font-medium text-left" type="button">
-<div class="w-7 h-7 rounded-full bg-[#f0f2f5] dark:bg-[#242526] flex items-center justify-center text-[#1c1e21] dark:text-white"><i class="fa-solid fa-link text-xs"></i></div>
+<button class="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-[#f0f2f5] dark:hover:bg-[#242526] transition text-[14px] text-[#1c1e21] dark:text-white font-medium text-left" style="border: none; background: transparent; cursor: pointer;" type="button">
+<div style="width: 30px; height: 30px; border-radius: 50%; background-color: #f0f2f5; display: flex; align-items: center; justify-content: center; color: #1c1e21; flex-shrink: 0;"><i class="fa-solid fa-link text-xs"></i></div>
 <span>Links</span>
 </button>
 </div>
@@ -236,25 +236,25 @@
 
 <!-- Privacy & support -->
 <div>
-<button class="w-full flex items-center justify-between p-2 rounded-lg hover:bg-[#f0f2f5] dark:hover:bg-[#242526] transition font-semibold text-[#1c1e21] dark:text-white text-[14px]" data-acc-toggle="privacy" type="button">
+<button class="w-full flex items-center justify-between p-2 rounded-lg hover:bg-[#f0f2f5] dark:hover:bg-[#242526] transition font-semibold text-[#1c1e21] dark:text-white text-[14px]" style="border: none; background: transparent; cursor: pointer;" data-acc-toggle="privacy" type="button">
 <span>Privacy & support</span>
 <i class="fa-solid fa-chevron-right text-xs text-[#65676b] dark:text-gray-400 transition-transform" data-acc-arrow="privacy"></i>
 </button>
 <div class="hidden px-1 py-1 flex flex-col gap-1" data-acc-content="privacy">
-<button class="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-[#f0f2f5] dark:hover:bg-[#242526] transition text-[14px] text-[#1c1e21] dark:text-white font-medium text-left" data-action-mute type="button">
-<div class="w-7 h-7 rounded-full bg-[#f0f2f5] dark:bg-[#242526] flex items-center justify-center text-[#1c1e21] dark:text-white"><i class="fa-solid fa-bell-slash text-xs"></i></div>
+<button class="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-[#f0f2f5] dark:hover:bg-[#242526] transition text-[14px] text-[#1c1e21] dark:text-white font-medium text-left" style="border: none; background: transparent; cursor: pointer;" data-action-mute type="button">
+<div style="width: 30px; height: 30px; border-radius: 50%; background-color: #f0f2f5; display: flex; align-items: center; justify-content: center; color: #1c1e21; flex-shrink: 0;"><i class="fa-solid fa-bell-slash text-xs"></i></div>
 <span>Mute notifications</span>
 </button>
-<button class="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-[#f0f2f5] dark:hover:bg-[#242526] transition text-[14px] text-[#1c1e21] dark:text-white font-medium text-left" data-action-restrict type="button">
-<div class="w-7 h-7 rounded-full bg-[#f0f2f5] dark:bg-[#242526] flex items-center justify-center text-[#1c1e21] dark:text-white"><i class="fa-solid fa-circle-minus text-xs"></i></div>
+<button class="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-[#f0f2f5] dark:hover:bg-[#242526] transition text-[14px] text-[#1c1e21] dark:text-white font-medium text-left" style="border: none; background: transparent; cursor: pointer;" data-action-restrict type="button">
+<div style="width: 30px; height: 30px; border-radius: 50%; background-color: #f0f2f5; display: flex; align-items: center; justify-content: center; color: #1c1e21; flex-shrink: 0;"><i class="fa-solid fa-circle-minus text-xs"></i></div>
 <span>Restrict</span>
 </button>
-<button class="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-[#f0f2f5] dark:hover:bg-[#242526] transition text-[14px] text-[#e41e3f] font-medium text-left" data-action-block type="button">
-<div class="w-7 h-7 rounded-full bg-[#f0f2f5] dark:bg-[#242526] flex items-center justify-center text-[#e41e3f]"><i class="fa-solid fa-ban text-xs"></i></div>
+<button class="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-[#f0f2f5] dark:hover:bg-[#242526] transition text-[14px] text-[#e41e3f] font-medium text-left" style="border: none; background: transparent; cursor: pointer;" data-action-block type="button">
+<div style="width: 30px; height: 30px; border-radius: 50%; background-color: #f0f2f5; display: flex; align-items: center; justify-content: center; color: #e41e3f; flex-shrink: 0;"><i class="fa-solid fa-ban text-xs"></i></div>
 <span>Block</span>
 </button>
-<button class="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-[#f0f2f5] dark:hover:bg-[#242526] transition text-[14px] text-[#e41e3f] font-medium text-left" data-action-report type="button">
-<div class="w-7 h-7 rounded-full bg-[#f0f2f5] dark:bg-[#242526] flex items-center justify-center text-[#e41e3f]"><i class="fa-solid fa-triangle-exclamation text-xs"></i></div>
+<button class="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-[#f0f2f5] dark:hover:bg-[#242526] transition text-[14px] text-[#e41e3f] font-medium text-left" style="border: none; background: transparent; cursor: pointer;" data-action-report type="button">
+<div style="width: 30px; height: 30px; border-radius: 50%; background-color: #f0f2f5; display: flex; align-items: center; justify-content: center; color: #e41e3f; flex-shrink: 0;"><i class="fa-solid fa-triangle-exclamation text-xs"></i></div>
 <span>Report</span>
 </button>
 </div>
@@ -282,10 +282,10 @@
 </section>
 </div>
 
-<script src="/faithin-app/assets/faithin-runtime.js?v=20260901-v1"></script>
-<script src="/assets/js/faith-in-backend.js?v=20260901-v1"></script>
-<script src="/faithin-app/assets/faithin.js?v=20260901-v1"></script>
-<script src="/faithin-app/assets/faithin-live.js?v=20260901-v1"></script>
-<script src="/faithin-app/assets/faithin-messaging.js?v=20260901-v1"></script>
+<script src="/faithin-app/assets/faithin-runtime.js?v=20260901-v2"></script>
+<script src="/assets/js/faith-in-backend.js?v=20260901-v2"></script>
+<script src="/faithin-app/assets/faithin.js?v=20260901-v2"></script>
+<script src="/faithin-app/assets/faithin-live.js?v=20260901-v2"></script>
+<script src="/faithin-app/assets/faithin-messaging.js?v=20260901-v2"></script>
 </body>
 </html>
