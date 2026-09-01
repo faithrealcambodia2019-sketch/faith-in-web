@@ -12,7 +12,7 @@ export type FirebasePublicConfig = {
 // by Firebase Authentication, App Check, and the Firestore/Storage rules.
 export const firebasePublicConfig: FirebasePublicConfig = Object.freeze({
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || "AIzaSyDJNCX00QsByyUG_1293fzjXJ-LhEbA-a4",
-  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || "faith-app-98a5f.firebaseapp.com",
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || "auth.faithin.co",
   projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || "faith-app-98a5f",
   storageBucket:
     process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || "faith-app-98a5f.firebasestorage.app",

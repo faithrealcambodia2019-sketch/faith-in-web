@@ -16,244 +16,109 @@
 <link href="/faithin-app/assets/faithin-fonts.css" rel="stylesheet"/>
 <link href="/faithin-app/assets/faithin-icons.css" rel="stylesheet"/>
 <link href="/faithin-app/assets/faithin-tw.css" rel="stylesheet"/>
-<link href="/faithin-app/assets/faithin.css?v=20260901-v10" rel="stylesheet"/>
+<link href="/faithin-app/assets/faithin.css?v=20260831-v24" rel="stylesheet"/>
 </head>
 <body class="font-sans min-h-screen pb-16 lg:pb-0" data-page="messaging" data-search="Search messages">
-<main class="fi-msg-wrapper" id="main">
-<div class="fi-msg-container">
+<main class="max-w-[1200px] mx-auto px-0 sm:px-4 py-0 sm:py-5" id="main">
+<div class="card overflow-hidden msg-shell">
 
-<!-- ───── INBOX (LEFT) ───── -->
-<aside class="fi-msg-inbox" data-pane="inbox">
-<header class="flex items-center justify-between gap-2 px-3 pt-3 pb-2.5">
-<div class="relative flex-1 flex items-center bg-[#f0f2f5] dark:bg-[#242526] rounded-full px-3 py-1.5 border border-transparent focus-within:bg-white dark:focus-within:bg-[#18191a] focus-within:border-[#1877f2] transition shadow-sm">
-<i class="fa-solid fa-magnifying-glass text-[13px] text-[#8d949e] shrink-0 pointer-events-none"></i>
-<label class="sr-only" for="msg-search">Search messages</label>
-<input class="bg-transparent border-none outline-none text-[13.5px] text-[#1c1e21] dark:text-white placeholder-[#8d949e] ml-2 w-full" id="msg-search" placeholder="Search messages" type="search"/>
-</div>
-<div class="flex items-center gap-1 shrink-0">
-<button aria-label="More options" class="w-8 h-8 rounded-full bg-[#f0f2f5] dark:bg-[#242526] hover:bg-[#e4e6eb] dark:hover:bg-[#3a3b3c] transition text-[#65676b] dark:text-gray-300 flex items-center justify-center" data-filter-unread title="Filter conversations" type="button">
-<i class="fa-solid fa-ellipsis text-sm"></i>
+<!-- ───── INBOX ───── -->
+<aside class="w-full md:w-[336px] md:shrink-0 flex flex-col min-h-0 border-line md:border-r" data-pane="inbox">
+<header class="flex items-center justify-between gap-2 px-4 py-3.5 border-b border-line">
+<h1 class="text-[18px] font-bold">Messaging</h1>
+<div class="flex items-center gap-1">
+<button aria-label="Filter conversations" class="icon-btn" data-filter-unread title="Show unread only" type="button">
+<i class="fa-solid fa-filter text-[13px]"></i>
 </button>
-<button aria-label="Start a new conversation" class="w-8 h-8 rounded-full bg-[#f0f2f5] dark:bg-[#242526] hover:bg-[#e4e6eb] dark:hover:bg-[#3a3b3c] text-[#1c1e21] dark:text-white transition flex items-center justify-center" data-new-message title="New message" type="button">
-<i class="fa-solid fa-pen-to-square text-sm"></i>
+<button aria-label="Start a new conversation" class="icon-btn bg-brand-soft text-brand" data-new-message title="New message" type="button">
+<i class="fa-regular fa-pen-to-square text-[13px]"></i>
 </button>
 </div>
 </header>
 
-<div class="flex-1 overflow-y-auto min-h-0 py-1 custom-scrollbar" data-thread-list>
-<!-- Populated immediately by JS with zero loading wait -->
+<div class="p-3 border-b border-line">
+<div class="relative">
+<i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-[13px] text-faint pointer-events-none"></i>
+<label class="sr-only" for="msg-search">Search conversations</label>
+<input class="field !pl-10 !rounded-pill" id="msg-search" placeholder="Search messages" type="search"/>
+</div>
+</div>
+
+<div class="flex-1 overflow-y-auto min-h-0" data-thread-list>
+<p class="p-8 text-center text-[13.5px] text-muted" data-placeholder>Loading conversations…</p>
 </div>
 </aside>
 
-<!-- ───── CONVERSATION (CENTER) ───── -->
-<section aria-label="Conversation" class="fi-msg-chat" data-pane="conversation">
+<!-- ───── CONVERSATION ───── -->
+<section aria-label="Conversation" class="hidden md:flex flex-1 flex-col min-w-0 min-h-0" data-pane="conversation">
 
-<!-- Header -->
-<header class="h-[56px] shrink-0 px-3.5 flex items-center justify-between border-b border-[#ccd0d5] dark:border-[#3a3b3c] bg-white dark:bg-[#18191a] shadow-sm z-10" data-conversation-header>
-<div class="flex items-center gap-2.5 min-w-0 hover:bg-[#f2f2f2] dark:hover:bg-[#242526] p-1 rounded-lg cursor-pointer transition -ml-1" data-header-profile>
-<button aria-label="Back to conversations" class="w-7 h-7 flex items-center justify-center rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 md:hidden shrink-0 text-[#65676b] dark:text-gray-300" data-back type="button">
-<i class="fa-solid fa-arrow-left text-sm"></i>
+<header class="h-[68px] shrink-0 px-3 sm:px-5 flex items-center justify-between gap-3 border-b border-line" data-conversation-header hidden>
+<div class="flex items-center gap-3 min-w-0">
+<button aria-label="Back to conversations" class="icon-btn md:hidden shrink-0" data-back type="button">
+<i class="fa-solid fa-arrow-left"></i>
 </button>
 <span class="relative shrink-0" data-partner-avatar></span>
 <div class="min-w-0">
-<h2 class="text-[14.5px] font-bold text-[#1c1e21] dark:text-white leading-tight truncate" data-partner-name>Conversation</h2>
-<p class="text-[11.5px] text-[#65676b] dark:text-gray-400 leading-tight mt-0.5" data-partner-status>Active now</p>
+<h2 class="text-[15px] font-bold leading-tight truncate" data-partner-name>Conversation</h2>
+<p class="text-[12px] text-muted leading-tight mt-0.5" data-partner-status></p>
 </div>
 </div>
-
-<div class="flex items-center gap-1 text-[#1877f2] shrink-0">
-<button aria-label="Voice call" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-[#f0f2f5] dark:hover:bg-[#242526] transition text-[#1877f2]" data-call-voice title="Start voice call" type="button">
-<i class="fa-solid fa-phone text-sm"></i>
+<div class="flex items-center gap-1 shrink-0">
+<button aria-label="Voice call — coming soon" class="icon-btn opacity-40 cursor-not-allowed" data-call disabled title="Voice calling is not available yet" type="button">
+<i class="fa-solid fa-phone text-[13px]"></i>
 </button>
-<button aria-label="Video call" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-[#f0f2f5] dark:hover:bg-[#242526] transition text-[#1877f2]" data-call-video title="Start video call" type="button">
-<i class="fa-solid fa-video text-sm"></i>
+<button aria-label="Video call — coming soon" class="icon-btn opacity-40 cursor-not-allowed" data-call disabled title="Video calling is not available yet" type="button">
+<i class="fa-solid fa-video text-[13px]"></i>
 </button>
-<button aria-expanded="false" aria-label="Conversation details" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-[#f0f2f5] dark:hover:bg-[#242526] transition text-[#1877f2]" data-info-toggle type="button">
-<i class="fa-solid fa-circle-info text-sm"></i>
+<span class="w-px h-6 bg-line mx-1"></span>
+<button aria-expanded="false" aria-label="Conversation details" class="icon-btn" data-info-toggle type="button">
+<i class="fa-solid fa-circle-info"></i>
 </button>
 </div>
 </header>
 
-<!-- Call Overlay (Audio/Video Call) -->
-<div class="hidden msg-call-overlay" id="msg-call-overlay">
-<div class="flex flex-col items-center mt-6">
-<div class="w-28 h-28 rounded-full text-white flex items-center justify-center text-4xl font-bold mb-4 shadow-2xl bg-blue-600 animate-pulse" data-call-avatar>
-<span data-call-initials>SS</span>
-</div>
-<h2 class="text-white text-[24px] font-bold mb-1.5" data-call-name>Calling…</h2>
-<p class="text-[#a8abaf] text-[15px]" data-call-type>Calling…</p>
-</div>
-
-<div class="flex items-center gap-5 mb-6">
-<button aria-label="Mute microphone" class="w-12 h-12 rounded-full bg-[#3a3b3c] hover:bg-[#4e4f50] flex items-center justify-center text-white transition" data-call-mic type="button">
-<i class="fa-solid fa-microphone text-lg"></i>
-</button>
-<button aria-label="Toggle camera" class="w-12 h-12 rounded-full bg-[#3a3b3c] hover:bg-[#4e4f50] flex items-center justify-center text-white transition" data-call-cam type="button">
-<i class="fa-solid fa-video text-lg"></i>
-</button>
-<button aria-label="End call" class="w-14 h-14 rounded-full bg-[#e41e3f] hover:bg-[#c91835] flex items-center justify-center text-white transition shadow-lg" data-call-end type="button">
-<i class="fa-solid fa-phone-slash text-xl"></i>
-</button>
+<div class="flex-1 overflow-y-auto min-h-0 px-3 sm:px-5 py-4 flex flex-col gap-2.5 bg-canvas" data-messages>
+<div class="m-auto text-center px-6">
+<i class="fa-regular fa-comments text-3xl text-faint"></i>
+<p class="mt-3 text-[14px] text-muted">Choose a conversation, or start a new one.</p>
 </div>
 </div>
 
-<!-- Messages Stream -->
-<div class="flex-1 overflow-y-auto min-h-0 px-4 py-3 flex flex-col gap-1.5 bg-white dark:bg-[#18191a] custom-scrollbar" data-messages>
-<!-- Rendered immediately -->
-</div>
-
-<!-- Composer Footer -->
-<div class="shrink-0 bg-white dark:bg-[#18191a] border-t border-[#ccd0d5] dark:border-[#3a3b3c] z-10 flex flex-col" data-composer>
-<!-- Attachment Preview -->
-<div class="hidden px-4 pt-2.5 pb-1" data-attach-preview>
-<div class="flex items-center gap-2.5 p-2 w-max max-w-sm bg-[#f0f2f5] dark:bg-[#242526] border border-[#ccd0d5] dark:border-[#3a3b3c] rounded-lg relative shadow-sm">
-<div class="p-1.5 bg-white dark:bg-[#18191a] rounded text-[#1877f2] border border-[#ccd0d5] dark:border-[#3a3b3c]">
-<i class="fa-solid fa-file text-base"></i>
-</div>
-<div class="flex-1 min-w-0 pr-6">
-<p class="text-[13.5px] font-semibold text-[#1c1e21] dark:text-white truncate" data-attach-name></p>
-<p class="text-[11.5px] text-[#65676b] dark:text-gray-400" data-attach-size></p>
-</div>
-<button aria-label="Remove attachment" class="absolute -top-2 -right-2 bg-white dark:bg-[#242526] border border-[#ccd0d5] dark:border-[#3a3b3c] w-5 h-5 flex items-center justify-center rounded-full text-[#65676b] dark:text-gray-300 hover:bg-[#e4e6eb] shadow-sm transition" data-attach-clear type="button">
-<i class="fa-solid fa-xmark text-xs"></i>
+<div class="shrink-0 px-3 sm:px-4 py-3 border-t border-line" data-composer hidden>
+<form class="msg-composer" data-message-form>
+<label class="sr-only" for="msg-input">Write a message</label>
+<textarea class="no-scrollbar" id="msg-input" name="body" placeholder="Write a message…" rows="1"></textarea>
+<input accept="image/png,image/jpeg,image/gif,image/webp" class="hidden" data-attach-input type="file"/>
+<button aria-label="Attach an image" class="icon-btn shrink-0" data-attach title="Attach an image" type="button">
+<i class="fa-regular fa-image"></i>
 </button>
-</div>
-</div>
-
-<div class="p-3">
-<form class="flex items-end gap-2" data-message-form>
-<div class="flex items-center gap-1 text-[#1877f2] pb-1">
-<button aria-label="Insert emoji" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-[#f0f2f5] dark:hover:bg-[#242526] transition text-[#1877f2]" data-btn-emoji type="button">
-<i class="fa-regular fa-face-smile text-lg"></i>
-</button>
-<button aria-label="Attach file" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-[#f0f2f5] dark:hover:bg-[#242526] transition text-[#1877f2]" data-attach-file type="button">
-<i class="fa-solid fa-paperclip text-lg"></i>
-</button>
-<button aria-label="Attach photo" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-[#f0f2f5] dark:hover:bg-[#242526] transition text-[#1877f2]" data-attach-photo type="button">
-<i class="fa-regular fa-image text-lg"></i>
-</button>
-</div>
-
-<input class="hidden" data-file-input type="file"/>
-<input accept="image/*" class="hidden" data-photo-input type="file"/>
-
-<div class="msg-input-pill">
-<input autocomplete="off" id="msg-input" name="body" placeholder="Aa" type="text"/>
-</div>
-
-<button aria-label="Send message" class="w-9 h-9 rounded-full flex items-center justify-center text-[#1877f2] hover:bg-[#f0f2f5] dark:hover:bg-[#242526] transition shrink-0 mb-0.5" data-send type="submit">
-<svg fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" viewBox="0 0 24 24" width="24">
-<path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
-<path d="M10 8h5"></path>
-<path d="M10 12h4"></path>
-<path d="M10 8v8"></path>
-</svg>
+<button aria-label="Send message" class="icon-btn shrink-0 !bg-brand !text-white dark:!text-[#0b1120]" data-send type="submit">
+<i class="fa-solid fa-paper-plane text-[13px]"></i>
 </button>
 </form>
+<div class="hidden mt-2 flex items-center gap-2 text-[12px] text-muted" data-attach-preview>
+<i class="fa-regular fa-image text-brand"></i>
+<span class="truncate max-w-[220px]" data-attach-name></span>
+<button class="text-rose font-semibold" data-attach-clear type="button">Remove</button>
 </div>
+<p class="mt-2 text-center text-[11.5px] text-faint">Enter sends · Shift + Enter starts a new line</p>
 </div>
 </section>
 
-<!-- ───── DETAILS (RIGHT INFO PANEL) ───── -->
-<aside aria-label="Conversation details" class="fi-msg-info" data-pane="info">
-<div class="flex flex-col items-center pt-5 pb-3">
-<span class="relative mb-3" data-info-avatar></span>
-<h3 class="text-[17px] font-bold text-[#1c1e21] dark:text-white leading-tight" data-info-name>Faith In Member</h3>
-<p class="text-[13px] text-[#65676b] dark:text-gray-400 mt-0.5" data-info-role>Active now</p>
-</div>
-
-<!-- 3 Quick Action Circles -->
-<div style="display: flex; justify-content: center; gap: 24px; padding: 14px 0 18px; border-bottom: 1px solid #ccd0d5;">
-<a class="flex flex-col items-center gap-1 cursor-pointer no-underline text-[#1c1e21] dark:text-white" data-info-profile href="/profile">
-<div style="width: 36px; height: 36px; border-radius: 50%; background-color: #f0f2f5; display: flex; align-items: center; justify-content: center; color: #1c1e21;">
-<i class="fa-solid fa-user text-sm"></i>
-</div>
-<span style="font-size: 12px; font-weight: 500; color: #1c1e21;">Profile</span>
-</a>
-<button class="flex flex-col items-center gap-1 cursor-pointer bg-transparent border-none text-[#1c1e21] dark:text-white" data-action-mute type="button">
-<div style="width: 36px; height: 36px; border-radius: 50%; background-color: #f0f2f5; display: flex; align-items: center; justify-content: center; color: #1c1e21;" data-mute-icon-wrap>
-<i class="fa-solid fa-bell text-sm"></i>
-</div>
-<span style="font-size: 12px; font-weight: 500; color: #1c1e21;" data-mute-label>Mute</span>
-</button>
-<button class="flex flex-col items-center gap-1 cursor-pointer bg-transparent border-none text-[#1c1e21] dark:text-white" data-action-search type="button">
-<div style="width: 36px; height: 36px; border-radius: 50%; background-color: #f0f2f5; display: flex; align-items: center; justify-content: center; color: #1c1e21;">
-<i class="fa-solid fa-magnifying-glass text-sm"></i>
-</div>
-<span style="font-size: 12px; font-weight: 500; color: #1c1e21;">Search</span>
-</button>
-</div>
-
-<!-- Accordion Menus -->
-<div class="px-2 py-2 space-y-1">
-<!-- Customize Chat -->
-<div class="border-b border-[#ccd0d5] dark:border-[#3a3b3c] pb-2">
-<button class="w-full flex items-center justify-between p-2 rounded-lg hover:bg-[#f0f2f5] dark:hover:bg-[#242526] transition font-semibold text-[#1c1e21] dark:text-white text-[14px]" style="border: none; background: transparent; cursor: pointer;" data-acc-toggle="customize" type="button">
-<span>Customize chat</span>
-<i class="fa-solid fa-chevron-down text-xs text-[#65676b] dark:text-gray-400 transition-transform" data-acc-arrow="customize"></i>
-</button>
-<div class="px-1 py-1 flex flex-col gap-1" data-acc-content="customize">
-<button class="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-[#f0f2f5] dark:hover:bg-[#242526] transition text-[14px] text-[#1c1e21] dark:text-white font-medium text-left" style="border: none; background: transparent; cursor: pointer;" data-action-theme type="button">
-<div style="width: 30px; height: 30px; border-radius: 50%; background-color: #f0f2f5; display: flex; align-items: center; justify-content: center; color: #1877f2; flex-shrink: 0;"><i class="fa-solid fa-palette text-xs"></i></div>
-<span>Change theme</span>
-</button>
-<button class="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-[#f0f2f5] dark:hover:bg-[#242526] transition text-[14px] text-[#1c1e21] dark:text-white font-medium text-left" style="border: none; background: transparent; cursor: pointer;" data-action-emoji type="button">
-<div style="width: 30px; height: 30px; border-radius: 50%; background-color: #f0f2f5; display: flex; align-items: center; justify-content: center; color: #1877f2; flex-shrink: 0;"><i class="fa-solid fa-thumbs-up text-xs"></i></div>
-<span>Change emoji</span>
-</button>
-<button class="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-[#f0f2f5] dark:hover:bg-[#242526] transition text-[14px] text-[#1c1e21] dark:text-white font-medium text-left" style="border: none; background: transparent; cursor: pointer;" data-action-nickname type="button">
-<div style="width: 30px; height: 30px; border-radius: 50%; background-color: #f0f2f5; display: flex; align-items: center; justify-content: center; color: #1c1e21; flex-shrink: 0;"><i class="fa-solid fa-font text-xs"></i></div>
-<span>Edit nicknames</span>
-</button>
+<!-- ───── DETAILS ───── -->
+<aside aria-label="Conversation details" class="hidden w-[272px] shrink-0 border-l border-line flex-col min-h-0 overflow-y-auto" data-pane="info">
+<div class="p-6 flex flex-col items-center text-center border-b border-line">
+<span class="relative" data-info-avatar></span>
+<h3 class="font-bold text-[17px] mt-4 leading-tight" data-info-name>Faith In Member</h3>
+<p class="text-[12.5px] text-muted mt-1" data-info-role>Faith In member</p>
+<div class="flex gap-2 mt-5">
+<a class="btn btn-neutral !py-1.5 !px-3.5 text-[13px]" data-info-profile href="/profile"><i class="fa-regular fa-user"></i>Profile</a>
 </div>
 </div>
-
-<!-- Media, files and links -->
-<div class="border-b border-[#ccd0d5] dark:border-[#3a3b3c] pb-2">
-<button class="w-full flex items-center justify-between p-2 rounded-lg hover:bg-[#f0f2f5] dark:hover:bg-[#242526] transition font-semibold text-[#1c1e21] dark:text-white text-[14px]" style="border: none; background: transparent; cursor: pointer;" data-acc-toggle="media" type="button">
-<span>Media, files and links</span>
-<i class="fa-solid fa-chevron-right text-xs text-[#65676b] dark:text-gray-400 transition-transform" data-acc-arrow="media"></i>
-</button>
-<div class="hidden px-1 py-1 flex flex-col gap-1" data-acc-content="media">
-<button class="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-[#f0f2f5] dark:hover:bg-[#242526] transition text-[14px] text-[#1c1e21] dark:text-white font-medium text-left" style="border: none; background: transparent; cursor: pointer;" type="button">
-<div style="width: 30px; height: 30px; border-radius: 50%; background-color: #f0f2f5; display: flex; align-items: center; justify-content: center; color: #1c1e21; flex-shrink: 0;"><i class="fa-regular fa-image text-xs"></i></div>
-<span>Media</span>
-</button>
-<button class="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-[#f0f2f5] dark:hover:bg-[#242526] transition text-[14px] text-[#1c1e21] dark:text-white font-medium text-left" style="border: none; background: transparent; cursor: pointer;" type="button">
-<div style="width: 30px; height: 30px; border-radius: 50%; background-color: #f0f2f5; display: flex; align-items: center; justify-content: center; color: #1c1e21; flex-shrink: 0;"><i class="fa-regular fa-file-lines text-xs"></i></div>
-<span>Files</span>
-</button>
-<button class="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-[#f0f2f5] dark:hover:bg-[#242526] transition text-[14px] text-[#1c1e21] dark:text-white font-medium text-left" style="border: none; background: transparent; cursor: pointer;" type="button">
-<div style="width: 30px; height: 30px; border-radius: 50%; background-color: #f0f2f5; display: flex; align-items: center; justify-content: center; color: #1c1e21; flex-shrink: 0;"><i class="fa-solid fa-link text-xs"></i></div>
-<span>Links</span>
-</button>
-</div>
-</div>
-
-<!-- Privacy & support -->
-<div>
-<button class="w-full flex items-center justify-between p-2 rounded-lg hover:bg-[#f0f2f5] dark:hover:bg-[#242526] transition font-semibold text-[#1c1e21] dark:text-white text-[14px]" style="border: none; background: transparent; cursor: pointer;" data-acc-toggle="privacy" type="button">
-<span>Privacy & support</span>
-<i class="fa-solid fa-chevron-right text-xs text-[#65676b] dark:text-gray-400 transition-transform" data-acc-arrow="privacy"></i>
-</button>
-<div class="hidden px-1 py-1 flex flex-col gap-1" data-acc-content="privacy">
-<button class="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-[#f0f2f5] dark:hover:bg-[#242526] transition text-[14px] text-[#1c1e21] dark:text-white font-medium text-left" style="border: none; background: transparent; cursor: pointer;" data-action-mute type="button">
-<div style="width: 30px; height: 30px; border-radius: 50%; background-color: #f0f2f5; display: flex; align-items: center; justify-content: center; color: #1c1e21; flex-shrink: 0;"><i class="fa-solid fa-bell-slash text-xs"></i></div>
-<span>Mute notifications</span>
-</button>
-<button class="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-[#f0f2f5] dark:hover:bg-[#242526] transition text-[14px] text-[#1c1e21] dark:text-white font-medium text-left" style="border: none; background: transparent; cursor: pointer;" data-action-restrict type="button">
-<div style="width: 30px; height: 30px; border-radius: 50%; background-color: #f0f2f5; display: flex; align-items: center; justify-content: center; color: #1c1e21; flex-shrink: 0;"><i class="fa-solid fa-circle-minus text-xs"></i></div>
-<span>Restrict</span>
-</button>
-<button class="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-[#f0f2f5] dark:hover:bg-[#242526] transition text-[14px] text-[#e41e3f] font-medium text-left" style="border: none; background: transparent; cursor: pointer;" data-action-block type="button">
-<div style="width: 30px; height: 30px; border-radius: 50%; background-color: #f0f2f5; display: flex; align-items: center; justify-content: center; color: #e41e3f; flex-shrink: 0;"><i class="fa-solid fa-ban text-xs"></i></div>
-<span>Block</span>
-</button>
-<button class="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-[#f0f2f5] dark:hover:bg-[#242526] transition text-[14px] text-[#e41e3f] font-medium text-left" style="border: none; background: transparent; cursor: pointer;" data-action-report type="button">
-<div style="width: 30px; height: 30px; border-radius: 50%; background-color: #f0f2f5; display: flex; align-items: center; justify-content: center; color: #e41e3f; flex-shrink: 0;"><i class="fa-solid fa-triangle-exclamation text-xs"></i></div>
-<span>Report</span>
-</button>
-</div>
+<div class="p-5">
+<h4 class="text-[13.5px] font-bold">Shared images</h4>
+<div class="grid grid-cols-3 gap-2 mt-3" data-info-media>
+<p class="col-span-3 text-[12.5px] text-muted">Images shared in this conversation appear here.</p>
 </div>
 </div>
 </aside>
@@ -261,27 +126,27 @@
 </div>
 </main>
 
-<!-- ───── NEW MESSAGE MODAL ───── -->
+<!-- ───── NEW MESSAGE ───── -->
 <div class="hidden fixed inset-0 z-[240] bg-[#0b1120]/70 p-4 items-center justify-center" data-new-modal>
-<section aria-labelledby="msg-new-title" aria-modal="true" class="card w-full max-w-md shadow-pop flex flex-col max-h-[560px] bg-white dark:bg-[#18191a] border border-[#ccd0d5] dark:border-[#3a3b3c] rounded-xl overflow-hidden" role="dialog">
-<header class="px-5 py-3.5 border-b border-[#ccd0d5] dark:border-[#3a3b3c] flex items-center justify-between">
-<h2 class="font-bold text-[17px] text-[#1c1e21] dark:text-white" id="msg-new-title">New message</h2>
-<button aria-label="Close" class="w-8 h-8 rounded-full bg-[#f0f2f5] dark:bg-[#242526] flex items-center justify-center text-[#65676b] dark:text-gray-300 hover:bg-[#e4e6eb]" data-new-close type="button"><i class="fa-solid fa-xmark"></i></button>
+<section aria-labelledby="msg-new-title" aria-modal="true" class="card w-full max-w-md shadow-pop flex flex-col max-h-[560px]" role="dialog">
+<header class="px-5 py-4 border-b border-line flex items-center justify-between">
+<h2 class="font-bold text-[17px]" id="msg-new-title">New message</h2>
+<button aria-label="Close" class="icon-btn" data-new-close type="button"><i class="fa-solid fa-xmark"></i></button>
 </header>
-<div class="p-3 border-b border-[#ccd0d5] dark:border-[#3a3b3c]">
+<div class="p-3 border-b border-line">
 <label class="sr-only" for="msg-people">Search members</label>
-<input class="w-full px-3.5 py-2 bg-[#f0f2f5] dark:bg-[#242526] rounded-full border border-transparent focus:bg-white dark:focus:bg-[#18191a] focus:border-[#1877f2] outline-none text-[14px]" id="msg-people" placeholder="Search members by name…" type="search"/>
+<input class="field" id="msg-people" placeholder="Search members by name…" type="search"/>
 </div>
-<div class="flex-1 overflow-y-auto p-2 min-h-[200px]" data-people-list>
+<div class="flex-1 overflow-y-auto p-2 min-h-[180px]" data-people-list>
 <p class="p-6 text-center text-[13px] text-muted">Type a name to find someone to message.</p>
 </div>
 </section>
 </div>
 
-<script src="/faithin-app/assets/faithin-runtime.js?v=20260901-v10"></script>
-<script src="/assets/js/faith-in-backend.js?v=20260901-backend-v2"></script>
-<script src="/faithin-app/assets/faithin.js?v=20260901-v10"></script>
-<script src="/faithin-app/assets/faithin-live.js?v=20260901-v10"></script>
-<script src="/faithin-app/assets/faithin-messaging.js?v=20260901-backend-v2"></script>
+<script src="/faithin-app/assets/faithin-runtime.js?v=20260831-v24"></script>
+<script src="/assets/js/faith-in-backend.js?v=20260901-backend-v3"></script>
+<script src="/faithin-app/assets/faithin.js?v=20260831-v24"></script>
+<script src="/faithin-app/assets/faithin-live.js?v=20260831-v24"></script>
+<script src="/faithin-app/assets/faithin-messaging.js?v=20260831-v24"></script>
 </body>
 </html>

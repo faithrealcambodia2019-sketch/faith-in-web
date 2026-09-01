@@ -70,7 +70,7 @@ const dbMod = {
   },
   deleteDoc: async (ref) => { delete store[key(ref.path)]; },
   deleteField: () => ({ __delete: true }),
-  writeBatch: (db) => {
+  writeBatch: () => {
     const ops = [];
     return {
       set: (ref, data) => { ops.push(() => { store[key(ref.path)] = Object.assign({}, store[key(ref.path)] || {}, data); }); },
@@ -399,6 +399,8 @@ check('search users returns list', r.success === true && r.data.items.length ===
 r = await call({ action:'cv_social_open_thread', recipient_uid:'uid-friend' });
 check('open new thread returns thread id and exists 0', r.success === true && r.data.exists === 0 && r.data.other_user.uid === 'uid-friend');
 const directId = r.data.thread_id;
+r = await call({ action:'cv_social_open_thread', recipient_uid:'uid-missing' });
+check('nonexistent recipient is rejected', r.success === false && /could not be found/.test(r.data), r.data);
 r = await call({ action:'cv_social_send_message', thread_id:'thread-uid-friend', recipient_uid:'uid-friend', body:'Peace be with you!' });
 check('send message creates thread and message', r.success === true && r.data.thread_id === directId && !!store['messageThreads/' + directId]);
 check('placeholder thread id is never persisted', !store['messageThreads/thread-uid-friend']);

@@ -70,6 +70,8 @@ export default function EditProfileModal({ onClose }: { onClose: () => void }) {
               </div>
               <label className="relative flex w-full h-[150px] bg-[#f0f2f5] rounded-[8px] border border-[#ccd0d5] cursor-pointer overflow-hidden group">
                 {previews.cover ? (
+                  // Local object/data URL preview; Next Image cannot optimize it.
+                  // eslint-disable-next-line @next/next/no-img-element
                   <img src={previews.cover} alt="Cover Preview" className="w-full h-full object-cover" />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-[#bcc0c4]">
@@ -99,6 +101,8 @@ export default function EditProfileModal({ onClose }: { onClose: () => void }) {
               </div>
               <label className="relative flex w-[120px] h-[120px] bg-[#f0f2f5] rounded-full border border-[#ccd0d5] cursor-pointer overflow-hidden group shadow-sm">
                 {previews.profile ? (
+                  // Local object/data URL preview; Next Image cannot optimize it.
+                  // eslint-disable-next-line @next/next/no-img-element
                   <img src={previews.profile} alt="Profile Preview" className="w-full h-full object-cover" />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center bg-[#e4e6eb] text-[#bcc0c4]">

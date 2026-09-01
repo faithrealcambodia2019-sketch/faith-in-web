@@ -15,10 +15,10 @@
 <link href="/faithin-app/assets/faithin-fonts.css" rel="stylesheet"/>
 <link href="/faithin-app/assets/faithin-icons.css" rel="stylesheet"/>
 <link href="/faithin-app/assets/faithin-tw.css" rel="stylesheet"/>
-<link href="/faithin-app/assets/faithin.css?v=20260901-v10" rel="stylesheet"/>
+<link href="/faithin-app/assets/faithin.css?v=20260831-v31" rel="stylesheet"/>
 </head>
-<body class="font-sans min-h-screen pb-14 lg:pb-0" data-page="settings" data-search="Search settings">
-<main class="max-w-[1200px] mx-auto px-2 sm:px-4 py-2 sm:py-5 grid gap-2 sm:gap-5 lg:grid-cols-[288px_minmax(0,1fr)] items-start" id="main">
+<body class="font-sans min-h-screen pb-16 lg:pb-0" data-page="settings" data-search="Search settings">
+<main class="max-w-[1200px] mx-auto px-3 sm:px-4 py-5 grid gap-5 lg:grid-cols-[288px_minmax(0,1fr)] items-start" id="main">
 <!-- ───── LEFT RAIL ───── -->
 <aside class="lg:sticky lg:top-[72px]">
 <section class="card overflow-hidden">
@@ -46,7 +46,7 @@
   <i class="fa-solid fa-comment-dots"></i>
   <span>Communications</span>
 </a>
-<a class="side-link" href="/settings-security" data-settings-notice="Your data is encrypted and never sold to third parties.">
+<a class="side-link" href="/privacy">
   <i class="fa-solid fa-database"></i>
   <span>Data privacy</span>
 </a>
@@ -167,9 +167,9 @@
 </footer>
 </div>
 </main>
-<script src="/faithin-app/assets/faithin-runtime.js?v=20260901-v10"></script>
-<script src="/assets/js/faith-in-backend.js?v=20260901-backend-v2"></script>
-<script src="/faithin-app/assets/faithin.js?v=20260901-v10"></script>
+<script src="/faithin-app/assets/faithin-runtime.js?v=20260831-v31"></script>
+<script src="/assets/js/faith-in-backend.js?v=20260901-backend-v3"></script>
+<script src="/faithin-app/assets/faithin.js?v=20260831-v31"></script>
 <script>
   /* The theme picker drives the real theme via the shared FI.setTheme(). */
   const picker = document.getElementById('theme-picker');
@@ -186,6 +186,6 @@
   document.addEventListener('fi:theme', e => paintPicker(e.detail.mode));
   paintPicker(FI.getTheme());
 </script>
-<script src="/faithin-app/assets/faithin-live.js?v=20260901-v10"></script>
+<script src="/faithin-app/assets/faithin-live.js?v=20260831-v31"></script>
 </body>
 </html>

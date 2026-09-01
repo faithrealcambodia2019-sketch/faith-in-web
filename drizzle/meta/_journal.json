@@ -8,6 +8,13 @@
       "when": 1788172751821,
       "tag": "0000_minor_naoko",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1788257209013,
+      "tag": "0001_add_message_attachment",
+      "breakpoints": true
     }
   ]
 }

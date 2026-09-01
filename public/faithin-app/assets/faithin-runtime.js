@@ -1,16 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* Faith In — production runtime configuration for the new interface. */
-if (typeof navigator !== 'undefined' && 'serviceWorker' in navigator) {
-  navigator.serviceWorker.getRegistrations().then(function(registrations) {
-    for (var reg of registrations) {
-      reg.unregister();
-    }
-  });
-  if (typeof caches !== 'undefined') {
-    caches.keys().then(function(names) {
-      for (var name of names) caches.delete(name);
-    });
-  }
-}
 window.cv_ajax = window.cv_ajax || {
   direct_data_mode: true,
   ajax_url: '/api/compat',
@@ -27,7 +16,7 @@ window.cv_ajax = window.cv_ajax || {
     site_origin: 'https://faithin.co',
     firebase_config: {
       apiKey: 'AIzaSyDJNCX00QsByyUG_1293fzjXJ-LhEbA-a4',
-      authDomain: 'faith-app-98a5f.firebaseapp.com',
+      authDomain: 'auth.faithin.co',
       projectId: 'faith-app-98a5f',
       storageBucket: 'faith-app-98a5f.firebasestorage.app',
       messagingSenderId: '218141432536',
@@ -140,40 +129,39 @@ window.cv_ajax = window.cv_ajax || {
       // For user sessions: if a valid logged-in session exists in local storage,
       // return it instantly so refresh never flashes or signs the user out.
       // Simultaneously revalidate with Firebase in the background.
-      if (action === 'cv_get_session') {
-        if (cached?.value?.logged_in) {
-          const epoch = cacheEpoch;
-          requestNetwork(action, values, files, onProgress, key)
-            .then(value => {
-              if (epoch === cacheEpoch) {
-                if (value && value.logged_in) {
-                  writeRecord(key, value);
-                } else if (value && value.logged_in === false) {
-                  clearRecords();
-                  document.dispatchEvent(new CustomEvent('fi:session-updated', { detail: value }));
-                }
+      if (action === 'cv_get_session' && cached?.value?.logged_in) {
+        const epoch = cacheEpoch;
+        requestNetwork(action, values, files, onProgress, key)
+          .then(value => {
+            if (epoch === cacheEpoch) {
+              if (value && value.logged_in) {
+                writeRecord(key, value);
+              } else if (value && value.logged_in === false) {
+                clearRecords();
+                document.dispatchEvent(new CustomEvent('fi:session-updated', { detail: value }));
               }
-            })
-            .catch(() => {});
-          return Promise.resolve(cached.value);
-        }
-        // If not logged in or on auth redirect return, always verify fresh with Firebase
-        return requestNetwork(action, values, files, onProgress, key).then(value => {
-          if (value && value.logged_in) writeRecord(key, value);
-          return value;
-        });
+            }
+          })
+          .catch(() => {});
+        return Promise.resolve(cached.value);
       }
 
-      const fresh = cached && Date.now() - cached.savedAt < ttl;
+      const sessionTtl = action === 'cv_get_session' && cached?.value?.logged_in === false ? 10000 : ttl;
+      const fresh = cached && Date.now() - cached.savedAt < sessionTtl;
 
       if (fresh) {
+        if (action !== 'cv_get_session') return Promise.resolve(cached.value);
+        const epoch = cacheEpoch;
+        requestNetwork(action, values, files, onProgress, key)
+          .then(value => { if (epoch === cacheEpoch) writeRecord(key, value); })
+          .catch(() => {});
         return Promise.resolve(cached.value);
       }
 
       // Real read data remains useful while it is refreshed. Rendering the
       // last successful response immediately avoids an empty feed whenever a
       // short TTL expires or Firestore is reconnecting.
-      if (ttl && cached && Date.now() - cached.savedAt < 24 * 60 * 60 * 1000) {
+      if (ttl && action !== 'cv_get_session' && cached && Date.now() - cached.savedAt < 24 * 60 * 60 * 1000) {
         const epoch = cacheEpoch;
         requestNetwork(action, values, files, onProgress, key)
           .then(value => { if (epoch === cacheEpoch) writeRecord(key, value); })
@@ -187,7 +175,7 @@ window.cv_ajax = window.cv_ajax || {
       return requestNetwork(action, values, files, onProgress, key)
         .then(value => {
           if (ttl && epoch === cacheEpoch) writeRecord(key, value);
-          if (/^cv_(google|email|phone)_sign_|^cv_phone_verify_code/.test(action)) {
+          if (/^cv_(google|email)_sign_/.test(action)) {
             if (value && value.logged_in) writeRecord(keyFor('cv_get_session', {}), value);
           }
           if (action === 'cv_logout') clearRecords();

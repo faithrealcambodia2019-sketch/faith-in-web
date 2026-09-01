@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars, @next/next/no-location-assign-relative-destination */
 /* Faith In — shared live data and authentication for the new interface. */
 (() => {
   'use strict';
@@ -30,62 +31,13 @@
     host.innerHTML = `<div class="fi-auth__page" role="dialog" aria-modal="true" aria-labelledby="fi-auth-title">
       <header class="fi-auth__brand"><span>FaithIn</span><i class="fa-solid fa-globe" aria-hidden="true"></i></header>
       <main class="fi-auth__main">
-        <div class="fi-auth__intro"><h1>Welcome to your professional<br>faith community</h1><p>Connect with believers, discover ministry opportunities, and grow your spiritual network.</p></div>
+        <div class="fi-auth__intro"><h1>Welcome to your professional<br>faith community</h1><p>Connect with believers, discover ministry opportunities, and grow your professional network.</p></div>
         <section class="fi-auth__card">
           <button class="fi-auth__close" data-auth-close aria-label="Close sign in"><i class="fa-solid fa-xmark"></i></button>
 
-          <div class="fi-auth__tabs" data-auth-tabs>
-            <button type="button" class="fi-auth__tab-btn is-active" data-tab="email"><i class="fa-solid fa-envelope"></i> Email / Gmail</button>
-            <button type="button" class="fi-auth__tab-btn" data-tab="phone"><i class="fa-solid fa-mobile-screen"></i> Phone</button>
-          </div>
-
-          <!-- PHONE SIGN IN -->
-          <div data-auth-view="phone" hidden>
-            <h2 id="fi-auth-title">Sign in with Phone</h2>
-            <p class="fi-auth__subtitle">Fast and secure login via SMS verification code.</p>
-            <form data-auth-form="phone-send" class="fi-auth__form">
-              <div class="fi-auth__phone-row">
-                <select name="country_code" class="fi-auth__country-select" aria-label="Country Code">
-                  <option value="+855">🇰🇭 +855 (Cambodia)</option>
-                  <option value="+1">🇺🇸 +1 (USA/CA)</option>
-                  <option value="+66">🇹🇭 +66 (Thailand)</option>
-                  <option value="+95">🇲🇲 +95 (Myanmar)</option>
-                  <option value="+84">🇻🇳 +84 (Vietnam)</option>
-                  <option value="+82">🇰🇷 +82 (S. Korea)</option>
-                  <option value="+81">🇯🇵 +81 (Japan)</option>
-                  <option value="+65">🇸🇬 +65 (Singapore)</option>
-                  <option value="+61">🇦🇺 +61 (Australia)</option>
-                  <option value="+44">🇬🇧 +44 (UK)</option>
-                  <option value="+33">🇫🇷 +33 (France)</option>
-                </select>
-                <input name="phone" type="tel" autocomplete="tel-national" inputmode="tel" placeholder="Phone number (e.g. 12345678)" required>
-              </div>
-              <div id="fi-recaptcha-container"></div>
-              <p class="fi-auth__error" data-auth-error hidden role="alert"></p>
-              <button class="fi-auth__primary" name="intent" value="phone-send"><span>Send SMS Code</span><i class="fi-auth__spinner" aria-hidden="true"></i></button>
-            </form>
-            <div class="fi-auth__divider"><span>or</span></div>
-            <button class="fi-auth__social" data-auth-google><span class="fi-auth__google" aria-hidden="true">G</span>Continue with Google</button>
-          </div>
-
-          <!-- PHONE VERIFY CODE -->
-          <div data-auth-view="phone-verify" hidden>
-            <button class="fi-auth__back" data-auth-show="phone"><i class="fa-solid fa-arrow-left"></i> Change phone number</button>
-            <h2>Enter SMS Code</h2>
-            <p class="fi-auth__subtitle">We sent a 6-digit code to <strong data-phone-display></strong>.</p>
-            <form data-auth-form="phone-verify" class="fi-auth__form">
-              <label class="sr-only" for="fi-phone-code">Verification Code</label>
-              <input id="fi-phone-code" name="code" type="text" autocomplete="one-time-code" inputmode="numeric" placeholder="6-digit verification code" maxlength="6" required style="letter-spacing: 4px; font-size: 22px; text-align: center;">
-              <p class="fi-auth__error" data-auth-error hidden role="alert"></p>
-              <button class="fi-auth__primary" name="intent" value="phone-verify"><span>Verify &amp; Sign in</span><i class="fi-auth__spinner" aria-hidden="true"></i></button>
-            </form>
-            <button class="fi-auth__text-button" data-auth-resend-sms>Resend SMS Code</button>
-          </div>
-
-          <!-- EMAIL SIGN IN -->
           <div data-auth-view="signin">
-            <h2>Sign in with Email</h2>
-            <p class="fi-auth__subtitle">Stay updated on your Christian community.</p>
+            <h2 id="fi-auth-title">Sign in</h2>
+            <p class="fi-auth__subtitle">Stay updated on your professional world.</p>
             <form data-auth-form="signin" class="fi-auth__form">
               <label class="sr-only" for="fi-signin-email">Email address</label>
               <input id="fi-signin-email" name="email" type="email" autocomplete="email" inputmode="email" placeholder="Email address" required>
@@ -99,10 +51,9 @@
             <p class="fi-auth__switch">New to Faith In? <button data-auth-show="signup">Join now</button></p>
           </div>
 
-          <!-- EMAIL SIGN UP -->
           <div data-auth-view="signup" hidden>
             <h2>Join Faith In</h2>
-            <p class="fi-auth__subtitle">Create your free member account in seconds.</p>
+            <p class="fi-auth__subtitle">Create your secure member account.</p>
             <form data-auth-form="signup" class="fi-auth__form">
               <div class="fi-auth__names"><label><span class="sr-only">First name</span><input name="first_name" autocomplete="given-name" placeholder="First name" required maxlength="60"></label><label><span class="sr-only">Last name</span><input name="last_name" autocomplete="family-name" placeholder="Last name" required maxlength="60"></label></div>
               <label class="sr-only" for="fi-signup-email">Email address</label>
@@ -117,7 +68,6 @@
             <p class="fi-auth__switch">Already on Faith In? <button data-auth-show="signin">Sign in</button></p>
           </div>
 
-          <!-- FORGOT PASSWORD -->
           <div data-auth-view="forgot" hidden>
             <button class="fi-auth__back" data-auth-show="signin"><i class="fa-solid fa-arrow-left"></i> Back to sign in</button>
             <h2>Reset your password</h2>
@@ -131,7 +81,6 @@
             </form>
           </div>
 
-          <!-- VERIFY EMAIL -->
           <div data-auth-view="verify" hidden>
             <div class="fi-auth__verify-icon"><i class="fa-regular fa-envelope"></i></div>
             <h2>Verify your email</h2>
@@ -146,8 +95,6 @@
     </div>`;
     document.body.appendChild(host);
     let verificationEmail = '';
-    let lastEnteredPhone = '';
-
     const close = () => {
       if (host.dataset.locked === 'true') return;
       host.classList.add('hidden');
@@ -160,17 +107,7 @@
     const showView = name => {
       $$('[data-auth-view]', host).forEach(view => { view.hidden = view.dataset.authView !== name; });
       $$('[data-auth-error], [data-auth-success]', host).forEach(message => { message.hidden = true; message.textContent = ''; });
-      
-      const tabs = $('[data-auth-tabs]', host);
-      if (tabs) {
-        tabs.hidden = (name !== 'phone' && name !== 'signin' && name !== 'signup');
-        const isPhone = (name === 'phone');
-        $$('.fi-auth__tab-btn', tabs).forEach(btn => {
-          btn.classList.toggle('is-active', (btn.dataset.tab === 'phone') === isPhone);
-        });
-      }
-      
-      const input = $(`[data-auth-view="${name}"] input:not([type="hidden"])`, host);
+      const input = $(`[data-auth-view="${name}"] input`, host);
       window.setTimeout(() => input?.focus(), 0);
     };
     const showAuthError = (scope, error) => {
@@ -178,19 +115,10 @@
       el.textContent = error.message || 'Sign-in failed. Please try again.';
       el.hidden = false;
     };
-
     host.addEventListener('click', async event => {
       if (event.target === host || event.target.closest('[data-auth-close]')) close();
-
-      const tabBtn = event.target.closest('.fi-auth__tab-btn');
-      if (tabBtn) {
-        showView(tabBtn.dataset.tab === 'phone' ? 'phone' : 'signin');
-        return;
-      }
-
       const switcher = event.target.closest('[data-auth-show]');
       if (switcher) { showView(switcher.dataset.authShow); return; }
-      
       const toggle = event.target.closest('[data-password-toggle]');
       if (toggle) {
         const input = toggle.closest('.fi-auth__password').querySelector('input');
@@ -223,22 +151,8 @@
         try { await api.request('cv_send_email_verification'); status.textContent = 'Verification email sent. Check your inbox and spam folder.'; status.hidden = false; }
         catch (error) { status.textContent = error.message || 'Please wait before trying again.'; status.hidden = false; }
         finally { setBusy(resend, false); }
-        return;
-      }
-      const resendSms = event.target.closest('[data-auth-resend-sms]');
-      if (resendSms && lastEnteredPhone) {
-        setBusy(resendSms, true);
-        try {
-          await api.request('cv_phone_send_code', { phone: lastEnteredPhone });
-          alert('New verification code sent via SMS!');
-        } catch (error) {
-          showAuthError(resendSms.closest('[data-auth-view]'), error);
-        } finally {
-          setBusy(resendSms, false);
-        }
       }
     });
-
     $$('[data-auth-form]', host).forEach(form => form.addEventListener('submit', async event => {
       event.preventDefault();
       const mode = form.dataset.authForm;
@@ -246,27 +160,6 @@
       const submitter = event.submitter || $('button[type="submit"], button:not([type])', form);
       setBusy(submitter, true);
       try {
-        if (mode === 'phone-send') {
-          const country = String(data.get('country_code') || '+855').trim();
-          let local = String(data.get('phone') || '').trim().replace(/^0+/, '');
-          const fullPhone = `${country}${local}`;
-          lastEnteredPhone = fullPhone;
-          await api.request('cv_phone_send_code', { phone: fullPhone });
-          const displayEl = $('[data-phone-display]', host);
-          if (displayEl) displayEl.textContent = fullPhone;
-          showView('phone-verify');
-          return;
-        }
-
-        if (mode === 'phone-verify') {
-          const code = String(data.get('code') || '').trim();
-          const result = await api.request('cv_phone_verify_code', { code });
-          session = result;
-          applySession(session);
-          window.location.reload();
-          return;
-        }
-
         if (mode === 'forgot') {
           await api.request('cv_password_reset', { email: data.get('email') });
           const success = $('[data-auth-success]', form);
@@ -275,7 +168,6 @@
           $('[data-auth-error]', form).hidden = true;
           return;
         }
-
         const action = mode === 'signup' ? 'cv_email_sign_up' : 'cv_email_sign_in';
         const values = { email: data.get('email'), password: data.get('password'), remember: data.get('remember') === 'on' };
         if (mode === 'signup') values.display_name = `${data.get('first_name') || ''} ${data.get('last_name') || ''}`.trim();
@@ -292,7 +184,6 @@
       } catch (error) { showAuthError(form, error); }
       finally { setBusy(submitter, false); }
     }));
-
     window.FI.openAuth = options => {
       const locked = !!options?.locked;
       host.dataset.locked = String(locked);
@@ -301,7 +192,7 @@
       document.body.classList.toggle('fi-auth-locked', locked);
       const main = $('#main');
       if (main) { main.inert = locked; main.setAttribute('aria-hidden', String(locked)); }
-      showView(options?.verificationRequired ? 'verify' : (options?.mode || 'phone'));
+      showView(options?.verificationRequired ? 'verify' : 'signin');
       if (options?.email) { verificationEmail = options.email; $('[data-auth-email]', host).textContent = verificationEmail; }
       if (options?.verificationRequired) showView('verify');
     };
@@ -643,208 +534,18 @@
   }
 
   function openResourceEditor(refresh) {
-    const modal = document.createElement('div');
-    modal.className = 'fixed inset-0 z-[240] bg-black/60 backdrop-blur-sm p-4 flex items-center justify-center';
-    modal.innerHTML = `
-      <div class="fi-resource-modal animate-pop-in">
-        
-        <!-- Header -->
-        <div class="fi-resource-modal__header">
-          <h2 class="fi-resource-modal__title">Publish a resource</h2>
-          <button type="button" class="fi-resource-modal__close" data-close-resource aria-label="Close">
-            <i class="fa-solid fa-xmark text-lg"></i>
-          </button>
-        </div>
-
-        <!-- Scrollable Form Content -->
-        <form class="fi-resource-modal__body space-y-4">
-          <p class="fi-resource-modal__subtitle">
-            Share a PDF, image, audio, video, or ZIP file with the community.
-          </p>
-
-          <!-- Title -->
-          <div>
-            <input
-              type="text"
-              name="title"
-              placeholder="Resource title"
-              required
-              class="fi-resource-input"
-            />
-          </div>
-
-          <!-- Description -->
-          <div>
-            <textarea
-              name="description"
-              placeholder="Description"
-              rows="3"
-              class="fi-resource-textarea"
-            ></textarea>
-          </div>
-
-          <!-- Author & Translator -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <input
-              type="text"
-              name="contributor_name"
-              placeholder="Author / Creator"
-              class="fi-resource-input"
-            />
-            <input
-              type="text"
-              name="translator_name"
-              placeholder="Translated by"
-              class="fi-resource-input"
-            />
-          </div>
-
-          <!-- Language & Category -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <input
-              type="text"
-              name="language"
-              placeholder="Language, e.g. Khmer"
-              class="fi-resource-input"
-            />
-            <select
-              name="category"
-              class="fi-resource-select"
-            >
-              <option value="Bible Study">Bible Study</option>
-              <option value="Sermon">Sermon</option>
-              <option value="Book">Book</option>
-              <option value="Devotional">Devotional</option>
-              <option value="Worship">Worship</option>
-            </select>
-          </div>
-
-          <!-- Format Dropdown -->
-          <div>
-            <select
-              name="format"
-              class="fi-resource-select"
-            >
-              <option value="pdf">PDF</option>
-              <option value="image">Image</option>
-              <option value="audio">Audio</option>
-              <option value="video">Video</option>
-              <option value="zip">ZIP</option>
-            </select>
-          </div>
-
-          <!-- Resource File Upload -->
-          <div class="pt-1">
-            <label class="block text-[14px] font-bold text-[#1c1e21] dark:text-white mb-1.5">
-              Resource file
-            </label>
-            <label class="fi-resource-file-box">
-              <div class="fi-resource-file-btn">
-                Choose File
-              </div>
-              <div class="fi-resource-file-name" data-resource-file-label>
-                No file chosen
-              </div>
-              <input 
-                type="file" 
-                name="resource_file"
-                accept=".pdf,.zip,image/*,audio/*,video/*"
-                required
-                class="hidden" 
-              />
-            </label>
-            <p class="text-[12.5px] text-[#65676b] dark:text-gray-400 mt-1">
-              Maximum 50MB · stored in free Supabase Storage
-            </p>
-          </div>
-
-          <!-- Cover Image Upload -->
-          <div class="pt-1">
-            <label class="block text-[14px] font-bold text-[#1c1e21] dark:text-white mb-0.5">
-              Cover image
-            </label>
-            <p class="text-[12.5px] text-[#65676b] dark:text-gray-400 mb-1.5" data-thumb-hint>
-              Videos get a thumbnail captured automatically. Upload your own image to use that instead.
-            </p>
-            <label class="fi-resource-file-box">
-              <div class="fi-resource-file-btn">
-                Choose File
-              </div>
-              <div class="fi-resource-file-name">
-                <img class="fi-thumb-preview hidden w-6 h-6 rounded object-cover" alt="" data-thumb-preview>
-                <span data-cover-file-label>No file chosen</span>
-              </div>
-              <input 
-                type="file" 
-                name="thumbnail"
-                accept="image/*"
-                class="hidden" 
-              />
-            </label>
-          </div>
-
-          <!-- Checkbox -->
-          <div class="flex items-center gap-2.5 pt-1">
-            <input
-              type="checkbox"
-              id="allow_download"
-              name="allow_download"
-              value="1"
-              checked
-              class="w-4 h-4 text-[#1877f2] bg-white dark:bg-gray-800 border-[#ccd0d5] dark:border-gray-600 rounded cursor-pointer accent-[#1877f2]"
-            />
-            <label for="allow_download" class="text-[14px] text-[#1c1e21] dark:text-gray-200 cursor-pointer select-none">
-              Allow members to download this resource
-            </label>
-          </div>
-
-          <!-- Error & Progress -->
-          <p class="hidden rounded-xl border border-rose/30 bg-rose/10 px-3 py-2.5 text-[12.5px] text-rose" data-resource-error role="alert"></p>
-          
-          <div class="hidden" data-resource-progress>
-            <div class="flex justify-between text-[12.5px] text-muted mb-1">
-              <span>Uploading to FaithIn</span>
-              <strong data-resource-progress-label>0%</strong>
-            </div>
-            <div class="h-2 rounded-full bg-[#e4e6eb] dark:bg-gray-700 overflow-hidden">
-              <span class="block h-full bg-[#1877f2] transition-all duration-200" data-resource-progress-bar style="width:0%"></span>
-            </div>
-          </div>
-
-          <!-- Footer Button -->
-          <div class="pt-2">
-            <button type="submit" class="fi-resource-btn-primary" data-resource-submit>
-              Publish resource
-            </button>
-          </div>
-        </form>
-
-      </div>`;
-    document.body.appendChild(modal);
-    $('[data-close-resource]', modal).onclick = () => modal.remove();
-
-    const form = $('form', modal);
-    const fileInput = form.elements.namedItem('resource_file');
-    const formatInput = form.elements.namedItem('format');
-    const thumbField = form.elements.namedItem('thumbnail');
-    const thumbPreview = $('[data-thumb-preview]', form);
-    const thumbHint = $('[data-thumb-hint]', form);
-    const resourceFileLabel = $('[data-resource-file-label]', form);
-    const coverFileLabel = $('[data-cover-file-label]', form);
+    const modal = document.createElement('div'); modal.className = 'fixed inset-0 z-[240] bg-[#0b1120]/70 p-4 flex items-center justify-center';
+    modal.innerHTML = `<form class="card w-full max-w-2xl max-h-[92vh] overflow-y-auto p-5 space-y-4"><div class="flex justify-between"><div><h2 class="text-[20px] font-bold">Publish a resource</h2><p class="text-[12.5px] text-muted mt-1">Share a PDF, image, audio, video, or ZIP file with the community.</p></div><button type="button" class="icon-btn" data-close-resource aria-label="Close"><i class="fa-solid fa-xmark"></i></button></div><input class="field" name="title" placeholder="Resource title" required><textarea class="field" name="description" rows="3" placeholder="Description"></textarea><div class="grid sm:grid-cols-2 gap-3"><input class="field" name="contributor_name" placeholder="Author / Creator"><input class="field" name="translator_name" placeholder="Translated by"><input class="field" name="language" placeholder="Language, e.g. Khmer"><input class="field" name="category" placeholder="Category" value="Bible Study"></div><select class="field" name="format" aria-label="Resource format"><option value="pdf">PDF</option><option value="image">Image</option><option value="audio">Audio</option><option value="video">Video</option><option value="zip">ZIP bundle</option></select><label class="block text-[13px] font-semibold">Resource file<input class="field mt-1" name="resource_file" type="file" accept=".pdf,.zip,image/*,audio/*,video/*" required><span class="block text-[11.5px] text-muted mt-1">Maximum 50MB · stored in free Supabase Storage</span></label><div class="block text-[13px] font-semibold">Cover image<span class="block text-[11.5px] font-normal text-muted mt-1" data-thumb-hint>Videos get a thumbnail captured automatically. Upload your own image to use that instead.</span><div class="flex items-center gap-3 mt-2"><img class="fi-thumb-preview hidden" alt="" data-thumb-preview><input class="field" name="thumbnail" type="file" accept="image/*"></div></div><label class="flex items-center gap-2 text-[12.5px] text-muted"><input type="checkbox" name="allow_download" value="1" checked>Allow members to download this resource</label><p class="hidden rounded-xl border border-rose/30 bg-rose/10 px-3 py-2.5 text-[12.5px] text-rose" data-resource-error role="alert"></p><div class="hidden" data-resource-progress><div class="flex justify-between text-[11.5px] text-muted mb-1"><span>Uploading to FaithIn</span><strong data-resource-progress-label>0%</strong></div><div class="h-2 rounded-full bg-line overflow-hidden"><span class="block h-full bg-brand transition" data-resource-progress-bar style="width:0%"></span></div></div><button class="btn btn-primary w-full" data-resource-submit>Publish resource</button></form>`;
+    document.body.appendChild(modal); $('[data-close-resource]', modal).onclick = () => modal.remove();
+    const form = $('form', modal), fileInput = form.elements.namedItem('resource_file'), formatInput = form.elements.namedItem('format');
+    const thumbField = form.elements.namedItem('thumbnail'), thumbPreview = $('[data-thumb-preview]', form), thumbHint = $('[data-thumb-hint]', form);
     const DEFAULT_THUMB_HINT = thumbHint.textContent;
     let autoThumb = null, autoThumbUrl = '', manualThumbUrl = '';
-
     const setThumbPreview = (url, note) => {
-      if (url) {
-        thumbPreview.src = url;
-        thumbPreview.classList.remove('hidden');
-      } else {
-        thumbPreview.removeAttribute('src');
-        thumbPreview.classList.add('hidden');
-      }
+      if (url) { thumbPreview.src = url; thumbPreview.classList.remove('hidden'); }
+      else { thumbPreview.removeAttribute('src'); thumbPreview.classList.add('hidden'); }
       thumbHint.textContent = note || DEFAULT_THUMB_HINT;
     };
-
     // Draw a frame out of the chosen video and keep it as the default cover.
     const captureVideoThumbnail = file => {
       const objectUrl = URL.createObjectURL(file), video = document.createElement('video');
@@ -864,10 +565,7 @@
             if (autoThumbUrl) URL.revokeObjectURL(autoThumbUrl);
             autoThumb = new File([blob], 'auto-thumbnail.jpg', { type: 'image/jpeg' });
             autoThumbUrl = URL.createObjectURL(blob);
-            if (!thumbField.files?.[0]) {
-              setThumbPreview(autoThumbUrl, 'Thumbnail captured from your video. Upload an image to use a different one.');
-              if (coverFileLabel) coverFileLabel.textContent = 'Auto video thumbnail';
-            }
+            if (!thumbField.files?.[0]) setThumbPreview(autoThumbUrl, 'Thumbnail captured from your video. Upload an image to use a different one.');
           }, 'image/jpeg', 0.85);
         } catch (_) { fail(); }
       }, { once: true });
@@ -875,105 +573,38 @@
       setThumbPreview(manualThumbUrl, 'Capturing a thumbnail from your video…');
       video.src = objectUrl;
     };
-
     thumbField.addEventListener('change', () => {
       const picked = thumbField.files?.[0];
       if (manualThumbUrl) { URL.revokeObjectURL(manualThumbUrl); manualThumbUrl = ''; }
-      if (!picked) {
-        if (coverFileLabel) coverFileLabel.textContent = 'No file chosen';
-        setThumbPreview(autoThumbUrl, autoThumbUrl ? 'Using the thumbnail captured from your video.' : '');
-        return;
-      }
-      if (coverFileLabel) coverFileLabel.textContent = picked.name;
+      if (!picked) { setThumbPreview(autoThumbUrl, autoThumbUrl ? 'Using the thumbnail captured from your video.' : ''); return; }
       manualThumbUrl = URL.createObjectURL(picked);
       setThumbPreview(manualThumbUrl, 'Using your uploaded cover image.');
     });
-
-    fileInput.addEventListener('change', () => {
-      const file = fileInput.files?.[0];
-      if (!file) {
-        if (resourceFileLabel) resourceFileLabel.textContent = 'No file chosen';
-        return;
-      }
-      if (resourceFileLabel) resourceFileLabel.textContent = `${file.name} (${(file.size / (1024 * 1024)).toFixed(1)} MB)`;
-      const type = String(file.type || '').toLowerCase(), ext = String(file.name || '').split('.').pop().toLowerCase();
-      if (type === 'application/pdf' || ext === 'pdf') formatInput.value = 'pdf';
-      else if (type.startsWith('video/')) formatInput.value = 'video';
-      else if (type.startsWith('audio/')) formatInput.value = 'audio';
-      else if (type.startsWith('image/')) formatInput.value = 'image';
-      else if (type === 'application/zip' || ext === 'zip') formatInput.value = 'zip';
-      else {
-        fileInput.value = '';
-        if (resourceFileLabel) resourceFileLabel.textContent = 'No file chosen';
-        toast('Choose a PDF, image, audio, video, or ZIP file.');
-        return;
-      }
-
+    fileInput.addEventListener('change', () => { const file = fileInput.files?.[0]; if (!file) return; const type = String(file.type || '').toLowerCase(), ext = String(file.name || '').split('.').pop().toLowerCase(); if (type === 'application/pdf' || ext === 'pdf') formatInput.value = 'pdf'; else if (type.startsWith('video/')) formatInput.value = 'video'; else if (type.startsWith('audio/')) formatInput.value = 'audio'; else if (type.startsWith('image/')) formatInput.value = 'image'; else if (type === 'application/zip' || ext === 'zip') formatInput.value = 'zip'; else { fileInput.value = ''; toast('Choose a PDF, image, audio, video, or ZIP file.'); return; }
       if (autoThumbUrl) { URL.revokeObjectURL(autoThumbUrl); autoThumbUrl = ''; }
       autoThumb = null;
       if (formatInput.value === 'video') captureVideoThumbnail(file);
       else if (!thumbField.files?.[0]) setThumbPreview(manualThumbUrl, '');
     });
-
     form.onsubmit = async event => {
       event.preventDefault();
-      const resourceFile = fileInput.files?.[0];
-      const thumbnailInput = form.elements.namedItem('thumbnail');
-      const submit = $('[data-resource-submit]', form);
+      const resourceFile = fileInput.files?.[0], thumbnailInput = form.elements.namedItem('thumbnail'), submit = $('[data-resource-submit]', form);
       if (!resourceFile) return toast('Choose a resource file to publish.');
       if (resourceFile.size > 50 * 1024 * 1024) return toast(`${resourceFile.name} is larger than the free 50MB limit.`);
-
-      const data = Object.fromEntries(new FormData(form));
-      data.allow_download = form.elements.namedItem('allow_download').checked ? '1' : '0';
-      delete data.resource_file;
-      delete data.thumbnail;
-
+      const data = Object.fromEntries(new FormData(form)); data.allow_download = form.elements.namedItem('allow_download').checked ? '1' : '0'; delete data.resource_file; delete data.thumbnail;
       const chosenThumbnail = thumbnailInput.files?.[0] || autoThumb;
       const files = { resource_file: [resourceFile], thumbnail: chosenThumbnail ? [chosenThumbnail] : [] };
-      const progress = $('[data-resource-progress]', form);
-      const label = $('[data-resource-progress-label]', form);
-      const bar = $('[data-resource-progress-bar]', form);
-      const errorBox = $('[data-resource-error]', form);
-
-      errorBox.classList.add('hidden');
-      errorBox.textContent = '';
-      const oldSubmitHtml = submit.innerHTML;
-      progress.classList.remove('hidden');
-      submit.disabled = true;
-      submit.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin mr-1.5"></i>Publishing…';
-
+      const progress = $('[data-resource-progress]', form), label = $('[data-resource-progress-label]', form), bar = $('[data-resource-progress-bar]', form), errorBox = $('[data-resource-error]', form);
+      errorBox.classList.add('hidden'); errorBox.textContent = '';
+      const oldSubmitHtml = submit.innerHTML; progress.classList.remove('hidden'); submit.disabled = true; submit.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i>Uploading';
       try {
-        await api.request('cv_upload_resource', data, files, fraction => {
-          const percent = Math.max(1, Math.min(100, Math.round(fraction * 100)));
-          label.textContent = `${percent}%`;
-          bar.style.width = `${percent}%`;
-        });
-        label.textContent = '100%';
-        bar.style.width = '100%';
-        await refresh();
-        form.innerHTML = `
-          <div class="py-8 text-center">
-            <span class="mx-auto grid h-16 w-16 place-items-center rounded-full bg-emerald-500 text-white text-[28px]">
-              <i class="fa-solid fa-check"></i>
-            </span>
-            <h2 class="mt-5 text-[22px] font-bold text-[#1c1e21] dark:text-white">Published successfully</h2>
-            <p class="mt-2 text-[14px] text-[#65676b] dark:text-gray-400">Your resource is now live in the FaithIn Library.</p>
-            <button type="button" class="w-full bg-[#1877f2] hover:bg-[#166fe5] text-white font-bold text-[15px] py-2.5 rounded-md transition-colors mt-6" data-resource-done>
-              Done
-            </button>
-          </div>`;
-        $('[data-resource-done]', form).onclick = () => modal.remove();
-        toast('Resource published successfully ✨');
-      } catch (error) {
-        const message = error.message || 'Upload failed. Please try again.';
-        errorBox.textContent = message;
-        errorBox.classList.remove('hidden');
-        toast(message);
-        progress.classList.add('hidden');
-      } finally {
-        submit.disabled = false;
-        submit.innerHTML = oldSubmitHtml;
+        await api.request('cv_upload_resource', data, files, fraction => { const percent = Math.max(1, Math.min(100, Math.round(fraction * 100))); label.textContent = `${percent}%`; bar.style.width = `${percent}%`; });
+        label.textContent = '100%'; bar.style.width = '100%'; await refresh();
+        form.innerHTML = `<div class="py-8 text-center"><span class="mx-auto grid h-16 w-16 place-items-center rounded-full bg-emerald-500 text-white text-[28px]"><i class="fa-solid fa-check"></i></span><h2 class="mt-5 text-[22px] font-bold">Published successfully</h2><p class="mt-2 text-[13.5px] text-muted">Your resource is now available in the FaithIn Library.</p><button type="button" class="btn btn-primary w-full mt-6" data-resource-done><i class="fa-solid fa-check"></i>Done</button></div>`;
+        $('[data-resource-done]', form).onclick = () => modal.remove(); toast('Resource published successfully');
       }
+      catch (error) { const message = error.message || 'Upload failed. Please try again.'; errorBox.textContent = message; errorBox.classList.remove('hidden'); toast(message); progress.classList.add('hidden'); }
+      finally { submit.disabled = false; submit.innerHTML = oldSubmitHtml; }
     };
   }
 

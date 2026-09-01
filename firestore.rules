@@ -205,8 +205,19 @@ service cloud.firestore {
       allow delete: if isAuthor();
 
       match /comments/{commentId} {
-        allow read: if isVerifiedMember();
+        function canReadParentPost() {
+          let parent = get(/databases/$(database)/documents/posts/$(postId)).data;
+          return parent.get('visibility', 'public') == 'public'
+            || parent.authorUid == request.auth.uid
+            || (
+              parent.get('visibility', 'public') == 'followers'
+              && exists(/databases/$(database)/documents/follows/$(request.auth.uid + '__' + parent.authorUid))
+            );
+        }
+
+        allow read: if isVerifiedMember() && canReadParentPost();
         allow create: if isVerifiedMember()
+          && canReadParentPost()
           && request.resource.data.keys().hasOnly(['authorUid', 'author', 'content', 'media_url', 'reactions', 'createdAt'])
           && request.resource.data.authorUid == request.auth.uid
           && request.resource.data.author.uid == request.auth.uid
@@ -397,6 +408,8 @@ service cloud.firestore {
           && request.resource.data.participantProfiles.keys().hasAll(request.resource.data.participants)
           && validParticipantProfile(request.resource.data.participants[0])
           && validParticipantProfile(request.resource.data.participants[1])
+          && exists(/databases/$(database)/documents/users/$(request.resource.data.participants[0]))
+          && exists(/databases/$(database)/documents/users/$(request.resource.data.participants[1]))
           && threadId == request.resource.data.participants[0] + '__' + request.resource.data.participants[1]
           && request.resource.data.lastMessage is string
           && request.resource.data.lastMessage.size() <= 500

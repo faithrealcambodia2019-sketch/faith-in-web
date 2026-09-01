@@ -153,7 +153,7 @@
     }
 
     function needsEmailVerification(user) {
-        return false;
+        return !!(user && usesPasswordProvider(user) && user.email && !user.emailVerified);
     }
 
     function safeContinueUrl() {
@@ -245,13 +245,14 @@
         if (code === 'auth/invalid-email') return 'Enter a valid email address.';
         if (code === 'auth/too-many-requests') return 'Too many attempts. Please wait a while, then try again or reset your password.';
         if (code === 'auth/network-request-failed') return 'We could not reach the sign-in service. Check your connection and try again.';
-        if (code === 'auth/operation-not-allowed') return 'Google Sign-In is not enabled. Please sign in with your email and password below.';
-        if (code === 'auth/unauthorized-domain') return 'Google Sign-In domain not authorized. Please use your email and password.';
-        if (code === 'auth/internal-error') return 'Google sign-in could not connect. Please sign in using your Gmail & password below.';
+        if (code === 'auth/popup-closed-by-user' || code === 'auth/cancelled-popup-request') return 'The sign-in window was closed before completion.';
+        if (code === 'auth/popup-blocked') return 'Your browser blocked the sign-in window. Allow pop-ups for Faith In and try again.';
+        if (code === 'unavailable' || code === 'deadline-exceeded') return 'Faith In could not reach the service. Please check your connection and try again.';
+        if (isFirestoreIndexError(error)) return 'We could not prepare this content right now. Please try again shortly.';
         if (/https?:\/\/|firebase|firestore|googleapis| at |\bcode\s*:/i.test(message)) {
-            return 'Sign-in could not complete. You can sign in with your Gmail and password.';
+            return 'Something went wrong. Please try again.';
         }
-        return message || 'Sign-in could not complete. Please try again.';
+        return message || 'Something went wrong. Please try again.';
     }
 
     function httpsUrl(value) {
@@ -751,7 +752,7 @@
 
     actions.cv_get_session = function (b, params) {
         var checkRedirect = (b.authMod && typeof b.authMod.getRedirectResult === 'function')
-            ? within(b.authMod.getRedirectResult(b.auth).catch(function () { return null; }), 1500).catch(function () { return null; })
+            ? b.authMod.getRedirectResult(b.auth).catch(function () { return null; })
             : Promise.resolve(null);
 
         return checkRedirect.then(function (redirectResult) {
@@ -786,14 +787,22 @@
         provider.setCustomParameters({ prompt: 'select_account' });
         return setAuthPersistence(b, true)
             .then(function () {
-                return b.authMod.signInWithPopup(b.auth, provider);
+                return b.authMod.signInWithPopup(b.auth, provider)
+                    .catch(function (error) {
+                        var code = error && error.code ? String(error.code) : '';
+                        if (code === 'auth/popup-blocked' || code === 'auth/operation-not-supported-in-this-environment') {
+                            if (typeof b.authMod.signInWithRedirect === 'function') {
+                                return b.authMod.signInWithRedirect(b.auth, provider).then(function () {
+                                    return { redirected: true };
+                                });
+                            }
+                        }
+                        throw error;
+                    });
             })
             .then(function (result) {
+                if (result && result.redirected) return { redirected: true };
                 return loadProfile(b, result.user);
-            })
-            .catch(function (error) {
-                console.warn('[Faith In Auth] Google Sign-In notice:', error);
-                throw new Error('Please enter your Gmail and password in the fields above to sign in instantly.');
             });
     };
 
@@ -804,7 +813,16 @@
         return setAuthPersistence(b, String(params.remember) !== 'false')
             .then(function () { return b.authMod.signInWithEmailAndPassword(b.auth, email, password); })
             .then(function (credential) {
-                return loadProfile(b, credential.user);
+                if (!needsEmailVerification(credential.user)) return loadProfile(b, credential.user);
+                return b.authMod.sendEmailVerification(credential.user, { url: safeContinueUrl() })
+                    .catch(function () {})
+                    .then(function () {
+                        return {
+                            logged_in: false,
+                            verification_required: true,
+                            email: email
+                        };
+                    });
             });
     };
 
@@ -813,70 +831,19 @@
         var password = String(params.password || '');
         var displayName = text(params.display_name, 120);
         if (!displayName) throw new Error('Enter your first and last name.');
-        if (!email || password.length < 6) throw new Error('Enter a valid email and a password with at least 6 characters.');
+        if (!email || password.length < 8) throw new Error('Enter a valid email and a password with at least 8 characters.');
         return setAuthPersistence(b, String(params.remember) !== 'false')
             .then(function () { return b.authMod.createUserWithEmailAndPassword(b.auth, email, password); })
             .then(function (credential) {
                 return b.authMod.updateProfile(credential.user, { displayName: displayName })
+                    .then(function () { return b.authMod.sendEmailVerification(credential.user, { url: safeContinueUrl() }); })
                     .then(function () {
-                        return loadProfile(b, credential.user);
+                        return {
+                            logged_in: false,
+                            verification_required: true,
+                            email: email
+                        };
                     });
-            });
-    };
-
-    var phoneConfirmation = null;
-
-    actions.cv_phone_send_code = function (b, params) {
-        var rawPhone = String(params.phone || '').trim();
-        if (!rawPhone || rawPhone.length < 6) throw new Error('Enter a valid phone number with country code.');
-        if (!/^\+/.test(rawPhone)) {
-            rawPhone = '+' + rawPhone.replace(/\D/g, '');
-        }
-        if (typeof b.authMod.signInWithPhoneNumber !== 'function') {
-            throw new Error('Phone sign-in is not supported in this environment.');
-        }
-        var containerId = params.container_id || 'fi-recaptcha-container';
-        var container = typeof document !== 'undefined' ? document.getElementById(containerId) : null;
-        if (!container && typeof document !== 'undefined') {
-            container = document.createElement('div');
-            container.id = containerId;
-            document.body.appendChild(container);
-        }
-        var verifier = (typeof window !== 'undefined' && window._fiRecaptchaVerifier) || null;
-        if (!verifier && typeof b.authMod.RecaptchaVerifier === 'function') {
-            verifier = new b.authMod.RecaptchaVerifier(b.auth, containerId, {
-                size: 'invisible',
-                callback: function () {}
-            });
-            if (typeof window !== 'undefined') window._fiRecaptchaVerifier = verifier;
-        }
-        return setAuthPersistence(b, String(params.remember) !== 'false')
-            .then(function () {
-                return b.authMod.signInWithPhoneNumber(b.auth, rawPhone, verifier);
-            })
-            .then(function (confirmationResult) {
-                phoneConfirmation = confirmationResult;
-                return { success: true, phone: rawPhone, verification_sent: true };
-            })
-            .catch(function (error) {
-                if (typeof window !== 'undefined' && window._fiRecaptchaVerifier && typeof window._fiRecaptchaVerifier.clear === 'function') {
-                    window._fiRecaptchaVerifier.clear();
-                    window._fiRecaptchaVerifier = null;
-                }
-                throw error;
-            });
-    };
-
-    actions.cv_phone_verify_code = function (b, params) {
-        var code = String(params.code || '').trim();
-        if (!code || code.length < 4) throw new Error('Enter the verification code sent to your phone.');
-        if (!phoneConfirmation || typeof phoneConfirmation.confirm !== 'function') {
-            throw new Error('Please request an SMS verification code first.');
-        }
-        return phoneConfirmation.confirm(code)
-            .then(function (result) {
-                phoneConfirmation = null;
-                return loadProfile(b, result.user);
             });
     };
 
@@ -1009,26 +976,7 @@
 
     actions.cv_get_posts = function (b) {
         return currentUser(b).then(function (user) {
-            if (!user) {
-                return b.dbMod.getDocs(b.dbMod.query(
-                    b.dbMod.collection(b.db, 'posts'),
-                    b.dbMod.where('visibility', '==', 'public'),
-                    b.dbMod.limit(FEED_PAGE_SIZE)
-                )).then(function (snap) {
-                    var items = [];
-                    snap.forEach(function (doc) {
-                        var d = doc.data() || {};
-                        if (d.visibility === 'private') return;
-                        items.push(shapePost(doc.id, d, null));
-                    });
-                    items.sort(function (a, b) {
-                        return String(b.created_at || '').localeCompare(String(a.created_at || ''));
-                    });
-                    return { items: items };
-                }).catch(function () {
-                    return { items: [] };
-                });
-            }
+            if (!user) return { items: [] };
 
             return followingMap(b, user).then(function (following) {
                 var queries = [];
@@ -1873,6 +1821,7 @@
                         var postQuery = b.dbMod.query(
                             b.dbMod.collection(b.db, 'posts'),
                             b.dbMod.where('authorUid', '==', uid),
+                            b.dbMod.where('visibility', '==', 'public'),
                             b.dbMod.limit(1)
                         );
                         return b.dbMod.getDocs(postQuery).then(function (postSnap) {
@@ -2433,11 +2382,7 @@
                             }
                         }
                         if (!recipientUid || recipientUid === user.uid) throw new Error('Choose another member to message.');
-                        // A locally-created placeholder id (for example
-                        // `thread-<uid>`) must never become the stored document
-                        // id. New direct conversations always use the same
-                        // deterministic, sorted participant id as the rules.
-                        var requestedExists = existing && existing.exists && existing.exists();
+                        var requestedExists = !!(existing && existing.exists && existing.exists());
                         var id = requestedExists && requestedThreadId
                             ? requestedThreadId
                             : directThreadId(user.uid, recipientUid);
