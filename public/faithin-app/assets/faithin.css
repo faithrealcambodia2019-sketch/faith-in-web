@@ -747,63 +747,119 @@ html.dark .msg-bubble.is-mine{ color:#0b1120; }
 
 /* Compact Library shelf cards. Explicit CSS keeps the fixed book dimensions
    reliable even though these cards are created dynamically after page load. */
-/* --- Library: Facebook-style shelf & card system ------------------------ */
+/* --- Library: Modern Facebook-style shelf & card system ----------------- */
 .fb-publish-btn {
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
-  gap: 7px !important;
-  padding: 8px 16px !important;
+  gap: 8px !important;
+  padding: 9px 18px !important;
   background-color: #1877F2 !important;
   color: #ffffff !important;
   font-size: 14px !important;
   font-weight: 600 !important;
-  border-radius: 6px !important;
+  border-radius: 8px !important;
   border: none !important;
   cursor: pointer !important;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12) !important;
-  transition: background-color 0.15s ease, transform 0.1s ease !important;
+  box-shadow: 0 1px 3px rgba(24, 119, 242, 0.3) !important;
+  transition: all 0.15s ease !important;
   text-decoration: none !important;
   white-space: nowrap !important;
 }
 .fb-publish-btn:hover {
   background-color: #166fe5 !important;
   color: #ffffff !important;
+  box-shadow: 0 4px 12px rgba(24, 119, 242, 0.35) !important;
+  transform: translateY(-1px) !important;
 }
 .fb-publish-btn:active {
   background-color: #1464cc !important;
-  transform: scale(0.98) !important;
+  transform: translateY(0) !important;
 }
 .fb-publish-btn i {
   color: #ffffff !important;
   font-size: 13px !important;
 }
 
+.fb-filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+  scrollbar-width: none;
+}
+.fb-filter-bar::-webkit-scrollbar { display: none; }
+.fb-filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #475569;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+  text-decoration: none;
+}
+.fb-filter-chip:hover {
+  background: #f8fafc;
+  color: #0f172a;
+  border-color: #cbd5e1;
+}
+.fb-filter-chip.is-active {
+  background: #E7F3FF;
+  color: #1877F2;
+  border-color: #bad9ff;
+}
+html.dark .fb-filter-chip {
+  background: #1e293b;
+  border-color: #334155;
+  color: #94a3b8;
+}
+html.dark .fb-filter-chip:hover {
+  background: #334155;
+  color: #f8fafc;
+}
+html.dark .fb-filter-chip.is-active {
+  background: rgba(24, 119, 242, 0.2);
+  color: #60a5fa;
+  border-color: rgba(24, 119, 242, 0.4);
+}
+
 .fb-library-card {
   width: 100%;
-  max-width: 270px;
   background: #ffffff;
-  border-radius: 10px;
+  border-radius: 14px;
   border: 1px solid #e2e8f0;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03);
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .fb-library-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.09);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.1);
+  border-color: #cbd5e1;
 }
 html.dark .fb-library-card {
   background: #1e293b;
   border-color: #334155;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
+html.dark .fb-library-card:hover {
+  border-color: #475569;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.4);
+}
 
 .fb-library-cover-box {
-  background-color: #F0F2F5;
-  height: 210px;
+  background: linear-gradient(180deg, #F0F2F5 0%, #E4E6EB 100%);
+  height: 220px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -812,7 +868,7 @@ html.dark .fb-library-card {
   overflow: hidden;
 }
 html.dark .fb-library-cover-box {
-  background-color: #0f172a;
+  background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
 }
 
 .fb-book-3d-wrap {
@@ -821,83 +877,85 @@ html.dark .fb-library-cover-box {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: transform 0.2s ease;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
-.fb-book-3d-wrap:hover {
-  transform: scale(1.04);
+.fb-library-card:hover .fb-book-3d-wrap {
+  transform: scale(1.05);
 }
 .fb-book-3d-wrap img {
-  max-height: 175px;
-  max-width: 130px;
+  max-height: 180px;
+  max-width: 135px;
   width: auto;
   height: auto;
   object-fit: contain;
   border-radius: 2px 6px 6px 2px;
-  filter: drop-shadow(3px 6px 12px rgba(0, 0, 0, 0.22));
+  filter: drop-shadow(4px 8px 16px rgba(0, 0, 0, 0.28));
 }
 
 /* CSS fallback 3D book when no thumbnail is uploaded */
 .fb-book-fallback {
-  width: 120px;
-  height: 175px;
+  width: 124px;
+  height: 178px;
   display: flex;
   border-radius: 2px 6px 6px 2px;
-  box-shadow: 3px 6px 12px rgba(0, 0, 0, 0.22);
+  box-shadow: 4px 8px 18px rgba(0, 0, 0, 0.28);
   overflow: hidden;
+  background: #14532d;
 }
 .fb-book-spine {
-  width: 14px;
-  background: #111827;
+  width: 16px;
+  background: #0f172a;
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;
   align-items: center;
   padding: 10px 0;
-  box-shadow: inset -2px 0 4px rgba(0,0,0,0.5);
+  box-shadow: inset -2px 0 5px rgba(0,0,0,0.6);
   flex-shrink: 0;
 }
 .fb-spine-line {
   width: 100%;
   height: 2px;
-  background: #ca8a04;
+  background: #eab308;
   opacity: 0.85;
 }
 .fb-book-front {
   flex: 1;
-  background: #1e4d3b;
+  background: linear-gradient(135deg, #14532d 0%, #166534 100%);
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 20px 8px 10px;
-  border-left: 1px solid #111827;
-  box-shadow: inset 3px 0 8px rgba(0, 0, 0, 0.3);
+  padding: 20px 8px 12px;
+  border-left: 1px solid rgba(0, 0, 0, 0.4);
+  box-shadow: inset 4px 0 10px rgba(0, 0, 0, 0.35);
 }
 .fb-book-badge {
-  border: 1px solid #ca8a04;
-  padding: 6px 4px;
+  border: 1px solid #eab308;
+  padding: 7px 5px;
   text-align: center;
-  width: 90%;
-  background: #1e4d3b;
+  width: 92%;
+  background: rgba(20, 83, 45, 0.9);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
 }
 .fb-book-author {
-  color: #eab308;
+  color: #facc15;
   font-size: 8px;
   font-weight: 700;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.05em;
   line-height: 1.2;
   text-transform: uppercase;
 }
 .fb-book-divider {
   width: 100%;
   height: 1px;
-  background: #ca8a04;
+  background: #eab308;
   margin: 3px 0;
-  opacity: 0.8;
+  opacity: 0.85;
 }
 .fb-book-title {
   color: #ffffff;
   font-size: 7px;
-  font-weight: 500;
+  font-weight: 600;
   letter-spacing: 0.02em;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -922,9 +980,16 @@ html.dark .fb-library-cover-box {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  transition: color 0.15s ease;
+}
+.fb-library-card:hover .fb-card-title {
+  color: #1877F2;
 }
 html.dark .fb-card-title {
   color: #f8fafc;
+}
+html.dark .fb-library-card:hover .fb-card-title {
+  color: #60a5fa;
 }
 .fb-card-author {
   font-size: 12.5px;
@@ -986,11 +1051,11 @@ html.dark .fb-card-footer {
 .fb-download-btn {
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
   font-size: 13px;
   font-weight: 600;
   color: #475569;
-  padding: 4px 6px;
+  padding: 4px 8px;
   border-radius: 6px;
   cursor: pointer;
   transition: background 0.15s ease, color 0.15s ease;

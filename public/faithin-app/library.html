@@ -15,7 +15,7 @@
 <link href="/faithin-app/assets/faithin-fonts.css" rel="stylesheet"/>
 <link href="/faithin-app/assets/faithin-icons.css" rel="stylesheet"/>
 <link href="/faithin-app/assets/faithin-tw.css" rel="stylesheet"/>
-<link href="/faithin-app/assets/faithin.css?v=20260901-v60" rel="stylesheet"/>
+<link href="/faithin-app/assets/faithin.css?v=20260901-v70" rel="stylesheet"/>
 </head>
 <body class="font-sans min-h-screen pb-16 lg:pb-0" data-page="library" data-search="Search Faith In">
 <main class="max-w-[1240px] mx-auto px-3 sm:px-4 py-5 grid gap-6 lg:grid-cols-[280px_minmax(0,1fr)] xl:grid-cols-[280px_minmax(0,1fr)_280px] items-start" id="main">
@@ -139,7 +139,7 @@
 <section class="min-w-0 space-y-4">
   
   <!-- Header Section -->
-  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-2 bg-transparent">
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-1 bg-transparent">
     <div>
       <h1 class="text-[20px] sm:text-[22px] font-bold text-ink leading-tight" id="library-title">Recommended for you</h1>
       <p class="text-[13.5px] sm:text-[14px] text-muted mt-0.5" id="library-subtitle">Resources published by the Faith In community</p>
@@ -148,6 +148,26 @@
       <i class="fa-solid fa-plus"></i>
       <span>Publish resource</span>
     </button>
+  </div>
+
+  <!-- Quick Format Filter Tabs -->
+  <div class="fb-filter-bar pt-1 pb-2">
+    <a href="/library" class="fb-filter-chip is-active" data-format-filter="all">
+      <i class="fa-solid fa-layer-group text-[12px]"></i>
+      <span>All Resources</span>
+    </a>
+    <a href="/library?format=pdf" class="fb-filter-chip" data-format-filter="pdf">
+      <i class="fa-solid fa-file-lines text-orange-500 text-[12px]"></i>
+      <span>PDF Books</span>
+    </a>
+    <a href="/library?format=video" class="fb-filter-chip" data-format-filter="video">
+      <i class="fa-solid fa-video text-red-500 text-[12px]"></i>
+      <span>Sermons &amp; Videos</span>
+    </a>
+    <a href="/library?format=audio" class="fb-filter-chip" data-format-filter="audio">
+      <i class="fa-solid fa-headphones text-purple-500 text-[12px]"></i>
+      <span>Podcasts &amp; Audio</span>
+    </a>
   </div>
 
   <!-- Cards Grid -->
@@ -189,10 +209,10 @@
 
 </main>
 
-<script src="/faithin-app/assets/faithin-runtime.js?v=20260901-v65"></script>
-<script src="/faithin-app/assets/faithin-blob-upload.js?v=20260901-v65"></script>
-<script src="/assets/js/faith-in-backend.js?v=20260901-v65"></script>
-<script src="/faithin-app/assets/faithin.js?v=20260901-v65"></script>
+<script src="/faithin-app/assets/faithin-runtime.js?v=20260901-v70"></script>
+<script src="/faithin-app/assets/faithin-blob-upload.js?v=20260901-v70"></script>
+<script src="/assets/js/faith-in-backend.js?v=20260901-v70"></script>
+<script src="/faithin-app/assets/faithin.js?v=20260901-v70"></script>
 <script>
   document.getElementById('show-more-cats')?.addEventListener('click', function () {
     const hidden = document.querySelectorAll('[data-more-cat].hidden');
@@ -205,6 +225,6 @@
     }
   });
 </script>
-<script src="/faithin-app/assets/faithin-live.js?v=20260901-v65"></script>
+<script src="/faithin-app/assets/faithin-live.js?v=20260901-v70"></script>
 </body>
 </html>

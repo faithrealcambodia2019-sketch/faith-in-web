@@ -534,6 +534,15 @@
     };
     updateHeaderInfo();
 
+    $$('[data-format-filter]').forEach(chip => {
+      const target = chip.dataset.formatFilter;
+      if ((!format && target === 'all') || (format && format.toLowerCase() === target.toLowerCase())) {
+        chip.classList.add('is-active');
+      } else {
+        chip.classList.remove('is-active');
+      }
+    });
+
     const render = () => {
       let items = resources.slice();
       if (format) items = items.filter(resource => String(resource.format || '').toLowerCase() === format.toLowerCase());
