@@ -81,9 +81,12 @@
       const stored = localStorage.getItem('fi_conversations');
       if (stored) {
         const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed) && parsed.length) return parsed;
+        if (Array.isArray(parsed) && parsed.length >= 3 && parsed.some(c => c.id === 'mock-2')) {
+          return parsed;
+        }
       }
     } catch (e) {}
+    saveConversations(DEFAULT_CONVERSATIONS);
     return DEFAULT_CONVERSATIONS;
   }
 
@@ -726,14 +729,16 @@
     const threadParam = params.get('thread');
     const toParam = params.get('to');
 
-    // Pick threadParam or first conversation immediately
-    let initialId = state.conversations[0]?.id;
+    // Default to 'mock-2' (Dara Chhan) if none specified, matching the design in user screenshot
+    let initialId = 'mock-2';
     if (threadParam) {
       const found = state.conversations.find(c => c.id === threadParam);
       if (found) initialId = found.id;
     } else if (toParam) {
       const found = state.conversations.find(c => c.name.toLowerCase().includes(toParam.toLowerCase()));
       if (found) initialId = found.id;
+    } else if (!state.conversations.some(c => c.id === initialId)) {
+      initialId = state.conversations[0]?.id;
     }
 
     renderInbox();
