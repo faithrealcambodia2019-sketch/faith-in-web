@@ -6,6 +6,7 @@ const read = path => fs.readFileSync(new URL(path, import.meta.url), "utf8");
 const messaging = read("../public/faithin-app/assets/faithin-messaging.js");
 const live = read("../public/faithin-app/assets/faithin-live.js");
 const runtime = read("../public/faithin-app/assets/faithin-runtime.js");
+const messagingPage = read("../public/faithin-app/messaging.html");
 const networkTransport = runtime.slice(
   runtime.indexOf("function requestNetwork"),
   runtime.indexOf("window.FIData"),
@@ -29,4 +30,13 @@ test("messaging keeps realtime subscriptions and all message actions", () => {
 test("messaging contains no demo contacts or compatibility-route fallback", () => {
   assert.doesNotMatch(messaging, /Dara Chhan|Sophea Sok|Kosal Meng/);
   assert.doesNotMatch(messaging, /\/api\/compat/);
+});
+
+test("the messaging page cache-busts every restored runtime asset", () => {
+  for (const asset of ["faithin-runtime.js", "faithin.js", "faithin-live.js", "faithin-messaging.js"]) {
+    assert.match(
+      messagingPage,
+      new RegExp(`${asset.replace(".", "\\.")}\\?v=20260901-baseline-v2`),
+    );
+  }
 });
