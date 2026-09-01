@@ -747,22 +747,282 @@ html.dark .msg-bubble.is-mine{ color:#0b1120; }
 
 /* Compact Library shelf cards. Explicit CSS keeps the fixed book dimensions
    reliable even though these cards are created dynamically after page load. */
-.fi-resource-card{ flex:0 0 154px; width:154px; min-width:154px; }
-.fi-resource-cover{ width:154px; height:196px; }
-.fi-resource-cover img{ display:block; width:100%; height:100%; object-fit:cover; }
-@media (max-width:480px){
-  .fi-resource-card{ flex-basis:142px; width:142px; min-width:142px; }
-  .fi-resource-cover{ width:142px; height:181px; }
+/* --- Library: Facebook-style shelf & card system ------------------------ */
+.fb-library-card {
+  background: #ffffff;
+  border-radius: 10px;
+  border: 1px solid #e4e6eb;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.fb-library-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+}
+html.dark .fb-library-card {
+  background: #1e293b;
+  border-color: #334155;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
-/* --- Library: media grid, sermon/video grid, audio cards, in-app player --------- */
+.fb-library-cover-box {
+  background-color: #F0F2F5;
+  height: 240px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+}
+html.dark .fb-library-cover-box {
+  background-color: #0f172a;
+}
+
+.fb-book-3d-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+.fb-book-3d-wrap:hover {
+  transform: scale(1.04);
+}
+.fb-book-3d-wrap img {
+  max-height: 190px;
+  max-width: 140px;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border-radius: 2px 6px 6px 2px;
+  filter: drop-shadow(4px 6px 12px rgba(0, 0, 0, 0.22));
+}
+
+/* CSS fallback 3D book when no thumbnail is uploaded */
+.fb-book-fallback {
+  width: 130px;
+  height: 185px;
+  display: flex;
+  border-radius: 2px 6px 6px 2px;
+  box-shadow: 4px 6px 14px rgba(0, 0, 0, 0.22);
+  overflow: hidden;
+}
+.fb-book-spine {
+  width: 16px;
+  background: #111827;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
+  padding: 10px 0;
+  box-shadow: inset -2px 0 4px rgba(0,0,0,0.5);
+  flex-shrink: 0;
+}
+.fb-spine-line {
+  width: 100%;
+  height: 2px;
+  background: #ca8a04;
+  opacity: 0.85;
+}
+.fb-book-front {
+  flex: 1;
+  background: #1e4d3b;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px 8px 12px;
+  border-left: 1px solid #111827;
+  box-shadow: inset 4px 0 10px rgba(0, 0, 0, 0.3);
+}
+.fb-book-badge {
+  border: 1px solid #ca8a04;
+  padding: 8px 4px;
+  text-align: center;
+  width: 90%;
+  background: #1e4d3b;
+}
+.fb-book-author {
+  color: #eab308;
+  font-size: 8.5px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+.fb-book-divider {
+  width: 100%;
+  height: 1px;
+  background: #ca8a04;
+  margin: 4px 0;
+  opacity: 0.8;
+}
+.fb-book-title {
+  color: #ffffff;
+  font-size: 7.5px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  line-height: 1.2;
+}
+
+/* Card details area */
+.fb-card-body {
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+.fb-card-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #111827;
+  line-height: 1.35;
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+html.dark .fb-card-title {
+  color: #f8fafc;
+}
+.fb-card-author {
+  font-size: 13px;
+  color: #6b7280;
+  margin-bottom: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.fb-card-author strong {
+  color: #111827;
+  font-weight: 600;
+}
+html.dark .fb-card-author strong {
+  color: #e2e8f0;
+}
+.fb-card-translator {
+  font-size: 12.5px;
+  color: #6b7280;
+  margin-bottom: 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+html.dark .fb-card-translator {
+  color: #94a3b8;
+}
+.fb-format-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3px 10px;
+  border-radius: 5px;
+  background: #E7F3FF;
+  color: #1877F2;
+  font-size: 11.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  width: fit-content;
+  margin-top: 2px;
+  margin-bottom: 14px;
+}
+html.dark .fb-format-pill {
+  background: rgba(24, 119, 242, 0.2);
+  color: #60a5fa;
+}
+
+.fb-card-footer {
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid #f1f3f5;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+html.dark .fb-card-footer {
+  border-top-color: #334155;
+}
+.fb-download-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #4b5563;
+  padding: 4px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+  background: transparent;
+  border: none;
+}
+.fb-download-btn:hover {
+  background: #f3f4f6;
+  color: #111827;
+}
+html.dark .fb-download-btn {
+  color: #94a3b8;
+}
+html.dark .fb-download-btn:hover {
+  background: #334155;
+  color: #f8fafc;
+}
+.fb-download-btn i {
+  color: #1877F2;
+  font-size: 14px;
+}
+
+.fb-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.fb-action-icon-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6b7280;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.fb-action-icon-btn:hover {
+  background: #f3f4f6;
+  color: #111827;
+}
+html.dark .fb-action-icon-btn {
+  color: #94a3b8;
+}
+html.dark .fb-action-icon-btn:hover {
+  background: #334155;
+  color: #f8fafc;
+}
+.fb-action-icon-btn.is-saved {
+  color: #1877F2 !important;
+}
+.fb-action-icon-btn.is-delete:hover {
+  color: #ef4444 !important;
+}
+
 .fi-media-grid{
-  display:grid; gap:14px; padding-bottom:4px;
-  grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+  display:grid; gap:20px; padding-bottom:4px;
+  grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
   align-items:start;
 }
-@media (max-width:560px){
-  .fi-media-grid{ grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px 10px; }
+@media (max-width:640px){
+  .fi-media-grid{ grid-template-columns:repeat(1,minmax(0,1fr)); gap:16px; }
 }
 
 /* wide 16:9 sermon / video card */

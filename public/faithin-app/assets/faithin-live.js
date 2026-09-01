@@ -369,47 +369,47 @@
 
     let coverMarkup = '';
     if (format === 'video') {
-      coverMarkup = `<div class="w-full max-w-[220px] aspect-video relative rounded-md overflow-hidden shadow-sm bg-gray-900 flex items-center justify-center cursor-pointer group" data-resource-play aria-label="Play ${esc(resource.title)}">`
-        + (resource.thumbnail_url ? `<img class="w-full h-full object-cover" src="${esc(resource.thumbnail_url)}" alt="${esc(resource.title)}" loading="lazy">` : `<span class="text-white font-semibold text-center p-2 text-[11px]"><i class="fa-solid fa-video text-base block mb-1"></i>${esc(resource.title)}</span>`)
-        + `<span class="fi-media-play"><span><i class="fa-solid fa-play text-xs"></i></span></span>`
+      coverMarkup = `<div class="w-full max-w-[240px] aspect-video relative rounded-md overflow-hidden shadow bg-gray-900 flex items-center justify-center cursor-pointer group" data-resource-play aria-label="Play ${esc(resource.title)}">`
+        + (resource.thumbnail_url ? `<img class="w-full h-full object-cover" src="${esc(resource.thumbnail_url)}" alt="${esc(resource.title)}" loading="lazy">` : `<span class="text-white font-semibold text-center p-3 text-xs"><i class="fa-solid fa-video text-lg block mb-1"></i>${esc(resource.title)}</span>`)
+        + `<span class="fi-media-play"><span><i class="fa-solid fa-play text-sm"></i></span></span>`
         + `<span class="fi-media-badge">Sermon</span></div>`;
     } else if (format === 'audio') {
-      coverMarkup = `<div class="w-[125px] h-[125px] relative rounded-md overflow-hidden shadow-sm bg-gradient-to-br from-purple-700 to-indigo-900 flex items-center justify-center cursor-pointer group" data-resource-play aria-label="Play ${esc(resource.title)}">`
-        + (resource.thumbnail_url ? `<img class="w-full h-full object-cover" src="${esc(resource.thumbnail_url)}" alt="${esc(resource.title)}" loading="lazy">` : `<span class="text-white font-semibold text-center p-2 text-[11px]"><i class="fa-solid fa-headphones text-lg block mb-1"></i>${esc(resource.title)}</span>`)
-        + `<span class="fi-media-play"><span><i class="fa-solid fa-play text-xs"></i></span></span>`
+      coverMarkup = `<div class="w-[140px] h-[140px] relative rounded-md overflow-hidden shadow bg-gradient-to-br from-purple-700 to-indigo-900 flex items-center justify-center cursor-pointer group" data-resource-play aria-label="Play ${esc(resource.title)}">`
+        + (resource.thumbnail_url ? `<img class="w-full h-full object-cover" src="${esc(resource.thumbnail_url)}" alt="${esc(resource.title)}" loading="lazy">` : `<span class="text-white font-semibold text-center p-3 text-xs"><i class="fa-solid fa-headphones text-xl block mb-1"></i>${esc(resource.title)}</span>`)
+        + `<span class="fi-media-play"><span><i class="fa-solid fa-play text-sm"></i></span></span>`
         + `<span class="fi-media-badge">Audio</span></div>`;
     } else if (resource.thumbnail_url) {
-      coverMarkup = `<div class="h-[140px] max-w-[120px] flex items-center justify-center relative cursor-pointer transition-transform duration-200 hover:scale-105" data-resource-download>`
-        + `<img class="max-h-[140px] w-auto max-w-[120px] object-contain rounded drop-shadow-md" src="${esc(resource.thumbnail_url)}" alt="${esc(resource.title)}" loading="lazy">`
+      coverMarkup = `<div class="fb-book-3d-wrap" data-resource-download title="Download ${esc(resource.title)}">`
+        + `<img src="${esc(resource.thumbnail_url)}" alt="${esc(resource.title)}" loading="lazy">`
         + `</div>`;
     } else {
-      // Sleek 3D Book Cover
-      coverMarkup = `<div class="w-[95px] h-[135px] relative drop-shadow-md rounded-r rounded-l-sm flex cursor-pointer transition-transform duration-200 hover:scale-105 select-none" data-resource-download>`
-        + `<div class="w-3 bg-gray-900 rounded-l-sm flex flex-col justify-evenly items-center py-1.5 shadow-inner shrink-0"><div class="w-full h-[1px] bg-yellow-600 opacity-80"></div><div class="w-full h-[1px] bg-yellow-600 opacity-80"></div><div class="w-full h-[1px] bg-yellow-600 opacity-80"></div></div>`
-        + `<div class="flex-1 bg-[#1e4d3b] rounded-r flex flex-col items-center pt-4 border-l border-gray-800 shadow-[inset_2px_0_6px_rgba(0,0,0,0.2)] px-1 overflow-hidden">`
-        + `<div class="border border-yellow-600 p-1 text-center w-[90%] bg-[#1e4d3b]">`
-        + `<p class="text-yellow-500 text-[7px] font-bold tracking-wider leading-tight uppercase truncate max-w-full">${esc(authorName)}</p>`
-        + `<div class="w-full h-[0.5px] bg-yellow-600 my-[1.5px] opacity-70"></div>`
-        + `<p class="text-white text-[6px] font-medium tracking-wide line-clamp-2 leading-tight">${esc(resource.title)}</p>`
-        + `</div></div></div>`;
+      // 3D Book Cover Fallback
+      coverMarkup = `<div class="fb-book-3d-wrap" data-resource-download title="Download ${esc(resource.title)}">`
+        + `<div class="fb-book-fallback">`
+        + `<div class="fb-book-spine"><div class="fb-spine-line"></div><div class="fb-spine-line"></div><div class="fb-spine-line"></div></div>`
+        + `<div class="fb-book-front"><div class="fb-book-badge">`
+        + `<p class="fb-book-author">${esc(authorName)}</p>`
+        + `<div class="fb-book-divider"></div>`
+        + `<p class="fb-book-title">${esc(resource.title)}</p>`
+        + `</div></div></div></div>`;
     }
 
-    return `<article class="bg-white dark:bg-[#151d2e] rounded-lg shadow-[0_1px_2px_rgba(0,0,0,0.08)] overflow-hidden flex flex-col border border-gray-100 dark:border-slate-800 transition-all hover:shadow-md" data-resource-id="${id}" data-resource-format="${esc(format)}">`
-      + `<div class="bg-[#F0F2F5] dark:bg-slate-800/50 h-[165px] flex items-center justify-center p-3 relative select-none">${coverMarkup}</div>`
-      + `<div class="p-3 flex flex-col flex-1">`
-      + `<h3 class="text-[14px] font-bold text-gray-900 dark:text-white leading-snug mb-0.5 truncate" title="${esc(resource.title)}">${esc(resource.title)}</h3>`
-      + `<p class="text-[12px] text-gray-500 dark:text-gray-400 mb-0.5 truncate">By <span class="font-semibold text-gray-800 dark:text-gray-200">${esc(authorName)}</span></p>`
-      + (resource.translated_by ? `<p class="text-[11.5px] text-gray-500 dark:text-gray-400 mb-1 truncate">Translated by ${esc(resource.translated_by)}</p>` : '')
-      + `<span class="inline-flex items-center justify-center px-2 py-0.5 rounded bg-[#E7F3FF] dark:bg-blue-950/60 text-[#1877F2] dark:text-blue-400 text-[10.5px] font-bold w-max my-1.5 uppercase">${esc(resource.format || 'PDF')}</span>`
-      + `<div class="mt-auto flex items-center justify-between pt-2 border-t border-gray-100 dark:border-slate-800">`
-      + `<button type="button" class="flex items-center text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-slate-800 px-1.5 py-1 rounded cursor-pointer transition-colors text-[12.5px]" data-resource-download title="Download resource">`
-      + `<i class="fa-solid fa-download w-3.5 h-3.5 mr-1 text-[#1877F2]"></i>`
-      + `<span class="font-medium">${downloadCount}</span>`
+    return `<article class="fb-library-card group" data-resource-id="${id}" data-resource-format="${esc(format)}">`
+      + `<div class="fb-library-cover-box">${coverMarkup}</div>`
+      + `<div class="fb-card-body">`
+      + `<h3 class="fb-card-title" title="${esc(resource.title)}">${esc(resource.title)}</h3>`
+      + `<p class="fb-card-author">By <strong>${esc(authorName)}</strong></p>`
+      + (resource.translated_by ? `<p class="fb-card-translator">Translated by ${esc(resource.translated_by)}</p>` : '<div class="mb-1"></div>')
+      + `<span class="fb-format-pill">${esc(resource.format || 'PDF')}</span>`
+      + `<div class="fb-card-footer">`
+      + `<button type="button" class="fb-download-btn" data-resource-download title="Download resource">`
+      + `<i class="fa-solid fa-download"></i>`
+      + `<span>${downloadCount}</span>`
       + `</button>`
-      + `<div class="flex items-center gap-0.5 text-gray-500 dark:text-gray-400">`
-      + (canDelete ? `<button type="button" class="flex items-center justify-center w-7 h-7 rounded-full hover:bg-gray-100 dark:hover:bg-slate-800 hover:text-red-500 transition-colors" title="Delete" data-resource-delete><i class="fa-regular fa-trash-can text-[12px]"></i></button>` : '')
-      + `<button type="button" class="flex items-center justify-center w-7 h-7 rounded-full hover:bg-gray-100 dark:hover:bg-slate-800 ${saved ? '!text-[#1877F2]' : ''} transition-colors" title="${saved ? 'Remove saved resource' : 'Save resource'}" data-resource-save>`
-      + `<i class="fa-${saved ? 'solid' : 'regular'} fa-bookmark text-[12px]"></i>`
+      + `<div class="fb-card-actions">`
+      + (canDelete ? `<button type="button" class="fb-action-icon-btn is-delete" title="Delete" data-resource-delete><i class="fa-regular fa-trash-can text-[15px]"></i></button>` : '')
+      + `<button type="button" class="fb-action-icon-btn ${saved ? 'is-saved' : ''}" title="${saved ? 'Remove saved resource' : 'Save resource'}" data-resource-save>`
+      + `<i class="fa-${saved ? 'solid' : 'regular'} fa-bookmark text-[15px]"></i>`
       + `</button>`
       + `</div></div></div></article>`;
   }
@@ -501,7 +501,7 @@
 
   async function loadLibrary() {
     const shelf = $('#shelf'); if (!shelf) return;
-    shelf.className = 'grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4';
+    shelf.className = 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5';
     $$('[data-rail-prev],[data-rail-next]').forEach(button => { button.style.display = 'none'; });
     let resources = [], rendered = [], savedIds = new Set(), searchQuery = '';
     const view = new URLSearchParams(location.search).get('view');
