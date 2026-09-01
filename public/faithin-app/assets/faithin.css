@@ -172,6 +172,24 @@ html.dark .btn-primary{ color:#0b1120; }
 .action-btn:hover{ background: rgb(var(--raised)); color: rgb(var(--ink)); }
 .action-btn.is-on{ color: rgb(var(--brand)); }
 .action-btn.is-on.rose{ color: rgb(var(--rose)); }
+
+/* Keep all five composer actions visible on narrow phones without changing
+   their desktop appearance or removing any action. */
+.fi-composer-actions .action-btn{ min-width:0; }
+@media (max-width: 420px){
+  .fi-composer-actions{
+    display:grid;
+    grid-template-columns:repeat(5,minmax(0,1fr));
+  }
+  .fi-composer-actions .action-btn{
+    width:100%;
+    gap:2px;
+    padding-left:2px !important;
+    padding-right:2px !important;
+    font-size:10.5px !important;
+  }
+  .fi-composer-actions .action-btn span{ margin-left:0 !important; }
+}
 .faith-reaction-wrap{ position:relative; flex:1; min-width:0; display:flex; }
 .faith-reaction-trigger{ width:100%; }
 .faith-reaction-trigger.amen{ color:#3157d5; }
@@ -1739,5 +1757,4 @@ html.dark .fi-resource-btn-primary {
 html.dark .fi-resource-btn-primary:hover {
   background: #2374e1 !important;
 }
-
 
