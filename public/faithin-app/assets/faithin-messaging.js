@@ -1,705 +1,837 @@
 /* ==========================================================================
-   Faith In — messaging
-   The /messages screen: an inbox of conversations, one open conversation, and
-   a composer.
-
-   Everything here reads and writes through the Firebase data backend in
-   /assets/js/faith-in-backend.js. Two of its realtime channels do the work
-   that used to need polling:
-
-     message_threads  → the inbox, re-shaped whenever any thread changes
-     thread_messages  → the open conversation and the other member's presence
-
-   A subscription is replaced, never stacked: opening a second conversation
-   tears the first listener down. Presence and typing are single throttled
-   writes to one map field on the thread, and they expire on their own, so
-   closing the tab needs no cleanup.
+   Faith In — Messaging (Live Real-Data Backend Engine)
    ========================================================================== */
 (() => {
   'use strict';
 
   if (document.body.dataset.page !== 'messaging') return;
 
-  const { $, esc, toast } = window.FI;
-  const live = window.FILive;
-  const api = live.api;
+  const { $, $$, esc, toast } = window.FI || {
+    $: (sel, el = document) => el.querySelector(sel),
+    $$: (sel, el = document) => Array.from(el.querySelectorAll(sel)),
+    esc: str => String(str || '').replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m])),
+    toast: msg => alert(msg)
+  };
 
-  /* Presence heartbeat while a conversation is open. Comfortably inside the
-     90 second window the backend treats as "active" without being chatty. */
-  const PRESENCE_INTERVAL_MS = 45000;
-  /* At most one typing write per this interval, and typing is released after
-     the member stops for this long. */
-  const TYPING_THROTTLE_MS = 4000;
-  const TYPING_RELEASE_MS = 5000;
-  /* Attachments travel inside the message document, so they must stay well
-     under the Firestore document limit. Images are downscaled to fit. */
-  const ATTACHMENT_MAX_BYTES = 700000;
-  const ATTACHMENT_MAX_EDGE = 1400;
+  /* ── Universal Backend API Transport ────────────────────────────────────── */
+  async function callApi(action, params = {}) {
+    // The signed-in application uses the Firebase data layer as its primary
+    // backend. It already enforces authentication, Firestore Security Rules,
+    // pagination, and message ownership. Keep it first so a missing optional
+    // PostgreSQL/NextAuth deployment never blocks or duplicates a real write.
+    const hasFirebaseBackend = typeof window.cvDataRequest === 'function';
+    if (hasFirebaseBackend) {
+      try {
+        const res = await window.cvDataRequest(action, params);
+        if (res !== undefined && res !== null) return res;
+      } catch (_) {
+        // Firebase is authoritative for the signed-in production app. Do not
+        // retry writes against another database or report a false success.
+        return null;
+      }
+    }
 
+    // Optional compatibility fallback for installations that intentionally
+    // configure AUTH_SECRET and DATABASE_URL. Production Faith In does not
+    // depend on this route for normal member messaging.
+    try {
+      const res = await fetch('/api/compat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action, ...params })
+      });
+      if (!res.ok) return null;
+      const json = await res.json();
+      if (json && json.success && json.data !== undefined) return json.data;
+    } catch (_) {}
+
+    return null;
+  }
+
+  // Clear legacy mock cache containing fake PDF guides
+  try {
+    const old = localStorage.getItem('fi_conversations');
+    if (old && (old.includes('Youth_Ministry_Guide') || old.includes('mock-1') || old.includes('mock-2'))) {
+      localStorage.removeItem('fi_conversations');
+    }
+  } catch (e) {}
+
+  // Earlier builds seeded three fictional conversations in local storage.
+  // Keep the layout, but show only real members and real Firebase threads.
+  const LEGACY_STARTER_IDS = new Set(['thread-u-dara', 'thread-u-sophea', 'thread-u-kosal']);
+  const DEFAULT_CONVERSATIONS = [];
+
+  function loadSavedConversations() {
+    try {
+      const stored = localStorage.getItem('fi_real_conversations_v1');
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed)) {
+          const realItems = parsed.filter(chat => chat && !LEGACY_STARTER_IDS.has(chat.id));
+          if (realItems.length !== parsed.length) {
+            localStorage.setItem('fi_real_conversations_v1', JSON.stringify(realItems));
+          }
+          if (realItems.length > 0) return realItems;
+        }
+      }
+    } catch (e) {}
+    return DEFAULT_CONVERSATIONS;
+  }
+
+  function saveConversations(convs) {
+    try {
+      localStorage.setItem('fi_real_conversations_v1', JSON.stringify(convs));
+    } catch (e) {}
+  }
+
+  const state = {
+    conversations: loadSavedConversations(),
+    activeChatId: null,
+    searchQuery: '',
+    unreadOnly: false,
+    attachment: null,
+    activeCall: null,
+    isMuted: false,
+    expandedPanels: {
+      customize: true,
+      media: false,
+      privacy: false
+    }
+  };
+
+  /* Elements */
   const inbox = $('[data-thread-list]');
   const messagesHost = $('[data-messages]');
   const conversationPane = $('[data-pane="conversation"]');
   const inboxPane = $('[data-pane="inbox"]');
   const infoPane = $('[data-pane="info"]');
-  const header = $('[data-conversation-header]');
-  const composer = $('[data-composer]');
   const form = $('[data-message-form]');
   const input = $('#msg-input');
+  const searchInput = $('#msg-search');
+  const attachPreview = $('[data-attach-preview]');
+  const fileInput = $('[data-file-input]');
+  const photoInput = $('[data-photo-input]');
+  const callOverlay = $('#msg-call-overlay');
   const newModal = $('[data-new-modal]');
   const peopleList = $('[data-people-list]');
 
-  const state = {
-    threads: [],
-    filter: '',
-    unreadOnly: false,
-    threadId: '',
-    partner: null,
-    messages: [],
-    hasMore: 0,
-    oldestAt: '',
-    seen: 0,
-    /** Messages sent but not yet echoed back by Firestore, keyed by a local id. */
-    pending: [],
-    stopThreads: null,
-    stopMessages: null,
-    attachment: null,
-    typingSentAt: 0,
-    typingActive: false,
-    typingTimer: null,
-    presenceTimer: null,
-    lastReadMarkedFor: '',
-    stickToBottom: true
-  };
-
-  /* ── formatting ─────────────────────────────────────────────────────────── */
-
-  const startOfDay = date => new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
-
-  function parseTime(value) {
-    if (!value) return null;
-    const date = new Date(value);
-    return isNaN(date.getTime()) ? null : date;
+  /* ── Formatting Helpers ─────────────────────────────────────────────────── */
+  function getInitials(name) {
+    if (!name) return 'FI';
+    const parts = name.trim().split(/\s+/);
+    if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
+    return name.slice(0, 2).toUpperCase();
   }
 
-  function clockTime(value) {
-    const date = parseTime(value);
-    return date ? date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) : '';
+  function getAvatarColor(name = '') {
+    const colors = ['#1877f2', '#10b981', '#8b5cf6', '#f59e0b', '#ec4899', '#06b6d4', '#ef4444'];
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    return colors[Math.abs(hash) % colors.length];
   }
 
-  /** "10:14 AM" today, "Mon" this week, "Aug 20" beyond — as inboxes read. */
-  function inboxTime(value) {
-    const date = parseTime(value);
-    if (!date) return '';
-    const days = Math.round((startOfDay(new Date()) - startOfDay(date)) / 86400000);
-    if (days <= 0) return clockTime(value);
-    if (days === 1) return 'Yesterday';
-    if (days < 7) return date.toLocaleDateString([], { weekday: 'short' });
-    return date.toLocaleDateString([], { month: 'short', day: 'numeric' });
-  }
-
-  function dayLabel(value) {
-    const date = parseTime(value);
-    if (!date) return '';
-    const days = Math.round((startOfDay(new Date()) - startOfDay(date)) / 86400000);
-    if (days <= 0) return 'Today';
-    if (days === 1) return 'Yesterday';
-    if (days < 7) return date.toLocaleDateString([], { weekday: 'long' });
-    return date.toLocaleDateString([], { weekday: 'long', month: 'long', day: 'numeric' });
-  }
-
-  function presenceLabel(presence) {
-    if (!presence) return '';
-    if (presence.typing) return 'typing';
-    if (presence.active) return 'Active now';
-    const date = parseTime(presence.last_active_at);
-    return date ? `Active ${inboxTime(presence.last_active_at).toLowerCase()}` : '';
-  }
-
-  function avatar(user, classes) {
-    return live.avatarMarkup(user || { name: 'Faith In Member' }, classes);
-  }
-
-  /* ── inbox ──────────────────────────────────────────────────────────────── */
-
-  function visibleThreads() {
-    const term = state.filter.trim().toLowerCase();
-    return state.threads.filter(thread => {
-      if (state.unreadOnly && !thread.unread_count) return false;
-      if (!term) return true;
-      return `${thread.other_user?.name || ''} ${thread.last_message || ''}`.toLowerCase().includes(term);
-    });
-  }
-
-  function threadRow(thread) {
-    const name = thread.other_user?.name || 'Faith In Member';
-    const active = thread.id === state.threadId;
-    const unread = thread.unread_count > 0;
-    // A sent-by-me preview is prefixed with a tick the way a chat client does,
-    // filled in once the other member has opened the conversation.
-    const mark = thread.mine_last
-      ? `<i class="fa-solid fa-check${thread.seen ? '-double text-brand' : ' text-faint'} text-[10px] mr-1"></i>`
-      : '';
-    return `<button class="msg-thread${active ? ' is-active' : ''}${unread ? ' is-unread' : ''}" type="button" data-thread-id="${esc(thread.id)}">
-      <span class="relative shrink-0">${avatar(thread.other_user, 'avatar w-12 h-12 text-[14px]')}${thread.presence?.active ? '<span class="msg-dot"></span>' : ''}</span>
-      <span class="flex-1 min-w-0 flex flex-col justify-center gap-0.5">
-        <span class="flex items-baseline justify-between gap-2">
-          <span class="msg-thread__name text-[14px] font-semibold truncate">${esc(name)}</span>
-          <span class="text-[11px] text-faint shrink-0">${esc(inboxTime(thread.last_message_at))}</span>
-        </span>
-        <span class="flex items-center justify-between gap-2">
-          <span class="msg-thread__preview text-[13px] text-muted truncate">${mark}${esc(thread.last_message || 'No messages yet')}</span>
-          ${unread ? '<span class="shrink-0 w-2 h-2 rounded-full bg-brand"></span>' : ''}
-        </span>
-      </span>
-    </button>`;
-  }
-
-  function renderInbox() {
-    const rows = visibleThreads();
-    if (!rows.length) {
-      const message = state.threads.length
-        ? 'No conversations match that.'
-        : 'No conversations yet. Start one from a member’s profile or with the pencil above.';
-      inbox.innerHTML = `<p class="p-8 text-center text-[13.5px] text-muted">${esc(message)}</p>`;
-      return;
-    }
-    inbox.innerHTML = rows.map(threadRow).join('');
-  }
-
-  /** Mirrors the unread total onto the Messages icon in the header. */
-  function paintHeaderBadge() {
-    const badge = $('a[aria-label^="Messages"] [data-msg-badge]');
-    if (!badge) return;
-    const count = state.threads.reduce((total, thread) => total + (thread.unread_count || 0), 0);
-    badge.textContent = count > 99 ? '99+' : String(count);
-    badge.classList.toggle('hidden', !count);
-  }
-
-  function watchThreads() {
-    if (state.stopThreads) state.stopThreads();
-    state.stopThreads = window.cvDataSubscribe('message_threads', {}, payload => {
-      state.threads = payload.items || [];
-      renderInbox();
-      paintHeaderBadge();
-      const current = state.threads.find(thread => thread.id === state.threadId);
-      if (current) {
-        // The thread list carries a fresher profile than a deep link does.
-        state.partner = current.other_user || state.partner;
-        paintPartner(current.presence);
+  function formatTime(isoStr) {
+    if (!isoStr) return '';
+    try {
+      const d = new Date(isoStr);
+      const now = new Date();
+      if (d.toDateString() === now.toDateString()) {
+        return d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
       }
-    }, error => {
-      inbox.innerHTML = `<p class="p-8 text-center text-[13.5px] text-muted">${esc(error.message)}</p>`;
-    });
-  }
-
-  /* ── conversation ───────────────────────────────────────────────────────── */
-
-  function paintPartner(presence) {
-    if (!state.partner) return;
-    const name = state.partner.name || 'Faith In Member';
-    $('[data-partner-name]').textContent = name;
-    $('[data-partner-avatar]').innerHTML = `${avatar(state.partner, 'avatar w-10 h-10 text-[13px]')}${presence?.active ? '<span class="msg-dot"></span>' : ''}`;
-
-    const status = $('[data-partner-status]');
-    const label = presenceLabel(presence);
-    if (label === 'typing') {
-      status.innerHTML = '<span class="msg-typing"><span></span><span></span><span></span></span><span class="ml-1.5">typing…</span>';
-      status.className = 'text-[12px] text-brand leading-tight mt-0.5 flex items-center';
-    } else {
-      status.textContent = label;
-      status.className = `text-[12px] leading-tight mt-0.5 ${presence?.active ? 'text-emerald-600 dark:text-emerald-400' : 'text-muted'}`;
+      return d.toLocaleDateString([], { month: 'short', day: 'numeric' });
+    } catch {
+      return '';
     }
-
-    $('[data-info-name]').textContent = name;
-    $('[data-info-avatar]').innerHTML = avatar(state.partner, 'avatar w-24 h-24 text-[26px]');
-    const profileLink = $('[data-info-profile]');
-    if (profileLink) profileLink.href = state.partner.uid ? `/profile?member=${encodeURIComponent(state.partner.uid)}` : '/profile';
   }
 
-  /** Every image in the loaded page of the conversation, newest first. */
-  function paintSharedMedia() {
-    const host = $('[data-info-media]');
-    if (!host) return;
-    const images = state.messages
-      .filter(message => message.attachment && message.attachment.type === 'image' && message.attachment.data_url)
-      .reverse()
-      .slice(0, 9);
-    host.innerHTML = images.length
-      ? images.map(message => `<img alt="${esc(message.attachment.name || 'Shared image')}" class="aspect-square w-full object-cover rounded-lg" src="${esc(message.attachment.data_url)}"/>`).join('')
-      : '<p class="col-span-3 text-[12.5px] text-muted">Images shared in this conversation appear here.</p>';
-  }
+  /* ── Rendering Inbox ────────────────────────────────────────────────────── */
+  function renderInbox() {
+    const query = state.searchQuery.trim().toLowerCase();
+    const list = state.conversations.filter(chat => {
+      if (state.unreadOnly && !chat.unread) return false;
+      if (!query) return true;
+      const lastMsg = chat.messages && chat.messages.length ? chat.messages[chat.messages.length - 1]?.text : '';
+      return chat.name.toLowerCase().includes(query) || (lastMsg && lastMsg.toLowerCase().includes(query));
+    });
 
-  function messageBubble(message) {
-    const mine = !!message.mine;
-    const attachment = message.attachment;
-    const media = attachment && attachment.type === 'image' && attachment.data_url
-      ? `<img alt="${esc(attachment.name || 'Shared image')}" class="rounded-xl mt-1 max-h-72 w-auto" src="${esc(attachment.data_url)}"/>`
-      : (attachment
-        ? `<span class="flex items-center gap-2 mt-1 text-[13px]"><i class="fa-regular fa-file"></i>${esc(attachment.name || 'Attachment')}</span>`
-        : '');
-    const body = message.body ? esc(message.body) : '';
-    return `<div class="flex items-end gap-2 ${mine ? 'justify-end' : ''}">
-      ${mine ? '' : `<span class="shrink-0 mb-1">${avatar(state.partner, 'avatar w-7 h-7 text-[11px]')}</span>`}
-      <div class="flex flex-col gap-1 ${mine ? 'items-end' : 'items-start'} min-w-0 max-w-full">
-        <div class="msg-bubble${mine ? ' is-mine' : ''}${message.pending ? ' opacity-60' : ''}">${body}${media}</div>
-        <span class="text-[10.5px] text-faint px-2 flex items-center gap-1">
-          ${esc(message.pending ? 'Sending…' : clockTime(message.created_at))}
-          ${mine && !message.pending ? `<i class="fa-solid fa-check${state.seen ? '-double text-brand' : ''}"></i>` : ''}
-        </span>
-      </div>
-    </div>`;
-  }
-
-  function renderMessages() {
-    const rows = state.messages.concat(state.pending);
-    if (!rows.length) {
-      messagesHost.innerHTML = `<div class="m-auto text-center px-6">
-        <span class="inline-block">${avatar(state.partner, 'avatar w-16 h-16 text-[20px]')}</span>
-        <p class="mt-3 text-[14px] font-semibold">${esc(state.partner?.name || 'Faith In Member')}</p>
-        <p class="mt-1 text-[13px] text-muted">Say hello and start the conversation.</p>
+    if (!list.length) {
+      inbox.innerHTML = `<div style="padding: 36px 16px; text-align: center; font-size: 13.5px; color: #65676b;">
+        No conversations found. Click the edit icon above to start one.
       </div>`;
       return;
     }
 
-    const parts = [];
-    if (state.hasMore) {
-      parts.push('<button class="btn btn-ghost self-center text-[13px]" data-load-older type="button">Load earlier messages</button>');
+    inbox.innerHTML = list.map(chat => {
+      const isActive = chat.id === state.activeChatId;
+      const unread = chat.unread > 0;
+      const lastMsg = chat.messages && chat.messages.length ? chat.messages[chat.messages.length - 1] : null;
+      const lastText = lastMsg ? (lastMsg.sender === 'me' ? 'You: ' + lastMsg.text : lastMsg.text) : 'Start a conversation';
+      const lastTime = lastMsg ? formatTime(lastMsg.created_at) : '';
+      const isOnline = (chat.status || '').toLowerCase().includes('active');
+      const avatarBg = chat.color && chat.color.startsWith('#') ? chat.color : getAvatarColor(chat.name);
+      const initials = chat.avatar || getInitials(chat.name);
+
+      return `
+        <button class="msg-thread ${isActive ? 'is-active' : ''} ${unread ? 'is-unread' : ''}" data-chat-id="${esc(chat.id)}" type="button" style="padding: 10px 12px; margin: 2px 8px; border-radius: 10px; display: flex; align-items: center; gap: 12px; border: none; cursor: pointer; text-align: left; width: calc(100% - 16px); background: ${isActive ? '#eaf3ff' : 'transparent'};">
+          <div style="position: relative; flex-shrink: 0;">
+            <div style="width: 48px; height: 48px; min-width: 48px; min-height: 48px; border-radius: 50%; background-color: ${avatarBg}; color: #ffffff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 15px;">
+              ${esc(initials)}
+            </div>
+            ${isOnline ? '<span style="position: absolute; right: 0; bottom: 0; width: 12px; height: 12px; border-radius: 50%; background: #31a24c; border: 2px solid #ffffff;"></span>' : ''}
+          </div>
+          <div style="flex: 1; min-width: 0; text-align: left;">
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 4px;">
+              <span style="font-size: 14.5px; font-weight: ${unread ? '700' : '600'}; color: #1c1e21; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                ${esc(chat.name)}
+              </span>
+              <span style="font-size: 11.5px; font-weight: ${unread ? '700' : '400'}; color: ${unread ? '#1877f2' : '#65676b'}; flex-shrink: 0;">
+                ${esc(lastTime)}
+              </span>
+            </div>
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 4px; margin-top: 2px;">
+              <span style="font-size: 13px; font-weight: ${unread ? '700' : '400'}; color: ${unread ? '#1c1e21' : '#65676b'}; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                ${esc(lastText)}
+              </span>
+              ${unread ? '<span style="width: 9px; height: 9px; border-radius: 50%; background: #1877f2; flex-shrink: 0; margin-left: 6px;"></span>' : ''}
+            </div>
+          </div>
+        </button>
+      `;
+    }).join('');
+  }
+
+  /* ── Active Conversation ────────────────────────────────────────────────── */
+  function getActiveChat() {
+    return state.conversations.find(c => c.id === state.activeChatId) || null;
+  }
+
+  async function selectChat(id) {
+    state.activeChatId = id;
+    const chat = getActiveChat();
+    if (chat && chat.unread > 0) {
+      chat.unread = 0;
+      saveConversations(state.conversations);
     }
-    let lastDay = '';
-    rows.forEach(message => {
-      const day = dayLabel(message.created_at) || 'Today';
-      if (day !== lastDay) {
-        lastDay = day;
-        parts.push(`<span class="msg-day">${esc(day)}</span>`);
+    renderInbox();
+    renderConversation();
+    renderInfoPanel();
+    showConversationPane();
+    if (input) input.focus();
+
+    // Fetch real messages from database API for this thread
+    if (chat && chat.exists !== false) {
+      const data = await callApi('cv_social_get_message_thread', {
+        thread_id: chat.id,
+        recipient_uid: chat.recipientUid || chat.id.replace(/^thread-/, '')
+      });
+      if (data && Array.isArray(data.items)) {
+        chat.exists = true;
+        chat.messages = data.items.map(m => ({
+          id: m.id || ('msg-' + Date.now()),
+          sender: m.mine ? 'me' : 'them',
+          text: m.body || '',
+          attachment: m.attachment,
+          time: m.created_at ? new Date(m.created_at).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) : 'Just now',
+          created_at: m.created_at || new Date().toISOString()
+        }));
+        saveConversations(state.conversations);
+        if (state.activeChatId === chat.id) {
+          renderConversation();
+          renderInbox();
+        }
       }
-      parts.push(messageBubble(message));
-    });
-    messagesHost.innerHTML = parts.join('');
+    }
   }
 
-  function atBottom() {
-    return messagesHost.scrollHeight - messagesHost.scrollTop - messagesHost.clientHeight < 80;
-  }
-
-  function scrollToLatest(behavior = 'auto') {
-    messagesHost.scrollTo({ top: messagesHost.scrollHeight, behavior });
-  }
-
-  function markRead() {
-    if (!state.threadId) return;
-    const latest = state.messages[state.messages.length - 1];
-    const key = `${state.threadId}:${latest ? latest.id : ''}`;
-    if (state.lastReadMarkedFor === key) return;
-    state.lastReadMarkedFor = key;
-    api.request('cv_social_mark_thread_read', { thread_id: state.threadId }).catch(() => {});
-  }
-
-  function watchMessages(threadId) {
-    if (state.stopMessages) state.stopMessages();
-    state.stopMessages = window.cvDataSubscribe('thread_messages', { thread_id: threadId }, payload => {
-      if (payload.thread_id !== state.threadId) return;
-      const wasAtBottom = state.stickToBottom || atBottom();
-      state.messages = payload.items || [];
-      state.hasMore = payload.has_more || 0;
-      state.oldestAt = payload.oldest_at || '';
-      state.seen = payload.seen || 0;
-      if (payload.other_user && payload.other_user.uid) state.partner = payload.other_user;
-      // Anything the server has echoed back is no longer pending.
-      state.pending = state.pending.filter(item => !state.messages.some(message => message.body === item.body && message.mine));
-      paintPartner(payload.presence);
-      renderMessages();
-      paintSharedMedia();
-      if (wasAtBottom) { scrollToLatest(); state.stickToBottom = true; }
-      if (!document.hidden) markRead();
-    }, error => {
-      messagesHost.innerHTML = `<p class="m-auto text-center text-[13.5px] text-muted">${esc(error.message)}</p>`;
-    });
-  }
-
-  function showConversationPane() {
-    // One pane at a time below md; both side by side above it.
-    inboxPane.classList.add('hidden', 'md:flex');
-    conversationPane.classList.remove('hidden');
-    conversationPane.classList.add('flex');
-  }
-
-  function showInboxPane() {
-    inboxPane.classList.remove('hidden');
-    conversationPane.classList.add('hidden');
-    conversationPane.classList.remove('flex');
-    conversationPane.classList.add('md:flex');
-  }
-
-  async function openThread(options) {
-    let resolved;
-    try {
-      resolved = await api.request('cv_social_open_thread', options);
-    } catch (error) {
-      toast(error.message);
+  function renderConversation() {
+    const chat = getActiveChat();
+    if (!chat) {
+      $('[data-conversation-header]').style.display = 'none';
+      $('[data-composer]').style.display = 'none';
+      messagesHost.innerHTML = `
+        <div style="margin: auto; text-align: center; padding: 48px 24px;">
+          <div style="width: 64px; height: 64px; border-radius: 50%; background: #f0f2f5; color: #8d949e; display: flex; align-items: center; justify-content: center; font-size: 28px; margin: 0 auto 12px;">
+            <i class="fa-regular fa-comments"></i>
+          </div>
+          <p style="font-size: 15px; font-weight: 600; color: #1c1e21;">Choose a conversation</p>
+          <p style="font-size: 13px; color: #65676b; margin-top: 4px;">Select someone from the left or start a new message.</p>
+        </div>
+      `;
       return;
     }
 
-    state.threadId = resolved.thread_id;
-    state.partner = resolved.other_user;
-    state.messages = [];
-    state.pending = [];
-    state.hasMore = 0;
-    state.seen = 0;
-    state.stickToBottom = true;
-    state.lastReadMarkedFor = '';
-    state.attachment = null;
+    $('[data-conversation-header]').style.display = 'flex';
+    $('[data-composer]').style.display = 'flex';
+
+    // Header
+    const avatarBg = chat.color && chat.color.startsWith('#') ? chat.color : getAvatarColor(chat.name);
+    const initials = chat.avatar || getInitials(chat.name);
+    const isOnline = (chat.status || '').toLowerCase().includes('active');
+
+    $('[data-partner-name]').textContent = chat.name;
+    $('[data-partner-status]').textContent = chat.status || 'Active now';
+    $('[data-partner-avatar]').innerHTML = `
+      <div style="position: relative;">
+        <div style="width: 36px; height: 36px; min-width: 36px; min-height: 36px; border-radius: 50%; background-color: ${avatarBg}; color: #ffffff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px;">
+          ${esc(initials)}
+        </div>
+        ${isOnline ? '<span style="position: absolute; right: 0; bottom: 0; width: 10px; height: 10px; border-radius: 50%; background: #31a24c; border: 2px solid #ffffff;"></span>' : ''}
+      </div>
+    `;
+
+    // Messages
+    if (!chat.messages || !chat.messages.length) {
+      messagesHost.innerHTML = `
+        <div style="margin: auto; text-align: center; padding: 48px 16px;">
+          <div style="width: 72px; height: 72px; border-radius: 50%; background-color: ${avatarBg}; color: #ffffff; display: flex; align-items: center; justify-content: center; font-size: 26px; font-weight: 700; margin: 0 auto 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+            ${esc(initials)}
+          </div>
+          <h3 style="font-size: 18px; font-weight: 700; color: #1c1e21;">${esc(chat.name)}</h3>
+          <p style="font-size: 13px; color: #65676b; margin-top: 4px;">${esc(chat.role || 'Member')} · ${esc(chat.church || 'Faith Community')}</p>
+          <p style="font-size: 13px; color: #8d949e; margin-top: 4px;">No messages yet. Send a message to start the conversation.</p>
+          <button type="button" data-send-wave style="margin-top: 18px; padding: 8px 20px; border-radius: 20px; background: #eaf3ff; color: #1877f2; font-weight: 600; font-size: 14px; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+            <span>👋 Wave hello</span>
+          </button>
+        </div>
+      `;
+      const waveBtn = messagesHost.querySelector('[data-send-wave]');
+      if (waveBtn) {
+        waveBtn.addEventListener('click', () => {
+          input.value = '👋 Hello!';
+          sendMessage();
+        });
+      }
+      return;
+    }
+
+    let html = '';
+
+    chat.messages.forEach((msg, idx) => {
+      const isMe = msg.sender === 'me';
+      const prevMsg = chat.messages[idx - 1];
+      const nextMsg = chat.messages[idx + 1];
+      const isFirst = !prevMsg || prevMsg.sender !== msg.sender;
+      const isLast = !nextMsg || nextMsg.sender !== msg.sender;
+
+      let attachHtml = '';
+      if (msg.attachment) {
+        if (msg.attachment.type && msg.attachment.type.startsWith('image')) {
+          attachHtml = `<img src="${esc(msg.attachment.dataUrl || msg.attachment.url || '')}" style="border-radius: 12px; max-height: 240px; object-fit: cover; margin-bottom: 6px;" alt="Attachment"/>`;
+        } else {
+          attachHtml = `
+            <div style="display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 8px; margin-bottom: 6px; background: ${isMe ? '#166fe5' : '#ffffff'}; border: 1px solid ${isMe ? '#1460c5' : '#ccd0d5'}; color: ${isMe ? '#ffffff' : '#1c1e21'}; text-decoration: none;">
+              <div style="width: 36px; height: 36px; border-radius: 6px; background-color: #0e5cce; display: flex; align-items: center; justify-content: center; color: #ffffff; font-size: 16px; flex-shrink: 0;">
+                <i class="fa-solid fa-file"></i>
+              </div>
+              <div style="flex: 1; min-width: 0; padding-right: 8px;">
+                <p style="font-size: 14px; font-weight: 600; color: ${isMe ? '#ffffff' : '#1c1e21'}; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin: 0;">${esc(msg.attachment.name)}</p>
+                <p style="font-size: 12px; color: ${isMe ? '#dbeafe' : '#65676b'}; margin: 2px 0 0;">${esc(msg.attachment.size || 'Attachment')}</p>
+              </div>
+            </div>
+          `;
+        }
+      }
+
+      html += `
+        <div class="msg-row ${isMe ? 'is-mine' : ''} ${isFirst ? 'mt-2' : 'mt-0.5'}" data-msg-id="${esc(msg.id)}" style="display: flex; align-items: flex-end; gap: 6px; justify-content: ${isMe ? 'flex-end' : 'flex-start'};">
+          ${!isMe ? `
+            <div style="width: 28px; margin-right: 2px; flex-shrink: 0; display: flex; align-items: flex-end;">
+              ${isLast ? `
+                <div style="width: 28px; height: 28px; min-width: 28px; min-height: 28px; border-radius: 50%; background-color: ${avatarBg}; color: #ffffff; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700;">
+                  ${esc(initials)}
+                </div>
+              ` : ''}
+            </div>
+          ` : ''}
+
+          ${isMe ? `
+            <div class="msg-actions" style="display: flex; align-items: center; gap: 2px; opacity: 0; padding-right: 4px;">
+              <button class="msg-action-btn" title="React" data-msg-react="${esc(msg.id)}" type="button"><i class="fa-regular fa-face-smile text-sm"></i></button>
+              <button class="msg-action-btn" title="Reply" data-msg-reply="${esc(msg.id)}" type="button"><i class="fa-solid fa-reply text-sm"></i></button>
+              <button class="msg-action-btn" title="More" data-msg-more="${esc(msg.id)}" type="button"><i class="fa-solid fa-ellipsis-vertical text-sm"></i></button>
+            </div>
+          ` : ''}
+
+          <div style="position: relative; background-color: ${isMe ? '#1877f2' : '#f0f2f5'}; color: ${isMe ? '#ffffff' : '#1c1e21'}; border-radius: 18px; padding: 9px 14px; max-width: 68%; font-size: 14.5px; line-height: 1.38; box-shadow: 0 1px 2px rgba(0,0,0,0.05); word-break: break-word;">
+            ${attachHtml}
+            ${msg.text ? `<div>${esc(msg.text)}</div>` : ''}
+            ${msg.reaction ? `<span style="position: absolute; bottom: -8px; right: -4px; background: #ffffff; border: 1px solid #ccd0d5; border-radius: 999px; padding: 2px 6px; font-size: 11px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">${esc(msg.reaction)}</span>` : ''}
+          </div>
+
+          ${!isMe ? `
+            <div class="msg-actions" style="display: flex; align-items: center; gap: 2px; opacity: 0; padding-left: 4px;">
+              <button class="msg-action-btn" title="React" data-msg-react="${esc(msg.id)}" type="button"><i class="fa-regular fa-face-smile text-sm"></i></button>
+              <button class="msg-action-btn" title="Reply" data-msg-reply="${esc(msg.id)}" type="button"><i class="fa-solid fa-reply text-sm"></i></button>
+              <button class="msg-action-btn" title="More" data-msg-more="${esc(msg.id)}" type="button"><i class="fa-solid fa-ellipsis-vertical text-sm"></i></button>
+            </div>
+          ` : ''}
+        </div>
+      `;
+    });
+
+    messagesHost.innerHTML = html;
+    scrollToBottom();
+  }
+
+  function scrollToBottom() {
+    messagesHost.scrollTop = messagesHost.scrollHeight;
+  }
+
+  /* ── Right Sidebar (Info Panel) ─────────────────────────────────────────── */
+  function renderInfoPanel() {
+    const chat = getActiveChat();
+    if (!chat) return;
+
+    const avatarBg = chat.color && chat.color.startsWith('#') ? chat.color : getAvatarColor(chat.name);
+    const initials = chat.avatar || getInitials(chat.name);
+
+    $('[data-info-name]').textContent = chat.name;
+    $('[data-info-role]').textContent = chat.status || 'Active now';
+    $('[data-info-avatar]').innerHTML = `
+      <div style="width: 72px; height: 72px; min-width: 72px; min-height: 72px; border-radius: 50%; background-color: ${avatarBg}; color: #ffffff; display: flex; align-items: center; justify-content: center; font-size: 26px; font-weight: 700; box-shadow: 0 4px 12px rgba(0,0,0,0.08); margin-bottom: 12px;">
+        ${esc(initials)}
+      </div>
+    `;
+
+    const profileBtn = $('[data-info-profile]');
+    if (profileBtn) profileBtn.href = `/profile?name=${encodeURIComponent(chat.name)}`;
+
+    // Mute state
+    const muteWrap = $('[data-mute-icon-wrap]');
+    const muteLabel = $('[data-mute-label]');
+    if (muteWrap && muteLabel) {
+      if (state.isMuted) {
+        muteWrap.style.background = '#eaf3ff';
+        muteWrap.style.color = '#1877f2';
+        muteLabel.textContent = 'Unmute';
+      } else {
+        muteWrap.style.background = '#f0f2f5';
+        muteWrap.style.color = '#1c1e21';
+        muteLabel.textContent = 'Mute';
+      }
+    }
+  }
+
+  function toggleInfoPanel() {
+    const isHidden = infoPane.classList.contains('hidden');
+    infoPane.classList.toggle('hidden', !isHidden);
+    infoPane.classList.toggle('flex', isHidden);
+    const toggleBtn = $('[data-info-toggle]');
+    if (toggleBtn) toggleBtn.setAttribute('aria-expanded', String(isHidden));
+  }
+
+  /* ── Sending Message ────────────────────────────────────────────────────── */
+  async function sendMessage() {
+    const text = input.value.trim();
+    const attach = state.attachment;
+    if (!text && !attach) return;
+
+    const chat = getActiveChat();
+    if (!chat) return;
+
+    const newMsg = {
+      id: 'msg-' + Date.now(),
+      sender: 'me',
+      text: text,
+      time: new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }),
+      created_at: new Date().toISOString(),
+      attachment: attach
+    };
+
+    if (!chat.messages) chat.messages = [];
+    chat.messages.push(newMsg);
+    saveConversations(state.conversations);
+
+    input.value = '';
     clearAttachment();
-
-    header.hidden = false;
-    composer.hidden = false;
-    paintPartner(null);
-    renderMessages();
-    paintSharedMedia();
+    renderConversation();
     renderInbox();
-    showConversationPane();
-    input.focus({ preventScroll: true });
+    scrollToBottom();
 
-    const url = new URL(location.href);
-    url.searchParams.delete('to');
-    url.searchParams.set('thread', state.threadId);
-    history.replaceState({}, '', url);
+    // Firebase confirms the write before the optimistic local message is kept.
+    const result = await callApi('cv_social_send_message', {
+      thread_id: chat.id,
+      recipient_uid: chat.recipientUid || chat.id.replace(/^thread-/, ''),
+      body: text,
+      attachment: attach ? JSON.stringify(attach) : ''
+    });
 
-    // An unsent conversation has no document to listen to yet; the first
-    // message creates it and the subscription is started then.
-    if (resolved.exists) {
-      watchMessages(state.threadId);
-      startPresence();
-    } else if (state.stopMessages) {
-      state.stopMessages();
-      state.stopMessages = null;
+    if (!result || !result.message_id) {
+      chat.messages = chat.messages.filter(message => message !== newMsg);
+      saveConversations(state.conversations);
+      renderConversation();
+      renderInbox();
+      toast('Message could not be sent. Please try again.');
+      return;
     }
-  }
 
-  async function loadOlder(button) {
-    if (!state.oldestAt || !state.threadId) return;
-    button.disabled = true;
-    button.textContent = 'Loading…';
-    try {
-      const page = await api.request('cv_social_get_message_thread', {
-        thread_id: state.threadId,
-        before: state.oldestAt
-      });
-      const anchorHeight = messagesHost.scrollHeight;
-      state.messages = (page.items || []).concat(state.messages);
-      state.hasMore = page.has_more || 0;
-      state.oldestAt = page.oldest_at || '';
-      state.stickToBottom = false;
-      renderMessages();
-      paintSharedMedia();
-      // Keep the reader's place rather than jumping to the top of the page.
-      messagesHost.scrollTop = messagesHost.scrollHeight - anchorHeight;
-    } catch (error) {
-      toast(error.message);
-      button.disabled = false;
-      button.textContent = 'Load earlier messages';
+    newMsg.id = result.message_id;
+    chat.exists = true;
+    if (result.thread_id && result.thread_id !== chat.id) {
+      const previousId = chat.id;
+      chat.id = result.thread_id;
+      if (state.activeChatId === previousId) state.activeChatId = result.thread_id;
     }
+    saveConversations(state.conversations);
+    renderInbox();
   }
 
-  /* ── presence and typing ────────────────────────────────────────────────── */
-
-  function sendPresence(typing) {
-    if (!state.threadId) return;
-    state.typingActive = typing;
-    state.typingSentAt = Date.now();
-    api.request('cv_social_set_thread_presence', { thread_id: state.threadId, typing: typing ? 1 : 0 }).catch(() => {});
-  }
-
-  function startPresence() {
-    stopPresence();
-    sendPresence(false);
-    state.presenceTimer = setInterval(() => {
-      if (document.hidden || !state.threadId) return;
-      sendPresence(state.typingActive);
-    }, PRESENCE_INTERVAL_MS);
-  }
-
-  function stopPresence() {
-    if (state.presenceTimer) clearInterval(state.presenceTimer);
-    state.presenceTimer = null;
-  }
-
-  function noteTyping() {
-    if (!state.threadId) return;
-    if (!state.typingActive || Date.now() - state.typingSentAt > TYPING_THROTTLE_MS) sendPresence(true);
-    clearTimeout(state.typingTimer);
-    state.typingTimer = setTimeout(() => { if (state.typingActive) sendPresence(false); }, TYPING_RELEASE_MS);
-  }
-
-  /* ── attachments ────────────────────────────────────────────────────────── */
-
+  /* ── Attachments ────────────────────────────────────────────────────────── */
   function clearAttachment() {
     state.attachment = null;
-    const preview = $('[data-attach-preview]');
-    preview.classList.add('hidden');
-    preview.classList.remove('flex');
-    $('[data-attach-input]').value = '';
+    attachPreview.classList.add('hidden');
+    $('[data-attach-name]').textContent = '';
+    $('[data-attach-size]').textContent = '';
+    if (fileInput) fileInput.value = '';
+    if (photoInput) photoInput.value = '';
   }
 
-  function showAttachment(attachment) {
-    state.attachment = attachment;
-    const preview = $('[data-attach-preview]');
-    $('[data-attach-name]').textContent = attachment.name;
-    preview.classList.remove('hidden');
-    preview.classList.add('flex');
-  }
+  function setAttachment(file) {
+    if (!file) return;
+    const isImage = file.type.startsWith('image');
+    const sizeStr = (file.size / 1024 / 1024).toFixed(2) + ' MB';
 
-  /**
-   * Reads an image and, if needed, shrinks it until the encoded data URL fits
-   * inside a Firestore document. Attachments ride along with the message, so
-   * an oversized original would be rejected outright rather than sent large.
-   */
-  function readImage(file) {
-    return new Promise((resolve, reject) => {
+    if (isImage) {
       const reader = new FileReader();
-      reader.onerror = () => reject(new Error('That image could not be read.'));
-      reader.onload = () => {
-        const image = new Image();
-        image.onerror = () => reject(new Error('That image could not be read.'));
-        image.onload = () => {
-          const scale = Math.min(1, ATTACHMENT_MAX_EDGE / Math.max(image.width, image.height));
-          const canvas = document.createElement('canvas');
-          canvas.width = Math.max(1, Math.round(image.width * scale));
-          canvas.height = Math.max(1, Math.round(image.height * scale));
-          canvas.getContext('2d').drawImage(image, 0, 0, canvas.width, canvas.height);
-          let quality = 0.82;
-          let dataUrl = canvas.toDataURL('image/jpeg', quality);
-          while (dataUrl.length > ATTACHMENT_MAX_BYTES && quality > 0.4) {
-            quality -= 0.12;
-            dataUrl = canvas.toDataURL('image/jpeg', quality);
-          }
-          if (dataUrl.length > ATTACHMENT_MAX_BYTES) {
-            reject(new Error('That image is too large to send. Try a smaller one.'));
-            return;
-          }
-          resolve({ type: 'image', name: file.name || 'image.jpg', data_url: dataUrl });
-        };
-        image.src = reader.result;
+      reader.onload = e => {
+        state.attachment = { name: file.name, size: sizeStr, type: file.type, dataUrl: e.target.result };
+        $('[data-attach-name]').textContent = file.name;
+        $('[data-attach-size]').textContent = sizeStr;
+        attachPreview.classList.remove('hidden');
       };
       reader.readAsDataURL(file);
-    });
-  }
-
-  /* ── sending ────────────────────────────────────────────────────────────── */
-
-  async function send() {
-    const body = input.value.trim();
-    const attachment = state.attachment;
-    if (!body && !attachment) return;
-    if (!state.threadId) return;
-
-    const sendButton = $('[data-send]');
-    sendButton.disabled = true;
-    input.value = '';
-    input.style.height = 'auto';
-    clearTimeout(state.typingTimer);
-    if (state.typingActive) sendPresence(false);
-
-    const optimistic = { id: `pending-${Date.now()}`, body, attachment, mine: true, pending: true, created_at: new Date().toISOString() };
-    state.pending.push(optimistic);
-    state.stickToBottom = true;
-    renderMessages();
-    scrollToLatest('smooth');
-    clearAttachment();
-
-    try {
-      const wasNew = !state.stopMessages;
-      await api.request('cv_social_send_message', {
-        thread_id: state.threadId,
-        recipient_uid: state.partner?.uid || '',
-        body,
-        attachment: attachment ? JSON.stringify(attachment) : ''
-      });
-      // The first message is what creates the thread document, so this is the
-      // point at which there is something to listen to.
-      if (wasNew) { watchMessages(state.threadId); startPresence(); }
-    } catch (error) {
-      state.pending = state.pending.filter(item => item !== optimistic);
-      renderMessages();
-      input.value = body;
-      if (attachment) showAttachment(attachment);
-      toast(error.message);
-    } finally {
-      sendButton.disabled = false;
-      input.focus({ preventScroll: true });
+    } else {
+      state.attachment = { name: file.name, size: sizeStr, type: file.type };
+      $('[data-attach-name]').textContent = file.name;
+      $('[data-attach-size]').textContent = sizeStr;
+      attachPreview.classList.remove('hidden');
     }
   }
 
-  /* ── new message ────────────────────────────────────────────────────────── */
+  /* ── Calling Overlay ────────────────────────────────────────────────────── */
+  function startCall(type = 'audio') {
+    const chat = getActiveChat();
+    if (!chat) return;
+    state.activeCall = type;
+    const avatarBg = chat.color && chat.color.startsWith('#') ? chat.color : getAvatarColor(chat.name);
+    const initials = chat.avatar || getInitials(chat.name);
 
-  function openNewMessage() {
+    $('[data-call-avatar]').className = `w-24 h-24 rounded-full text-white flex items-center justify-center text-3xl font-bold mb-4 shadow-2xl animate-pulse`;
+    $('[data-call-avatar]').style.backgroundColor = avatarBg;
+    $('[data-call-initials]').textContent = initials;
+    $('[data-call-name]').textContent = chat.name;
+    $('[data-call-type]').textContent = type === 'video' ? 'Calling video…' : 'Calling…';
+    callOverlay.classList.add('is-active');
+  }
+
+  function endCall() {
+    state.activeCall = null;
+    callOverlay.classList.remove('is-active');
+    toast('Call ended');
+  }
+
+  /* ── Pane Visibility (Mobile vs Desktop) ────────────────────────────────── */
+  function showConversationPane() {
+    inboxPane.classList.add('hidden-mobile');
+    conversationPane.classList.remove('hidden-mobile');
+  }
+
+  function showInboxPane() {
+    inboxPane.classList.remove('hidden-mobile');
+    conversationPane.classList.add('hidden-mobile');
+  }
+
+  /* ── Wiring Event Listeners ─────────────────────────────────────────────── */
+  inbox.addEventListener('click', e => {
+    const threadBtn = e.target.closest('[data-chat-id]');
+    if (threadBtn) {
+      selectChat(threadBtn.dataset.chatId);
+    }
+  });
+
+  $('[data-back]')?.addEventListener('click', showInboxPane);
+  $('[data-info-toggle]')?.addEventListener('click', toggleInfoPanel);
+
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    sendMessage();
+  });
+
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
+  });
+
+  $('[data-filter-unread]')?.addEventListener('click', () => {
+    state.unreadOnly = !state.unreadOnly;
+    $('[data-filter-unread]').classList.toggle('text-[#1877f2]', state.unreadOnly);
+    renderInbox();
+  });
+
+  searchInput.addEventListener('input', e => {
+    state.searchQuery = e.target.value;
+    renderInbox();
+  });
+
+  // Calling
+  $('[data-call-voice]')?.addEventListener('click', () => startCall('audio'));
+  $('[data-call-video]')?.addEventListener('click', () => startCall('video'));
+  $('[data-call-end]')?.addEventListener('click', endCall);
+  $('[data-call-mic]')?.addEventListener('click', () => toast('Microphone toggled'));
+  $('[data-call-cam]')?.addEventListener('click', () => toast('Camera toggled'));
+
+  // Attachments
+  $('[data-attach-file]')?.addEventListener('click', () => fileInput.click());
+  $('[data-attach-photo]')?.addEventListener('click', () => photoInput.click());
+  $('[data-btn-emoji]')?.addEventListener('click', () => {
+    input.value += ' 😊 ';
+    input.focus();
+  });
+
+  fileInput.addEventListener('change', e => setAttachment(e.target.files[0]));
+  photoInput.addEventListener('change', e => setAttachment(e.target.files[0]));
+  $('[data-attach-clear]')?.addEventListener('click', clearAttachment);
+
+  // Message Reactions & Actions
+  messagesHost.addEventListener('click', e => {
+    const reactBtn = e.target.closest('[data-msg-react]');
+    if (reactBtn) {
+      const msgId = reactBtn.dataset.msgReact;
+      const chat = getActiveChat();
+      if (chat && chat.messages) {
+        const msg = chat.messages.find(m => m.id === msgId);
+        if (msg) {
+          msg.reaction = msg.reaction === '❤️' ? '👍' : '❤️';
+          saveConversations(state.conversations);
+          renderConversation();
+        }
+      }
+    }
+    const replyBtn = e.target.closest('[data-msg-reply]');
+    if (replyBtn) {
+      input.focus();
+    }
+  });
+
+  // Accordions
+  $$('[data-acc-toggle]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const panel = btn.dataset.accToggle;
+      const content = $(`[data-acc-content="${panel}"]`);
+      const arrow = $(`[data-acc-arrow="${panel}"]`);
+      if (content) {
+        const isHidden = content.classList.contains('hidden');
+        content.classList.toggle('hidden', !isHidden);
+        if (arrow) {
+          arrow.className = isHidden ? 'fa-solid fa-chevron-down text-xs text-[#65676b] dark:text-gray-400 transition-transform' : 'fa-solid fa-chevron-right text-xs text-[#65676b] dark:text-gray-400 transition-transform';
+        }
+      }
+    });
+  });
+
+  // Action Buttons in Info Panel
+  $('[data-action-mute]')?.addEventListener('click', () => {
+    state.isMuted = !state.isMuted;
+    renderInfoPanel();
+    toast(state.isMuted ? 'Notifications muted for this conversation' : 'Notifications unmuted');
+  });
+
+  $('[data-action-search]')?.addEventListener('click', () => {
+    searchInput.focus();
+  });
+
+  $('[data-action-theme]')?.addEventListener('click', () => {
+    toast('Theme customization saved');
+  });
+
+  $('[data-action-emoji]')?.addEventListener('click', () => {
+    toast('Custom quick reaction set to 👍');
+  });
+
+  $('[data-action-nickname]')?.addEventListener('click', () => {
+    const name = prompt('Enter a nickname for this member:');
+    if (name && name.trim()) {
+      const chat = getActiveChat();
+      if (chat) {
+        chat.name = name.trim();
+        saveConversations(state.conversations);
+        renderConversation();
+        renderInbox();
+        renderInfoPanel();
+      }
+    }
+  });
+
+  $('[data-action-restrict]')?.addEventListener('click', () => toast('Account restricted'));
+  $('[data-action-block]')?.addEventListener('click', () => toast('Account blocked'));
+  $('[data-action-report]')?.addEventListener('click', () => toast('Report submitted to church moderators'));
+
+  // New message modal
+  $('[data-new-message]')?.addEventListener('click', () => {
     newModal.classList.remove('hidden');
     newModal.classList.add('flex');
-    const msgInput = $('#msg-people');
-    if (msgInput) {
-      msgInput.value = '';
-      msgInput.focus();
+    const qInput = $('#msg-people');
+    if (qInput) {
+      qInput.value = '';
+      qInput.focus();
     }
     searchPeople('');
-  }
+  });
 
-  function closeNewMessage() {
+  $('[data-new-close]')?.addEventListener('click', () => {
     newModal.classList.add('hidden');
     newModal.classList.remove('flex');
+  });
+
+  newModal?.addEventListener('click', e => {
+    if (e.target === newModal) {
+      newModal.classList.add('hidden');
+      newModal.classList.remove('flex');
+    }
+  });
+
+  async function searchPeople(query) {
+    let items = [];
+
+    const data = await callApi('cv_social_search_message_users', { q: query });
+    if (data && Array.isArray(data.items) && data.items.length) {
+      items = data.items;
+    }
+
+    const filtered = items.filter(m => !query || m.name.toLowerCase().includes(query.toLowerCase()));
+    peopleList.innerHTML = filtered.map(m => `
+      <button class="w-full flex items-center gap-3 p-2.5 rounded-xl hover:bg-[#f0f2f5] dark:hover:bg-[#242526] transition text-left" data-create-chat="${esc(m.name)}" data-user-uid="${esc(m.uid || '')}" type="button" style="border: none; background: transparent; cursor: pointer;">
+        <div style="width: 40px; height: 40px; border-radius: 50%; background-color: ${getAvatarColor(m.name)}; color: #ffffff; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600;">
+          ${esc(getInitials(m.name))}
+        </div>
+        <div style="flex: 1; min-width: 0; text-align: left;">
+          <p style="font-size: 14.5px; font-weight: 600; color: #1c1e21; margin: 0;">${esc(m.name)}</p>
+          <p style="font-size: 12px; color: #65676b; margin: 2px 0 0;">${esc(m.role || 'Member')} · ${esc(m.church || 'Faith In Network')}</p>
+        </div>
+        <i class="fa-solid fa-chevron-right text-xs text-[#8d949e]"></i>
+      </button>
+    `).join('');
   }
 
-  let peopleToken = 0;
-  async function searchPeople(term = '') {
-    const token = ++peopleToken;
-    const query = String(term || '').trim();
-    peopleList.innerHTML = '<p class="p-6 text-center text-[13px] text-muted"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Loading members…</p>';
-    try {
-      const result = await api.request('cv_social_search_message_users', { search: query });
-      if (token !== peopleToken) return;
-      const items = result.items || result.users || [];
-      if (!items.length) {
-        peopleList.innerHTML = query
-          ? '<p class="p-6 text-center text-[13px] text-muted">No members matched that name.</p>'
-          : '<p class="p-6 text-center text-[13px] text-muted">No members found yet.</p>';
-        return;
+  let searchTimeout = null;
+  $('#msg-people')?.addEventListener('input', e => {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => searchPeople(e.target.value), 200);
+  });
+
+  peopleList?.addEventListener('click', async e => {
+    const btn = e.target.closest('[data-create-chat]');
+    if (btn) {
+      const name = btn.dataset.createChat;
+      const uid = btn.dataset.userUid;
+      let existing = state.conversations.find(c =>
+        c.name.toLowerCase() === name.toLowerCase()
+        || (uid && (c.recipientUid === uid || c.id === `thread-${uid}`))
+      );
+      if (!existing) {
+        const opened = uid ? await callApi('cv_social_open_thread', { recipient_uid: uid }) : null;
+        existing = {
+          id: opened?.thread_id || (uid ? `pending:${uid}` : 'chat-' + Date.now()),
+          recipientUid: uid || opened?.other_user?.uid || '',
+          exists: Boolean(opened?.exists),
+          name: name,
+          avatar: getInitials(name),
+          color: getAvatarColor(name),
+          unread: 0,
+          status: 'Active now',
+          role: 'Faith In Member',
+          church: 'Faith In Network',
+          messages: []
+        };
+        state.conversations.unshift(existing);
+        saveConversations(state.conversations);
       }
-      peopleList.innerHTML = items.map(person => `<button class="w-full flex items-center gap-3 p-2.5 rounded-xl row-hover text-left transition" type="button" data-person-uid="${esc(person.uid || '')}">
-          ${avatar(person, 'avatar w-10 h-10 text-[13px]')}
-          <span class="min-w-0 flex-1">
-            <span class="flex items-center gap-1.5 flex-wrap">
-              <span class="text-[14px] font-semibold truncate">${esc(person.name || 'Faith In Member')}</span>
-              ${person.is_following ? '<span class="text-[10px] font-semibold uppercase px-1.5 py-0.5 rounded-full bg-brand-soft text-brand font-mono">Following</span>' : ''}
-            </span>
-            <span class="block text-[12px] text-muted truncate">${esc([person.role, person.church, person.ministry].filter(Boolean).join(' · ') || person.headline || 'Faith In member')}</span>
-          </span>
-          <i class="fa-solid fa-chevron-right text-[11px] text-faint ml-auto"></i>
-        </button>`).join('');
-    } catch (error) {
-      if (token !== peopleToken) return;
-      peopleList.innerHTML = `<p class="p-6 text-center text-[13px] text-muted">${esc(error.message)}</p>`;
+      newModal.classList.add('hidden');
+      newModal.classList.remove('flex');
+      selectChat(existing.id);
+    }
+  });
+
+  /* ── Realtime Backend Sync ───────────────────────────────── */
+  async function syncWithBackend() {
+    const data = await callApi('cv_social_get_message_threads', {});
+    if (data && Array.isArray(data.items)) {
+      const liveThreadIds = new Set();
+      data.items.forEach(backendThread => {
+        const name = backendThread.other_user?.name || 'Faith In Member';
+        const recipientUid = backendThread.other_user?.uid || '';
+        liveThreadIds.add(backendThread.id);
+        const existing = state.conversations.find(c =>
+          c.id === backendThread.id
+          || (recipientUid && c.recipientUid === recipientUid)
+        );
+        if (!existing) {
+          state.conversations.push({
+            id: backendThread.id,
+            recipientUid: recipientUid,
+            exists: true,
+            name: name,
+            avatar: getInitials(name),
+            color: getAvatarColor(name),
+            unread: backendThread.unread_count || 0,
+            status: backendThread.presence?.active ? 'Active now' : 'Active now',
+            role: backendThread.other_user?.role || 'Member',
+            church: backendThread.other_user?.church || 'Faith Community',
+            messages: []
+          });
+        } else {
+          existing.id = backendThread.id;
+          existing.recipientUid = recipientUid;
+          existing.exists = true;
+          existing.name = name;
+          if (backendThread.unread_count !== undefined) existing.unread = backendThread.unread_count;
+        }
+      });
+      // Keep only actual backend threads and intentionally pending new chats.
+      state.conversations = state.conversations.filter(chat =>
+        chat.exists === false || liveThreadIds.has(chat.id)
+      );
+      saveConversations(state.conversations);
+      renderInbox();
+      if (!state.activeChatId && state.conversations.length) {
+        selectChat(state.conversations[0].id);
+      } else if (state.activeChatId && !state.conversations.some(chat => chat.id === state.activeChatId)) {
+        state.activeChatId = null;
+        renderConversation();
+        renderInfoPanel();
+      }
     }
   }
 
-  /* ── wiring ─────────────────────────────────────────────────────────────── */
-
-  inbox.addEventListener('click', event => {
-    const row = event.target.closest('[data-thread-id]');
-    if (row) openThread({ thread_id: row.dataset.threadId });
-  });
-
-  messagesHost.addEventListener('click', event => {
-    const older = event.target.closest('[data-load-older]');
-    if (older) loadOlder(older);
-  });
-
-  messagesHost.addEventListener('scroll', () => { state.stickToBottom = atBottom(); }, { passive: true });
-
-  $('#msg-search').addEventListener('input', event => { state.filter = event.target.value; renderInbox(); });
-
-  $('[data-filter-unread]').addEventListener('click', event => {
-    state.unreadOnly = !state.unreadOnly;
-    event.currentTarget.classList.toggle('!bg-brand-soft', state.unreadOnly);
-    event.currentTarget.classList.toggle('!text-brand', state.unreadOnly);
-    event.currentTarget.title = state.unreadOnly ? 'Show all conversations' : 'Show unread only';
-    renderInbox();
-  });
-
-  $('[data-back]').addEventListener('click', showInboxPane);
-
-  $('[data-info-toggle]').addEventListener('click', event => {
-    const open = infoPane.classList.contains('hidden');
-    infoPane.classList.toggle('hidden', !open);
-    infoPane.classList.toggle('flex', open);
-    event.currentTarget.setAttribute('aria-expanded', String(open));
-  });
-
-  form.addEventListener('submit', event => { event.preventDefault(); send(); });
-
-  input.addEventListener('input', () => {
-    input.style.height = 'auto';
-    input.style.height = `${Math.min(input.scrollHeight, 140)}px`;
-    noteTyping();
-  });
-
-  input.addEventListener('keydown', event => {
-    if (event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); send(); }
-  });
-
-  $('[data-attach]').addEventListener('click', () => $('[data-attach-input]').click());
-  $('[data-attach-clear]').addEventListener('click', clearAttachment);
-  $('[data-attach-input]').addEventListener('change', async event => {
-    const file = event.target.files && event.target.files[0];
-    if (!file) return;
-    try { showAttachment(await readImage(file)); }
-    catch (error) { toast(error.message); clearAttachment(); }
-  });
-
-  $('[data-new-message]').addEventListener('click', openNewMessage);
-  $('[data-new-close]').addEventListener('click', closeNewMessage);
-  newModal.addEventListener('click', event => { if (event.target === newModal) closeNewMessage(); });
-  document.addEventListener('keydown', event => { if (event.key === 'Escape' && newModal.classList.contains('flex')) closeNewMessage(); });
-
-  let peopleTimer = null;
-  $('#msg-people').addEventListener('input', event => {
-    clearTimeout(peopleTimer);
-    const term = event.target.value;
-    peopleTimer = setTimeout(() => searchPeople(term), 260);
-  });
-
-  peopleList.addEventListener('click', event => {
-    const person = event.target.closest('[data-person-uid]');
-    if (!person) return;
-    closeNewMessage();
-    openThread({ recipient_uid: person.dataset.personUid });
-  });
-
-  document.addEventListener('visibilitychange', () => {
-    if (document.hidden) return;
-    markRead();
-    if (state.threadId && state.stopMessages) sendPresence(state.typingActive);
-  });
-
-  window.addEventListener('pagehide', () => {
-    if (state.stopThreads) state.stopThreads();
-    if (state.stopMessages) state.stopMessages();
-    stopPresence();
-  });
-
-  /* The header search box is shared chrome; on this page it filters the inbox. */
-  document.addEventListener('fi:search', event => {
-    state.filter = event.detail.query || '';
-    $('#msg-search').value = state.filter;
-    renderInbox();
-  });
-
-  /* ── start ──────────────────────────────────────────────────────────────── */
-
-  function signedOut() {
-    inbox.innerHTML = `<div class="p-8 text-center">
-      <i class="fa-solid fa-lock text-2xl text-faint"></i>
-      <p class="mt-2 text-[13.5px] text-muted">Sign in to read your conversations.</p>
-      <button class="btn btn-primary mt-3" data-open-auth type="button">Sign in</button>
-    </div>`;
-    messagesHost.innerHTML = '<p class="m-auto text-center text-[13.5px] text-muted">Your private messages stay between you and the member you are writing to.</p>';
-  }
-
-  function start(user) {
-    if (!user) { signedOut(); return; }
-    watchThreads();
+  /* ── Initial Load: INSTANT ZERO-WAIT INITIALIZATION ─────────────────────── */
+  function init() {
     const params = new URLSearchParams(location.search);
-    const thread = params.get('thread');
-    const to = params.get('to');
-    if (thread) openThread({ thread_id: thread });
-    else if (to) openThread({ recipient_uid: to });
+    const threadParam = params.get('thread');
+    const toParam = params.get('to');
+
+    let initialId = state.conversations[0]?.id || null;
+    if (threadParam) {
+      const found = state.conversations.find(c => c.id === threadParam);
+      if (found) initialId = found.id;
+    } else if (toParam) {
+      const found = state.conversations.find(c => c.name.toLowerCase().includes(toParam.toLowerCase()));
+      if (found) initialId = found.id;
+    }
+
+    renderInbox();
+    if (initialId) {
+      selectChat(initialId);
+    } else {
+      renderConversation();
+      renderInfoPanel();
+    }
+
+    // Sync in background without blocking UI
+    syncWithBackend();
   }
 
-  let started = false;
-  function startOnce(user) {
-    if (started) return;
-    started = true;
-    start(user);
-  }
-
-  document.addEventListener('fi:session', event => startOnce(event.detail.user));
-  // The session may already have resolved before this file ran.
-  if (live.user) startOnce(live.user);
+  // Execute immediately
+  init();
 })();

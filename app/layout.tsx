@@ -78,10 +78,11 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#D9941E",
+  themeColor: "#2f5bea",
   width: "device-width",
   initialScale: 1,
   maximumScale: 5,
+  viewportFit: "cover",
 };
 
 export default function RootLayout({
@@ -93,6 +94,19 @@ export default function RootLayout({
     <html lang="en" className={`${inter.variable} ${kohSantepheap.variable}`}>
       <body className="font-sans antialiased min-h-screen flex flex-col bg-[#FCFCFA] text-[#0D1017]">
         {children}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              if ('serviceWorker' in navigator) {
+                window.addEventListener('load', function() {
+                  navigator.serviceWorker.register('/sw.js').catch(function(err) {
+                    console.debug('SW registration skipped:', err);
+                  });
+                });
+              }
+            `,
+          }}
+        />
       </body>
     </html>
   );

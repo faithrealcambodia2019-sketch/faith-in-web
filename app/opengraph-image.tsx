@@ -1,7 +1,6 @@
 import { ImageResponse } from "next/og";
 import { site } from "@/lib/site-content";
 
-export const runtime = "edge";
 export const alt = `${site.name} — ${site.tagline}`;
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
@@ -40,9 +39,17 @@ export default async function OpengraphImage() {
                 color: "#0D1017",
               }}
             >
-              ✦
+              F
             </div>
-            <div style={{ fontSize: 36, fontWeight: 900, letterSpacing: "-0.03em" }}>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "baseline",
+                fontSize: 36,
+                fontWeight: 900,
+                letterSpacing: "-0.03em",
+              }}
+            >
               Faith<span style={{ color: "#D9941E" }}>In</span>
             </div>
           </div>
@@ -103,9 +110,9 @@ export default async function OpengraphImage() {
           }}
         >
           <div style={{ display: "flex", gap: "24px" }}>
-            <span>✓ 100% Free Forever</span>
-            <span>✓ No Ads or Tracking</span>
-            <span>✓ Global Diaspora Community</span>
+            <span>100% Free Forever</span>
+            <span>No Ads or Tracking</span>
+            <span>Global Diaspora Community</span>
           </div>
           <div style={{ color: "#EBB94F", fontWeight: 700 }}>faithin.co</div>
         </div>

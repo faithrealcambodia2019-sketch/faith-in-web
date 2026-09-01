@@ -5,8 +5,6 @@ import {
   primaryKey,
   integer,
   boolean,
-  uuid,
-  varchar,
 } from "drizzle-orm/pg-core";
 import type { AdapterAccountType } from "next-auth/adapters";
 
@@ -214,6 +212,7 @@ export const messages = pgTable("message", {
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
   content: text("content").notNull(),
+  attachment: text("attachment"),
   readAt: timestamp("read_at", { mode: "date" }),
   createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
 });
