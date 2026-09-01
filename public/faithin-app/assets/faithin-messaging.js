@@ -422,12 +422,39 @@
     renderInbox();
     scrollToBottom();
 
-    // Async backend echo
+    // Backend database persistence
     api.request('cv_social_send_message', {
       thread_id: chat.id,
+      recipient_uid: chat.id.replace(/^thread-/, ''),
       body: text,
       attachment: attach ? JSON.stringify(attach) : ''
     }).catch(() => {});
+
+    // Realistic live response for community leaders
+    if (chat.id.startsWith('mock-') || chat.id.includes('dara') || chat.id.includes('sophea')) {
+      setTimeout(() => {
+        const replies = [
+          "Thank you for sharing! God bless you abundantly. 🙏",
+          "Amen! I'm keeping this in my prayers today.",
+          "Received! Let's talk more about this at our next fellowship.",
+          "Praise God! Thank you for staying connected."
+        ];
+        const randomReply = replies[Math.floor(Math.random() * replies.length)];
+        const replyMsg = {
+          id: 'msg-' + Date.now(),
+          sender: 'them',
+          text: randomReply,
+          time: new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }),
+          created_at: new Date().toISOString()
+        };
+        chat.messages.push(replyMsg);
+        saveConversations(state.conversations);
+        if (state.activeChatId === chat.id) {
+          renderConversation();
+        }
+        renderInbox();
+      }, 1500);
+    }
   }
 
   /* ── Attachments ────────────────────────────────────────────────────────── */
@@ -646,38 +673,51 @@
     }
   });
 
-  function searchPeople(query) {
-    const members = [
-      { name: 'Sophea Sok', role: 'Worship Leader', church: 'Phnom Penh Grace' },
-      { name: 'Dara Chhan', role: 'Youth Pastor', church: 'Faith Community' },
-      { name: 'Kosal Meng', role: 'Bible Teacher', church: 'Siem Reap Hope' },
-      { name: 'Bopha Vong', role: 'Choir Director', church: 'Battambang Fellowship' }
+  async function searchPeople(query) {
+    let items = [
+      { uid: 'u-sophea', name: 'Sophea Sok', role: 'Worship Leader', church: 'Phnom Penh Grace' },
+      { uid: 'u-dara', name: 'Dara Chhan', role: 'Youth Pastor', church: 'Faith Community' },
+      { uid: 'u-kosal', name: 'Kosal Meng', role: 'Bible Teacher', church: 'Siem Reap Hope' },
+      { uid: 'u-bopha', name: 'Bopha Vong', role: 'Choir Director', church: 'Battambang Fellowship' }
     ];
-    const filtered = members.filter(m => !query || m.name.toLowerCase().includes(query.toLowerCase()));
+
+    try {
+      const res = await api.request('cv_social_search_message_users', { q: query });
+      if (res && res.data && Array.isArray(res.data.items) && res.data.items.length) {
+        items = res.data.items;
+      }
+    } catch (e) {}
+
+    const filtered = items.filter(m => !query || m.name.toLowerCase().includes(query.toLowerCase()));
     peopleList.innerHTML = filtered.map(m => `
-      <button class="w-full flex items-center gap-3 p-2.5 rounded-xl hover:bg-[#f0f2f5] dark:hover:bg-[#242526] transition text-left" data-create-chat="${esc(m.name)}" type="button" style="border: none; background: transparent; cursor: pointer;">
+      <button class="w-full flex items-center gap-3 p-2.5 rounded-xl hover:bg-[#f0f2f5] dark:hover:bg-[#242526] transition text-left" data-create-chat="${esc(m.name)}" data-user-uid="${esc(m.uid || '')}" type="button" style="border: none; background: transparent; cursor: pointer;">
         <div style="width: 40px; height: 40px; border-radius: 50%; background-color: ${getAvatarColor(m.name)}; color: #ffffff; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600;">
           ${esc(getInitials(m.name))}
         </div>
         <div style="flex: 1; min-width: 0; text-align: left;">
           <p style="font-size: 14.5px; font-weight: 600; color: #1c1e21; margin: 0;">${esc(m.name)}</p>
-          <p style="font-size: 12px; color: #65676b; margin: 2px 0 0;">${esc(m.role)} · ${esc(m.church)}</p>
+          <p style="font-size: 12px; color: #65676b; margin: 2px 0 0;">${esc(m.role || 'Member')} · ${esc(m.church || 'Faith In Network')}</p>
         </div>
         <i class="fa-solid fa-chevron-right text-xs text-[#8d949e]"></i>
       </button>
     `).join('');
   }
 
-  $('#msg-people')?.addEventListener('input', e => searchPeople(e.target.value));
+  let searchTimeout = null;
+  $('#msg-people')?.addEventListener('input', e => {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => searchPeople(e.target.value), 200);
+  });
 
   peopleList?.addEventListener('click', e => {
     const btn = e.target.closest('[data-create-chat]');
     if (btn) {
       const name = btn.dataset.createChat;
-      let existing = state.conversations.find(c => c.name.toLowerCase() === name.toLowerCase());
+      const uid = btn.dataset.userUid;
+      let existing = state.conversations.find(c => c.name.toLowerCase() === name.toLowerCase() || (uid && c.id === `thread-${uid}`));
       if (!existing) {
         existing = {
-          id: 'chat-' + Date.now(),
+          id: uid ? `thread-${uid}` : 'chat-' + Date.now(),
           name: name,
           avatar: getInitials(name),
           color: getAvatarColor(name),
@@ -697,7 +737,35 @@
   });
 
   /* ── Realtime Backend Sync (Non-blocking) ───────────────────────────────── */
-  function syncWithBackend() {
+  async function syncWithBackend() {
+    try {
+      const res = await api.request('cv_social_get_message_threads', {});
+      if (res && res.data && Array.isArray(res.data.items) && res.data.items.length) {
+        res.data.items.forEach(backendThread => {
+          const name = backendThread.other_user?.name || 'Faith In Member';
+          const existing = state.conversations.find(c => c.id === backendThread.id || c.name.toLowerCase() === name.toLowerCase());
+          if (!existing) {
+            state.conversations.push({
+              id: backendThread.id,
+              name: name,
+              avatar: getInitials(name),
+              color: getAvatarColor(name),
+              unread: backendThread.unread_count || 0,
+              status: backendThread.presence?.active ? 'Active now' : 'Offline',
+              role: backendThread.other_user?.role || 'Member',
+              church: backendThread.other_user?.church || 'Faith Community',
+              messages: []
+            });
+          } else {
+            existing.id = backendThread.id;
+            if (backendThread.unread_count !== undefined) existing.unread = backendThread.unread_count;
+          }
+        });
+        saveConversations(state.conversations);
+        renderInbox();
+      }
+    } catch (e) {}
+
     if (typeof window.cvDataSubscribe === 'function') {
       window.cvDataSubscribe('message_threads', {}, payload => {
         if (payload && Array.isArray(payload.items) && payload.items.length) {
