@@ -364,6 +364,7 @@
     const id = esc(resource.id);
     const saved = savedIds.has(resource.id);
     const canDelete = Boolean(resource.can_delete);
+    const canEdit = Boolean(resource.can_edit || resource.can_delete);
     const authorName = (typeof resource.author === 'object' && resource.author?.name) ? resource.author.name : (resource.contributor_name || resource.author || 'Faith In member');
     const downloadCount = Number(resource.download_count || 0);
 
@@ -407,7 +408,7 @@
       + `<span>${downloadCount}</span>`
       + `</button>`
       + `<div class="fb-card-actions">`
-      + `<button type="button" class="fb-action-icon-btn is-edit" title="Edit title or author" data-resource-edit><i class="fa-solid fa-pen-to-square text-[14px]"></i></button>`
+      + (canEdit ? `<button type="button" class="fb-action-icon-btn is-edit" title="Edit title or author" data-resource-edit><i class="fa-solid fa-pen-to-square text-[14px]"></i></button>` : '')
       + (canDelete ? `<button type="button" class="fb-action-icon-btn is-delete" title="Delete" data-resource-delete><i class="fa-regular fa-trash-can text-[15px]"></i></button>` : '')
       + `<button type="button" class="fb-action-icon-btn ${saved ? 'is-saved' : ''}" title="${saved ? 'Remove saved resource' : 'Save resource'}" data-resource-save>`
       + `<i class="fa-${saved ? 'solid' : 'regular'} fa-bookmark text-[15px]"></i>`

@@ -1564,6 +1564,9 @@
             return b.dbMod.getDoc(ref).then(function (snap) {
                 if (!snap.exists()) throw new Error('That resource is no longer available.');
                 var existing = snap.data();
+                if (existing.authorUid && existing.authorUid !== user.uid) {
+                    throw new Error('Only the author who published this resource can edit it.');
+                }
                 var updates = {
                     title: title,
                     description: description,
@@ -1588,9 +1591,17 @@
     actions.cv_delete_resource = function (b, params) {
         var id = text(params.resource_id || params.id);
         if (!id) throw new Error('That resource could not be found.');
-        return requireUser(b).then(function () {
-            return b.dbMod.deleteDoc(b.dbMod.doc(b.db, 'resources', id)).then(function () {
-                return { deleted: true, id: id };
+        return requireUser(b).then(function (user) {
+            var ref = b.dbMod.doc(b.db, 'resources', id);
+            return b.dbMod.getDoc(ref).then(function (snap) {
+                if (!snap.exists()) return { deleted: true, id: id };
+                var existing = snap.data();
+                if (existing.authorUid && existing.authorUid !== user.uid) {
+                    throw new Error('Only the author who published this resource can delete it.');
+                }
+                return b.dbMod.deleteDoc(ref).then(function () {
+                    return { deleted: true, id: id };
+                });
             });
         });
     };
