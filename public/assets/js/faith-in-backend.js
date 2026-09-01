@@ -1029,6 +1029,7 @@
             if (!user) {
                 return b.dbMod.getDocs(b.dbMod.query(
                     b.dbMod.collection(b.db, 'posts'),
+                    b.dbMod.where('visibility', '==', 'public'),
                     b.dbMod.limit(FEED_PAGE_SIZE)
                 )).then(function (snap) {
                     var items = [];
@@ -1049,24 +1050,19 @@
             return followingMap(b, user).then(function (following) {
                 var queries = [];
 
-                // 1. General posts query with order (if rules/index allow)
+                // 1. Public posts with order. The visibility predicate is part
+                // of the query so Firestore can prove every returned document
+                // is readable without exposing another member's private post.
                 queries.push(
                     b.dbMod.getDocs(b.dbMod.query(
                         b.dbMod.collection(b.db, 'posts'),
+                        b.dbMod.where('visibility', '==', 'public'),
                         b.dbMod.orderBy('createdAt', 'desc'),
                         b.dbMod.limit(FEED_PAGE_SIZE)
                     )).catch(function () { return null; })
                 );
 
-                // 2. Unordered general collection query (guaranteed fallback)
-                queries.push(
-                    b.dbMod.getDocs(b.dbMod.query(
-                        b.dbMod.collection(b.db, 'posts'),
-                        b.dbMod.limit(FEED_PAGE_SIZE)
-                    )).catch(function () { return null; })
-                );
-
-                // 3. Public posts query
+                // 2. Unordered public query (index-safe fallback).
                 queries.push(
                     b.dbMod.getDocs(b.dbMod.query(
                         b.dbMod.collection(b.db, 'posts'),
@@ -1075,7 +1071,7 @@
                     )).catch(function () { return null; })
                 );
 
-                // 4. Own posts query (both authorUid and author_uid)
+                // 3. Own posts query (both authorUid and author_uid).
                 queries.push(
                     b.dbMod.getDocs(b.dbMod.query(
                         b.dbMod.collection(b.db, 'posts'),
@@ -1091,13 +1087,15 @@
                     )).catch(function () { return null; })
                 );
 
-                // 5. Followed authors query (high speed: 1-2 batch queries or direct target queries)
+                // 4. Follower-only posts from followed authors. Public posts
+                // are already covered above; private posts stay owner-only.
                 var followedUids = Object.keys(following || {}).filter(function (id) { return id && id !== user.uid; });
                 if (followedUids.length > 0) {
                     queries.push(
                         b.dbMod.getDocs(b.dbMod.query(
                             b.dbMod.collection(b.db, 'posts'),
                             b.dbMod.where('authorUid', 'in', followedUids.slice(0, 10)),
+                            b.dbMod.where('visibility', '==', 'followers'),
                             b.dbMod.limit(FEED_PAGE_SIZE)
                         )).catch(function () { return null; })
                     );
@@ -1105,6 +1103,7 @@
                         b.dbMod.getDocs(b.dbMod.query(
                             b.dbMod.collection(b.db, 'posts'),
                             b.dbMod.where('author_uid', 'in', followedUids.slice(0, 10)),
+                            b.dbMod.where('visibility', '==', 'followers'),
                             b.dbMod.limit(FEED_PAGE_SIZE)
                         )).catch(function () { return null; })
                     );
@@ -1114,6 +1113,7 @@
                             b.dbMod.getDocs(b.dbMod.query(
                                 b.dbMod.collection(b.db, 'posts'),
                                 b.dbMod.where('authorUid', '==', fUid),
+                                b.dbMod.where('visibility', '==', 'followers'),
                                 b.dbMod.limit(20)
                             )).catch(function () { return null; })
                         );
@@ -2457,7 +2457,10 @@
                             var batch = b.dbMod.writeBatch(b.db);
                             var isNewThread = !(resolvedExisting && typeof resolvedExisting.exists === 'function' && resolvedExisting.exists());
                             var threadUpdate = {
-                                lastMessage: body || ('Shared ' + (attachment ? attachment.name : 'an attachment')),
+                                // The full message lives in the immutable
+                                // subdocument. Keep only a bounded inbox preview
+                                // on the thread so it matches Firestore Rules.
+                                lastMessage: text(body || ('Shared ' + (attachment ? attachment.name : 'an attachment')), 500),
                                 lastMessageAt: b.dbMod.serverTimestamp(),
                                 lastSenderUid: user.uid,
                                 updatedAt: b.dbMod.serverTimestamp()

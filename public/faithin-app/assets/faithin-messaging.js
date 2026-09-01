@@ -15,28 +15,30 @@
 
   /* ── Universal Backend API Transport ────────────────────────────────────── */
   async function callApi(action, params = {}) {
-    // 1. Try server backend route /api/compat
+    // The signed-in application uses the Firebase data layer as its primary
+    // backend. It already enforces authentication, Firestore Security Rules,
+    // pagination, and message ownership. Keep it first so a missing optional
+    // PostgreSQL/NextAuth deployment never blocks or duplicates a real write.
+    try {
+      if (typeof window.cvDataRequest === 'function') {
+        const res = await window.cvDataRequest(action, params);
+        if (res !== undefined && res !== null) return res;
+      }
+    } catch (_) {}
+
+    // Optional compatibility fallback for installations that intentionally
+    // configure AUTH_SECRET and DATABASE_URL. Production Faith In does not
+    // depend on this route for normal member messaging.
     try {
       const res = await fetch('/api/compat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action, ...params })
       });
-      if (res.ok) {
-        const json = await res.json();
-        if (json && json.success && json.data) {
-          return json.data;
-        }
-      }
-    } catch (e) {}
-
-    // 2. Fallback to client cvDataRequest / FIData
-    try {
-      if (typeof window.cvDataRequest === 'function') {
-        const res = await window.cvDataRequest(action, params);
-        if (res) return res;
-      }
-    } catch (e) {}
+      if (!res.ok) return null;
+      const json = await res.json();
+      if (json && json.success && json.data !== undefined) return json.data;
+    } catch (_) {}
 
     return null;
   }
