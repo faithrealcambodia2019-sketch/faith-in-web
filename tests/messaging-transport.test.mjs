@@ -40,12 +40,24 @@ test("messaging uses Firebase before the optional compatibility server", async (
   assert.equal(calls.length, 0);
 });
 
-test("messaging retains the optional server fallback", async () => {
-  const expected = { items: [{ id: "thread-1" }] };
+test("messaging does not retry Firebase failures against another database", async () => {
   const { callApi, calls } = transportContext({
     client: async () => {
-      throw new Error("Firebase unavailable");
+      throw new Error("Firebase denied the request");
     },
+    server: async () => {
+      throw new Error("The server fallback must not run.");
+    },
+  });
+
+  assert.equal(await callApi("cv_social_send_message"), null);
+  assert.equal(calls.length, 0);
+});
+
+test("messaging retains the optional server fallback when Firebase is absent", async () => {
+  const expected = { items: [{ id: "thread-1" }] };
+  const { callApi, calls } = transportContext({
+    client: undefined,
     server: async () => ({
       ok: true,
       json: async () => ({ success: true, data: expected }),
@@ -54,4 +66,10 @@ test("messaging retains the optional server fallback", async () => {
 
   assert.deepEqual(await callApi("cv_social_get_message_threads"), expected);
   assert.equal(calls.length, 1);
+});
+
+test("messaging does not ship fictional starter conversations", () => {
+  assert.match(source, /const DEFAULT_CONVERSATIONS = \[\];/);
+  assert.doesNotMatch(source, /name: 'Dara Chhan'|name: 'Sophea Sok'|name: 'Kosal Meng'/);
+  assert.match(source, /if \(!result \|\| !result\.message_id\)/);
 });
