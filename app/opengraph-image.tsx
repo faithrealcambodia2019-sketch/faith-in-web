@@ -34,12 +34,18 @@ export default async function OpengraphImage() {
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                fontSize: 26,
-                fontWeight: 800,
                 color: "#0D1017",
               }}
             >
-              F
+              <span
+                style={{
+                  width: 24,
+                  height: 24,
+                  display: "flex",
+                  background: "#0D1017",
+                  clipPath: "polygon(50% 0, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0 50%, 39% 39%)",
+                }}
+              />
             </div>
             <div
               style={{
@@ -110,9 +116,21 @@ export default async function OpengraphImage() {
           }}
         >
           <div style={{ display: "flex", gap: "24px" }}>
-            <span>100% Free Forever</span>
-            <span>No Ads or Tracking</span>
-            <span>Global Diaspora Community</span>
+            {["100% Free Forever", "No Ads or Tracking", "Global Diaspora Community"].map((label) => (
+              <span key={label} style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <span
+                  style={{
+                    width: 7,
+                    height: 12,
+                    display: "flex",
+                    borderRight: "2px solid #94A3B8",
+                    borderBottom: "2px solid #94A3B8",
+                    transform: "rotate(45deg)",
+                  }}
+                />
+                {label}
+              </span>
+            ))}
           </div>
           <div style={{ color: "#EBB94F", fontWeight: 700 }}>faithin.co</div>
         </div>

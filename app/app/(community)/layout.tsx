@@ -1,3 +1,5 @@
+/* The compatibility shell intentionally reuses the app's static stylesheet bundle. */
+/* eslint-disable @next/next/no-css-tags */
 import { ReactNode } from "react";
 import Link from "next/link";
 import { redirect } from "next/navigation";

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars, @next/next/no-location-assign-relative-destination */
 /* Faith In — live home feed, composers, prayers, members and engagement. */
 (() => {
   'use strict';

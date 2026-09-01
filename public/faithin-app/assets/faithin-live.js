@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars, @next/next/no-location-assign-relative-destination */
 /* Faith In — shared live data and authentication for the new interface. */
 (() => {
   'use strict';

@@ -436,7 +436,11 @@
             return Promise.resolve(_memberSnapshotCache);
         }
         var publicQuery = b.dbMod.query(b.dbMod.collection(b.db, 'publicProfiles'), b.dbMod.limit(200));
-        var postQuery = b.dbMod.query(b.dbMod.collection(b.db, 'posts'), b.dbMod.limit(100));
+        var postQuery = b.dbMod.query(
+            b.dbMod.collection(b.db, 'posts'),
+            b.dbMod.where('visibility', '==', 'public'),
+            b.dbMod.limit(100)
+        );
         return Promise.all([
             b.dbMod.getDocs(publicQuery).catch(function () { return { forEach: function () {} }; }),
             b.dbMod.getDocs(postQuery).catch(function () { return { forEach: function () {} }; })
@@ -487,6 +491,7 @@
         var postQuery = b.dbMod.query(
             b.dbMod.collection(b.db, 'posts'),
             b.dbMod.where('authorUid', '==', uid),
+            b.dbMod.where('visibility', '==', 'public'),
             b.dbMod.limit(1)
         );
         return b.dbMod.getDocs(postQuery).then(function (postSnap) {
@@ -515,36 +520,14 @@
             }
             return {
                 id: uid,
-                exists: function () { return true; },
-                data: function () {
-                    return {
-                        uid: uid,
-                        displayName: 'Faith In Member',
-                        photoURL: '',
-                        role: 'Faith In member',
-                        church: '',
-                        ministry: '',
-                        location: '',
-                        bio: ''
-                    };
-                }
+                exists: function () { return false; },
+                data: function () { return {}; }
             };
         }).catch(function () {
             return {
                 id: uid,
-                exists: function () { return true; },
-                data: function () {
-                    return {
-                        uid: uid,
-                        displayName: 'Faith In Member',
-                        photoURL: '',
-                        role: 'Faith In member',
-                        church: '',
-                        ministry: '',
-                        location: '',
-                        bio: ''
-                    };
-                }
+                exists: function () { return false; },
+                data: function () { return {}; }
             };
         });
     }
@@ -1838,6 +1821,7 @@
                         var postQuery = b.dbMod.query(
                             b.dbMod.collection(b.db, 'posts'),
                             b.dbMod.where('authorUid', '==', uid),
+                            b.dbMod.where('visibility', '==', 'public'),
                             b.dbMod.limit(1)
                         );
                         return b.dbMod.getDocs(postQuery).then(function (postSnap) {
@@ -2295,6 +2279,9 @@
                     if (parts.length === 2 && parts.indexOf(user.uid) !== -1) {
                         var otherUid = parts.find(function (u) { return u !== user.uid; });
                         return getMemberDocument(b, otherUid).then(function (mSnap) {
+                            if (!mSnap || typeof mSnap.exists !== 'function' || !mSnap.exists()) {
+                                throw new Error('That member could not be found.');
+                            }
                             var otherData = (mSnap && typeof mSnap.data === 'function') ? mSnap.data() : {};
                             return {
                                 thread_id: requestedThreadId,
@@ -2315,6 +2302,9 @@
                 ]).then(function (resolved) {
                     var mDoc = resolved[0];
                     var tDoc = resolved[1];
+                    if (!mDoc || typeof mDoc.exists !== 'function' || !mDoc.exists()) {
+                        throw new Error('That member could not be found.');
+                    }
                     var otherData = (mDoc && typeof mDoc.data === 'function') ? mDoc.data() : {};
                     return {
                         thread_id: id,
@@ -2392,12 +2382,20 @@
                             }
                         }
                         if (!recipientUid || recipientUid === user.uid) throw new Error('Choose another member to message.');
-                        var id = requestedThreadId || directThreadId(user.uid, recipientUid);
+                        var requestedExists = !!(existing && existing.exists && existing.exists());
+                        var id = requestedExists && requestedThreadId
+                            ? requestedThreadId
+                            : directThreadId(user.uid, recipientUid);
                         var ref = b.dbMod.doc(b.db, 'messageThreads', id);
-                        var resolvedExistingPromise = (existing && existing.exists && existing.exists()) ? Promise.resolve(existing) : b.dbMod.getDoc(ref).catch(function () { return { exists: function () { return false; } }; });
+                        var resolvedExistingPromise = requestedExists
+                            ? Promise.resolve(existing)
+                            : b.dbMod.getDoc(ref).catch(function () { return { exists: function () { return false; } }; });
                         return Promise.all([getMemberDocument(b, recipientUid), resolvedExistingPromise]).then(function (resolved) {
                             var recipientSnap = resolved[0];
                             var resolvedExisting = resolved[1];
+                            if (!recipientSnap || typeof recipientSnap.exists !== 'function' || !recipientSnap.exists()) {
+                                throw new Error('That member could not be found.');
+                            }
                             var recipientData = (recipientSnap && typeof recipientSnap.data === 'function') ? recipientSnap.data() : {};
                             var recipient = compactProfile(shapeMember(recipientUid, recipientData, user, {}));
                             var sender = compactProfile(Object.assign({}, profile, { uid: user.uid }));

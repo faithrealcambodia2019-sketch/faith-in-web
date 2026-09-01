@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* Faith In — production runtime configuration for the new interface. */
 window.cv_ajax = window.cv_ajax || {
   direct_data_mode: true,

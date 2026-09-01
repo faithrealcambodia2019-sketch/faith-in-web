@@ -167,6 +167,8 @@ export function ContactsWidget({
                 </div>
               ) : (
                 <div className="w-[46px] h-[46px] rounded-full overflow-hidden shrink-0 bg-gray-100">
+                  {/* Remote member avatars are user-provided and cannot use a fixed Next image loader. */}
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={contact.imageUrl}
                     alt={contact.name}

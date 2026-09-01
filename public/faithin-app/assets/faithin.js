@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions, @next/next/no-location-assign-relative-destination */
 /* ==========================================================================
    Faith In — shared chrome and behaviour
    Mounts the header, the mobile tab bar and the toast host, then wires the

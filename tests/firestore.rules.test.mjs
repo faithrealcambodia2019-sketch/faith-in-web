@@ -234,6 +234,18 @@ test("comments support safe media and caller-scoped reactions", async () => {
   await assertFails(
     updateDoc(doc(bob, "posts/comments-test/comments/comment-1"), { "reactions.alice": null }),
   );
+
+  await assertSucceeds(setDoc(doc(alice, "posts/private-comments"), post("alice", "private")));
+  await assertSucceeds(
+    setDoc(doc(alice, "posts/private-comments/comments/owner-comment"), {
+      ...comment,
+      authorUid: "alice",
+      author: { uid: "alice", name: "Alice", avatar_url: "" },
+    }),
+  );
+  await assertSucceeds(getDoc(doc(alice, "posts/private-comments/comments/owner-comment")));
+  await assertFails(getDoc(doc(bob, "posts/private-comments/comments/owner-comment")));
+  await assertFails(setDoc(doc(bob, "posts/private-comments/comments/intrusion"), comment));
 });
 
 test("direct messages are private to their two participants", async () => {
@@ -312,6 +324,10 @@ test("presence and typing can only be written for yourself", async () => {
   const charlie = authenticated("charlie", "charlie@example.com");
   const threadPath = "messageThreads/alice__presence-bob";
   const profile = (uid, id) => ({ uid, id, name: uid, avatar_url: "" });
+
+  await assertSucceeds(
+    setDoc(doc(bob, "users/presence-bob"), account("presence-bob", "presence-bob@example.com")),
+  );
 
   await assertSucceeds(
     setDoc(doc(alice, threadPath), {
