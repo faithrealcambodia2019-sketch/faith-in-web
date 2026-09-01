@@ -324,23 +324,23 @@
 
   function renderBlessings(items) {
     const rail = $('[data-rail]'); if (!rail) return;
-    let blessings = items.filter(post => post.type === 'blessing' || (post.type === 'post' && post.content && post.content.length < 240)).slice(0, 10);
-    if (!blessings.length) {
+    let blessings = (items || []).filter(post => post.type === 'blessing' || (post.content && post.content.length < 240)).slice(0, 10);
+    if (!blessings.length && items && items.length) {
       blessings = items.slice(0, 8);
     }
     const current = window.FILive.user || { name: 'Me' };
     const currentPhoto = current.avatar_url || current.avatar || current.photo_url || '';
     const addVisual = currentPhoto ? `<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" src="${esc(currentPhoto)}" alt="${esc(current.name || 'Your profile')}">` : `<div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-brand/20 to-indigo-500/30 text-brand text-xl font-bold">${esc(api.initials(current.name || 'You'))}</div>`;
     
-    const add = `<div class="snap-start shrink-0 w-[102px] sm:w-[114px] h-[155px] sm:h-[175px] rounded-2xl overflow-hidden relative border border-line bg-surface flex flex-col group cursor-pointer shadow-xs hover:shadow-md transition-all duration-200" data-modal-open="modal-blessing">
-      <div class="h-[65%] w-full overflow-hidden bg-raised relative flex items-center justify-center">
+    const add = `<div class="snap-start shrink-0 w-[110px] sm:w-[124px] h-[175px] sm:h-[195px] rounded-2xl overflow-hidden relative border border-line bg-surface flex flex-col group cursor-pointer shadow-xs hover:shadow-md transition-all duration-200 select-none" data-modal-open="modal-blessing">
+      <div class="h-[120px] sm:h-[135px] w-full overflow-hidden bg-raised relative flex items-center justify-center">
         ${addVisual}
       </div>
-      <div class="h-[35%] w-full bg-surface relative flex items-center justify-center pt-2">
-        <span class="absolute -top-3.5 left-1/2 -translate-x-1/2 w-7 h-7 rounded-full bg-brand text-white text-[12px] font-black grid place-items-center ring-2 ring-surface shadow-sm group-hover:scale-110 transition-transform">
+      <div class="flex-1 w-full bg-surface relative flex flex-col items-center justify-end pb-2.5 px-1">
+        <span class="absolute -top-4 left-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-brand text-white text-[13px] font-black grid place-items-center ring-3 ring-surface shadow-md group-hover:scale-110 transition-transform">
           <i class="fa-solid fa-plus"></i>
         </span>
-        <span class="text-[11.5px] font-bold text-ink leading-tight text-center px-1">Add Blessing</span>
+        <span class="text-[12px] font-bold text-ink leading-tight text-center truncate w-full">Add Blessing</span>
       </div>
     </div>`;
     
@@ -358,7 +358,7 @@
       const gradient = storyGradients[index % storyGradients.length];
       const text = post.content || post.excerpt || '';
       
-      return `<div class="snap-start shrink-0 w-[102px] sm:w-[114px] h-[155px] sm:h-[175px] rounded-2xl overflow-hidden relative border border-line cursor-pointer group shadow-xs hover:shadow-md transition-all duration-200 select-none" data-blessing-post="${esc(post.id)}" data-story-text="${esc(text)}" data-story-author="${esc(authorName)}" data-story-avatar="${esc(authorPhoto)}" data-story-time="${esc(post.time || 'Today')}" data-story-bg="${esc(storyImage || '')}" data-story-gradient="${gradient}">
+      return `<div class="snap-start shrink-0 w-[110px] sm:w-[124px] h-[175px] sm:h-[195px] rounded-2xl overflow-hidden relative border border-line cursor-pointer group shadow-xs hover:shadow-md transition-all duration-200 select-none" data-blessing-post="${esc(post.id)}" data-story-text="${esc(text)}" data-story-author="${esc(authorName)}" data-story-avatar="${esc(authorPhoto)}" data-story-time="${esc(post.time || 'Today')}" data-story-bg="${esc(storyImage || '')}" data-story-gradient="${gradient}">
         <!-- Background -->
         <div class="absolute inset-0 bg-cover bg-center transition-transform duration-300 group-hover:scale-105" style="background:${gradient};">
           ${hasImage ? `<img class="w-full h-full object-cover" src="${esc(storyImage)}" alt="Blessing">` : ''}
@@ -374,10 +374,10 @@
           </div>
         </div>
         <!-- Center Excerpt preview if text only -->
-        ${!hasImage && text ? `<p class="absolute inset-x-2.5 top-12 text-[10.5px] text-white/95 font-medium line-clamp-3 leading-snug drop-shadow-sm" style="font-family:'Koh Santepheap','Inter',sans-serif;">${esc(text)}</p>` : ''}
+        ${!hasImage && text ? `<p class="absolute inset-x-2.5 top-12 text-[11px] text-white/95 font-medium line-clamp-3 leading-snug drop-shadow-sm" style="font-family:'Koh Santepheap','Inter',sans-serif;">${esc(text)}</p>` : ''}
         <!-- Bottom Name -->
-        <div class="absolute bottom-2 inset-x-2 z-10">
-          <span class="block text-[11px] font-bold text-white leading-tight drop-shadow truncate">${esc(authorName.split(' ')[0])}</span>
+        <div class="absolute bottom-2.5 inset-x-2.5 z-10">
+          <span class="block text-[11.5px] font-bold text-white leading-tight drop-shadow truncate">${esc(authorName.split(' ')[0])}</span>
         </div>
       </div>`;
     }).join('');
