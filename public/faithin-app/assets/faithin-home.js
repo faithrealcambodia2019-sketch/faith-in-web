@@ -313,31 +313,73 @@
     $('#load-more')?.classList.add('hidden');
   }
 
+  const storyGradients = [
+    'linear-gradient(145deg, #1e3a8a, #3b82f6, #06b6d4)',
+    'linear-gradient(145deg, #4c1d95, #7c3aed, #ec4899)',
+    'linear-gradient(145deg, #065f46, #10b981, #0284c7)',
+    'linear-gradient(145deg, #831843, #e11d48, #f59e0b)',
+    'linear-gradient(145deg, #312e81, #4f46e5, #9333ea)',
+    'linear-gradient(145deg, #1e293b, #334155, #64748b)'
+  ];
+
   function renderBlessings(items) {
     const rail = $('[data-rail]'); if (!rail) return;
-    const blessings = items.filter(post => post.type === 'blessing').slice(0, 10);
+    let blessings = items.filter(post => post.type === 'blessing' || (post.type === 'post' && post.content && post.content.length < 240)).slice(0, 10);
+    if (!blessings.length) {
+      blessings = items.slice(0, 8);
+    }
     const current = window.FILive.user || { name: 'Me' };
     const currentPhoto = current.avatar_url || current.avatar || current.photo_url || '';
-    const addVisual = currentPhoto ? `<img class="w-full h-full object-cover" src="${esc(currentPhoto)}" alt="${esc(current.name || 'Your profile')}">` : window.FILive.avatarMarkup(current, 'avatar w-full h-full text-[12px] object-cover');
+    const addVisual = currentPhoto ? `<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" src="${esc(currentPhoto)}" alt="${esc(current.name || 'Your profile')}">` : `<div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-brand/20 to-indigo-500/30 text-brand text-xl font-bold">${esc(api.initials(current.name || 'You'))}</div>`;
     
-    const add = `<button class="snap-start shrink-0 flex flex-col items-center text-center group cursor-pointer" data-modal-open="modal-blessing">
-      <div class="relative w-[50px] h-[50px] sm:w-[56px] sm:h-[56px] rounded-full p-[2px] bg-gradient-to-tr from-brand to-indigo-400">
-        <div class="w-full h-full rounded-full overflow-hidden bg-surface ring-2 ring-surface flex items-center justify-center">${addVisual}</div>
-        <span class="absolute bottom-0 right-0 w-4 h-4 rounded-full bg-brand text-white text-[8px] font-black grid place-items-center ring-2 ring-surface shadow-sm"><i class="fa-solid fa-plus"></i></span>
+    const add = `<div class="snap-start shrink-0 w-[102px] sm:w-[114px] h-[155px] sm:h-[175px] rounded-2xl overflow-hidden relative border border-line bg-surface flex flex-col group cursor-pointer shadow-xs hover:shadow-md transition-all duration-200" data-modal-open="modal-blessing">
+      <div class="h-[65%] w-full overflow-hidden bg-raised relative flex items-center justify-center">
+        ${addVisual}
       </div>
-      <span class="text-[10.5px] font-medium text-ink mt-1 truncate max-w-[60px]">Add Blessing</span>
-    </button>`;
+      <div class="h-[35%] w-full bg-surface relative flex items-center justify-center pt-2">
+        <span class="absolute -top-3.5 left-1/2 -translate-x-1/2 w-7 h-7 rounded-full bg-brand text-white text-[12px] font-black grid place-items-center ring-2 ring-surface shadow-sm group-hover:scale-110 transition-transform">
+          <i class="fa-solid fa-plus"></i>
+        </span>
+        <span class="text-[11.5px] font-bold text-ink leading-tight text-center px-1">Add Blessing</span>
+      </div>
+    </div>`;
     
     rail.innerHTML = add + blessings.map((post, index) => {
       const author = post.author || {};
-      const authorPhoto = author.uid === current.uid ? currentPhoto : (author.avatar_url || author.avatar || '');
-      const avatar = authorPhoto ? `<img class="w-full h-full object-cover" src="${esc(authorPhoto)}" alt="${esc(author.name || 'Member')}">` : `<span class="avatar w-full h-full text-[12px] font-bold">${esc(api.initials(author.name))}</span>`;
-      return `<button class="snap-start shrink-0 flex flex-col items-center text-center group cursor-pointer" data-blessing-post="${esc(post.id)}">
-        <div class="relative w-[50px] h-[50px] sm:w-[56px] sm:h-[56px] rounded-full p-[2px] bg-gradient-to-tr from-amber-400 via-rose-500 to-purple-600">
-          <div class="w-full h-full rounded-full overflow-hidden bg-surface ring-2 ring-surface flex items-center justify-center">${avatar}</div>
+      const authorUid = author.uid || post.author_uid || post.authorUid || '';
+      const authorName = author.name || author.displayName || post.author_name || post.authorName || 'Faith In Member';
+      const isSelf = !!(current && authorUid && (authorUid === current.uid || String(current.id) === String(authorUid)));
+      const authorPhoto = isSelf ? currentPhoto : (author.avatar_url || author.avatar || author.photo_url || post.author_avatar || '');
+      const avatar = authorPhoto ? `<img class="w-full h-full object-cover" src="${esc(authorPhoto)}" alt="${esc(authorName)}">` : `<span class="avatar w-full h-full text-[11px] font-bold">${esc(api.initials(authorName))}</span>`;
+      
+      const mediaItems = Array.isArray(post.media_items) ? post.media_items : [];
+      const storyImage = post.cover_image_url || (mediaItems[0] ? (mediaItems[0].url || mediaItems[0].preview_url) : '');
+      const hasImage = !!storyImage;
+      const gradient = storyGradients[index % storyGradients.length];
+      const text = post.content || post.excerpt || '';
+      
+      return `<div class="snap-start shrink-0 w-[102px] sm:w-[114px] h-[155px] sm:h-[175px] rounded-2xl overflow-hidden relative border border-line cursor-pointer group shadow-xs hover:shadow-md transition-all duration-200 select-none" data-blessing-post="${esc(post.id)}" data-story-text="${esc(text)}" data-story-author="${esc(authorName)}" data-story-avatar="${esc(authorPhoto)}" data-story-time="${esc(post.time || 'Today')}" data-story-bg="${esc(storyImage || '')}" data-story-gradient="${gradient}">
+        <!-- Background -->
+        <div class="absolute inset-0 bg-cover bg-center transition-transform duration-300 group-hover:scale-105" style="background:${gradient};">
+          ${hasImage ? `<img class="w-full h-full object-cover" src="${esc(storyImage)}" alt="Blessing">` : ''}
         </div>
-        <span class="text-[10.5px] font-medium text-ink mt-1 truncate max-w-[60px]">${esc(author.name ? author.name.split(' ')[0] : 'Member')}</span>
-      </button>`;
+        <!-- Gradient Overlay -->
+        <div class="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/85"></div>
+        <!-- Top Avatar Ring -->
+        <div class="absolute top-2.5 left-2.5 z-10">
+          <div class="w-8 h-8 rounded-full p-[2px] bg-gradient-to-tr from-amber-400 via-rose-500 to-purple-600 shadow-sm">
+            <div class="w-full h-full rounded-full overflow-hidden bg-surface flex items-center justify-center ring-1 ring-white/80">
+              ${avatar}
+            </div>
+          </div>
+        </div>
+        <!-- Center Excerpt preview if text only -->
+        ${!hasImage && text ? `<p class="absolute inset-x-2.5 top-12 text-[10.5px] text-white/95 font-medium line-clamp-3 leading-snug drop-shadow-sm" style="font-family:'Koh Santepheap','Inter',sans-serif;">${esc(text)}</p>` : ''}
+        <!-- Bottom Name -->
+        <div class="absolute bottom-2 inset-x-2 z-10">
+          <span class="block text-[11px] font-bold text-white leading-tight drop-shadow truncate">${esc(authorName.split(' ')[0])}</span>
+        </div>
+      </div>`;
     }).join('');
   }
 
@@ -1038,6 +1080,91 @@
       }
     }
   });
+  let storyTimer = null;
+  document.addEventListener('click', event => {
+    const storyCard = event.target.closest('[data-blessing-post]');
+    if (storyCard) {
+      event.preventDefault();
+      event.stopPropagation();
+      const text = storyCard.dataset.storyText || '';
+      const author = storyCard.dataset.storyAuthor || 'Member';
+      const avatar = storyCard.dataset.storyAvatar || '';
+      const time = storyCard.dataset.storyTime || 'Blessing';
+      const bg = storyCard.dataset.storyBg || '';
+      const gradient = storyCard.dataset.storyGradient || 'linear-gradient(180deg,#3157d5,#1e1b4b)';
+      
+      const modal = $('#modal-story');
+      const canvas = $('#story-canvas');
+      const textEl = $('#story-text');
+      const nameEl = $('#story-name');
+      const timeEl = $('#story-time');
+      const bgImg = $('#story-bg-img');
+      const avatarWrap = $('#story-avatar-wrap');
+      const bar = $('#story-bar');
+      
+      if (textEl) textEl.textContent = text || 'Praise God for this day!';
+      if (nameEl) nameEl.textContent = author;
+      if (timeEl) timeEl.textContent = time;
+      
+      if (avatarWrap) {
+        avatarWrap.innerHTML = avatar ? `<img class="w-full h-full object-cover" src="${esc(avatar)}" alt="${esc(author)}">` : `<span class="avatar w-full h-full text-[12px] font-bold" style="background:#2f5bea">${esc(api.initials(author))}</span>`;
+      }
+      
+      if (bg && (bg.startsWith('http') || bg.startsWith('/'))) {
+        if (bgImg) {
+          bgImg.src = bg;
+          bgImg.classList.remove('hidden');
+        }
+        if (canvas) canvas.style.background = '#0b1120';
+      } else {
+        if (bgImg) {
+          bgImg.src = '';
+          bgImg.classList.add('hidden');
+        }
+        if (canvas) canvas.style.background = gradient;
+      }
+      
+      if (bar) {
+        bar.style.transition = 'none';
+        bar.style.width = '0%';
+        setTimeout(() => {
+          bar.style.transition = 'width 7s linear';
+          bar.style.width = '100%';
+        }, 50);
+      }
+      
+      if (storyTimer) clearTimeout(storyTimer);
+      storyTimer = setTimeout(() => {
+        if (window.FI && typeof window.FI.closeModal === 'function') {
+          window.FI.closeModal();
+        }
+      }, 7100);
+      
+      if (window.FI && typeof window.FI.openModal === 'function') {
+        window.FI.openModal('modal-story');
+      } else {
+        const backdrop = $('#backdrop');
+        if (backdrop && modal) {
+          backdrop.classList.remove('hidden');
+          backdrop.classList.add('flex');
+          $$('.modal').forEach(m => m.classList.toggle('hidden', m.id !== 'modal-story'));
+          document.body.style.overflow = 'hidden';
+        }
+      }
+    }
+  });
+
+  $('#story-reply-form')?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const input = $('#story-reply-input');
+    if (input && input.value.trim()) {
+      input.value = '';
+      if (storyTimer) clearTimeout(storyTimer);
+      if (window.FI && typeof window.FI.closeModal === 'function') window.FI.closeModal();
+      toast('Encouragement sent 🙏');
+    }
+  });
+
   async function loadVerse() { try { const result = await api.request('cv_bible_get_verses', { book: 'John', chapter: 3, version: 'KJV' }); const verse = (result.items || []).find(item => item.v === 16); if (!verse) return; const card = $$('#main h2').find(node => node.textContent.trim() === 'Verse of the Day')?.closest('section'); const english = card ? $$('blockquote p', card)[1] : null; if (english) english.textContent = `“${verse.text.trim()}”`; } catch (_) {} }
   document.addEventListener('click', event => { if (event.target.closest('[data-open-auth]')) window.FI.openAuth(); });
   // Start real home data in parallel with session initialization. FIData
