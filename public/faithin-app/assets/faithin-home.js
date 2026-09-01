@@ -353,28 +353,40 @@
       const avatar = authorPhoto ? `<img class="w-full h-full object-cover" src="${esc(authorPhoto)}" alt="${esc(authorName)}">` : `<span class="avatar w-full h-full text-[11px] font-bold">${esc(api.initials(authorName))}</span>`;
       
       const mediaItems = Array.isArray(post.media_items) ? post.media_items : [];
-      const storyImage = post.cover_image_url || (mediaItems[0] ? (mediaItems[0].url || mediaItems[0].preview_url) : '');
-      const hasImage = !!storyImage;
-      const gradient = storyGradients[index % storyGradients.length];
+      const videoItem = mediaItems.find(item => item.type === 'video');
+      const audioItem = mediaItems.find(item => item.type === 'audio');
+      const imageItem = mediaItems.find(item => item.type === 'image' || !item.type);
+      
+      const storyVideo = videoItem ? mediaUrl(videoItem.url || videoItem.preview_url || videoItem.local_url || '') : '';
+      const storyAudio = audioItem ? mediaUrl(audioItem.url || audioItem.preview_url || audioItem.local_url || '') : '';
+      const storyAudioName = audioItem ? (audioItem.name || 'Worship Music') : '';
+      const storyImage = post.cover_image_url || (imageItem ? mediaUrl(imageItem.url || imageItem.preview_url || '') : '');
+      const hasImage = !!storyImage && !storyVideo;
+      const hasVideo = !!storyVideo;
+      const hasAudio = !!storyAudio;
+      
+      const gradient = post.blessing_bg_color || post.bg_color || storyGradients[index % storyGradients.length];
       const text = post.content || post.excerpt || '';
       
-      return `<div class="snap-start shrink-0 w-[110px] sm:w-[124px] h-[175px] sm:h-[195px] rounded-2xl overflow-hidden relative border border-line cursor-pointer group shadow-xs hover:shadow-md transition-all duration-200 select-none" data-blessing-post="${esc(post.id)}" data-story-text="${esc(text)}" data-story-author="${esc(authorName)}" data-story-avatar="${esc(authorPhoto)}" data-story-time="${esc(post.time || 'Today')}" data-story-bg="${esc(storyImage || '')}" data-story-gradient="${gradient}">
-        <!-- Background -->
+      return `<div class="snap-start shrink-0 w-[110px] sm:w-[124px] h-[175px] sm:h-[195px] rounded-2xl overflow-hidden relative border border-line cursor-pointer group shadow-xs hover:shadow-md transition-all duration-200 select-none" data-blessing-post="${esc(post.id)}" data-story-text="${esc(text)}" data-story-author="${esc(authorName)}" data-story-avatar="${esc(authorPhoto)}" data-story-time="${esc(post.time || 'Today')}" data-story-bg="${esc(storyImage || '')}" data-story-video="${esc(storyVideo)}" data-story-audio="${esc(storyAudio)}" data-story-audio-name="${esc(storyAudioName)}" data-story-gradient="${esc(gradient)}">
+        <!-- Background Layer -->
         <div class="absolute inset-0 bg-cover bg-center transition-transform duration-300 group-hover:scale-105" style="background:${gradient};">
-          ${hasImage ? `<img class="w-full h-full object-cover" src="${esc(storyImage)}" alt="Blessing">` : ''}
+          ${hasVideo ? `<video class="w-full h-full object-cover" muted playsinline preload="metadata" src="${esc(storyVideo)}"></video>` : (hasImage ? `<img class="w-full h-full object-cover" src="${esc(storyImage)}" alt="Blessing">` : '')}
         </div>
         <!-- Gradient Overlay -->
         <div class="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/85"></div>
         <!-- Top Avatar Ring -->
-        <div class="absolute top-2.5 left-2.5 z-10">
+        <div class="absolute top-2.5 left-2.5 z-10 flex items-center gap-1">
           <div class="w-8 h-8 rounded-full p-[2px] bg-gradient-to-tr from-amber-400 via-rose-500 to-purple-600 shadow-sm">
             <div class="w-full h-full rounded-full overflow-hidden bg-surface flex items-center justify-center ring-1 ring-white/80">
               ${avatar}
             </div>
           </div>
+          ${hasAudio ? `<span class="w-5 h-5 rounded-full bg-purple-600 text-white text-[9px] grid place-items-center shadow-xs ml-0.5"><i class="fa-solid fa-music"></i></span>` : ''}
+          ${hasVideo ? `<span class="w-5 h-5 rounded-full bg-rose text-white text-[9px] grid place-items-center shadow-xs ml-0.5"><i class="fa-solid fa-video"></i></span>` : ''}
         </div>
         <!-- Center Excerpt preview if text only -->
-        ${!hasImage && text ? `<p class="absolute inset-x-2.5 top-12 text-[11px] text-white/95 font-medium line-clamp-3 leading-snug drop-shadow-sm" style="font-family:'Koh Santepheap','Inter',sans-serif;">${esc(text)}</p>` : ''}
+        ${!hasImage && !hasVideo && text ? `<p class="absolute inset-x-2.5 top-12 text-[11px] text-white/95 font-medium line-clamp-3 leading-snug drop-shadow-sm" style="font-family:'Koh Santepheap','Inter',sans-serif;">${esc(text)}</p>` : ''}
         <!-- Bottom Name -->
         <div class="absolute bottom-2.5 inset-x-2.5 z-10">
           <span class="block text-[11.5px] font-bold text-white leading-tight drop-shadow truncate">${esc(authorName.split(' ')[0])}</span>
@@ -488,42 +500,183 @@
   }
 
   const ta = $('#blessing-text'), postBtn = $('#blessing-post'), count = $('#blessing-count');
-  const blessingImageInput = $('#blessing-image-input'), blessingVideoInput = $('#blessing-video-input');
-  const blessingPreviewWrap = $('#blessing-media-preview-wrap'), blessingPreview = $('#blessing-media-preview');
-  let blessingMediaFiles = [], blessingPreviewUrls = [];
-  function updateBlessingButton() { if (postBtn) postBtn.disabled = !ta?.value.trim() && !blessingMediaFiles.length; }
+  const blessingImageInput = $('#blessing-image-input'), blessingVideoInput = $('#blessing-video-input'), blessingAudioInput = $('#blessing-audio-input');
+  const blessingPreviewWrap = $('#blessing-media-preview-wrap'), blessingMediaBox = $('#blessing-media-preview-box'), blessingPreview = $('#blessing-media-preview');
+  const blessingAudioWrap = $('#blessing-audio-preview-wrap'), blessingAudioName = $('#blessing-audio-name'), blessingAudioPlayToggle = $('#blessing-audio-play-toggle');
+  const blessingEditorBox = $('#blessing-editor-box');
+  
+  let blessingMediaFiles = [], blessingAudioFile = null, blessingPreviewUrls = [], blessingAudioUrl = '', blessingAudioEl = null;
+  let selectedBlessingTheme = 'linear-gradient(145deg, #1e3a8a, #3b82f6, #06b6d4)';
+
+  function updateBlessingButton() {
+    if (postBtn) postBtn.disabled = !ta?.value.trim() && !blessingMediaFiles.length && !blessingAudioFile;
+  }
+
   function clearBlessingMedia() {
-    blessingPreviewUrls.forEach(url => URL.revokeObjectURL(url)); blessingPreviewUrls = []; blessingMediaFiles = [];
+    blessingPreviewUrls.forEach(url => URL.revokeObjectURL(url));
+    blessingPreviewUrls = [];
+    blessingMediaFiles = [];
     if (blessingImageInput) blessingImageInput.value = '';
     if (blessingVideoInput) blessingVideoInput.value = '';
-    blessingPreviewWrap?.classList.add('hidden');
+    if (blessingMediaBox) blessingMediaBox.classList.add('hidden');
     if (blessingPreview) blessingPreview.innerHTML = '';
+    checkBlessingWrapVisibility();
     updateBlessingButton();
   }
+
+  function clearBlessingAudio() {
+    if (blessingAudioUrl) {
+      if (blessingAudioEl) { blessingAudioEl.pause(); blessingAudioEl = null; }
+      URL.revokeObjectURL(blessingAudioUrl);
+      blessingAudioUrl = '';
+    }
+    blessingAudioFile = null;
+    if (blessingAudioInput) blessingAudioInput.value = '';
+    if (blessingAudioWrap) blessingAudioWrap.classList.add('hidden');
+    if (blessingAudioPlayToggle) blessingAudioPlayToggle.innerHTML = '<i class="fa-solid fa-play text-xs"></i>';
+    checkBlessingWrapVisibility();
+    updateBlessingButton();
+  }
+
+  function checkBlessingWrapVisibility() {
+    if (blessingPreviewWrap) {
+      const hasMedia = blessingMediaFiles.length > 0;
+      const hasAudio = !!blessingAudioFile;
+      blessingPreviewWrap.classList.toggle('hidden', !hasMedia && !hasAudio);
+    }
+  }
+
   function selectBlessingMedia(files, mode) {
     const chosen = [...files].slice(0, mode === 'video' ? 1 : 10);
     if (!chosen.length) return clearBlessingMedia();
     const oversize = chosen.find(file => file.size > 50 * 1024 * 1024);
-    if (oversize) return toast(`${oversize.name} is larger than the free 50MB limit.`);
-    clearBlessingMedia(); blessingMediaFiles = chosen;
+    if (oversize) return toast(`${oversize.name} is larger than the 50MB limit.`);
+    clearBlessingMedia();
+    blessingMediaFiles = chosen;
+    if (blessingMediaBox) blessingMediaBox.classList.remove('hidden');
     blessingPreview.classList.toggle('is-video', mode === 'video');
     blessingPreview.classList.toggle('is-gallery', mode !== 'video');
     chosen.forEach(file => {
-      const url = URL.createObjectURL(file); blessingPreviewUrls.push(url);
+      const url = URL.createObjectURL(file);
+      blessingPreviewUrls.push(url);
       const element = document.createElement(mode === 'video' ? 'video' : 'img');
       element.src = url;
       if (mode === 'video') { element.controls = true; element.playsInline = true; element.preload = 'metadata'; }
       else element.alt = 'Blessing image preview';
       blessingPreview.appendChild(element);
     });
-    blessingPreviewWrap.classList.remove('hidden'); updateBlessingButton();
+    checkBlessingWrapVisibility();
+    updateBlessingButton();
   }
-  ta?.addEventListener('input', () => { count.textContent = `${ta.value.length}/600`; updateBlessingButton(); });
+
+  function selectBlessingAudio(files) {
+    const file = files[0];
+    if (!file) return clearBlessingAudio();
+    if (file.size > 30 * 1024 * 1024) return toast(`${file.name} is larger than the 30MB audio limit.`);
+    clearBlessingAudio();
+    blessingAudioFile = file;
+    blessingAudioUrl = URL.createObjectURL(file);
+    if (blessingAudioName) blessingAudioName.textContent = file.name || 'Worship Music';
+    if (blessingAudioWrap) {
+      blessingAudioWrap.classList.remove('hidden');
+      blessingAudioWrap.classList.add('flex');
+    }
+    checkBlessingWrapVisibility();
+    updateBlessingButton();
+  }
+
+  ta?.addEventListener('input', () => {
+    if (count) count.textContent = `${ta.value.length}/600`;
+    updateBlessingButton();
+  });
+
   blessingImageInput?.addEventListener('change', () => selectBlessingMedia(blessingImageInput.files || [], 'image'));
   blessingVideoInput?.addEventListener('change', () => selectBlessingMedia(blessingVideoInput.files || [], 'video'));
+  blessingAudioInput?.addEventListener('change', () => selectBlessingAudio(blessingAudioInput.files || []));
+  
   $('#blessing-media-remove')?.addEventListener('click', clearBlessingMedia);
-  $$('[data-chip]').forEach(chip => chip.addEventListener('click', () => { ta.value = `${ta.value.trim()} ${chip.textContent} `.trimStart(); ta.dispatchEvent(new Event('input')); ta.focus(); }));
-  postBtn?.addEventListener('click', async () => { if (!needUser()) return; busy(postBtn, true, blessingMediaFiles.length ? 'Uploading' : 'Posting'); try { const files = blessingMediaFiles.length ? { 'post_media[]': blessingMediaFiles } : {}; await api.request('cv_create_post', { content: ta.value.trim(), type: 'blessing', visibility: 'public' }, files); ta.value = ''; clearBlessingMedia(); closeModal(); toast('Your blessing is live 🕊️'); await loadPosts(); } catch (error) { toast(error.message); } finally { busy(postBtn, false, 'Post'); ta.dispatchEvent(new Event('input')); } });
+  $('#blessing-audio-remove')?.addEventListener('click', clearBlessingAudio);
+
+  blessingAudioPlayToggle?.addEventListener('click', () => {
+    if (!blessingAudioUrl) return;
+    if (!blessingAudioEl) {
+      blessingAudioEl = new Audio(blessingAudioUrl);
+      blessingAudioEl.onended = () => {
+        blessingAudioPlayToggle.innerHTML = '<i class="fa-solid fa-play text-xs"></i>';
+      };
+    }
+    if (blessingAudioEl.paused) {
+      blessingAudioEl.play();
+      blessingAudioPlayToggle.innerHTML = '<i class="fa-solid fa-pause text-xs"></i>';
+    } else {
+      blessingAudioEl.pause();
+      blessingAudioPlayToggle.innerHTML = '<i class="fa-solid fa-play text-xs"></i>';
+    }
+  });
+
+  // Story theme gradient picker
+  $$('#blessing-themes [data-story-theme]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      selectedBlessingTheme = btn.dataset.storyTheme;
+      if (blessingEditorBox) blessingEditorBox.style.background = selectedBlessingTheme;
+      $$('#blessing-themes [data-story-theme]').forEach(b => {
+        b.classList.remove('ring-2', 'ring-brand', 'scale-110');
+        b.classList.add('ring-1', 'ring-white/20');
+      });
+      btn.classList.add('ring-2', 'ring-brand', 'scale-110');
+      btn.classList.remove('ring-1', 'ring-white/20');
+    });
+  });
+
+  // Quick Scripture Insertion
+  $$('[data-verse-insert]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const verse = btn.dataset.verseInsert;
+      if (verse && ta) {
+        ta.value = ta.value ? `${ta.value.trim()}\n\n${verse}` : verse;
+        ta.dispatchEvent(new Event('input'));
+        ta.focus();
+      }
+    });
+  });
+
+  $$('[data-chip]').forEach(chip => chip.addEventListener('click', () => {
+    if (ta) {
+      ta.value = `${ta.value.trim()} ${chip.textContent} `.trimStart();
+      ta.dispatchEvent(new Event('input'));
+      ta.focus();
+    }
+  }));
+
+  postBtn?.addEventListener('click', async () => {
+    if (!needUser()) return;
+    const isUploading = blessingMediaFiles.length || blessingAudioFile;
+    busy(postBtn, true, isUploading ? 'Uploading' : 'Posting');
+    try {
+      const files = {};
+      if (blessingMediaFiles.length) files['post_media[]'] = blessingMediaFiles;
+      if (blessingAudioFile) files.blessing_music = [blessingAudioFile];
+      
+      await api.request('cv_create_post', {
+        content: ta.value.trim(),
+        type: 'blessing',
+        visibility: 'public',
+        blessing_bg_color: selectedBlessingTheme
+      }, files);
+      
+      ta.value = '';
+      clearBlessingMedia();
+      clearBlessingAudio();
+      closeModal();
+      toast('Your blessing story is live 🕊️');
+      await loadPosts();
+    } catch (error) {
+      toast(error.message);
+    } finally {
+      busy(postBtn, false, 'Share Story');
+      ta.dispatchEvent(new Event('input'));
+    }
+  });
 
   const fileInput = $('#file-input'), preview = $('#preview'), dropzone = $('#dropzone');
   const mediaPickerTitle = $('#media-picker-title'), mediaPickerHelp = $('#media-picker-help'), mediaPickerIcon = $('#media-picker-icon');
@@ -1081,49 +1234,139 @@
     }
   });
   let storyTimer = null;
+  const storyAudio = $('#story-audio');
+  const storyVideo = $('#story-video');
+  const storyMusicBadge = $('#story-music-badge');
+  const storyMusicName = $('#story-music-name');
+  const storySoundToggle = $('#story-sound-toggle');
+  let isStoryMuted = false;
+
+  function stopStoryMedia() {
+    if (storyTimer) { clearTimeout(storyTimer); storyTimer = null; }
+    if (storyAudio) {
+      storyAudio.pause();
+      storyAudio.src = '';
+    }
+    if (storyVideo) {
+      storyVideo.pause();
+      storyVideo.src = '';
+      storyVideo.classList.add('hidden');
+    }
+    if (storyMusicBadge) storyMusicBadge.classList.add('hidden');
+    if (storySoundToggle) storySoundToggle.classList.add('hidden');
+  }
+
+  // Intercept modal close to stop media
+  document.addEventListener('click', event => {
+    if (event.target.closest('[data-close]') || event.target.id === 'backdrop') {
+      const modalStory = $('#modal-story');
+      if (modalStory && !modalStory.classList.contains('hidden')) {
+        stopStoryMedia();
+      }
+    }
+  });
+
+  storySoundToggle?.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    isStoryMuted = !isStoryMuted;
+    if (storyAudio) storyAudio.muted = isStoryMuted;
+    if (storyVideo) storyVideo.muted = isStoryMuted;
+    storySoundToggle.innerHTML = isStoryMuted ? '<i class="fa-solid fa-volume-xmark text-xs"></i>' : '<i class="fa-solid fa-volume-high text-xs"></i>';
+  });
+
   document.addEventListener('click', event => {
     const storyCard = event.target.closest('[data-blessing-post]');
     if (storyCard) {
       event.preventDefault();
       event.stopPropagation();
+      stopStoryMedia();
+
       const text = storyCard.dataset.storyText || '';
       const author = storyCard.dataset.storyAuthor || 'Member';
       const avatar = storyCard.dataset.storyAvatar || '';
       const time = storyCard.dataset.storyTime || 'Blessing';
       const bg = storyCard.dataset.storyBg || '';
+      const video = storyCard.dataset.storyVideo || '';
+      const audio = storyCard.dataset.storyAudio || '';
+      const audioName = storyCard.dataset.storyAudioName || 'Worship Music';
       const gradient = storyCard.dataset.storyGradient || 'linear-gradient(180deg,#3157d5,#1e1b4b)';
       
       const modal = $('#modal-story');
       const canvas = $('#story-canvas');
       const textEl = $('#story-text');
+      const textWrap = $('#story-text-wrap');
       const nameEl = $('#story-name');
       const timeEl = $('#story-time');
       const bgImg = $('#story-bg-img');
       const avatarWrap = $('#story-avatar-wrap');
       const bar = $('#story-bar');
       
-      if (textEl) textEl.textContent = text || 'Praise God for this day!';
+      if (textEl) textEl.textContent = text || '';
+      if (textWrap) textWrap.classList.toggle('hidden', !text && (!!video || !!bg));
       if (nameEl) nameEl.textContent = author;
       if (timeEl) timeEl.textContent = time;
       
       if (avatarWrap) {
         avatarWrap.innerHTML = avatar ? `<img class="w-full h-full object-cover" src="${esc(avatar)}" alt="${esc(author)}">` : `<span class="avatar w-full h-full text-[12px] font-bold" style="background:#2f5bea">${esc(api.initials(author))}</span>`;
       }
-      
-      if (bg && (bg.startsWith('http') || bg.startsWith('/'))) {
+
+      // Handle Video
+      if (video) {
+        if (storyVideo) {
+          storyVideo.src = video;
+          storyVideo.classList.remove('hidden');
+          storyVideo.muted = isStoryMuted;
+          storyVideo.play().catch(() => {});
+        }
+        if (bgImg) bgImg.classList.add('hidden');
+        if (canvas) canvas.style.background = '#000000';
+        if (storySoundToggle) {
+          storySoundToggle.classList.remove('hidden');
+          storySoundToggle.innerHTML = isStoryMuted ? '<i class="fa-solid fa-volume-xmark text-xs"></i>' : '<i class="fa-solid fa-volume-high text-xs"></i>';
+        }
+      } 
+      // Handle Image Background
+      else if (bg && (bg.startsWith('http') || bg.startsWith('/'))) {
+        if (storyVideo) { storyVideo.classList.add('hidden'); storyVideo.src = ''; }
         if (bgImg) {
           bgImg.src = bg;
           bgImg.classList.remove('hidden');
         }
         if (canvas) canvas.style.background = '#0b1120';
-      } else {
+      } 
+      // Handle Spiritual Gradient Backdrop
+      else {
+        if (storyVideo) { storyVideo.classList.add('hidden'); storyVideo.src = ''; }
         if (bgImg) {
           bgImg.src = '';
           bgImg.classList.add('hidden');
         }
         if (canvas) canvas.style.background = gradient;
       }
+
+      // Handle Background Music / Audio
+      if (audio) {
+        if (storyAudio) {
+          storyAudio.src = audio;
+          storyAudio.muted = isStoryMuted;
+          storyAudio.play().catch(() => {});
+        }
+        if (storyMusicBadge) {
+          storyMusicBadge.classList.remove('hidden');
+          storyMusicBadge.classList.add('flex');
+        }
+        if (storyMusicName) storyMusicName.textContent = audioName;
+        if (storySoundToggle) {
+          storySoundToggle.classList.remove('hidden');
+          storySoundToggle.innerHTML = isStoryMuted ? '<i class="fa-solid fa-volume-xmark text-xs"></i>' : '<i class="fa-solid fa-volume-high text-xs"></i>';
+        }
+      } else if (!video) {
+        if (storyMusicBadge) storyMusicBadge.classList.add('hidden');
+        if (storySoundToggle) storySoundToggle.classList.add('hidden');
+      }
       
+      // Animate Story Progress Bar (7s duration)
       if (bar) {
         bar.style.transition = 'none';
         bar.style.width = '0%';
@@ -1133,8 +1376,8 @@
         }, 50);
       }
       
-      if (storyTimer) clearTimeout(storyTimer);
       storyTimer = setTimeout(() => {
+        stopStoryMedia();
         if (window.FI && typeof window.FI.closeModal === 'function') {
           window.FI.closeModal();
         }
@@ -1159,7 +1402,7 @@
     const input = $('#story-reply-input');
     if (input && input.value.trim()) {
       input.value = '';
-      if (storyTimer) clearTimeout(storyTimer);
+      stopStoryMedia();
       if (window.FI && typeof window.FI.closeModal === 'function') window.FI.closeModal();
       toast('Encouragement sent 🙏');
     }
