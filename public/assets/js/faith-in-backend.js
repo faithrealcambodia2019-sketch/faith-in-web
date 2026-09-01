@@ -1532,6 +1532,59 @@
         });
     };
 
+    actions.cv_update_resource = function (b, params, files, onProgress) {
+        var id = text(params.resource_id || params.id);
+        if (!id) throw new Error('That resource could not be found.');
+        var title = text(params.title || params.res_title, 300);
+        if (!title) throw new Error('Give the resource a title before saving.');
+        var authorName = text(params.contributor_name || params.author);
+        var translator = text(params.translator_name || params.translated_by, 300);
+        var category = text(params.category || params.res_category || 'Bible Study');
+        var description = text(params.description, 2000);
+        var language = text(params.language, 100);
+        var format = text(params.format || params.res_format || 'pdf');
+        var allowDownload = String(params.allow_download) !== '0';
+
+        var builtin = BUILTIN_COMMUNITY_RESOURCES.find(function (r) { return r.id === id; });
+        if (builtin) {
+            builtin.title = title;
+            if (authorName) builtin.author = authorName;
+            builtin.description = description;
+            builtin.category = category;
+            builtin.translated_by = translator;
+            builtin.language = language;
+            builtin.format = format;
+            builtin.type = format;
+            builtin.allow_download = allowDownload;
+            return Promise.resolve({ success: true, id: id, resource: builtin });
+        }
+
+        return requireUser(b).then(function (user) {
+            var ref = b.dbMod.doc(b.db, 'resources', id);
+            return b.dbMod.getDoc(ref).then(function (snap) {
+                if (!snap.exists()) throw new Error('That resource is no longer available.');
+                var existing = snap.data();
+                var updates = {
+                    title: title,
+                    description: description,
+                    category: category,
+                    format: format,
+                    translated_by: translator,
+                    language: language,
+                    allow_download: allowDownload,
+                    updatedAt: b.dbMod.serverTimestamp()
+                };
+                if (authorName) {
+                    updates['author.name'] = authorName;
+                }
+                return b.dbMod.updateDoc(ref, updates).then(function () {
+                    var updatedDoc = Object.assign({}, existing, updates);
+                    return { success: true, id: id, resource: shapeResource(id, updatedDoc, user) };
+                });
+            });
+        });
+    };
+
     actions.cv_delete_resource = function (b, params) {
         var id = text(params.resource_id || params.id);
         if (!id) throw new Error('That resource could not be found.');

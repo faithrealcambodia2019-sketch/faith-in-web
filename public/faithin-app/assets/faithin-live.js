@@ -407,6 +407,7 @@
       + `<span>${downloadCount}</span>`
       + `</button>`
       + `<div class="fb-card-actions">`
+      + `<button type="button" class="fb-action-icon-btn is-edit" title="Edit title or author" data-resource-edit><i class="fa-solid fa-pen-to-square text-[14px]"></i></button>`
       + (canDelete ? `<button type="button" class="fb-action-icon-btn is-delete" title="Delete" data-resource-delete><i class="fa-regular fa-trash-can text-[15px]"></i></button>` : '')
       + `<button type="button" class="fb-action-icon-btn ${saved ? 'is-saved' : ''}" title="${saved ? 'Remove saved resource' : 'Save resource'}" data-resource-save>`
       + `<i class="fa-${saved ? 'solid' : 'regular'} fa-bookmark text-[15px]"></i>`
@@ -661,6 +662,13 @@
 
     shelf.addEventListener('click', async event => {
       const row = event.target.closest('[data-resource-id]'); if (!row) return;
+      const edit = event.target.closest('[data-resource-edit]');
+      if (edit) {
+        event.preventDefault();
+        const resource = rendered.find(item => item.id === row.dataset.resourceId) || resources.find(item => item.id === row.dataset.resourceId);
+        if (resource) openResourceEditor(loadLibrary, resource);
+        return;
+      }
       const remove = event.target.closest('[data-resource-delete]');
       if (remove) { event.preventDefault(); if (!confirm('Delete this resource?')) return; await api.request('cv_delete_resource', { resource_id: row.dataset.resourceId }); resources = resources.filter(resource => resource.id !== row.dataset.resourceId); render(); toast('Resource deleted'); return; }
       const save = event.target.closest('[data-resource-save]');
@@ -681,9 +689,55 @@
     $$('#main section').filter(section => /jump back in|trending sermons|authors to follow/i.test(section.querySelector('h2,h3')?.textContent || '')).forEach(section => section.remove());
   }
 
-  function openResourceEditor(refresh) {
+  function openResourceEditor(refresh, resourceToEdit) {
+    const isEdit = Boolean(resourceToEdit);
     const modal = document.createElement('div'); modal.className = 'fixed inset-0 z-[240] bg-[#0b1120]/70 p-4 flex items-center justify-center';
-    modal.innerHTML = `<form class="card w-full max-w-2xl max-h-[92vh] overflow-y-auto p-5 space-y-4"><div class="flex justify-between"><div><h2 class="text-[20px] font-bold">Publish a resource</h2><p class="text-[12.5px] text-muted mt-1">Share a PDF, image, audio, video, or ZIP file with the community.</p></div><button type="button" class="icon-btn" data-close-resource aria-label="Close"><i class="fa-solid fa-xmark"></i></button></div><input class="field" name="title" placeholder="Resource title" required><textarea class="field" name="description" rows="3" placeholder="Description"></textarea><div class="grid sm:grid-cols-2 gap-3"><input class="field" name="contributor_name" placeholder="Author / Creator"><input class="field" name="translator_name" placeholder="Translated by"><input class="field" name="language" placeholder="Language, e.g. Khmer"><input class="field" name="category" placeholder="Category" value="Bible Study"></div><select class="field" name="format" aria-label="Resource format"><option value="pdf">PDF</option><option value="image">Image</option><option value="audio">Audio</option><option value="video">Video</option><option value="zip">ZIP bundle</option></select><label class="block text-[13px] font-semibold">Resource file<input class="field mt-1" name="resource_file" type="file" accept=".pdf,.zip,image/*,audio/*,video/*" required><span class="block text-[11.5px] text-muted mt-1">Maximum 50MB · stored in free Supabase Storage</span></label><div class="block text-[13px] font-semibold">Cover image<span class="block text-[11.5px] font-normal text-muted mt-1" data-thumb-hint>Videos get a thumbnail captured automatically. Upload your own image to use that instead.</span><div class="flex items-center gap-3 mt-2"><img class="fi-thumb-preview hidden" alt="" data-thumb-preview><input class="field" name="thumbnail" type="file" accept="image/*"></div></div><label class="flex items-center gap-2 text-[12.5px] text-muted"><input type="checkbox" name="allow_download" value="1" checked>Allow members to download this resource</label><p class="hidden rounded-xl border border-rose/30 bg-rose/10 px-3 py-2.5 text-[12.5px] text-rose" data-resource-error role="alert"></p><div class="hidden" data-resource-progress><div class="flex justify-between text-[11.5px] text-muted mb-1"><span>Uploading to FaithIn</span><strong data-resource-progress-label>0%</strong></div><div class="h-2 rounded-full bg-line overflow-hidden"><span class="block h-full bg-brand transition" data-resource-progress-bar style="width:0%"></span></div></div><button class="btn btn-primary w-full" data-resource-submit>Publish resource</button></form>`;
+    const currentAuthor = isEdit ? ((typeof resourceToEdit.author === 'object' ? resourceToEdit.author?.name : resourceToEdit.author) || resourceToEdit.contributor_name || '') : '';
+    const currentTranslator = isEdit ? (resourceToEdit.translated_by || resourceToEdit.translator_name || '') : '';
+    const currentTitle = isEdit ? (resourceToEdit.title || '') : '';
+    const currentDesc = isEdit ? (resourceToEdit.description || '') : '';
+    const currentLang = isEdit ? (resourceToEdit.language || '') : '';
+    const currentCategory = isEdit ? (resourceToEdit.category || 'Matthew Henry') : 'Bible Study';
+    const currentFormat = isEdit ? (resourceToEdit.format || 'pdf') : 'pdf';
+    const currentAllowDownload = isEdit ? (resourceToEdit.allow_download !== false) : true;
+    const currentThumb = isEdit ? (resourceToEdit.thumbnail_url || resourceToEdit.cover_image_url || '') : '';
+
+    modal.innerHTML = `<form class="card w-full max-w-2xl max-h-[92vh] overflow-y-auto p-5 space-y-4">`
+      + `<div class="flex justify-between"><div>`
+      + `<h2 class="text-[20px] font-bold">${isEdit ? 'Edit Resource & Book' : 'Publish a resource'}</h2>`
+      + `<p class="text-[12.5px] text-muted mt-1">${isEdit ? 'Update book title, author, translator, category, or description.' : 'Share a PDF, image, audio, video, or ZIP file with the community.'}</p>`
+      + `</div><button type="button" class="icon-btn" data-close-resource aria-label="Close"><i class="fa-solid fa-xmark"></i></button></div>`
+      + `<label class="block text-[13px] font-semibold text-ink">Title / Book Name<input class="field mt-1" name="title" placeholder="Resource title" value="${esc(currentTitle)}" required></label>`
+      + `<label class="block text-[13px] font-semibold text-ink">Description<textarea class="field mt-1" name="description" rows="3" placeholder="Description">${esc(currentDesc)}</textarea></label>`
+      + `<div class="grid sm:grid-cols-2 gap-3">`
+      + `<label class="block text-[13px] font-semibold text-ink">Author / Creator<input class="field mt-1" name="contributor_name" placeholder="Author / Creator" value="${esc(currentAuthor)}"></label>`
+      + `<label class="block text-[13px] font-semibold text-ink">Translated by<input class="field mt-1" name="translator_name" placeholder="Translated by" value="${esc(currentTranslator)}"></label>`
+      + `<label class="block text-[13px] font-semibold text-ink">Language<input class="field mt-1" name="language" placeholder="Language, e.g. Khmer" value="${esc(currentLang)}"></label>`
+      + `<label class="block text-[13px] font-semibold text-ink">Category<input class="field mt-1" name="category" placeholder="Category" value="${esc(currentCategory)}"></label>`
+      + `</div>`
+      + `<label class="block text-[13px] font-semibold text-ink">Format`
+      + `<select class="field mt-1" name="format" aria-label="Resource format">`
+      + `<option value="pdf"${currentFormat === 'pdf' ? ' selected' : ''}>PDF Book</option>`
+      + `<option value="image"${currentFormat === 'image' ? ' selected' : ''}>Image</option>`
+      + `<option value="audio"${currentFormat === 'audio' ? ' selected' : ''}>Audio</option>`
+      + `<option value="video"${currentFormat === 'video' ? ' selected' : ''}>Video</option>`
+      + `<option value="zip"${currentFormat === 'zip' ? ' selected' : ''}>ZIP bundle</option>`
+      + `</select></label>`
+      + `<label class="block text-[13px] font-semibold text-ink">Resource file`
+      + `<input class="field mt-1" name="resource_file" type="file" accept=".pdf,.zip,image/*,audio/*,video/*"${isEdit ? '' : ' required'}>`
+      + `<span class="block text-[11.5px] text-muted mt-1">${isEdit ? 'Optional · leave empty to keep current file' : 'Maximum 50MB · stored in free Supabase Storage'}</span>`
+      + `</label>`
+      + `<div class="block text-[13px] font-semibold text-ink">Cover image`
+      + `<span class="block text-[11.5px] font-normal text-muted mt-1" data-thumb-hint>${currentThumb ? 'Current cover preview (upload new image to replace):' : 'Videos get a thumbnail captured automatically. Upload your own image to use that instead.'}</span>`
+      + `<div class="flex items-center gap-3 mt-2">`
+      + `<img class="fi-thumb-preview ${currentThumb ? '' : 'hidden'} max-h-20 rounded border border-line" src="${esc(currentThumb)}" alt="" data-thumb-preview>`
+      + `<input class="field" name="thumbnail" type="file" accept="image/*">`
+      + `</div></div>`
+      + `<label class="flex items-center gap-2 text-[12.5px] text-muted"><input type="checkbox" name="allow_download" value="1"${currentAllowDownload ? ' checked' : ''}>Allow members to download this resource</label>`
+      + `<p class="hidden rounded-xl border border-rose/30 bg-rose/10 px-3 py-2.5 text-[12.5px] text-rose" data-resource-error role="alert"></p>`
+      + `<div class="hidden" data-resource-progress><div class="flex justify-between text-[11.5px] text-muted mb-1"><span>Saving to FaithIn</span><strong data-resource-progress-label>0%</strong></div><div class="h-2 rounded-full bg-line overflow-hidden"><span class="block h-full bg-brand transition" data-resource-progress-bar style="width:0%"></span></div></div>`
+      + `<button class="btn btn-primary w-full" data-resource-submit>${isEdit ? '<i class="fa-solid fa-floppy-disk mr-1.5"></i>Save changes' : 'Publish resource'}</button></form>`;
+
     document.body.appendChild(modal); $('[data-close-resource]', modal).onclick = () => modal.remove();
     const form = $('form', modal), fileInput = form.elements.namedItem('resource_file'), formatInput = form.elements.namedItem('format');
     const thumbField = form.elements.namedItem('thumbnail'), thumbPreview = $('[data-thumb-preview]', form), thumbHint = $('[data-thumb-hint]', form);
@@ -724,7 +778,7 @@
     thumbField.addEventListener('change', () => {
       const picked = thumbField.files?.[0];
       if (manualThumbUrl) { URL.revokeObjectURL(manualThumbUrl); manualThumbUrl = ''; }
-      if (!picked) { setThumbPreview(autoThumbUrl, autoThumbUrl ? 'Using the thumbnail captured from your video.' : ''); return; }
+      if (!picked) { setThumbPreview(autoThumbUrl || currentThumb, autoThumbUrl ? 'Using the thumbnail captured from your video.' : (currentThumb ? 'Current cover preview:' : '')); return; }
       manualThumbUrl = URL.createObjectURL(picked);
       setThumbPreview(manualThumbUrl, 'Using your uploaded cover image.');
     });
@@ -732,26 +786,39 @@
       if (autoThumbUrl) { URL.revokeObjectURL(autoThumbUrl); autoThumbUrl = ''; }
       autoThumb = null;
       if (formatInput.value === 'video') captureVideoThumbnail(file);
-      else if (!thumbField.files?.[0]) setThumbPreview(manualThumbUrl, '');
+      else if (!thumbField.files?.[0]) setThumbPreview(manualThumbUrl || currentThumb, '');
     });
     form.onsubmit = async event => {
       event.preventDefault();
       const resourceFile = fileInput.files?.[0], thumbnailInput = form.elements.namedItem('thumbnail'), submit = $('[data-resource-submit]', form);
-      if (!resourceFile) return toast('Choose a resource file to publish.');
-      if (resourceFile.size > 50 * 1024 * 1024) return toast(`${resourceFile.name} is larger than the free 50MB limit.`);
+      if (!isEdit && !resourceFile) return toast('Choose a resource file to publish.');
+      if (resourceFile && resourceFile.size > 50 * 1024 * 1024) return toast(`${resourceFile.name} is larger than the free 50MB limit.`);
       const data = Object.fromEntries(new FormData(form)); data.allow_download = form.elements.namedItem('allow_download').checked ? '1' : '0'; delete data.resource_file; delete data.thumbnail;
+      if (isEdit) data.resource_id = resourceToEdit.id;
       const chosenThumbnail = thumbnailInput.files?.[0] || autoThumb;
-      const files = { resource_file: [resourceFile], thumbnail: chosenThumbnail ? [chosenThumbnail] : [] };
+      const files = { resource_file: resourceFile ? [resourceFile] : [], thumbnail: chosenThumbnail ? [chosenThumbnail] : [] };
       const progress = $('[data-resource-progress]', form), label = $('[data-resource-progress-label]', form), bar = $('[data-resource-progress-bar]', form), errorBox = $('[data-resource-error]', form);
       errorBox.classList.add('hidden'); errorBox.textContent = '';
-      const oldSubmitHtml = submit.innerHTML; progress.classList.remove('hidden'); submit.disabled = true; submit.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i>Uploading';
+      const oldSubmitHtml = submit.innerHTML; progress.classList.remove('hidden'); submit.disabled = true; submit.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i>Saving';
       try {
-        await api.request('cv_upload_resource', data, files, fraction => { const percent = Math.max(1, Math.min(100, Math.round(fraction * 100))); label.textContent = `${percent}%`; bar.style.width = `${percent}%`; });
-        label.textContent = '100%'; bar.style.width = '100%'; await refresh();
-        form.innerHTML = `<div class="py-8 text-center"><span class="mx-auto grid h-16 w-16 place-items-center rounded-full bg-emerald-500 text-white text-[28px]"><i class="fa-solid fa-check"></i></span><h2 class="mt-5 text-[22px] font-bold">Published successfully</h2><p class="mt-2 text-[13.5px] text-muted">Your resource is now available in the FaithIn Library.</p><button type="button" class="btn btn-primary w-full mt-6" data-resource-done><i class="fa-solid fa-check"></i>Done</button></div>`;
-        $('[data-resource-done]', form).onclick = () => modal.remove(); toast('Resource published successfully');
+        const action = isEdit ? 'cv_update_resource' : 'cv_upload_resource';
+        await api.request(action, data, files, fraction => { const percent = Math.max(1, Math.min(100, Math.round(fraction * 100))); label.textContent = `${percent}%`; bar.style.width = `${percent}%`; });
+        label.textContent = '100%'; bar.style.width = '100%';
+        if (isEdit) {
+          resourceToEdit.title = data.title;
+          resourceToEdit.author = data.contributor_name || resourceToEdit.author;
+          resourceToEdit.contributor_name = data.contributor_name || resourceToEdit.contributor_name;
+          resourceToEdit.translated_by = data.translator_name || resourceToEdit.translated_by;
+          resourceToEdit.category = data.category || resourceToEdit.category;
+          resourceToEdit.description = data.description || resourceToEdit.description;
+          resourceToEdit.language = data.language || resourceToEdit.language;
+          resourceToEdit.format = data.format || resourceToEdit.format;
+        }
+        await refresh();
+        modal.remove();
+        toast(isEdit ? 'Book details updated successfully' : 'Resource published successfully');
       }
-      catch (error) { const message = error.message || 'Upload failed. Please try again.'; errorBox.textContent = message; errorBox.classList.remove('hidden'); toast(message); progress.classList.add('hidden'); }
+      catch (error) { const message = error.message || (isEdit ? 'Update failed. Please try again.' : 'Upload failed. Please try again.'); errorBox.textContent = message; errorBox.classList.remove('hidden'); toast(message); progress.classList.add('hidden'); }
       finally { submit.disabled = false; submit.innerHTML = oldSubmitHtml; }
     };
   }
