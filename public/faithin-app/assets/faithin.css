@@ -57,8 +57,9 @@ textarea:focus-visible, [tabindex]:focus-visible{
   outline-offset: 2px;
   border-radius: 8px;
 }
-/* borderless editors: the caret is the focus indicator */
+/* borderless editors and inline menu triggers: the caret is the focus indicator */
 #blessing-text:focus-visible, #article-body:focus-visible,
+[data-menu-btn]:focus-visible, [data-menu-btn]:focus,
 .modal input[type="text"]:focus-visible{ outline:none; }
 
 /* --- top navigation ------------------------------------------------------ */

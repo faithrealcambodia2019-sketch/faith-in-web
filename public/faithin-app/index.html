@@ -91,18 +91,20 @@
 </div>
 </section>
 <!-- sort -->
-<div class="flex items-center gap-3">
-<div class="h-px flex-1 bg-line"></div>
-<div class="relative" data-menu-root="">
-<button aria-expanded="false" aria-haspopup="menu" class="flex items-center gap-1.5 text-[12.5px] text-muted hover:text-ink transition" data-menu-btn="">
-          Sort by <span class="font-semibold text-ink" data-sort-label="">Top</span><i class="fa-solid fa-chevron-down text-[9px]"></i>
-</button>
-<div class="absolute right-0 mt-2 w-40 card shadow-pop p-1.5 hidden animate-pop-in z-20" data-menu="" role="menu">
-<button class="side-link w-full" data-sort="Top" role="menuitem"><i class="fa-solid fa-fire"></i>Top</button>
-<button class="side-link w-full" data-sort="Recent" role="menuitem"><i class="fa-regular fa-clock"></i>Recent</button>
-<button class="side-link w-full" data-sort="Following" role="menuitem"><i class="fa-solid fa-user-check"></i>Following</button>
-</div>
-</div>
+<div class="flex items-center gap-2 my-1">
+  <div class="h-px flex-1 bg-line/60"></div>
+  <div class="relative flex items-center text-[11px] text-muted select-none" data-menu-root="">
+    <span class="mr-1">Sort by:</span>
+    <button aria-expanded="false" aria-haspopup="menu" class="inline-flex items-center gap-1 font-semibold text-ink hover:text-brand transition py-0.5 px-1 rounded focus:outline-none cursor-pointer text-[11px]" data-menu-btn="">
+      <span data-sort-label="">Top</span>
+      <i class="fa-solid fa-caret-down text-[9px] text-muted"></i>
+    </button>
+    <div class="absolute right-0 mt-1 top-full w-32 card shadow-pop p-1 hidden animate-pop-in z-20" data-menu="" role="menu">
+      <button class="side-link w-full text-[11.5px] py-1 px-2 text-left flex items-center gap-2" data-sort="Top" role="menuitem"><i class="fa-solid fa-fire text-amber-500 text-[11px]"></i><span>Top</span></button>
+      <button class="side-link w-full text-[11.5px] py-1 px-2 text-left flex items-center gap-2" data-sort="Recent" role="menuitem"><i class="fa-regular fa-clock text-blue-500 text-[11px]"></i><span>Recent</span></button>
+      <button class="side-link w-full text-[11.5px] py-1 px-2 text-left flex items-center gap-2" data-sort="Following" role="menuitem"><i class="fa-solid fa-user-check text-emerald-500 text-[11px]"></i><span>Following</span></button>
+    </div>
+  </div>
 </div>
 <!-- posts get injected here -->
 <div class="space-y-4" id="posts">
