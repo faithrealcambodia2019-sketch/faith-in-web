@@ -1,4 +1,16 @@
 /* Faith In — production runtime configuration for the new interface. */
+if (typeof navigator !== 'undefined' && 'serviceWorker' in navigator) {
+  navigator.serviceWorker.getRegistrations().then(function(registrations) {
+    for (var reg of registrations) {
+      reg.unregister();
+    }
+  });
+  if (typeof caches !== 'undefined') {
+    caches.keys().then(function(names) {
+      for (var name of names) caches.delete(name);
+    });
+  }
+}
 window.cv_ajax = window.cv_ajax || {
   direct_data_mode: true,
   ajax_url: '/api/compat',
