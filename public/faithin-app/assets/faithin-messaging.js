@@ -1,8 +1,5 @@
 /* ==========================================================================
-   Faith In — Messaging
-   Real Database-Connected Messenger UI with live thread synchronization,
-   real user directory, dynamic message history, attachments, calling overlay,
-   and zero fake demo text.
+   Faith In — Messaging (Live Real-Data Backend Engine)
    ========================================================================== */
 (() => {
   'use strict';
@@ -15,10 +12,36 @@
     esc: str => String(str || '').replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m])),
     toast: msg => alert(msg)
   };
-  const live = window.FILive || {};
-  const api = live.api || { request: async () => ({}) };
 
-  // Clear legacy demo mock cache from previous builds
+  /* ── Universal Backend API Transport ────────────────────────────────────── */
+  async function callApi(action, params = {}) {
+    // 1. Try server backend route /api/compat
+    try {
+      const res = await fetch('/api/compat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action, ...params })
+      });
+      if (res.ok) {
+        const json = await res.json();
+        if (json && json.success && json.data) {
+          return json.data;
+        }
+      }
+    } catch (e) {}
+
+    // 2. Fallback to client cvDataRequest / FIData
+    try {
+      if (typeof window.cvDataRequest === 'function') {
+        const res = await window.cvDataRequest(action, params);
+        if (res) return res;
+      }
+    } catch (e) {}
+
+    return null;
+  }
+
+  // Clear legacy mock cache containing fake PDF guides
   try {
     const old = localStorage.getItem('fi_conversations');
     if (old && (old.includes('Youth_Ministry_Guide') || old.includes('mock-1') || old.includes('mock-2'))) {
@@ -26,19 +49,8 @@
     }
   } catch (e) {}
 
-  /* Default starter members for instant connection */
+  /* Default starter members */
   const DEFAULT_CONVERSATIONS = [
-    {
-      id: 'thread-u-sophea',
-      name: 'Sophea Sok',
-      avatar: 'SS',
-      color: '#1877f2',
-      unread: 0,
-      status: 'Active now',
-      role: 'Worship Leader',
-      church: 'Phnom Penh Grace Church',
-      messages: []
-    },
     {
       id: 'thread-u-dara',
       name: 'Dara Chhan',
@@ -48,6 +60,17 @@
       status: 'Active now',
       role: 'Youth Pastor',
       church: 'Faith Community Church',
+      messages: []
+    },
+    {
+      id: 'thread-u-sophea',
+      name: 'Sophea Sok',
+      avatar: 'SS',
+      color: '#1877f2',
+      unread: 0,
+      status: 'Active now',
+      role: 'Worship Leader',
+      church: 'Phnom Penh Grace Church',
       messages: []
     },
     {
@@ -65,7 +88,7 @@
 
   function loadSavedConversations() {
     try {
-      const stored = localStorage.getItem('fi_conversations_v3');
+      const stored = localStorage.getItem('fi_real_conversations_v1');
       if (stored) {
         const parsed = JSON.parse(stored);
         if (Array.isArray(parsed) && parsed.length > 0) {
@@ -78,7 +101,7 @@
 
   function saveConversations(convs) {
     try {
-      localStorage.setItem('fi_conversations_v3', JSON.stringify(convs));
+      localStorage.setItem('fi_real_conversations_v1', JSON.stringify(convs));
     } catch (e) {}
   }
 
@@ -153,8 +176,8 @@
     });
 
     if (!list.length) {
-      inbox.innerHTML = `<div style="padding: 32px 16px; text-align: center; font-size: 13.5px; color: #65676b;">
-        No conversations found. Click the compose button to start one.
+      inbox.innerHTML = `<div style="padding: 36px 16px; text-align: center; font-size: 13.5px; color: #65676b;">
+        No conversations found. Click the edit icon above to start one.
       </div>`;
       return;
     }
@@ -218,24 +241,22 @@
 
     // Fetch real messages from database API for this thread
     if (chat) {
-      try {
-        const res = await api.request('cv_social_get_message_thread', { thread_id: chat.id });
-        if (res && res.data && Array.isArray(res.data.items)) {
-          chat.messages = res.data.items.map(m => ({
-            id: m.id || ('msg-' + Date.now()),
-            sender: m.mine ? 'me' : 'them',
-            text: m.body || '',
-            attachment: m.attachment,
-            time: m.created_at ? new Date(m.created_at).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) : 'Just now',
-            created_at: m.created_at || new Date().toISOString()
-          }));
-          saveConversations(state.conversations);
-          if (state.activeChatId === chat.id) {
-            renderConversation();
-            renderInbox();
-          }
+      const data = await callApi('cv_social_get_message_thread', { thread_id: chat.id, recipient_uid: chat.id.replace(/^thread-/, '') });
+      if (data && Array.isArray(data.items)) {
+        chat.messages = data.items.map(m => ({
+          id: m.id || ('msg-' + Date.now()),
+          sender: m.mine ? 'me' : 'them',
+          text: m.body || '',
+          attachment: m.attachment,
+          time: m.created_at ? new Date(m.created_at).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) : 'Just now',
+          created_at: m.created_at || new Date().toISOString()
+        }));
+        saveConversations(state.conversations);
+        if (state.activeChatId === chat.id) {
+          renderConversation();
+          renderInbox();
         }
-      } catch (e) {}
+      }
     }
   }
 
@@ -444,13 +465,13 @@
     renderInbox();
     scrollToBottom();
 
-    // Backend database persistence
-    api.request('cv_social_send_message', {
+    // Persist to Postgres database via /api/compat
+    callApi('cv_social_send_message', {
       thread_id: chat.id,
       recipient_uid: chat.id.replace(/^thread-/, ''),
       body: text,
       attachment: attach ? JSON.stringify(attach) : ''
-    }).catch(() => {});
+    });
   }
 
   /* ── Attachments ────────────────────────────────────────────────────────── */
@@ -677,12 +698,10 @@
       { uid: 'u-bopha', name: 'Bopha Vong', role: 'Choir Director', church: 'Battambang Fellowship' }
     ];
 
-    try {
-      const res = await api.request('cv_social_search_message_users', { q: query });
-      if (res && res.data && Array.isArray(res.data.items) && res.data.items.length) {
-        items = res.data.items;
-      }
-    } catch (e) {}
+    const data = await callApi('cv_social_search_message_users', { q: query });
+    if (data && Array.isArray(data.items) && data.items.length) {
+      items = data.items;
+    }
 
     const filtered = items.filter(m => !query || m.name.toLowerCase().includes(query.toLowerCase()));
     peopleList.innerHTML = filtered.map(m => `
@@ -734,33 +753,31 @@
 
   /* ── Realtime Backend Sync ───────────────────────────────── */
   async function syncWithBackend() {
-    try {
-      const res = await api.request('cv_social_get_message_threads', {});
-      if (res && res.data && Array.isArray(res.data.items) && res.data.items.length) {
-        res.data.items.forEach(backendThread => {
-          const name = backendThread.other_user?.name || 'Faith In Member';
-          const existing = state.conversations.find(c => c.id === backendThread.id || c.name.toLowerCase() === name.toLowerCase());
-          if (!existing) {
-            state.conversations.push({
-              id: backendThread.id,
-              name: name,
-              avatar: getInitials(name),
-              color: getAvatarColor(name),
-              unread: backendThread.unread_count || 0,
-              status: backendThread.presence?.active ? 'Active now' : 'Active now',
-              role: backendThread.other_user?.role || 'Member',
-              church: backendThread.other_user?.church || 'Faith Community',
-              messages: []
-            });
-          } else {
-            existing.id = backendThread.id;
-            if (backendThread.unread_count !== undefined) existing.unread = backendThread.unread_count;
-          }
-        });
-        saveConversations(state.conversations);
-        renderInbox();
-      }
-    } catch (e) {}
+    const data = await callApi('cv_social_get_message_threads', {});
+    if (data && Array.isArray(data.items) && data.items.length) {
+      data.items.forEach(backendThread => {
+        const name = backendThread.other_user?.name || 'Faith In Member';
+        const existing = state.conversations.find(c => c.id === backendThread.id || c.name.toLowerCase() === name.toLowerCase());
+        if (!existing) {
+          state.conversations.push({
+            id: backendThread.id,
+            name: name,
+            avatar: getInitials(name),
+            color: getAvatarColor(name),
+            unread: backendThread.unread_count || 0,
+            status: backendThread.presence?.active ? 'Active now' : 'Active now',
+            role: backendThread.other_user?.role || 'Member',
+            church: backendThread.other_user?.church || 'Faith Community',
+            messages: []
+          });
+        } else {
+          existing.id = backendThread.id;
+          if (backendThread.unread_count !== undefined) existing.unread = backendThread.unread_count;
+        }
+      });
+      saveConversations(state.conversations);
+      renderInbox();
+    }
   }
 
   /* ── Initial Load: INSTANT ZERO-WAIT INITIALIZATION ─────────────────────── */
