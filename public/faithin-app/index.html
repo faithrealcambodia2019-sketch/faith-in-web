@@ -481,19 +481,19 @@
 </div>
 </div>
 <!-- media viewer lightbox -->
-<div aria-label="Media Preview" aria-modal="true" class="modal hidden w-full max-w-4xl card shadow-pop animate-pop-in overflow-hidden z-[110]" id="modal-media-viewer" role="dialog">
-  <div class="flex items-center justify-between px-4 py-3 border-b border-line bg-surface">
+<div aria-label="Media Preview" aria-modal="true" class="modal hidden w-full max-w-2xl sm:max-w-3xl card shadow-pop animate-pop-in overflow-hidden z-[110]" id="modal-media-viewer" role="dialog">
+  <div class="flex items-center justify-between px-3.5 py-2.5 border-b border-line bg-surface">
     <div class="flex items-center gap-2">
       <span class="text-xs font-bold px-2.5 py-1 rounded-full bg-brand-soft text-brand inline-flex items-center gap-1.5"><i class="fa-regular fa-image"></i>Photo View</span>
     </div>
     <div class="flex items-center gap-2">
-      <a href="#" id="media-viewer-open" target="_blank" class="btn btn-outline !py-1.5 !px-3 !text-xs font-semibold"><i class="fa-solid fa-arrow-up-right-from-square mr-1"></i>Open Original</a>
-      <button type="button" id="media-viewer-download" class="btn btn-primary !py-1.5 !px-4 !text-xs font-bold shadow-sm"><i class="fa-solid fa-download mr-1.5"></i>Download</button>
-      <button aria-label="Close" class="icon-btn !w-9 !h-9 ml-1 hover:bg-raised" data-close><i class="fa-solid fa-xmark text-base"></i></button>
+      <a href="#" id="media-viewer-open" target="_blank" class="btn btn-outline !py-1 !px-2.5 !text-xs font-semibold"><i class="fa-solid fa-arrow-up-right-from-square mr-1"></i>Open Original</a>
+      <button type="button" id="media-viewer-download" class="btn btn-primary !py-1 !px-3 !text-xs font-bold shadow-sm"><i class="fa-solid fa-download mr-1.5"></i>Download</button>
+      <button aria-label="Close" class="icon-btn !w-8 !h-8 ml-1 hover:bg-raised" data-close><i class="fa-solid fa-xmark text-sm"></i></button>
     </div>
   </div>
-  <div class="relative bg-black/90 dark:bg-black/95 flex items-center justify-center p-3 sm:p-6 min-h-[320px] max-h-[82vh] overflow-hidden select-none">
-    <img id="media-viewer-img" src="" alt="Full view" class="max-w-full max-h-[75vh] object-contain rounded-lg shadow-2xl transition-transform duration-200 ease-out" />
+  <div class="relative bg-black/90 dark:bg-black/95 flex items-center justify-center p-2 sm:p-4 max-h-[70vh] overflow-hidden select-none">
+    <img id="media-viewer-img" src="" alt="Full view" class="max-w-full max-h-[62vh] object-contain rounded-md shadow-2xl transition-transform duration-200 ease-out" />
   </div>
 </div>
 </div>

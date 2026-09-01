@@ -49,19 +49,20 @@
     const media = Array.isArray(post.media_items) ? post.media_items : [];
     const items = media.length ? media : (post.cover_image_url ? [{ type: 'image', url: post.cover_image_url }] : []);
     if (!items.length) return '';
+    const isSingle = items.length === 1;
     return `<div class="border-y border-line bg-raised grid gap-1 ${items.length > 1 ? 'grid-cols-2' : ''}" data-media>${items.slice(0, 4).map(item => {
       const url = esc(mediaUrl(item.url || item.preview_url || item.local_url || ''));
       if (item.type === 'video') {
         const poster = esc(mediaUrl(item.thumbnail_url || item.poster_url || ''));
-        return `<div class="relative aspect-square w-full overflow-hidden bg-black/10">
-          <video class="fi-feed-video w-full h-full aspect-square object-cover" controls playsinline preload="none"${poster ? ` poster="${poster}"` : ''} src="${url}"></video>
+        return `<div class="relative ${isSingle ? 'max-h-[340px] sm:max-h-[400px]' : 'aspect-square'} w-full overflow-hidden bg-black/10">
+          <video class="fi-feed-video w-full h-full ${isSingle ? 'max-h-[340px] sm:max-h-[400px]' : ''} object-cover" controls playsinline preload="none"${poster ? ` poster="${poster}"` : ''} src="${url}"></video>
         </div>`;
       }
       if (item.type === 'audio') return `<div class="p-5"><audio class="w-full" controls src="${url}"></audio></div>`;
-      return `<div class="fi-post-media-wrap aspect-square w-full overflow-hidden cursor-pointer group/media relative bg-black/5 dark:bg-white/5 select-none" data-view-media data-media-url="${url}">
-        <img class="w-full h-full aspect-square object-cover transition-transform duration-300 ease-out group-hover/media:scale-[1.03]" src="${url}" alt="Shared media" loading="lazy" decoding="async">
+      return `<div class="fi-post-media-wrap ${isSingle ? 'max-h-[340px] sm:max-h-[400px]' : 'aspect-square'} w-full overflow-hidden cursor-pointer group/media relative bg-black/5 dark:bg-white/5 select-none" data-view-media data-media-url="${url}">
+        <img class="w-full h-full ${isSingle ? 'max-h-[340px] sm:max-h-[400px]' : ''} object-cover transition-transform duration-300 ease-out group-hover/media:scale-[1.03]" src="${url}" alt="Shared media" loading="lazy" decoding="async">
         <div class="absolute inset-0 bg-black/0 group-hover/media:bg-black/20 transition-all duration-200 flex items-center justify-center pointer-events-none">
-          <span class="w-10 h-10 rounded-full bg-black/60 text-white backdrop-blur-sm opacity-0 group-hover/media:opacity-100 transition-all duration-200 transform scale-90 group-hover/media:scale-100 flex items-center justify-center text-sm shadow-md">
+          <span class="w-9 h-9 rounded-full bg-black/60 text-white backdrop-blur-sm opacity-0 group-hover/media:opacity-100 transition-all duration-200 transform scale-90 group-hover/media:scale-100 flex items-center justify-center text-xs shadow-md">
             <i class="fa-solid fa-magnifying-glass-plus"></i>
           </span>
         </div>
