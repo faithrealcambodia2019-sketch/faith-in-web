@@ -171,8 +171,8 @@
       ${mediaHTML(post)}
       <div class="px-3 py-1.5 sm:px-4 sm:py-2 flex items-center justify-between text-[11px] sm:text-[12px] text-muted border-b border-line">
         <div class="flex items-center gap-1.5">
-          <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-brand text-white text-[9px] shadow-xs" data-reaction-badge>
-            <i class="fa-solid ${selectedReaction ? selectedMeta.icon : 'fa-hands-praying'}"></i>
+          <span class="faith-counter-badge ${selectedMeta.tone}" data-reaction-badge>
+            <i class="fa-solid ${selectedMeta.icon}"></i>
           </span>
           <span class="font-medium text-ink/80 text-[12px]" data-likecount>${Number(post.reaction_count || 0)}</span>
         </div>
@@ -740,7 +740,8 @@
     const badge = $('[data-reaction-badge]', article);
     if (badge) {
       const meta = faithReactionMeta(selectedReaction || 'like');
-      badge.innerHTML = `<i class="fa-solid ${selectedReaction ? meta.icon : 'fa-hands-praying'}"></i>`;
+      badge.className = `faith-counter-badge ${meta.tone}`;
+      badge.innerHTML = `<i class="fa-solid ${meta.icon}"></i>`;
     }
     const counter = $('[data-likecount]', article);
     if (counter && count != null) counter.textContent = String(count);
