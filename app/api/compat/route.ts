@@ -163,34 +163,32 @@ export async function POST(req: NextRequest) {
           }
         }
 
-        // Seed / fallback initial realistic contacts if no DB threads exist yet
+        // If no message threads exist, fetch real users from database as starter connections
         if (!realThreads.length) {
-          realThreads = [
-            {
-              id: "mock-1",
-              other_user: { uid: "u-sophea", name: "Sophea Sok", role: "Worship Leader", church: "Phnom Penh Grace Church" },
-              last_message: "Let me know so we can save a seat.",
-              last_message_at: new Date(Date.now() - 3600000).toISOString(),
-              unread_count: 2,
-              presence: { active: true }
-            },
-            {
-              id: "mock-2",
-              other_user: { uid: "u-dara", name: "Dara Chhan", role: "Youth Pastor", church: "Faith Community Church" },
-              last_message: "Yes, thank you! It was very helpful.",
-              last_message_at: new Date(Date.now() - 86400000).toISOString(),
-              unread_count: 0,
-              presence: { active: false, last_active_at: new Date(Date.now() - 300000).toISOString() }
-            },
-            {
-              id: "mock-3",
-              other_user: { uid: "u-ym", name: "Youth Ministry Team", role: "Ministry Group", church: "Faith In Network" },
-              last_message: "Meeting at 5 PM this Friday.",
-              last_message_at: new Date(Date.now() - 172800000).toISOString(),
-              unread_count: 0,
-              presence: { active: false }
+          try {
+            const dbUsers = await db.query.users.findMany({
+              where: myUid ? eq(users.id, myUid) ? undefined : undefined : undefined,
+              limit: 10,
+            });
+            for (const u of dbUsers) {
+              if (myUid && u.id === myUid) continue;
+              const profile = await db.query.profiles.findFirst({ where: eq(profiles.userId, u.id) });
+              realThreads.push({
+                id: `thread-${u.id}`,
+                other_user: {
+                  uid: u.id,
+                  name: u.name || "Faith In Member",
+                  role: profile?.headline || u.role || "Member",
+                  church: profile?.location || "Faith Community Church",
+                  avatar: u.image,
+                },
+                last_message: "Start a conversation",
+                last_message_at: u.createdAt ? u.createdAt.toISOString() : new Date().toISOString(),
+                unread_count: 0,
+                presence: { active: true }
+              });
             }
-          ];
+          } catch (e) {}
         }
 
         return NextResponse.json({
@@ -200,12 +198,12 @@ export async function POST(req: NextRequest) {
       }
 
       case "cv_social_open_thread": {
-        const threadId = payload.thread_id || (payload.recipient_uid ? `thread-${payload.recipient_uid}` : "mock-2");
+        const threadId = payload.thread_id || (payload.recipient_uid ? `thread-${payload.recipient_uid}` : "");
         const recipientUid = payload.recipient_uid || threadId.replace(/^thread-/, "");
 
-        let otherUser = { uid: recipientUid, name: "Dara Chhan", role: "Youth Pastor", avatar: null as string | null };
+        let otherUser = { uid: recipientUid, name: "Faith In Member", role: "Member", avatar: null as string | null };
 
-        if (recipientUid && !recipientUid.startsWith("mock-")) {
+        if (recipientUid) {
           try {
             const dbUser = await db.query.users.findFirst({ where: eq(users.id, recipientUid) });
             if (dbUser) {
@@ -218,10 +216,6 @@ export async function POST(req: NextRequest) {
               };
             }
           } catch (e) {}
-        } else if (threadId.includes("sophea") || recipientUid === "u-sophea") {
-          otherUser = { uid: "u-sophea", name: "Sophea Sok", role: "Worship Leader", avatar: null };
-        } else if (threadId.includes("ym") || recipientUid === "u-ym") {
-          otherUser = { uid: "u-ym", name: "Youth Ministry Team", role: "Ministry Group", avatar: null };
         }
 
         return NextResponse.json({
@@ -239,7 +233,7 @@ export async function POST(req: NextRequest) {
         const threadId = payload.thread_id || "";
         const recipientUid = payload.recipient_uid || threadId.replace(/^thread-/, "");
 
-        if (myUid && recipientUid && !recipientUid.startsWith("mock-")) {
+        if (myUid && recipientUid) {
           try {
             const dbMsgs = await db.query.messages.findMany({
               where: or(
@@ -250,81 +244,39 @@ export async function POST(req: NextRequest) {
               limit: 100,
             });
 
-            if (dbMsgs.length > 0) {
-              return NextResponse.json({
-                success: true,
-                data: {
-                  thread_id: threadId,
-                  items: dbMsgs.map((m) => {
-                    let attachmentObj = null;
-                    if (m.attachment) {
-                      try {
-                        attachmentObj = JSON.parse(m.attachment);
-                      } catch {
-                        attachmentObj = { name: "Attachment", url: m.attachment };
-                      }
+            return NextResponse.json({
+              success: true,
+              data: {
+                thread_id: threadId,
+                items: dbMsgs.map((m) => {
+                  let attachmentObj = null;
+                  if (m.attachment) {
+                    try {
+                      attachmentObj = JSON.parse(m.attachment);
+                    } catch {
+                      attachmentObj = { name: "Attachment", url: m.attachment };
                     }
-                    return {
-                      id: m.id,
-                      mine: m.senderId === myUid,
-                      body: m.content,
-                      attachment: attachmentObj,
-                      created_at: m.createdAt.toISOString(),
-                    };
-                  }),
-                },
-              });
-            }
+                  }
+                  return {
+                    id: m.id,
+                    mine: m.senderId === myUid,
+                    body: m.content,
+                    attachment: attachmentObj,
+                    created_at: m.createdAt.toISOString(),
+                  };
+                }),
+              },
+            });
           } catch (err) {
             console.error("Error querying db messages:", err);
           }
-        }
-
-        // Return default mock thread data
-        if (threadId === "mock-1" || threadId.includes("sophea")) {
-          return NextResponse.json({
-            success: true,
-            data: {
-              thread_id: threadId,
-              items: [
-                { id: "m-1-1", mine: false, body: "Hello! Are you going to the service tomorrow?", created_at: new Date(Date.now() - 3600000).toISOString() },
-                { id: "m-1-2", mine: false, body: "Let me know so we can save a seat.", created_at: new Date(Date.now() - 3500000).toISOString() }
-              ]
-            }
-          });
-        }
-
-        if (threadId === "mock-3" || threadId.includes("ym")) {
-          return NextResponse.json({
-            success: true,
-            data: {
-              thread_id: threadId,
-              items: [
-                { id: "m-3-1", mine: false, body: "Meeting at 5 PM this Friday.", created_at: new Date(Date.now() - 172800000).toISOString() }
-              ]
-            }
-          });
         }
 
         return NextResponse.json({
           success: true,
           data: {
             thread_id: threadId,
-            items: [
-              {
-                id: "m-2-1",
-                mine: true,
-                body: "Here is the PDF we discussed.",
-                created_at: new Date(Date.now() - 86400000).toISOString(),
-                attachment: { name: "Youth_Ministry_Guide.pdf", size: "2.4 MB", type: "application/pdf" }
-              },
-              {
-                id: "m-2-2",
-                mine: false,
-                body: "Yes, thank you! It was very helpful.",
-                created_at: new Date(Date.now() - 82000000).toISOString()
-              }
-            ]
+            items: []
           }
         });
       }
