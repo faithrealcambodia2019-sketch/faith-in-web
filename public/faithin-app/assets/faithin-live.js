@@ -360,41 +360,60 @@
   }
 
   function fiResourceCardHtml(resource, savedIds) {
-    const format = String(resource.format || '').toLowerCase();
+    const format = String(resource.format || 'pdf').toLowerCase();
     const id = esc(resource.id);
-    const cover = resource.thumbnail_url
-      ? `<img class="w-full h-full object-cover" src="${esc(resource.thumbnail_url)}" alt="" loading="lazy" decoding="async">`
-      : '';
-    const playOverlay = `<span class="fi-media-play"><span><i class="fa-solid fa-play"></i></span></span>`;
+    const saved = savedIds.has(resource.id);
+    const canDelete = Boolean(resource.can_delete);
+    const canEdit = Boolean(resource.can_edit || resource.can_delete);
+    const authorName = (typeof resource.author === 'object' && resource.author?.name) ? resource.author.name : (resource.contributor_name || resource.author || 'Faith In member');
+    const downloadCount = Number(resource.download_count || 0);
 
-    // Sermons and videos: wide 16:9 card that opens the in-app player.
+    let coverMarkup = '';
     if (format === 'video') {
-      return `<article class="fi-video-card group relative" data-resource-id="${id}" data-resource-format="video">`
-        + `<button type="button" class="fi-video-cover" data-resource-play aria-label="Play ${esc(resource.title)}">`
-        + (cover || `<span class="fi-video-fallback"><i class="fa-solid fa-video text-[24px]"></i>${esc(resource.title)}</span>`)
-        + playOverlay + `<span class="fi-media-badge">Sermon</span></button>`
-        + `<button type="button" class="block w-full text-left" data-resource-play>${fiResourceMeta(resource)}</button>`
-        + fiResourceFooter(resource, savedIds) + `</article>`;
+      coverMarkup = `<div class="w-full max-w-[240px] aspect-video relative rounded-md overflow-hidden shadow bg-gray-900 flex items-center justify-center cursor-pointer group" data-resource-play aria-label="Play ${esc(resource.title)}">`
+        + (resource.thumbnail_url ? `<img class="w-full h-full object-cover" src="${esc(resource.thumbnail_url)}" alt="${esc(resource.title)}" loading="lazy">` : `<span class="text-white font-semibold text-center p-3 text-xs"><i class="fa-solid fa-video text-lg block mb-1"></i>${esc(resource.title)}</span>`)
+        + `<span class="fi-media-play"><span><i class="fa-solid fa-play text-sm"></i></span></span>`
+        + `<span class="fi-media-badge">Sermon</span></div>`;
+    } else if (format === 'audio') {
+      coverMarkup = `<div class="w-[140px] h-[140px] relative rounded-md overflow-hidden shadow bg-gradient-to-br from-purple-700 to-indigo-900 flex items-center justify-center cursor-pointer group" data-resource-play aria-label="Play ${esc(resource.title)}">`
+        + (resource.thumbnail_url ? `<img class="w-full h-full object-cover" src="${esc(resource.thumbnail_url)}" alt="${esc(resource.title)}" loading="lazy">` : `<span class="text-white font-semibold text-center p-3 text-xs"><i class="fa-solid fa-headphones text-xl block mb-1"></i>${esc(resource.title)}</span>`)
+        + `<span class="fi-media-play"><span><i class="fa-solid fa-play text-sm"></i></span></span>`
+        + `<span class="fi-media-badge">Audio</span></div>`;
+    } else if (resource.thumbnail_url) {
+      coverMarkup = `<div class="fb-book-3d-wrap" data-resource-download title="Download ${esc(resource.title)}">`
+        + `<img src="${esc(resource.thumbnail_url)}" alt="${esc(resource.title)}" loading="lazy">`
+        + `</div>`;
+    } else {
+      // 3D Book Cover Fallback
+      coverMarkup = `<div class="fb-book-3d-wrap" data-resource-download title="Download ${esc(resource.title)}">`
+        + `<div class="fb-book-fallback">`
+        + `<div class="fb-book-spine"><div class="fb-spine-line"></div><div class="fb-spine-line"></div><div class="fb-spine-line"></div></div>`
+        + `<div class="fb-book-front"><div class="fb-book-badge">`
+        + `<p class="fb-book-author">${esc(authorName)}</p>`
+        + `<div class="fb-book-divider"></div>`
+        + `<p class="fb-book-title">${esc(resource.title)}</p>`
+        + `</div></div></div></div>`;
     }
 
-    // Audio: square artwork card that opens the music player.
-    if (format === 'audio') {
-      return `<article class="fi-audio-card group relative" data-resource-id="${id}" data-resource-format="audio">`
-        + `<button type="button" class="fi-audio-art" data-resource-play aria-label="Play ${esc(resource.title)}">`
-        + (cover || `<span class="fi-video-fallback"><i class="fa-solid fa-headphones text-[24px]"></i>${esc(resource.title)}</span>`)
-        + playOverlay + `<span class="fi-media-badge">Audio</span></button>`
-        + `<button type="button" class="block w-full text-left" data-resource-play>${fiResourceMeta(resource)}</button>`
-        + fiResourceFooter(resource, savedIds) + `</article>`;
-    }
-
-    // Everything else keeps the book-spine cover.
-    return `<article class="fi-resource-card snap-start group relative" data-resource-id="${id}" data-resource-format="${esc(format)}">`
-      + (resource.open_url ? `<a href="${esc(resource.open_url)}" target="_blank" rel="noopener" class="block">` : '<button type="button" class="block w-full text-left" data-resource-download>')
-      + `<span class="fi-resource-cover book-cover block overflow-hidden bg-[linear-gradient(150deg,#1d4ed8,#172554)]">`
-      + (cover || `<span class="h-full p-3 flex flex-col gap-3 items-center justify-center text-center text-white font-serif font-semibold"><i class="fa-solid fa-${format === 'image' ? 'image' : 'file-lines'} text-[24px]"></i>${esc(resource.title)}</span>`)
-      + `</span>` + fiResourceMeta(resource)
-      + (resource.open_url ? '</a>' : '</button>')
-      + fiResourceFooter(resource, savedIds) + `</article>`;
+    return `<article class="fb-library-card group" data-resource-id="${id}" data-resource-format="${esc(format)}">`
+      + `<div class="fb-library-cover-box">${coverMarkup}</div>`
+      + `<div class="fb-card-body">`
+      + `<h3 class="fb-card-title" title="${esc(resource.title)}">${esc(resource.title)}</h3>`
+      + `<p class="fb-card-author">By <strong>${esc(authorName)}</strong></p>`
+      + (resource.translated_by ? `<p class="fb-card-translator">Translated by ${esc(resource.translated_by)}</p>` : '<div class="mb-1"></div>')
+      + `<span class="fb-format-pill">${esc(resource.format || 'PDF')}</span>`
+      + `<div class="fb-card-footer">`
+      + `<button type="button" class="fb-download-btn" data-resource-download title="Download resource">`
+      + `<i class="fa-solid fa-download"></i>`
+      + `<span>${downloadCount}</span>`
+      + `</button>`
+      + `<div class="fb-card-actions">`
+      + (canEdit ? `<button type="button" class="fb-action-icon-btn is-edit" title="Edit title or author" data-resource-edit><i class="fa-solid fa-pen-to-square text-[14px]"></i></button>` : '')
+      + (canDelete ? `<button type="button" class="fb-action-icon-btn is-delete" title="Delete" data-resource-delete><i class="fa-regular fa-trash-can text-[15px]"></i></button>` : '')
+      + `<button type="button" class="fb-action-icon-btn ${saved ? 'is-saved' : ''}" title="${saved ? 'Remove saved resource' : 'Save resource'}" data-resource-save>`
+      + `<i class="fa-${saved ? 'solid' : 'regular'} fa-bookmark text-[15px]"></i>`
+      + `</button>`
+      + `</div></div></div></article>`;
   }
 
   // In-app player. Video plays in a lightbox; audio gets a music player with a
@@ -484,12 +503,56 @@
 
   async function loadLibrary() {
     const shelf = $('#shelf'); if (!shelf) return;
-    shelf.className = 'fi-media-grid';
+    shelf.className = 'fi-library-shelf';
     $$('[data-rail-prev],[data-rail-next]').forEach(button => { button.style.display = 'none'; });
     let resources = [], rendered = [], savedIds = new Set(), searchQuery = '';
     const view = new URLSearchParams(location.search).get('view');
     const format = new URLSearchParams(location.search).get('format');
     const category = new URLSearchParams(location.search).get('category');
+
+    const updateHeaderInfo = () => {
+      const titleEl = $('#library-title');
+      const subtitleEl = $('#library-subtitle');
+      if (!titleEl) return;
+      if (view === 'saved') {
+        titleEl.textContent = 'Saved Items';
+        if (subtitleEl) subtitleEl.textContent = 'Resources you have bookmarked';
+      } else if (format === 'pdf') {
+        titleEl.textContent = 'PDF Books & Studies';
+        if (subtitleEl) subtitleEl.textContent = 'Reading resources published by the Faith In community';
+      } else if (format === 'video') {
+        titleEl.textContent = 'Sermons & Videos';
+        if (subtitleEl) subtitleEl.textContent = 'Watch teachings and sermon series';
+      } else if (format === 'audio') {
+        titleEl.textContent = 'Podcasts & Audio';
+        if (subtitleEl) subtitleEl.textContent = 'Listen to sermons and podcasts';
+      } else if (category) {
+        titleEl.textContent = category;
+        if (subtitleEl) subtitleEl.textContent = `Resources published in ${category}`;
+      } else {
+        titleEl.textContent = 'Recommended for you';
+        if (subtitleEl) subtitleEl.textContent = 'Resources published by the Faith In community';
+      }
+    };
+    updateHeaderInfo();
+
+    $$('[data-format-filter]').forEach(chip => {
+      const target = chip.dataset.formatFilter;
+      if (!category && ((!format && target === 'all') || (format && format.toLowerCase() === target.toLowerCase()))) {
+        chip.classList.add('is-active');
+      } else {
+        chip.classList.remove('is-active');
+      }
+    });
+    $$('[data-category-filter]').forEach(chip => {
+      const target = chip.dataset.categoryFilter;
+      if (category && category.toLowerCase().replace(/[^a-z]/g, '') === target.toLowerCase().replace(/[^a-z]/g, '')) {
+        chip.classList.add('is-active');
+      } else {
+        chip.classList.remove('is-active');
+      }
+    });
+
     const render = () => {
       let items = resources.slice();
       if (format) items = items.filter(resource => String(resource.format || '').toLowerCase() === format.toLowerCase());
@@ -504,14 +567,109 @@
     };
     try {
       const [result, saved] = await Promise.all([api.request('cv_get_resources'), api.request('cv_get_bookmarks').catch(() => ({ items: [] }))]);
-      resources = result.items || [];
+      const fetched = result.items || [];
+      const builtin = [
+        {
+          id: 'mhc-genesis-01-full',
+          title: 'MHC លោកុប្បត្តិ ជំពូកទី១ (ពេញលេញ ៣២ ទំព័រ)',
+          description: 'អភិប្រាយកណ្ឌគម្ពីរលោកុប្បត្តិ ជំពូក១ ទាំងមូល អមដោយសេចក្តីសង្កេតជាលក្ខណៈអនុវត្ត ដោយ មែធ្យូ ហិនរី បកប្រែដោយ អា៊ាម សំអាត',
+          category: 'Matthew Henry',
+          format: 'pdf',
+          type: 'pdf',
+          author: 'មែធ្យូ ហិនរី',
+          contributor_name: 'Hun Chet',
+          translated_by: 'SamAth Em (អា៊ាម សំអាត)',
+          language: 'Khmer (ភាសាខ្មែរ)',
+          file_url: '/library/mhc-gen-01-full-exposition.pdf',
+          download_url: '/library/mhc-gen-01-full-exposition.pdf',
+          filename: 'mhc-gen-01-full-exposition.pdf',
+          thumbnail_url: '/library/matthew-henry-cover.jpg',
+          download_count: 14,
+          view_count: 85,
+          allow_download: true,
+          can_delete: false
+        },
+        {
+          id: 'mhc-genesis-02-complete',
+          title: 'MHC លោកុប្បត្តិ ជំពូកទី២',
+          description: 'អភិប្រាយព្រះគម្ពីរប៊ីប លោកុប្បត្តិ ជំពូកទី២ អំពីថ្ងៃសប្ប័ទដ៏បរិសុទ្ធ សួនអេដែន និងការបង្កើតមនុស្ស ដោយ មែធ្យូ ហិនរី បកប្រែដោយ អា៊ាម សំអាត',
+          category: 'Matthew Henry',
+          format: 'pdf',
+          type: 'pdf',
+          author: 'មែធ្យូ ហិនរី',
+          contributor_name: 'Hun Chet',
+          translated_by: 'SamAth Em (អា៊ាម សំអាត)',
+          language: 'Khmer (ភាសាខ្មែរ)',
+          file_url: '/library/mhc-gen-02-complete.pdf',
+          download_url: '/library/mhc-gen-02-complete.pdf',
+          filename: 'mhc-gen-02-complete.pdf',
+          thumbnail_url: '/library/matthew-henry-cover.jpg',
+          download_count: 11,
+          view_count: 64,
+          allow_download: true,
+          can_delete: false
+        },
+        {
+          id: 'mhc-genesis-01-14-19',
+          title: 'MHC លោកុប្បត្តិ ១:១៤-១៩',
+          description: 'អភិប្រាយព្រះគម្ពីរប៊ីប លោកុប្បត្តិ ១:១៤-១៩ អំពីការបង្កើតថ្ងៃ ខែ និងផ្កាយនៅថ្ងៃទី៤ ដោយ មែធ្យូ ហិនរី បកប្រែដោយ អា៊ាម សំអាត',
+          category: 'Matthew Henry',
+          format: 'pdf',
+          type: 'pdf',
+          author: 'មែធ្យូ ហិនរី',
+          contributor_name: 'Hun Chet',
+          translated_by: 'SamAth Em (អា៊ាម សំអាត)',
+          language: 'Khmer (ភាសាខ្មែរ)',
+          file_url: '/library/mhc-gen-01-14-19.pdf',
+          download_url: '/library/mhc-gen-01-14-19.pdf',
+          filename: 'mhc-gen-01-14-19.pdf',
+          thumbnail_url: '/library/matthew-henry-cover.jpg',
+          download_count: 8,
+          view_count: 52,
+          allow_download: true,
+          can_delete: false
+        },
+        {
+          id: 'mhc-genesis-01-06-13',
+          title: 'MHC លោកុប្បត្តិ ១:៦-១៣',
+          description: 'អភិប្រាយព្រះគម្ពីរប៊ីប លោកុប្បត្តិ ១:៦-៨ និង ១:៩-១៣ អំពីការបង្កើតផ្ទៃមេឃ និងដីគោកនៅថ្ងៃទី២ និងទី៣ ដោយ មែធ្យូ ហិនរី បកប្រែដោយ អា៊ាម សំអាត',
+          category: 'Matthew Henry',
+          format: 'pdf',
+          type: 'pdf',
+          author: 'មែធ្យូ ហិនរី',
+          contributor_name: 'Hun Chet',
+          translated_by: 'SamAth Em (អា៊ាម សំអាត)',
+          language: 'Khmer (ភាសាខ្មែរ)',
+          file_url: '/library/mhc-gen-01-06-13.pdf',
+          download_url: '/library/mhc-gen-01-06-13.pdf',
+          filename: 'mhc-gen-01-06-13.pdf',
+          thumbnail_url: '/library/matthew-henry-cover.jpg',
+          download_count: 6,
+          view_count: 41,
+          allow_download: true,
+          can_delete: false
+        }
+      ];
+      const existingIds = new Set(fetched.map(it => it.id));
+      resources = fetched.concat(builtin.filter(b => !existingIds.has(b.id)));
       savedIds = new Set((saved.items || []).filter(row => row.object_type === 'resource').map(row => row.object_id));
       render();
     } catch (error) { shelf.innerHTML = emptyState(error.message); }
-    const section = shelf.closest('section'), header = section?.firstElementChild;
-    if (header && !header.querySelector('[data-publish-resource]')) { const button = document.createElement('button'); button.className = 'btn btn-primary !py-2'; button.dataset.publishResource = ''; button.innerHTML = '<i class="fa-solid fa-plus"></i>Publish resource'; header.appendChild(button); button.onclick = () => { if (requireUser()) openResourceEditor(loadLibrary); }; }
+
+    const publishBtn = $('[data-publish-resource]');
+    if (publishBtn) {
+      publishBtn.onclick = (e) => { e.preventDefault(); if (requireUser()) openResourceEditor(loadLibrary); };
+    }
+
     shelf.addEventListener('click', async event => {
       const row = event.target.closest('[data-resource-id]'); if (!row) return;
+      const edit = event.target.closest('[data-resource-edit]');
+      if (edit) {
+        event.preventDefault();
+        const resource = rendered.find(item => item.id === row.dataset.resourceId) || resources.find(item => item.id === row.dataset.resourceId);
+        if (resource) openResourceEditor(loadLibrary, resource);
+        return;
+      }
       const remove = event.target.closest('[data-resource-delete]');
       if (remove) { event.preventDefault(); if (!confirm('Delete this resource?')) return; await api.request('cv_delete_resource', { resource_id: row.dataset.resourceId }); resources = resources.filter(resource => resource.id !== row.dataset.resourceId); render(); toast('Resource deleted'); return; }
       const save = event.target.closest('[data-resource-save]');
@@ -529,13 +687,58 @@
       const button = event.target.closest('[data-resource-download]'); if (!button) return; event.preventDefault(); const result = await api.request('cv_download_resource', { resource_id: row.dataset.resourceId }); if (result.url) window.open(result.url, '_blank', 'noopener');
     });
     document.addEventListener('fi:search', event => { searchQuery = event.detail.query.toLowerCase(); render(); });
-    $('[aria-label="Share verse"]')?.addEventListener('click', async () => { const textValue = `${$('#votd')?.innerText || ''} — ${$('[data-votd-ref]')?.textContent || ''}`.trim(); try { if (navigator.share) await navigator.share({ title: 'Verse of the Day', text: textValue, url: location.origin + '/bible-study' }); else { await navigator.clipboard.writeText(textValue); toast('Verse copied'); } } catch (_) {} });
     $$('#main section').filter(section => /jump back in|trending sermons|authors to follow/i.test(section.querySelector('h2,h3')?.textContent || '')).forEach(section => section.remove());
   }
 
-  function openResourceEditor(refresh) {
+  function openResourceEditor(refresh, resourceToEdit) {
+    const isEdit = Boolean(resourceToEdit);
     const modal = document.createElement('div'); modal.className = 'fixed inset-0 z-[240] bg-[#0b1120]/70 p-4 flex items-center justify-center';
-    modal.innerHTML = `<form class="card w-full max-w-2xl max-h-[92vh] overflow-y-auto p-5 space-y-4"><div class="flex justify-between"><div><h2 class="text-[20px] font-bold">Publish a resource</h2><p class="text-[12.5px] text-muted mt-1">Share a PDF, image, audio, video, or ZIP file with the community.</p></div><button type="button" class="icon-btn" data-close-resource aria-label="Close"><i class="fa-solid fa-xmark"></i></button></div><input class="field" name="title" placeholder="Resource title" required><textarea class="field" name="description" rows="3" placeholder="Description"></textarea><div class="grid sm:grid-cols-2 gap-3"><input class="field" name="contributor_name" placeholder="Author / Creator"><input class="field" name="translator_name" placeholder="Translated by"><input class="field" name="language" placeholder="Language, e.g. Khmer"><input class="field" name="category" placeholder="Category" value="Bible Study"></div><select class="field" name="format" aria-label="Resource format"><option value="pdf">PDF</option><option value="image">Image</option><option value="audio">Audio</option><option value="video">Video</option><option value="zip">ZIP bundle</option></select><label class="block text-[13px] font-semibold">Resource file<input class="field mt-1" name="resource_file" type="file" accept=".pdf,.zip,image/*,audio/*,video/*" required><span class="block text-[11.5px] text-muted mt-1">Maximum 50MB · stored in free Supabase Storage</span></label><div class="block text-[13px] font-semibold">Cover image<span class="block text-[11.5px] font-normal text-muted mt-1" data-thumb-hint>Videos get a thumbnail captured automatically. Upload your own image to use that instead.</span><div class="flex items-center gap-3 mt-2"><img class="fi-thumb-preview hidden" alt="" data-thumb-preview><input class="field" name="thumbnail" type="file" accept="image/*"></div></div><label class="flex items-center gap-2 text-[12.5px] text-muted"><input type="checkbox" name="allow_download" value="1" checked>Allow members to download this resource</label><p class="hidden rounded-xl border border-rose/30 bg-rose/10 px-3 py-2.5 text-[12.5px] text-rose" data-resource-error role="alert"></p><div class="hidden" data-resource-progress><div class="flex justify-between text-[11.5px] text-muted mb-1"><span>Uploading to FaithIn</span><strong data-resource-progress-label>0%</strong></div><div class="h-2 rounded-full bg-line overflow-hidden"><span class="block h-full bg-brand transition" data-resource-progress-bar style="width:0%"></span></div></div><button class="btn btn-primary w-full" data-resource-submit>Publish resource</button></form>`;
+    const currentAuthor = isEdit ? ((typeof resourceToEdit.author === 'object' ? resourceToEdit.author?.name : resourceToEdit.author) || resourceToEdit.contributor_name || '') : '';
+    const currentTranslator = isEdit ? (resourceToEdit.translated_by || resourceToEdit.translator_name || '') : '';
+    const currentTitle = isEdit ? (resourceToEdit.title || '') : '';
+    const currentDesc = isEdit ? (resourceToEdit.description || '') : '';
+    const currentLang = isEdit ? (resourceToEdit.language || '') : '';
+    const currentCategory = isEdit ? (resourceToEdit.category || 'Matthew Henry') : 'Bible Study';
+    const currentFormat = isEdit ? (resourceToEdit.format || 'pdf') : 'pdf';
+    const currentAllowDownload = isEdit ? (resourceToEdit.allow_download !== false) : true;
+    const currentThumb = isEdit ? (resourceToEdit.thumbnail_url || resourceToEdit.cover_image_url || '') : '';
+
+    modal.innerHTML = `<form class="card w-full max-w-2xl max-h-[92vh] overflow-y-auto p-5 space-y-4">`
+      + `<div class="flex justify-between"><div>`
+      + `<h2 class="text-[20px] font-bold">${isEdit ? 'Edit Resource & Book' : 'Publish a resource'}</h2>`
+      + `<p class="text-[12.5px] text-muted mt-1">${isEdit ? 'Update book title, author, translator, category, or description.' : 'Share a PDF, image, audio, video, or ZIP file with the community.'}</p>`
+      + `</div><button type="button" class="icon-btn" data-close-resource aria-label="Close"><i class="fa-solid fa-xmark"></i></button></div>`
+      + `<label class="block text-[13px] font-semibold text-ink">Title / Book Name<input class="field mt-1" name="title" placeholder="Resource title" value="${esc(currentTitle)}" required></label>`
+      + `<label class="block text-[13px] font-semibold text-ink">Description<textarea class="field mt-1" name="description" rows="3" placeholder="Description">${esc(currentDesc)}</textarea></label>`
+      + `<div class="grid sm:grid-cols-2 gap-3">`
+      + `<label class="block text-[13px] font-semibold text-ink">Author / Creator<input class="field mt-1" name="contributor_name" placeholder="Author / Creator" value="${esc(currentAuthor)}"></label>`
+      + `<label class="block text-[13px] font-semibold text-ink">Translated by<input class="field mt-1" name="translator_name" placeholder="Translated by" value="${esc(currentTranslator)}"></label>`
+      + `<label class="block text-[13px] font-semibold text-ink">Language<input class="field mt-1" name="language" placeholder="Language, e.g. Khmer" value="${esc(currentLang)}"></label>`
+      + `<label class="block text-[13px] font-semibold text-ink">Category<input class="field mt-1" name="category" placeholder="Category" value="${esc(currentCategory)}"></label>`
+      + `</div>`
+      + `<label class="block text-[13px] font-semibold text-ink">Format`
+      + `<select class="field mt-1" name="format" aria-label="Resource format">`
+      + `<option value="pdf"${currentFormat === 'pdf' ? ' selected' : ''}>PDF Book</option>`
+      + `<option value="image"${currentFormat === 'image' ? ' selected' : ''}>Image</option>`
+      + `<option value="audio"${currentFormat === 'audio' ? ' selected' : ''}>Audio</option>`
+      + `<option value="video"${currentFormat === 'video' ? ' selected' : ''}>Video</option>`
+      + `<option value="zip"${currentFormat === 'zip' ? ' selected' : ''}>ZIP bundle</option>`
+      + `</select></label>`
+      + `<label class="block text-[13px] font-semibold text-ink">Resource file`
+      + `<input class="field mt-1" name="resource_file" type="file" accept=".pdf,.zip,image/*,audio/*,video/*"${isEdit ? '' : ' required'}>`
+      + `<span class="block text-[11.5px] text-muted mt-1">${isEdit ? 'Optional · leave empty to keep current file' : 'Maximum 50MB · stored in free Supabase Storage'}</span>`
+      + `</label>`
+      + `<div class="block text-[13px] font-semibold text-ink">Cover image`
+      + `<span class="block text-[11.5px] font-normal text-muted mt-1" data-thumb-hint>${currentThumb ? 'Current cover preview (upload new image to replace):' : 'Videos get a thumbnail captured automatically. Upload your own image to use that instead.'}</span>`
+      + `<div class="flex items-center gap-3 mt-2">`
+      + `<img class="fi-thumb-preview ${currentThumb ? '' : 'hidden'} max-h-20 rounded border border-line" src="${esc(currentThumb)}" alt="" data-thumb-preview>`
+      + `<input class="field" name="thumbnail" type="file" accept="image/*">`
+      + `</div></div>`
+      + `<label class="flex items-center gap-2 text-[12.5px] text-muted"><input type="checkbox" name="allow_download" value="1"${currentAllowDownload ? ' checked' : ''}>Allow members to download this resource</label>`
+      + `<p class="hidden rounded-xl border border-rose/30 bg-rose/10 px-3 py-2.5 text-[12.5px] text-rose" data-resource-error role="alert"></p>`
+      + `<div class="hidden" data-resource-progress><div class="flex justify-between text-[11.5px] text-muted mb-1"><span>Saving to FaithIn</span><strong data-resource-progress-label>0%</strong></div><div class="h-2 rounded-full bg-line overflow-hidden"><span class="block h-full bg-brand transition" data-resource-progress-bar style="width:0%"></span></div></div>`
+      + `<button class="btn btn-primary w-full" data-resource-submit>${isEdit ? '<i class="fa-solid fa-floppy-disk mr-1.5"></i>Save changes' : 'Publish resource'}</button></form>`;
+
     document.body.appendChild(modal); $('[data-close-resource]', modal).onclick = () => modal.remove();
     const form = $('form', modal), fileInput = form.elements.namedItem('resource_file'), formatInput = form.elements.namedItem('format');
     const thumbField = form.elements.namedItem('thumbnail'), thumbPreview = $('[data-thumb-preview]', form), thumbHint = $('[data-thumb-hint]', form);
@@ -576,7 +779,7 @@
     thumbField.addEventListener('change', () => {
       const picked = thumbField.files?.[0];
       if (manualThumbUrl) { URL.revokeObjectURL(manualThumbUrl); manualThumbUrl = ''; }
-      if (!picked) { setThumbPreview(autoThumbUrl, autoThumbUrl ? 'Using the thumbnail captured from your video.' : ''); return; }
+      if (!picked) { setThumbPreview(autoThumbUrl || currentThumb, autoThumbUrl ? 'Using the thumbnail captured from your video.' : (currentThumb ? 'Current cover preview:' : '')); return; }
       manualThumbUrl = URL.createObjectURL(picked);
       setThumbPreview(manualThumbUrl, 'Using your uploaded cover image.');
     });
@@ -584,26 +787,39 @@
       if (autoThumbUrl) { URL.revokeObjectURL(autoThumbUrl); autoThumbUrl = ''; }
       autoThumb = null;
       if (formatInput.value === 'video') captureVideoThumbnail(file);
-      else if (!thumbField.files?.[0]) setThumbPreview(manualThumbUrl, '');
+      else if (!thumbField.files?.[0]) setThumbPreview(manualThumbUrl || currentThumb, '');
     });
     form.onsubmit = async event => {
       event.preventDefault();
       const resourceFile = fileInput.files?.[0], thumbnailInput = form.elements.namedItem('thumbnail'), submit = $('[data-resource-submit]', form);
-      if (!resourceFile) return toast('Choose a resource file to publish.');
-      if (resourceFile.size > 50 * 1024 * 1024) return toast(`${resourceFile.name} is larger than the free 50MB limit.`);
+      if (!isEdit && !resourceFile) return toast('Choose a resource file to publish.');
+      if (resourceFile && resourceFile.size > 50 * 1024 * 1024) return toast(`${resourceFile.name} is larger than the free 50MB limit.`);
       const data = Object.fromEntries(new FormData(form)); data.allow_download = form.elements.namedItem('allow_download').checked ? '1' : '0'; delete data.resource_file; delete data.thumbnail;
+      if (isEdit) data.resource_id = resourceToEdit.id;
       const chosenThumbnail = thumbnailInput.files?.[0] || autoThumb;
-      const files = { resource_file: [resourceFile], thumbnail: chosenThumbnail ? [chosenThumbnail] : [] };
+      const files = { resource_file: resourceFile ? [resourceFile] : [], thumbnail: chosenThumbnail ? [chosenThumbnail] : [] };
       const progress = $('[data-resource-progress]', form), label = $('[data-resource-progress-label]', form), bar = $('[data-resource-progress-bar]', form), errorBox = $('[data-resource-error]', form);
       errorBox.classList.add('hidden'); errorBox.textContent = '';
-      const oldSubmitHtml = submit.innerHTML; progress.classList.remove('hidden'); submit.disabled = true; submit.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i>Uploading';
+      const oldSubmitHtml = submit.innerHTML; progress.classList.remove('hidden'); submit.disabled = true; submit.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i>Saving';
       try {
-        await api.request('cv_upload_resource', data, files, fraction => { const percent = Math.max(1, Math.min(100, Math.round(fraction * 100))); label.textContent = `${percent}%`; bar.style.width = `${percent}%`; });
-        label.textContent = '100%'; bar.style.width = '100%'; await refresh();
-        form.innerHTML = `<div class="py-8 text-center"><span class="mx-auto grid h-16 w-16 place-items-center rounded-full bg-emerald-500 text-white text-[28px]"><i class="fa-solid fa-check"></i></span><h2 class="mt-5 text-[22px] font-bold">Published successfully</h2><p class="mt-2 text-[13.5px] text-muted">Your resource is now available in the FaithIn Library.</p><button type="button" class="btn btn-primary w-full mt-6" data-resource-done><i class="fa-solid fa-check"></i>Done</button></div>`;
-        $('[data-resource-done]', form).onclick = () => modal.remove(); toast('Resource published successfully');
+        const action = isEdit ? 'cv_update_resource' : 'cv_upload_resource';
+        await api.request(action, data, files, fraction => { const percent = Math.max(1, Math.min(100, Math.round(fraction * 100))); label.textContent = `${percent}%`; bar.style.width = `${percent}%`; });
+        label.textContent = '100%'; bar.style.width = '100%';
+        if (isEdit) {
+          resourceToEdit.title = data.title;
+          resourceToEdit.author = data.contributor_name || resourceToEdit.author;
+          resourceToEdit.contributor_name = data.contributor_name || resourceToEdit.contributor_name;
+          resourceToEdit.translated_by = data.translator_name || resourceToEdit.translated_by;
+          resourceToEdit.category = data.category || resourceToEdit.category;
+          resourceToEdit.description = data.description || resourceToEdit.description;
+          resourceToEdit.language = data.language || resourceToEdit.language;
+          resourceToEdit.format = data.format || resourceToEdit.format;
+        }
+        await refresh();
+        modal.remove();
+        toast(isEdit ? 'Book details updated successfully' : 'Resource published successfully');
       }
-      catch (error) { const message = error.message || 'Upload failed. Please try again.'; errorBox.textContent = message; errorBox.classList.remove('hidden'); toast(message); progress.classList.add('hidden'); }
+      catch (error) { const message = error.message || (isEdit ? 'Update failed. Please try again.' : 'Upload failed. Please try again.'); errorBox.textContent = message; errorBox.classList.remove('hidden'); toast(message); progress.classList.add('hidden'); }
       finally { submit.disabled = false; submit.innerHTML = oldSubmitHtml; }
     };
   }
@@ -2072,8 +2288,16 @@
 
   function markActiveSideLink() {
     const here = location.pathname + location.search;
+    const path = location.pathname;
+    const hasSearch = Boolean(location.search);
     $$('#main a.side-link').forEach(link => {
-      const active = link.getAttribute('href') === here;
+      const href = link.getAttribute('href');
+      let active = false;
+      if (href === here) {
+        active = true;
+      } else if (!hasSearch && (href === path || (path === '/library' && href === '/library'))) {
+        active = true;
+      }
       link.classList.toggle('is-active', active);
       if (active) link.setAttribute('aria-current', 'page'); else link.removeAttribute('aria-current');
     });

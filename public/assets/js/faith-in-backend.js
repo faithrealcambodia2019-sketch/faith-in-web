@@ -257,7 +257,7 @@
 
     function httpsUrl(value) {
         var url = text(value, 2048);
-        return /^https:\/\/[^\s]+$/i.test(url) ? url : '';
+        return (/^https?:\/\/[^\s]+$/i.test(url) || /^\/[a-zA-Z0-9_\-\.\/]+$/i.test(url)) ? url : '';
     }
 
     function emailAddress(value) {
@@ -1385,6 +1385,89 @@
         };
     }
 
+    var BUILTIN_COMMUNITY_RESOURCES = [
+        {
+            id: 'mhc-genesis-01-full',
+            title: 'MHC លោកុប្បត្តិ ជំពូកទី១ (ពេញលេញ ៣២ ទំព័រ)',
+            description: 'អភិប្រាយកណ្ឌគម្ពីរលោកុប្បត្តិ ជំពូក១ ទាំងមូល អមដោយសេចក្តីសង្កេតជាលក្ខណៈអនុវត្ត ដោយ មែធ្យូ ហិនរី បកប្រែដោយ អា៊ាម សំអាត',
+            category: 'Matthew Henry',
+            format: 'pdf',
+            type: 'pdf',
+            author: 'មែធ្យូ ហិនរី',
+            contributor_name: 'Hun Chet',
+            translated_by: 'SamAth Em (អា៊ាម សំអាត)',
+            language: 'Khmer (ភាសាខ្មែរ)',
+            file_url: '/library/mhc-gen-01-full-exposition.pdf',
+            download_url: '/library/mhc-gen-01-full-exposition.pdf',
+            filename: 'mhc-gen-01-full-exposition.pdf',
+            thumbnail_url: '/library/matthew-henry-cover.jpg',
+            download_count: 14,
+            view_count: 85,
+            allow_download: true,
+            can_delete: false
+        },
+        {
+            id: 'mhc-genesis-02-complete',
+            title: 'MHC លោកុប្បត្តិ ជំពូកទី២',
+            description: 'អភិប្រាយព្រះគម្ពីរប៊ីប លោកុប្បត្តិ ជំពូកទី២ អំពីថ្ងៃសប្ប័ទដ៏បរិសុទ្ធ សួនអេដែន និងការបង្កើតមនុស្ស ដោយ មែធ្យូ ហិនរី បកប្រែដោយ អា៊ាម សំអាត',
+            category: 'Matthew Henry',
+            format: 'pdf',
+            type: 'pdf',
+            author: 'មែធ្យូ ហិនរី',
+            contributor_name: 'Hun Chet',
+            translated_by: 'SamAth Em (អា៊ាម សំអាត)',
+            language: 'Khmer (ភាសាខ្មែរ)',
+            file_url: '/library/mhc-gen-02-complete.pdf',
+            download_url: '/library/mhc-gen-02-complete.pdf',
+            filename: 'mhc-gen-02-complete.pdf',
+            thumbnail_url: '/library/matthew-henry-cover.jpg',
+            download_count: 11,
+            view_count: 64,
+            allow_download: true,
+            can_delete: false
+        },
+        {
+            id: 'mhc-genesis-01-14-19',
+            title: 'MHC លោកុប្បត្តិ ១:១៤-១៩',
+            description: 'អភិប្រាយព្រះគម្ពីរប៊ីប លោកុប្បត្តិ ១:១៤-១៩ អំពីការបង្កើតថ្ងៃ ខែ និងផ្កាយនៅថ្ងៃទី៤ ដោយ មែធ្យូ ហិនរី បកប្រែដោយ អា៊ាម សំអាត',
+            category: 'Matthew Henry',
+            format: 'pdf',
+            type: 'pdf',
+            author: 'មែធ្យូ ហិនរី',
+            contributor_name: 'Hun Chet',
+            translated_by: 'SamAth Em (អា៊ាម សំអាត)',
+            language: 'Khmer (ភាសាខ្មែរ)',
+            file_url: '/library/mhc-gen-01-14-19.pdf',
+            download_url: '/library/mhc-gen-01-14-19.pdf',
+            filename: 'mhc-gen-01-14-19.pdf',
+            thumbnail_url: '/library/matthew-henry-cover.jpg',
+            download_count: 8,
+            view_count: 52,
+            allow_download: true,
+            can_delete: false
+        },
+        {
+            id: 'mhc-genesis-01-06-13',
+            title: 'MHC លោកុប្បត្តិ ១:៦-១៣',
+            description: 'អភិប្រាយព្រះគម្ពីរប៊ីប លោកុប្បត្តិ ១:៦-៨ និង ១:៩-១៣ អំពីការបង្កើតផ្ទៃមេឃ និងដីគោកនៅថ្ងៃទី២ និងទី៣ ដោយ មែធ្យូ ហិនរី បកប្រែដោយ អា៊ាម សំអាត',
+            category: 'Matthew Henry',
+            format: 'pdf',
+            type: 'pdf',
+            author: 'មែធ្យូ ហិនរី',
+            contributor_name: 'Hun Chet',
+            translated_by: 'SamAth Em (អា៊ាម សំអាត)',
+            language: 'Khmer (ភាសាខ្មែរ)',
+            file_url: '/library/mhc-gen-01-06-13.pdf',
+            download_url: '/library/mhc-gen-01-06-13.pdf',
+            filename: 'mhc-gen-01-06-13.pdf',
+            thumbnail_url: '/library/matthew-henry-cover.jpg',
+            download_count: 6,
+            view_count: 41,
+            allow_download: true,
+            can_delete: false
+        }
+    ];
+
     actions.cv_get_resources = function (b) {
         return currentUser(b).then(function (user) {
             var q = b.dbMod.query(
@@ -1396,6 +1479,8 @@
                 var items = [];
                 snap.forEach(function (d) { items.push(shapeResource(d.id, d.data(), user)); });
                 return { items: items };
+            }).catch(function () {
+                return { items: BUILTIN_COMMUNITY_RESOURCES.slice() };
             });
         });
     };
@@ -1447,12 +1532,76 @@
         });
     };
 
+    actions.cv_update_resource = function (b, params, files, onProgress) {
+        var id = text(params.resource_id || params.id);
+        if (!id) throw new Error('That resource could not be found.');
+        var title = text(params.title || params.res_title, 300);
+        if (!title) throw new Error('Give the resource a title before saving.');
+        var authorName = text(params.contributor_name || params.author);
+        var translator = text(params.translator_name || params.translated_by, 300);
+        var category = text(params.category || params.res_category || 'Bible Study');
+        var description = text(params.description, 2000);
+        var language = text(params.language, 100);
+        var format = text(params.format || params.res_format || 'pdf');
+        var allowDownload = String(params.allow_download) !== '0';
+
+        var builtin = BUILTIN_COMMUNITY_RESOURCES.find(function (r) { return r.id === id; });
+        if (builtin) {
+            builtin.title = title;
+            if (authorName) builtin.author = authorName;
+            builtin.description = description;
+            builtin.category = category;
+            builtin.translated_by = translator;
+            builtin.language = language;
+            builtin.format = format;
+            builtin.type = format;
+            builtin.allow_download = allowDownload;
+            return Promise.resolve({ success: true, id: id, resource: builtin });
+        }
+
+        return requireUser(b).then(function (user) {
+            var ref = b.dbMod.doc(b.db, 'resources', id);
+            return b.dbMod.getDoc(ref).then(function (snap) {
+                if (!snap.exists()) throw new Error('That resource is no longer available.');
+                var existing = snap.data();
+                if (existing.authorUid && existing.authorUid !== user.uid) {
+                    throw new Error('Only the author who published this resource can edit it.');
+                }
+                var updates = {
+                    title: title,
+                    description: description,
+                    category: category,
+                    format: format,
+                    translated_by: translator,
+                    language: language,
+                    allow_download: allowDownload,
+                    updatedAt: b.dbMod.serverTimestamp()
+                };
+                if (authorName) {
+                    updates['author.name'] = authorName;
+                }
+                return b.dbMod.updateDoc(ref, updates).then(function () {
+                    var updatedDoc = Object.assign({}, existing, updates);
+                    return { success: true, id: id, resource: shapeResource(id, updatedDoc, user) };
+                });
+            });
+        });
+    };
+
     actions.cv_delete_resource = function (b, params) {
         var id = text(params.resource_id || params.id);
         if (!id) throw new Error('That resource could not be found.');
-        return requireUser(b).then(function () {
-            return b.dbMod.deleteDoc(b.dbMod.doc(b.db, 'resources', id)).then(function () {
-                return { deleted: true, id: id };
+        return requireUser(b).then(function (user) {
+            var ref = b.dbMod.doc(b.db, 'resources', id);
+            return b.dbMod.getDoc(ref).then(function (snap) {
+                if (!snap.exists()) return { deleted: true, id: id };
+                var existing = snap.data();
+                if (existing.authorUid && existing.authorUid !== user.uid) {
+                    throw new Error('Only the author who published this resource can delete it.');
+                }
+                return b.dbMod.deleteDoc(ref).then(function () {
+                    return { deleted: true, id: id };
+                });
             });
         });
     };
@@ -1460,12 +1609,17 @@
     actions.cv_download_resource = function (b, params) {
         var id = text(params.resource_id || params.id);
         if (!id) throw new Error('That resource could not be found.');
+        var builtin = BUILTIN_COMMUNITY_RESOURCES.find(function (r) { return r.id === id; });
+        if (builtin) {
+            builtin.download_count = (builtin.download_count || 0) + 1;
+            return Promise.resolve({ id: id, url: builtin.file_url, download_url: builtin.file_url });
+        }
         return currentUser(b).then(function () {
             var ref = b.dbMod.doc(b.db, 'resources', id);
             return b.dbMod.getDoc(ref).then(function (snap) {
                 if (!snap.exists()) throw new Error('That resource is no longer available.');
                 b.dbMod.updateDoc(ref, { download_count: b.dbMod.increment(1) }).catch(function () {});
-                return { id: id, url: httpsUrl(snap.data().file_url), download_url: httpsUrl(snap.data().file_url) };
+                return { id: id, url: snap.data().file_url, download_url: snap.data().file_url };
             });
         });
     };
