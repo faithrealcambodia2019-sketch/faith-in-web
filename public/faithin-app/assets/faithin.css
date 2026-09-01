@@ -755,14 +755,14 @@ html.dark .msg-bubble.is-mine{ color:#0b1120; }
   .fi-resource-cover{ width:142px; height:181px; }
 }
 
-/* --- Library: 16:9 sermon/video grid, audio cards, in-app player --------- */
+/* --- Library: media grid, sermon/video grid, audio cards, in-app player --------- */
 .fi-media-grid{
-  display:grid; gap:20px 18px; padding-bottom:4px;
-  grid-template-columns:repeat(auto-fill,minmax(250px,1fr));
+  display:grid; gap:14px; padding-bottom:4px;
+  grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
   align-items:start;
 }
 @media (max-width:560px){
-  .fi-media-grid{ grid-template-columns:repeat(auto-fill,minmax(178px,1fr)); gap:16px 14px; }
+  .fi-media-grid{ grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px 10px; }
 }
 
 /* wide 16:9 sermon / video card */
