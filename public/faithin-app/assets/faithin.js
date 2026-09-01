@@ -53,13 +53,13 @@
     const bellActive = page === 'notifications';
 
     const header = document.createElement('header');
-    header.className = 'sticky top-0 z-50 bg-surface/90 backdrop-blur-xl border-b border-line';
+    header.className = 'sticky top-0 z-50 bg-surface/85 backdrop-blur-xl border-b border-line';
     header.innerHTML = `
-      <div class="max-w-[1200px] mx-auto h-[48px] sm:h-[56px] px-3 sm:px-4 flex items-center gap-3">
+      <div class="max-w-[1200px] mx-auto h-[56px] px-3 sm:px-4 flex items-center gap-3">
 
         <a href="/home" class="flex items-center gap-1.5 shrink-0 text-brand" aria-label="Faith In home">
-          <span class="text-[20px] sm:text-[22px] font-extrabold tracking-tight leading-none">FaithIn</span>
-          <i class="fa-solid fa-globe text-[14px] sm:text-[15px]"></i>
+          <span class="text-[22px] font-extrabold tracking-tight leading-none">FaithIn</span>
+          <i class="fa-solid fa-globe text-[15px]"></i>
         </a>
 
         <div class="relative flex-1 max-w-[320px] hidden md:block">
@@ -146,17 +146,17 @@
       </div>`;
 
     const tabs = document.createElement('nav');
-    tabs.className = 'lg:hidden fixed bottom-0 inset-x-0 z-50 bg-surface/95 backdrop-blur-xl border-t border-line shadow-[0_-2px_12px_rgba(0,0,0,0.06)]';
+    tabs.className = 'lg:hidden fixed bottom-0 inset-x-0 z-50 bg-surface/95 backdrop-blur-xl border-t border-line pb-[env(safe-area-inset-bottom)]';
     tabs.setAttribute('aria-label', 'Mobile');
     tabs.innerHTML = `
-      <div class="grid grid-cols-5 h-[48px] sm:h-14 items-center">
-        <a href="/home" class="top-link min-w-0 py-0.5"${page === 'home' ? ' aria-current="page"' : ''}><i class="fa-solid fa-house text-[15px]"></i><span class="text-[10px] sm:text-[11px] mt-0.5">Home</span></a>
-        <a href="/network" class="top-link min-w-0 py-0.5"${page === 'network' ? ' aria-current="page"' : ''}><i class="fa-solid fa-user-group text-[15px]"></i><span class="text-[10px] sm:text-[11px] mt-0.5">Network</span></a>
+      <div class="grid grid-cols-5 h-14">
+        <a href="/home" class="top-link min-w-0"${page === 'home' ? ' aria-current="page"' : ''}><i class="fa-solid fa-house"></i>Home</a>
+        <a href="/network" class="top-link min-w-0"${page === 'network' ? ' aria-current="page"' : ''}><i class="fa-solid fa-user-group"></i>Network</a>
         <button class="grid place-items-center" data-modal-open="modal-blessing" data-fallback="/home" aria-label="Add blessing">
-          <span class="w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-brand text-white dark:text-[#0b1120] grid place-items-center shadow-lift active:scale-95 transition-transform"><i class="fa-solid fa-plus text-[14px]"></i></span>
+          <span class="w-11 h-11 rounded-full bg-brand text-white dark:text-[#0b1120] grid place-items-center shadow-lift"><i class="fa-solid fa-plus"></i></span>
         </button>
-        <a href="/jobs" class="top-link min-w-0 py-0.5"${page === 'jobs' ? ' aria-current="page"' : ''}><i class="fa-solid fa-briefcase text-[15px]"></i><span class="text-[10px] sm:text-[11px] mt-0.5">Jobs</span></a>
-        <a href="/library" class="top-link min-w-0 py-0.5"${page === 'library' ? ' aria-current="page"' : ''}><i class="fa-solid fa-book-open text-[15px]"></i><span class="text-[10px] sm:text-[11px] mt-0.5">Library</span></a>
+        <a href="/jobs" class="top-link min-w-0"${page === 'jobs' ? ' aria-current="page"' : ''}><i class="fa-solid fa-briefcase"></i>Jobs</a>
+        <a href="/library" class="top-link min-w-0"${page === 'library' ? ' aria-current="page"' : ''}><i class="fa-solid fa-book-open"></i>Library</a>
       </div>`;
 
     const toasts = document.createElement('div');

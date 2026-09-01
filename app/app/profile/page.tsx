@@ -1,15 +1,11 @@
+import { auth } from "@/auth";
 import { db } from "@/lib/db";
 import { posts } from "@/lib/db/schema";
 import { count, eq } from "drizzle-orm";
 import ProfileClient from "./ProfileClient";
 import Link from "next/link";
-import { redirect } from "next/navigation";
-import { isOptionalServerBackendConfigured } from "@/lib/optional-server-backend";
 
 export default async function ProfilePage() {
-  if (!isOptionalServerBackendConfigured()) redirect("/home");
-
-  const { auth } = await import("@/auth");
   const session = await auth();
   
   let myPostCount = 0;
@@ -18,7 +14,7 @@ export default async function ProfilePage() {
       const result = await db.select({ value: count() }).from(posts).where(eq(posts.userId, session.user.id));
       myPostCount = result[0].value;
     }
-  } catch {}
+  } catch(e) {}
 
   return (
     <>

@@ -15,7 +15,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   ],
   callbacks: {
     session({ session, user }) {
-      Object.assign(session.user, { id: user.id });
+      // @ts-ignore - session.user.id exists with adapter
+      session.user.id = user.id;
       return session;
     },
   },

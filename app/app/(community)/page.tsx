@@ -2,28 +2,19 @@ import { db } from "@/lib/db";
 import { posts } from "@/lib/db/schema";
 import { desc } from "drizzle-orm";
 import Link from "next/link";
+import { auth } from "@/auth";
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
-import { isOptionalServerBackendConfigured } from "@/lib/optional-server-backend";
 
 // Server action to create post
 async function createPost(formData: FormData) {
   "use server";
-  if (!isOptionalServerBackendConfigured()) {
-    throw new Error("Optional server backend is unavailable");
-  }
-
-  const { auth } = await import("@/auth");
   const session = await auth();
   if (!session?.user?.id) throw new Error("Unauthorized");
-
-  const contentValue = formData.get("content");
-  const content = typeof contentValue === "string" ? contentValue.trim() : "";
-  const typeValue = formData.get("type");
-  const type =
-    typeValue === "testimony" || typeValue === "article" ? typeValue : "blessing";
-
-  if (!content || content.length > 5_000) return;
+  
+  const content = formData.get("content") as string;
+  const type = (formData.get("type") as "blessing" | "testimony" | "article") || "blessing";
+  
+  if (!content) return;
 
   await db.insert(posts).values({
     userId: session.user.id,
@@ -34,16 +25,11 @@ async function createPost(formData: FormData) {
   revalidatePath("/app");
 }
 
-void createPost;
-
 export default async function FeedPage() {
-  if (!isOptionalServerBackendConfigured()) redirect("/home");
-
-  const { auth } = await import("@/auth");
   const session = await auth();
-
+  
   // Fetch posts from database
-  let feedPosts: Array<typeof posts.$inferSelect> = [];
+  let feedPosts: any[] = [];
   try {
     feedPosts = await db.query.posts.findMany({
       orderBy: [desc(posts.createdAt)],
@@ -127,7 +113,7 @@ export default async function FeedPage() {
               «ដ្បិតព្រះទ្រង់ស្រឡាញ់មនុស្សលោក ដល់ម៉្លេះបានជាទ្រង់ប្រទានព្រះរាជបុត្រាទ្រង់តែ១ ដើម្បីឲ្យអ្នកណាដែលជឿដល់ព្រះរាជបុត្រានោះ មិនត្រូវវិនាសឡើយ គឺឲ្យមានជីវិតអស់កល្បជានិច្ចវិញ»
             </p>
             <p className="font-serif italic text-[14px] leading-relaxed text-ink">
-              &ldquo;For God so loved the world, that he gave his only begotten Son.&rdquo;
+              "For God so loved the world, that he gave his only begotten Son."
             </p>
           </blockquote>
           <div className="px-4 pb-3 text-right text-[11px] font-bold uppercase tracking-wide text-muted">យ៉ូហាន ៣:១៦ · John 3:16</div>

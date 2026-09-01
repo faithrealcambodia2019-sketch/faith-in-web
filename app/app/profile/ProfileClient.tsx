@@ -1,15 +1,8 @@
 "use client";
 import React, { useState } from 'react';
 import EditProfileModal from '@/components/EditProfileModal';
-import type { Session } from 'next-auth';
 
-export default function ProfilePageClient({
-  user,
-  postCount,
-}: {
-  user?: Session["user"];
-  postCount: number;
-}) {
+export default function ProfilePageClient({ user, postCount }: { user: any, postCount: number }) {
   const [isEditing, setIsEditing] = useState(false);
 
   return (

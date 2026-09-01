@@ -1,15 +1,12 @@
 import { ReactNode } from "react";
 import Link from "next/link";
+import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
 import { posts } from "@/lib/db/schema";
 import { count, eq } from "drizzle-orm";
-import { isOptionalServerBackendConfigured } from "@/lib/optional-server-backend";
 
 export default async function CommunityLayout({ children }: { children: ReactNode }) {
-  if (!isOptionalServerBackendConfigured()) redirect("/home");
-
-  const { auth } = await import("@/auth");
   const session = await auth();
 
   // Fetch real statistics
@@ -19,7 +16,7 @@ export default async function CommunityLayout({ children }: { children: ReactNod
       const result = await db.select({ value: count() }).from(posts).where(eq(posts.userId, session.user.id));
       myPostCount = result[0].value;
     }
-  } catch {}
+  } catch(e) {}
 
   return (
     <div className="font-sans min-h-screen pb-16 lg:pb-0" data-page="home">

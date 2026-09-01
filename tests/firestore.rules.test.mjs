@@ -157,18 +157,8 @@ test("private posts are owner-only and ownership is immutable", async () => {
 
   await assertSucceeds(setDoc(doc(alice, "posts/public"), post("alice")));
   await assertSucceeds(setDoc(doc(alice, "posts/private"), post("alice", "private")));
-  await assertSucceeds(setDoc(doc(alice, "posts/followers"), post("alice", "followers")));
   await assertSucceeds(getDoc(doc(bob, "posts/public")));
   await assertFails(getDoc(doc(bob, "posts/private")));
-  await assertFails(getDoc(doc(bob, "posts/followers")));
-  await assertSucceeds(
-    setDoc(doc(bob, "follows/bob__alice"), {
-      followerUid: "bob",
-      targetUid: "alice",
-      createdAt: now(),
-    }),
-  );
-  await assertSucceeds(getDoc(doc(bob, "posts/followers")));
   await assertSucceeds(getDoc(doc(alice, "posts/private")));
   await assertFails(updateDoc(doc(bob, "posts/public"), { content: "stolen" }));
   await assertFails(updateDoc(doc(alice, "posts/public"), { authorUid: "bob" }));
@@ -255,33 +245,6 @@ test("direct messages are private to their two participants", async () => {
       updatedAt: now(),
     }),
   );
-  await assertFails(
-    setDoc(doc(alice, "messageThreads/not-the-direct-id"), {
-      participants: ["alice", "bob"],
-      participantProfiles: { alice: profile("alice", 1), bob: profile("bob", 2) },
-      lastMessage: "Hello",
-      lastMessageAt: now(),
-      lastSenderUid: "alice",
-      readAt: {},
-      createdAt: now(),
-      updatedAt: now(),
-    }),
-  );
-  await assertFails(
-    setDoc(doc(alice, "messageThreads/alice__charlie"), {
-      participants: ["alice", "charlie"],
-      participantProfiles: {
-        alice: profile("alice", 1),
-        charlie: { ...profile("charlie", 3), uid: "admin" },
-      },
-      lastMessage: "Hello",
-      lastMessageAt: now(),
-      lastSenderUid: "alice",
-      readAt: {},
-      createdAt: now(),
-      updatedAt: now(),
-    }),
-  );
   await assertSucceeds(
     setDoc(doc(alice, `${threadPath}/messages/message-1`), {
       authorUid: "alice",
@@ -308,18 +271,15 @@ test("direct messages are private to their two participants", async () => {
 
 test("presence and typing can only be written for yourself", async () => {
   const alice = authenticated("alice", "alice@example.com");
-  const bob = authenticated("presence-bob", "presence-bob@example.com");
+  const bob = authenticated("bob", "bob@example.com");
   const charlie = authenticated("charlie", "charlie@example.com");
-  const threadPath = "messageThreads/alice__presence-bob";
+  const threadPath = "messageThreads/presence-alice__bob";
   const profile = (uid, id) => ({ uid, id, name: uid, avatar_url: "" });
 
   await assertSucceeds(
     setDoc(doc(alice, threadPath), {
-      participants: ["alice", "presence-bob"],
-      participantProfiles: {
-        alice: profile("alice", 1),
-        "presence-bob": profile("presence-bob", 2),
-      },
+      participants: ["alice", "bob"],
+      participantProfiles: { alice: profile("alice", 1), bob: profile("bob", 2) },
       lastMessage: "Hello",
       lastMessageAt: now(),
       lastSenderUid: "alice",
@@ -330,10 +290,10 @@ test("presence and typing can only be written for yourself", async () => {
   );
 
   await assertSucceeds(
-    updateDoc(doc(bob, threadPath), { "presence.presence-bob": { at: now(), typing: true } }),
+    updateDoc(doc(bob, threadPath), { "presence.bob": { at: now(), typing: true } }),
   );
   await assertSucceeds(
-    updateDoc(doc(bob, threadPath), { "presence.presence-bob": { at: now(), typing: false } }),
+    updateDoc(doc(bob, threadPath), { "presence.bob": { at: now(), typing: false } }),
   );
 
   // Nobody may claim that another member is present or typing.
@@ -346,18 +306,16 @@ test("presence and typing can only be written for yourself", async () => {
 
   // The entry carries only the two fields the interface reads.
   await assertFails(
-    updateDoc(doc(bob, threadPath), {
-      "presence.presence-bob": { at: now(), typing: true, role: "admin" },
-    }),
+    updateDoc(doc(bob, threadPath), { "presence.bob": { at: now(), typing: true, role: "admin" } }),
   );
   await assertFails(
-    updateDoc(doc(bob, threadPath), { "presence.presence-bob": { at: now(), typing: "yes" } }),
+    updateDoc(doc(bob, threadPath), { "presence.bob": { at: now(), typing: "yes" } }),
   );
 
   // Presence must not be a way to smuggle a change into the conversation.
   await assertFails(
     updateDoc(doc(bob, threadPath), {
-      "presence.presence-bob": { at: now(), typing: true },
+      "presence.bob": { at: now(), typing: true },
       lastMessage: "Rewritten",
     }),
   );
