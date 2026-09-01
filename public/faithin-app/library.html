@@ -18,10 +18,10 @@
 <link href="/faithin-app/assets/faithin.css?v=20260901-v70" rel="stylesheet"/>
 </head>
 <body class="font-sans min-h-screen pb-16 lg:pb-0" data-page="library" data-search="Search Faith In">
-<main class="max-w-[1240px] mx-auto px-3 sm:px-4 py-5 grid gap-6 lg:grid-cols-[280px_minmax(0,1fr)] xl:grid-cols-[280px_minmax(0,1fr)_280px] items-start" id="main">
+<main class="fi-library-layout" id="main">
 
 <!-- ───── LEFT SIDEBAR ───── -->
-<aside class="hidden lg:block lg:sticky lg:top-[72px] space-y-4">
+<aside class="fi-library-sidebar">
   
   <!-- Card 1: My Library -->
   <div class="card p-3.5 rounded-xl bg-surface shadow-[0_1px_2px_rgba(0,0,0,0.06)] border border-line">
@@ -136,7 +136,7 @@
 </aside>
 
 <!-- ───── MAIN CONTENT AREA ───── -->
-<section class="min-w-0 space-y-4">
+<section class="fi-library-main">
   
   <!-- Header Section -->
   <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-1 bg-transparent">
@@ -171,14 +171,14 @@
   </div>
 
   <!-- Cards Grid -->
-  <div class="grid grid-cols-[repeat(auto-fill,minmax(230px,260px))] gap-4 sm:gap-5 justify-start" id="shelf">
+  <div class="fi-library-shelf" id="shelf">
     <p class="p-8 text-center text-[13.5px] text-muted col-span-full" data-placeholder="">Loading resources…</p>
   </div>
 
 </section>
 
 <!-- ───── RIGHT RAIL ───── -->
-<aside class="hidden xl:block xl:sticky xl:top-[72px] space-y-4">
+<aside class="fi-library-right-rail">
   <section class="card p-4 rounded-xl bg-surface shadow-[0_1px_2px_rgba(0,0,0,0.06)] border border-line">
     <div class="flex items-center justify-between mb-3">
       <h2 class="font-serif font-semibold text-[15px] flex items-center gap-2 text-ink">

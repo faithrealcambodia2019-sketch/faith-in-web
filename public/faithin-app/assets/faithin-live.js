@@ -501,7 +501,7 @@
 
   async function loadLibrary() {
     const shelf = $('#shelf'); if (!shelf) return;
-    shelf.className = 'grid grid-cols-[repeat(auto-fill,minmax(230px,260px))] gap-4 sm:gap-5 justify-start';
+    shelf.className = 'fi-library-shelf';
     $$('[data-rail-prev],[data-rail-next]').forEach(button => { button.style.display = 'none'; });
     let resources = [], rendered = [], savedIds = new Set(), searchQuery = '';
     const view = new URLSearchParams(location.search).get('view');

@@ -747,7 +747,77 @@ html.dark .msg-bubble.is-mine{ color:#0b1120; }
 
 /* Compact Library shelf cards. Explicit CSS keeps the fixed book dimensions
    reliable even though these cards are created dynamically after page load. */
-/* --- Library: Modern Facebook-style shelf & card system ----------------- */
+/* --- Dedicated Rock-Solid Library Layout System ----------------------- */
+.fi-library-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 20px 16px 48px;
+  align-items: start;
+}
+@media (min-width: 900px) {
+  .fi-library-layout {
+    grid-template-columns: 280px minmax(0, 1fr);
+  }
+}
+@media (min-width: 1200px) {
+  .fi-library-layout {
+    grid-template-columns: 280px minmax(0, 1fr) 280px;
+  }
+}
+
+.fi-library-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  position: sticky;
+  top: 76px;
+}
+@media (max-width: 899px) {
+  .fi-library-sidebar {
+    display: none !important;
+  }
+}
+
+.fi-library-right-rail {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  position: sticky;
+  top: 76px;
+}
+@media (max-width: 1199px) {
+  .fi-library-right-rail {
+    display: none !important;
+  }
+}
+
+.fi-library-main {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Shelf Grid */
+.fi-library-shelf {
+  display: grid;
+  gap: 18px;
+  grid-template-columns: 1fr;
+}
+@media (min-width: 540px) {
+  .fi-library-shelf {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (min-width: 900px) {
+  .fi-library-shelf {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 .fb-publish-btn {
   display: inline-flex !important;
   align-items: center !important;
@@ -834,7 +904,7 @@ html.dark .fb-filter-chip.is-active {
 .fb-library-card {
   width: 100%;
   background: #ffffff;
-  border-radius: 14px;
+  border-radius: 12px;
   border: 1px solid #e2e8f0;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03);
   overflow: hidden;
