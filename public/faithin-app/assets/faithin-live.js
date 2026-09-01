@@ -557,7 +557,91 @@
     };
     try {
       const [result, saved] = await Promise.all([api.request('cv_get_resources'), api.request('cv_get_bookmarks').catch(() => ({ items: [] }))]);
-      resources = result.items || [];
+      const fetched = result.items || [];
+      const builtin = [
+        {
+          id: 'mhc-genesis-01-full',
+          title: 'MHC លោកុប្បត្តិ ជំពូកទី១ (ពេញលេញ ៣២ ទំព័រ)',
+          description: 'អភិប្រាយកណ្ឌគម្ពីរលោកុប្បត្តិ ជំពូក១ ទាំងមូល អមដោយសេចក្តីសង្កេតជាលក្ខណៈអនុវត្ត ដោយ មែធ្យូ ហិនរី បកប្រែដោយ អា៊ាម សំអាត',
+          category: 'Theology',
+          format: 'pdf',
+          type: 'pdf',
+          author: 'មែធ្យូ ហិនរី',
+          contributor_name: 'Hun Chet',
+          translated_by: 'SamAth Em (អា៊ាម សំអាត)',
+          language: 'Khmer (ភាសាខ្មែរ)',
+          file_url: '/library/mhc-gen-01-full-exposition.pdf',
+          download_url: '/library/mhc-gen-01-full-exposition.pdf',
+          filename: 'mhc-gen-01-full-exposition.pdf',
+          thumbnail_url: '',
+          download_count: 14,
+          view_count: 85,
+          allow_download: true,
+          can_delete: false
+        },
+        {
+          id: 'mhc-genesis-02-complete',
+          title: 'MHC លោកុប្បត្តិ ជំពូកទី២',
+          description: 'អភិប្រាយព្រះគម្ពីរប៊ីប លោកុប្បត្តិ ជំពូកទី២ អំពីថ្ងៃសប្ប័ទដ៏បរិសុទ្ធ សួនអេដែន និងការបង្កើតមនុស្ស ដោយ មែធ្យូ ហិនរី បកប្រែដោយ អា៊ាម សំអាត',
+          category: 'Bible Study',
+          format: 'pdf',
+          type: 'pdf',
+          author: 'មែធ្យូ ហិនរី',
+          contributor_name: 'Hun Chet',
+          translated_by: 'SamAth Em (អា៊ាម សំអាត)',
+          language: 'Khmer (ភាសាខ្មែរ)',
+          file_url: '/library/mhc-gen-02-complete.pdf',
+          download_url: '/library/mhc-gen-02-complete.pdf',
+          filename: 'mhc-gen-02-complete.pdf',
+          thumbnail_url: '',
+          download_count: 11,
+          view_count: 64,
+          allow_download: true,
+          can_delete: false
+        },
+        {
+          id: 'mhc-genesis-01-14-19',
+          title: 'MHC លោកុប្បត្តិ ១:១៤-១៩',
+          description: 'អភិប្រាយព្រះគម្ពីរប៊ីប លោកុប្បត្តិ ១:១៤-១៩ អំពីការបង្កើតថ្ងៃ ខែ និងផ្កាយនៅថ្ងៃទី៤ ដោយ មែធ្យូ ហិនរី បកប្រែដោយ អា៊ាម សំអាត',
+          category: 'Bible Study',
+          format: 'pdf',
+          type: 'pdf',
+          author: 'មែធ្យូ ហិនរី',
+          contributor_name: 'Hun Chet',
+          translated_by: 'SamAth Em (អា៊ាម សំអាត)',
+          language: 'Khmer (ភាសាខ្មែរ)',
+          file_url: '/library/mhc-gen-01-14-19.pdf',
+          download_url: '/library/mhc-gen-01-14-19.pdf',
+          filename: 'mhc-gen-01-14-19.pdf',
+          thumbnail_url: '',
+          download_count: 8,
+          view_count: 52,
+          allow_download: true,
+          can_delete: false
+        },
+        {
+          id: 'mhc-genesis-01-06-13',
+          title: 'MHC លោកុប្បត្តិ ១:៦-១៣',
+          description: 'អភិប្រាយព្រះគម្ពីរប៊ីប លោកុប្បត្តិ ១:៦-៨ និង ១:៩-១៣ អំពីការបង្កើតផ្ទៃមេឃ និងដីគោកនៅថ្ងៃទី២ និងទី៣ ដោយ មែធ្យូ ហិនរី បកប្រែដោយ អា៊ាម សំអាត',
+          category: 'Bible Study',
+          format: 'pdf',
+          type: 'pdf',
+          author: 'មែធ្យូ ហិនរី',
+          contributor_name: 'Hun Chet',
+          translated_by: 'SamAth Em (អា៊ាម សំអាត)',
+          language: 'Khmer (ភាសាខ្មែរ)',
+          file_url: '/library/mhc-gen-01-06-13.pdf',
+          download_url: '/library/mhc-gen-01-06-13.pdf',
+          filename: 'mhc-gen-01-06-13.pdf',
+          thumbnail_url: '',
+          download_count: 6,
+          view_count: 41,
+          allow_download: true,
+          can_delete: false
+        }
+      ];
+      const existingIds = new Set(fetched.map(it => it.id));
+      resources = fetched.concat(builtin.filter(b => !existingIds.has(b.id)));
       savedIds = new Set((saved.items || []).filter(row => row.object_type === 'resource').map(row => row.object_id));
       render();
     } catch (error) { shelf.innerHTML = emptyState(error.message); }
