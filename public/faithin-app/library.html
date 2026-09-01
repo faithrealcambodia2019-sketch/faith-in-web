@@ -18,117 +18,117 @@
 <link href="/faithin-app/assets/faithin.css?v=20260901-v60" rel="stylesheet"/>
 </head>
 <body class="font-sans min-h-screen pb-16 lg:pb-0" data-page="library" data-search="Search Faith In">
-<main class="max-w-[1200px] mx-auto px-4 py-5 flex items-start gap-6 w-full pb-12" id="main">
+<main class="max-w-[1240px] mx-auto px-3 sm:px-4 py-5 grid gap-6 lg:grid-cols-[280px_minmax(0,1fr)] xl:grid-cols-[280px_minmax(0,1fr)_280px] items-start" id="main">
 
 <!-- ───── LEFT SIDEBAR ───── -->
-<aside class="hidden md:flex flex-col w-[320px] sticky top-[72px] gap-4 flex-shrink-0 max-h-[calc(100vh-72px)] overflow-y-auto pb-4">
+<aside class="hidden lg:block lg:sticky lg:top-[72px] space-y-4">
   
   <!-- Card 1: My Library -->
-  <div class="card p-4 rounded-lg bg-surface shadow-[0_1px_2px_rgba(0,0,0,0.1)] border border-line">
-    <h2 class="text-[17px] font-bold text-ink mb-2 px-1">My Library</h2>
+  <div class="card p-3.5 rounded-xl bg-surface shadow-[0_1px_2px_rgba(0,0,0,0.06)] border border-line">
+    <h2 class="text-[16px] font-bold text-ink mb-2 px-1">My Library</h2>
     <ul class="flex flex-col space-y-1">
       <li>
-        <a href="/library" class="side-link flex items-center gap-3 px-3 py-2.5 rounded-md transition-colors">
-          <div class="w-6 h-6 flex items-center justify-center">
-            <i class="fa-solid fa-compass text-[18px]"></i>
+        <a href="/library" class="side-link flex items-center gap-3 px-3 py-2 rounded-lg transition-colors">
+          <div class="w-5 h-5 flex items-center justify-center">
+            <i class="fa-solid fa-compass text-[17px] text-[#1877F2]"></i>
           </div>
-          <span class="font-semibold text-[15px]">Discover</span>
+          <span class="font-semibold text-[14.5px]">Discover</span>
         </a>
       </li>
       <li>
-        <a href="/library?view=saved" class="side-link flex items-center gap-3 px-3 py-2.5 rounded-md transition-colors">
-          <div class="w-6 h-6 flex items-center justify-center">
-            <i class="fa-solid fa-bookmark text-[18px]"></i>
+        <a href="/library?view=saved" class="side-link flex items-center gap-3 px-3 py-2 rounded-lg transition-colors">
+          <div class="w-5 h-5 flex items-center justify-center">
+            <i class="fa-solid fa-bookmark text-[17px]"></i>
           </div>
-          <span class="font-medium text-[15px]">Saved Items</span>
+          <span class="font-medium text-[14.5px]">Saved Items</span>
         </a>
       </li>
     </ul>
   </div>
 
   <!-- Card 2: Browse Formats & Categories -->
-  <div class="card p-4 rounded-lg bg-surface shadow-[0_1px_2px_rgba(0,0,0,0.1)] border border-line">
-    <h2 class="text-[17px] font-bold text-ink mb-2 px-1">Browse Formats</h2>
-    <ul class="flex flex-col space-y-1 mb-3">
+  <div class="card p-3.5 rounded-xl bg-surface shadow-[0_1px_2px_rgba(0,0,0,0.06)] border border-line">
+    <h2 class="text-[16px] font-bold text-ink mb-2 px-1">Browse Formats</h2>
+    <ul class="flex flex-col space-y-1 mb-2.5">
       <li>
-        <a href="/library?format=pdf" class="side-link flex items-center gap-3 px-3 py-2.5 rounded-md transition-colors">
-          <div class="w-6 h-6 flex items-center justify-center">
-            <i class="fa-solid fa-file-lines text-orange-500 text-[18px]"></i>
+        <a href="/library?format=pdf" class="side-link flex items-center gap-3 px-3 py-2 rounded-lg transition-colors">
+          <div class="w-5 h-5 flex items-center justify-center">
+            <i class="fa-solid fa-file-lines text-orange-500 text-[17px]"></i>
           </div>
-          <span class="font-medium text-[15px]">PDF Books &amp; Studies</span>
+          <span class="font-medium text-[14.5px]">PDF Books &amp; Studies</span>
         </a>
       </li>
       <li>
-        <a href="/library?format=video" class="side-link flex items-center gap-3 px-3 py-2.5 rounded-md transition-colors">
-          <div class="w-6 h-6 flex items-center justify-center">
-            <i class="fa-solid fa-video text-red-500 text-[18px]"></i>
+        <a href="/library?format=video" class="side-link flex items-center gap-3 px-3 py-2 rounded-lg transition-colors">
+          <div class="w-5 h-5 flex items-center justify-center">
+            <i class="fa-solid fa-video text-red-500 text-[17px]"></i>
           </div>
-          <span class="font-medium text-[15px]">Sermons &amp; Videos</span>
+          <span class="font-medium text-[14.5px]">Sermons &amp; Videos</span>
         </a>
       </li>
       <li>
-        <a href="/library?format=audio" class="side-link flex items-center gap-3 px-3 py-2.5 rounded-md transition-colors">
-          <div class="w-6 h-6 flex items-center justify-center">
-            <i class="fa-solid fa-headphones text-purple-500 text-[18px]"></i>
+        <a href="/library?format=audio" class="side-link flex items-center gap-3 px-3 py-2 rounded-lg transition-colors">
+          <div class="w-5 h-5 flex items-center justify-center">
+            <i class="fa-solid fa-headphones text-purple-500 text-[17px]"></i>
           </div>
-          <span class="font-medium text-[15px]">Podcasts &amp; Audio</span>
+          <span class="font-medium text-[14.5px]">Podcasts &amp; Audio</span>
         </a>
       </li>
     </ul>
 
     <hr class="border-line my-2 mx-1">
 
-    <h2 class="text-[17px] font-bold text-ink mt-4 mb-2 px-1">Categories</h2>
-    <ul class="flex flex-col space-y-1" data-categories="">
+    <h2 class="text-[16px] font-bold text-ink mt-3 mb-2 px-1">Categories</h2>
+    <ul class="flex flex-col space-y-0.5" data-categories="">
       <li>
-        <a href="/library?category=Theology" class="side-link flex items-center px-3 py-2 rounded-md transition-colors">
-          <span class="font-medium text-[15px]">Theology</span>
+        <a href="/library?category=Theology" class="side-link flex items-center px-3 py-1.5 rounded-lg transition-colors text-[14px]">
+          <span>Theology</span>
         </a>
       </li>
       <li>
-        <a href="/library?category=Christian Living" class="side-link flex items-center px-3 py-2 rounded-md transition-colors">
-          <span class="font-medium text-[15px]">Christian Living</span>
+        <a href="/library?category=Christian Living" class="side-link flex items-center px-3 py-1.5 rounded-lg transition-colors text-[14px]">
+          <span>Christian Living</span>
         </a>
       </li>
       <li>
-        <a href="/library?category=Apologetics" class="side-link flex items-center px-3 py-2 rounded-md transition-colors">
-          <span class="font-medium text-[15px]">Apologetics</span>
+        <a href="/library?category=Apologetics" class="side-link flex items-center px-3 py-1.5 rounded-lg transition-colors text-[14px]">
+          <span>Apologetics</span>
         </a>
       </li>
       <li>
-        <a href="/library?category=Marriage and Family" class="side-link flex items-center px-3 py-2 rounded-md transition-colors">
-          <span class="font-medium text-[15px]">Marriage &amp; Family</span>
+        <a href="/library?category=Marriage and Family" class="side-link flex items-center px-3 py-1.5 rounded-lg transition-colors text-[14px]">
+          <span>Marriage &amp; Family</span>
         </a>
       </li>
       <li>
-        <a href="/library?category=Leadership" class="side-link flex items-center px-3 py-2 rounded-md transition-colors">
-          <span class="font-medium text-[15px]">Leadership</span>
+        <a href="/library?category=Leadership" class="side-link flex items-center px-3 py-1.5 rounded-lg transition-colors text-[14px]">
+          <span>Leadership</span>
         </a>
       </li>
       <li>
-        <a href="/library?category=Daily Devotionals" class="side-link flex items-center px-3 py-2 rounded-md transition-colors">
-          <span class="font-medium text-[15px]">Daily Devotionals</span>
+        <a href="/library?category=Daily Devotionals" class="side-link flex items-center px-3 py-1.5 rounded-lg transition-colors text-[14px]">
+          <span>Daily Devotionals</span>
         </a>
       </li>
       <li>
-        <a href="/library?category=Missions" class="side-link hidden flex items-center px-3 py-2 rounded-md transition-colors" data-more-cat="">
-          <span class="font-medium text-[15px]">Missions</span>
+        <a href="/library?category=Missions" class="side-link hidden flex items-center px-3 py-1.5 rounded-lg transition-colors text-[14px]" data-more-cat="">
+          <span>Missions</span>
         </a>
       </li>
       <li>
-        <a href="/library?category=Church History" class="side-link hidden flex items-center px-3 py-2 rounded-md transition-colors" data-more-cat="">
-          <span class="font-medium text-[15px]">Church History</span>
+        <a href="/library?category=Church History" class="side-link hidden flex items-center px-3 py-1.5 rounded-lg transition-colors text-[14px]" data-more-cat="">
+          <span>Church History</span>
         </a>
       </li>
       <li>
-        <a href="/library?category=Prayer and Fasting" class="side-link hidden flex items-center px-3 py-2 rounded-md transition-colors" data-more-cat="">
-          <span class="font-medium text-[15px]">Prayer &amp; Fasting</span>
+        <a href="/library?category=Prayer and Fasting" class="side-link hidden flex items-center px-3 py-1.5 rounded-lg transition-colors text-[14px]" data-more-cat="">
+          <span>Prayer &amp; Fasting</span>
         </a>
       </li>
       <li>
-        <button class="flex items-center justify-between px-3 py-2 hover:bg-raised rounded-md transition-colors w-full text-left !text-brand" id="show-more-cats">
-          <span class="font-medium text-[15px]">Show more</span>
-          <i class="fa-solid fa-chevron-down text-[12px]"></i>
+        <button class="flex items-center justify-between px-3 py-2 hover:bg-raised rounded-lg transition-colors w-full text-left !text-[#1877F2] font-semibold text-[14px]" id="show-more-cats">
+          <span>Show more</span>
+          <i class="fa-solid fa-chevron-down text-[11px]"></i>
         </button>
       </li>
     </ul>
@@ -136,44 +136,75 @@
 </aside>
 
 <!-- ───── MAIN CONTENT AREA ───── -->
-<section class="flex-1 w-full min-w-0">
+<section class="min-w-0 space-y-4">
   
   <!-- Header Section -->
-  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 bg-transparent">
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-2 bg-transparent">
     <div>
-      <h1 class="text-[18px] sm:text-[20px] font-bold text-ink leading-tight" id="library-title">Recommended for you</h1>
-      <p class="text-[13px] sm:text-[14px] text-muted mt-0.5" id="library-subtitle">Resources published by the Faith In community</p>
+      <h1 class="text-[20px] sm:text-[22px] font-bold text-ink leading-tight" id="library-title">Recommended for you</h1>
+      <p class="text-[13.5px] sm:text-[14px] text-muted mt-0.5" id="library-subtitle">Resources published by the Faith In community</p>
     </div>
-    <button class="inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 sm:px-4 sm:py-2 bg-[#1877F2] hover:bg-blue-600 text-white font-semibold text-[13px] sm:text-[14px] rounded-lg shadow-sm transition whitespace-nowrap cursor-pointer" data-publish-resource>
-      <i class="fa-solid fa-plus text-[13px]"></i>
+    <button class="fb-publish-btn" data-publish-resource>
+      <i class="fa-solid fa-plus"></i>
       <span>Publish resource</span>
     </button>
   </div>
 
   <!-- Cards Grid -->
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5" id="shelf">
+  <div class="grid grid-cols-[repeat(auto-fill,minmax(230px,260px))] gap-4 sm:gap-5 justify-start" id="shelf">
     <p class="p-8 text-center text-[13.5px] text-muted col-span-full" data-placeholder="">Loading resources…</p>
   </div>
 
 </section>
+
+<!-- ───── RIGHT RAIL ───── -->
+<aside class="hidden xl:block xl:sticky xl:top-[72px] space-y-4">
+  <section class="card p-4 rounded-xl bg-surface shadow-[0_1px_2px_rgba(0,0,0,0.06)] border border-line">
+    <div class="flex items-center justify-between mb-3">
+      <h2 class="font-serif font-semibold text-[15px] flex items-center gap-2 text-ink">
+        <i class="fa-solid fa-sun text-gold text-[13px]"></i>Verse of the Day
+      </h2>
+      <button aria-label="Share verse" class="icon-btn w-8 h-8 rounded-full hover:bg-raised flex items-center justify-center text-muted">
+        <i class="fa-solid fa-share-nodes text-[13px]"></i>
+      </button>
+    </div>
+    <blockquote class="border-l-[3px] border-gold pl-3.5 py-1" id="votd">
+      <p class="font-serif italic text-[14.5px] leading-relaxed text-ink">"Your word is a lamp for my feet, a light on my path."</p>
+    </blockquote>
+    <div class="flex items-center justify-between mt-3.5 pt-3 border-t border-line">
+      <a class="text-[13px] font-semibold text-brand hover:underline" href="/bible-study">Open Bible Study</a>
+      <span class="text-[11px] font-bold uppercase tracking-wide text-muted" data-votd-ref="">Psalm 119:105</span>
+    </div>
+  </section>
+  <footer class="px-2 pb-4 text-center space-y-2">
+    <p class="text-[11.5px] text-muted">
+      <a class="hover:text-brand hover:underline" href="/about">About</a> ·
+      <a class="hover:text-brand hover:underline" href="/contact">Help Center</a> ·
+      <a class="hover:text-brand hover:underline" href="/privacy">Privacy</a> · 
+      <a class="hover:text-brand hover:underline" href="/terms">Terms</a>
+    </p>
+    <p class="text-[11.5px] text-faint">Faith In Corporation © 2026</p>
+  </footer>
+</aside>
+
 </main>
 
-<script src="/faithin-app/assets/faithin-runtime.js?v=20260901-v60"></script>
-<script src="/faithin-app/assets/faithin-blob-upload.js?v=20260901-v60"></script>
-<script src="/assets/js/faith-in-backend.js?v=20260901-v60"></script>
-<script src="/faithin-app/assets/faithin.js?v=20260901-v60"></script>
+<script src="/faithin-app/assets/faithin-runtime.js?v=20260901-v65"></script>
+<script src="/faithin-app/assets/faithin-blob-upload.js?v=20260901-v65"></script>
+<script src="/assets/js/faith-in-backend.js?v=20260901-v65"></script>
+<script src="/faithin-app/assets/faithin.js?v=20260901-v65"></script>
 <script>
   document.getElementById('show-more-cats')?.addEventListener('click', function () {
     const hidden = document.querySelectorAll('[data-more-cat].hidden');
     if (hidden.length) {
       hidden.forEach(el => el.classList.remove('hidden'));
-      this.innerHTML = '<span class="font-medium text-[15px]">Show less</span><i class="fa-solid fa-chevron-up text-[12px]"></i>';
+      this.innerHTML = '<span>Show less</span><i class="fa-solid fa-chevron-up text-[11px] ml-auto"></i>';
     } else {
       document.querySelectorAll('[data-more-cat]').forEach(el => el.classList.add('hidden'));
-      this.innerHTML = '<span class="font-medium text-[15px]">Show more</span><i class="fa-solid fa-chevron-down text-[12px]"></i>';
+      this.innerHTML = '<span>Show more</span><i class="fa-solid fa-chevron-down text-[11px] ml-auto"></i>';
     }
   });
 </script>
-<script src="/faithin-app/assets/faithin-live.js?v=20260901-v60"></script>
+<script src="/faithin-app/assets/faithin-live.js?v=20260901-v65"></script>
 </body>
 </html>

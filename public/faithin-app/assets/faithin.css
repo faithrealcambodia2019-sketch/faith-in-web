@@ -748,19 +748,52 @@ html.dark .msg-bubble.is-mine{ color:#0b1120; }
 /* Compact Library shelf cards. Explicit CSS keeps the fixed book dimensions
    reliable even though these cards are created dynamically after page load. */
 /* --- Library: Facebook-style shelf & card system ------------------------ */
+.fb-publish-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 7px !important;
+  padding: 8px 16px !important;
+  background-color: #1877F2 !important;
+  color: #ffffff !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  border-radius: 6px !important;
+  border: none !important;
+  cursor: pointer !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12) !important;
+  transition: background-color 0.15s ease, transform 0.1s ease !important;
+  text-decoration: none !important;
+  white-space: nowrap !important;
+}
+.fb-publish-btn:hover {
+  background-color: #166fe5 !important;
+  color: #ffffff !important;
+}
+.fb-publish-btn:active {
+  background-color: #1464cc !important;
+  transform: scale(0.98) !important;
+}
+.fb-publish-btn i {
+  color: #ffffff !important;
+  font-size: 13px !important;
+}
+
 .fb-library-card {
+  width: 100%;
+  max-width: 270px;
   background: #ffffff;
   border-radius: 10px;
-  border: 1px solid #e4e6eb;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .fb-library-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.09);
 }
 html.dark .fb-library-card {
   background: #1e293b;
@@ -770,11 +803,11 @@ html.dark .fb-library-card {
 
 .fb-library-cover-box {
   background-color: #F0F2F5;
-  height: 240px;
+  height: 210px;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 20px;
+  padding: 16px;
   position: relative;
   overflow: hidden;
 }
@@ -794,26 +827,26 @@ html.dark .fb-library-cover-box {
   transform: scale(1.04);
 }
 .fb-book-3d-wrap img {
-  max-height: 190px;
-  max-width: 140px;
+  max-height: 175px;
+  max-width: 130px;
   width: auto;
   height: auto;
   object-fit: contain;
   border-radius: 2px 6px 6px 2px;
-  filter: drop-shadow(4px 6px 12px rgba(0, 0, 0, 0.22));
+  filter: drop-shadow(3px 6px 12px rgba(0, 0, 0, 0.22));
 }
 
 /* CSS fallback 3D book when no thumbnail is uploaded */
 .fb-book-fallback {
-  width: 130px;
-  height: 185px;
+  width: 120px;
+  height: 175px;
   display: flex;
   border-radius: 2px 6px 6px 2px;
-  box-shadow: 4px 6px 14px rgba(0, 0, 0, 0.22);
+  box-shadow: 3px 6px 12px rgba(0, 0, 0, 0.22);
   overflow: hidden;
 }
 .fb-book-spine {
-  width: 16px;
+  width: 14px;
   background: #111827;
   display: flex;
   flex-direction: column;
@@ -835,22 +868,22 @@ html.dark .fb-library-cover-box {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 24px 8px 12px;
+  padding: 20px 8px 10px;
   border-left: 1px solid #111827;
-  box-shadow: inset 4px 0 10px rgba(0, 0, 0, 0.3);
+  box-shadow: inset 3px 0 8px rgba(0, 0, 0, 0.3);
 }
 .fb-book-badge {
   border: 1px solid #ca8a04;
-  padding: 8px 4px;
+  padding: 6px 4px;
   text-align: center;
   width: 90%;
   background: #1e4d3b;
 }
 .fb-book-author {
   color: #eab308;
-  font-size: 8.5px;
+  font-size: 8px;
   font-weight: 700;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.04em;
   line-height: 1.2;
   text-transform: uppercase;
 }
@@ -858,12 +891,12 @@ html.dark .fb-library-cover-box {
   width: 100%;
   height: 1px;
   background: #ca8a04;
-  margin: 4px 0;
+  margin: 3px 0;
   opacity: 0.8;
 }
 .fb-book-title {
   color: #ffffff;
-  font-size: 7.5px;
+  font-size: 7px;
   font-weight: 500;
   letter-spacing: 0.02em;
   display: -webkit-box;
@@ -875,17 +908,17 @@ html.dark .fb-library-cover-box {
 
 /* Card details area */
 .fb-card-body {
-  padding: 16px 18px;
+  padding: 14px 16px 12px;
   display: flex;
   flex-direction: column;
   flex: 1;
 }
 .fb-card-title {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 700;
-  color: #111827;
+  color: #0f172a;
   line-height: 1.35;
-  margin-bottom: 4px;
+  margin-bottom: 3px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -894,24 +927,24 @@ html.dark .fb-card-title {
   color: #f8fafc;
 }
 .fb-card-author {
-  font-size: 13px;
-  color: #6b7280;
+  font-size: 12.5px;
+  color: #64748b;
   margin-bottom: 2px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 .fb-card-author strong {
-  color: #111827;
+  color: #0f172a;
   font-weight: 600;
 }
 html.dark .fb-card-author strong {
   color: #e2e8f0;
 }
 .fb-card-translator {
-  font-size: 12.5px;
-  color: #6b7280;
-  margin-bottom: 8px;
+  font-size: 12px;
+  color: #64748b;
+  margin-bottom: 6px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -923,16 +956,16 @@ html.dark .fb-card-translator {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 3px 10px;
-  border-radius: 5px;
+  padding: 2px 8px;
+  border-radius: 4px;
   background: #E7F3FF;
   color: #1877F2;
-  font-size: 11.5px;
+  font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
   width: fit-content;
   margin-top: 2px;
-  margin-bottom: 14px;
+  margin-bottom: 10px;
 }
 html.dark .fb-format-pill {
   background: rgba(24, 119, 242, 0.2);
@@ -941,8 +974,8 @@ html.dark .fb-format-pill {
 
 .fb-card-footer {
   margin-top: auto;
-  padding-top: 12px;
-  border-top: 1px solid #f1f3f5;
+  padding-top: 10px;
+  border-top: 1px solid #f1f5f9;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -953,11 +986,11 @@ html.dark .fb-card-footer {
 .fb-download-btn {
   display: flex;
   align-items: center;
-  gap: 6px;
-  font-size: 14px;
-  font-weight: 500;
-  color: #4b5563;
-  padding: 4px 8px;
+  gap: 5px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #475569;
+  padding: 4px 6px;
   border-radius: 6px;
   cursor: pointer;
   transition: background 0.15s ease, color 0.15s ease;
@@ -965,8 +998,8 @@ html.dark .fb-card-footer {
   border: none;
 }
 .fb-download-btn:hover {
-  background: #f3f4f6;
-  color: #111827;
+  background: #f1f5f9;
+  color: #0f172a;
 }
 html.dark .fb-download-btn {
   color: #94a3b8;
@@ -977,30 +1010,30 @@ html.dark .fb-download-btn:hover {
 }
 .fb-download-btn i {
   color: #1877F2;
-  font-size: 14px;
+  font-size: 13px;
 }
 
 .fb-card-actions {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 2px;
 }
 .fb-action-icon-btn {
-  width: 34px;
-  height: 34px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #6b7280;
+  color: #64748b;
   background: transparent;
   border: none;
   cursor: pointer;
   transition: background 0.15s ease, color 0.15s ease;
 }
 .fb-action-icon-btn:hover {
-  background: #f3f4f6;
-  color: #111827;
+  background: #f1f5f9;
+  color: #0f172a;
 }
 html.dark .fb-action-icon-btn {
   color: #94a3b8;
