@@ -478,16 +478,13 @@
 
   /* ── Pane Visibility (Mobile vs Desktop) ────────────────────────────────── */
   function showConversationPane() {
-    inboxPane.classList.add('hidden', 'md:flex');
-    conversationPane.classList.remove('hidden');
-    conversationPane.classList.add('flex');
+    inboxPane.classList.add('hidden-mobile');
+    conversationPane.classList.remove('hidden-mobile');
   }
 
   function showInboxPane() {
-    inboxPane.classList.remove('hidden');
-    conversationPane.classList.add('hidden');
-    conversationPane.classList.remove('flex');
-    conversationPane.classList.add('md:flex');
+    inboxPane.classList.remove('hidden-mobile');
+    conversationPane.classList.add('hidden-mobile');
   }
 
   /* ── Wiring Event Listeners ─────────────────────────────────────────────── */

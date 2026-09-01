@@ -19,28 +19,28 @@
 <link href="/faithin-app/assets/faithin.css?v=20260831-v24" rel="stylesheet"/>
 </head>
 <body class="font-sans min-h-screen pb-16 lg:pb-0" data-page="messaging" data-search="Search messages">
-<main class="max-w-[1400px] mx-auto px-0 sm:px-4 py-0 sm:py-4" id="main">
-<div class="card overflow-hidden msg-shell relative">
+<main class="fi-msg-wrapper" id="main">
+<div class="fi-msg-container">
 
 <!-- ───── INBOX (LEFT) ───── -->
-<aside class="w-full md:w-[360px] md:shrink-0 flex flex-col min-h-0 border-line md:border-r bg-white dark:bg-[#18191a] z-10" data-pane="inbox">
-<header class="flex items-center justify-between gap-2 px-4 pt-4 pb-3">
-<h1 class="text-[22px] sm:text-[24px] font-bold text-[#1c1e21] dark:text-white leading-tight">Messaging</h1>
-<div class="flex items-center gap-1.5">
-<button aria-label="More options" class="w-9 h-9 rounded-full bg-[#f0f2f5] dark:bg-[#242526] hover:bg-[#e4e6eb] dark:hover:bg-[#3a3b3c] transition text-[#65676b] dark:text-gray-300 flex items-center justify-center" data-filter-unread title="Filter conversations" type="button">
-<i class="fa-solid fa-ellipsis text-base"></i>
+<aside class="fi-msg-inbox" data-pane="inbox">
+<header class="flex items-center justify-between gap-2 px-3.5 pt-3.5 pb-2.5">
+<h1 class="text-[20px] font-bold text-[#1c1e21] dark:text-white leading-tight">Messaging</h1>
+<div class="flex items-center gap-1">
+<button aria-label="More options" class="w-8 h-8 rounded-full bg-[#f0f2f5] dark:bg-[#242526] hover:bg-[#e4e6eb] dark:hover:bg-[#3a3b3c] transition text-[#65676b] dark:text-gray-300 flex items-center justify-center" data-filter-unread title="Filter conversations" type="button">
+<i class="fa-solid fa-ellipsis text-sm"></i>
 </button>
-<button aria-label="Start a new conversation" class="w-9 h-9 rounded-full bg-[#f0f2f5] dark:bg-[#242526] hover:bg-[#e4e6eb] dark:hover:bg-[#3a3b3c] text-[#1c1e21] dark:text-white transition flex items-center justify-center" data-new-message title="New message" type="button">
-<i class="fa-solid fa-pen-to-square text-base"></i>
+<button aria-label="Start a new conversation" class="w-8 h-8 rounded-full bg-[#f0f2f5] dark:bg-[#242526] hover:bg-[#e4e6eb] dark:hover:bg-[#3a3b3c] text-[#1c1e21] dark:text-white transition flex items-center justify-center" data-new-message title="New message" type="button">
+<i class="fa-solid fa-pen-to-square text-sm"></i>
 </button>
 </div>
 </header>
 
-<div class="px-4 pb-3">
-<div class="relative flex items-center w-full bg-[#f0f2f5] dark:bg-[#242526] rounded-full px-3.5 py-2 border border-transparent focus-within:bg-white dark:focus-within:bg-[#18191a] focus-within:border-[#1877f2] transition shadow-sm">
-<i class="fa-solid fa-magnifying-glass text-[14px] text-[#8d949e] shrink-0 pointer-events-none"></i>
+<div class="px-3 pb-2.5">
+<div class="relative flex items-center w-full bg-[#f0f2f5] dark:bg-[#242526] rounded-full px-3 py-1.5 border border-transparent focus-within:bg-white dark:focus-within:bg-[#18191a] focus-within:border-[#1877f2] transition shadow-sm">
+<i class="fa-solid fa-magnifying-glass text-[13px] text-[#8d949e] shrink-0 pointer-events-none"></i>
 <label class="sr-only" for="msg-search">Search messages</label>
-<input class="bg-transparent border-none outline-none text-[14.5px] text-[#1c1e21] dark:text-white placeholder-[#8d949e] ml-2.5 w-full" id="msg-search" placeholder="Search messages" type="search"/>
+<input class="bg-transparent border-none outline-none text-[13.5px] text-[#1c1e21] dark:text-white placeholder-[#8d949e] ml-2 w-full" id="msg-search" placeholder="Search messages" type="search"/>
 </div>
 </div>
 
@@ -50,30 +50,30 @@
 </aside>
 
 <!-- ───── CONVERSATION (CENTER) ───── -->
-<section aria-label="Conversation" class="hidden md:flex flex-1 flex-col min-w-0 min-h-0 bg-white dark:bg-[#18191a] relative" data-pane="conversation">
+<section aria-label="Conversation" class="fi-msg-chat" data-pane="conversation">
 
 <!-- Header -->
-<header class="h-[60px] shrink-0 px-4 flex items-center justify-between border-b border-[#ccd0d5] dark:border-[#3a3b3c] bg-white dark:bg-[#18191a] shadow-sm z-10" data-conversation-header>
-<div class="flex items-center gap-3 min-w-0 hover:bg-[#f2f2f2] dark:hover:bg-[#242526] p-1.5 rounded-lg cursor-pointer transition -ml-1" data-header-profile>
-<button aria-label="Back to conversations" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 md:hidden shrink-0 text-[#65676b] dark:text-gray-300" data-back type="button">
-<i class="fa-solid fa-arrow-left"></i>
+<header class="h-[56px] shrink-0 px-3.5 flex items-center justify-between border-b border-[#ccd0d5] dark:border-[#3a3b3c] bg-white dark:bg-[#18191a] shadow-sm z-10" data-conversation-header>
+<div class="flex items-center gap-2.5 min-w-0 hover:bg-[#f2f2f2] dark:hover:bg-[#242526] p-1 rounded-lg cursor-pointer transition -ml-1" data-header-profile>
+<button aria-label="Back to conversations" class="w-7 h-7 flex items-center justify-center rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 md:hidden shrink-0 text-[#65676b] dark:text-gray-300" data-back type="button">
+<i class="fa-solid fa-arrow-left text-sm"></i>
 </button>
 <span class="relative shrink-0" data-partner-avatar></span>
 <div class="min-w-0">
-<h2 class="text-[15px] font-bold text-[#1c1e21] dark:text-white leading-tight truncate" data-partner-name>Conversation</h2>
-<p class="text-[12px] text-[#65676b] dark:text-gray-400 leading-tight mt-0.5" data-partner-status>Active now</p>
+<h2 class="text-[14.5px] font-bold text-[#1c1e21] dark:text-white leading-tight truncate" data-partner-name>Conversation</h2>
+<p class="text-[11.5px] text-[#65676b] dark:text-gray-400 leading-tight mt-0.5" data-partner-status>Active now</p>
 </div>
 </div>
 
 <div class="flex items-center gap-1 text-[#1877f2] shrink-0">
-<button aria-label="Voice call" class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-[#f0f2f5] dark:hover:bg-[#242526] transition text-[#1877f2]" data-call-voice title="Start voice call" type="button">
-<i class="fa-solid fa-phone text-base"></i>
+<button aria-label="Voice call" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-[#f0f2f5] dark:hover:bg-[#242526] transition text-[#1877f2]" data-call-voice title="Start voice call" type="button">
+<i class="fa-solid fa-phone text-sm"></i>
 </button>
-<button aria-label="Video call" class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-[#f0f2f5] dark:hover:bg-[#242526] transition text-[#1877f2]" data-call-video title="Start video call" type="button">
-<i class="fa-solid fa-video text-base"></i>
+<button aria-label="Video call" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-[#f0f2f5] dark:hover:bg-[#242526] transition text-[#1877f2]" data-call-video title="Start video call" type="button">
+<i class="fa-solid fa-video text-sm"></i>
 </button>
-<button aria-expanded="false" aria-label="Conversation details" class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-[#f0f2f5] dark:hover:bg-[#242526] transition text-[#1877f2]" data-info-toggle type="button">
-<i class="fa-solid fa-circle-info text-base"></i>
+<button aria-expanded="false" aria-label="Conversation details" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-[#f0f2f5] dark:hover:bg-[#242526] transition text-[#1877f2]" data-info-toggle type="button">
+<i class="fa-solid fa-circle-info text-sm"></i>
 </button>
 </div>
 </header>
@@ -159,8 +159,8 @@
 </section>
 
 <!-- ───── DETAILS (RIGHT INFO PANEL) ───── -->
-<aside aria-label="Conversation details" class="hidden w-[320px] shrink-0 border-l border-[#ccd0d5] dark:border-[#3a3b3c] bg-white dark:bg-[#18191a] flex-col min-h-0 overflow-y-auto custom-scrollbar z-10" data-pane="info">
-<div class="flex flex-col items-center pt-6 pb-4">
+<aside aria-label="Conversation details" class="hidden fi-msg-info" data-pane="info">
+<div class="flex flex-col items-center pt-5 pb-3">
 <span class="relative mb-3" data-info-avatar></span>
 <h3 class="text-[17px] font-bold text-[#1c1e21] dark:text-white leading-tight" data-info-name>Faith In Member</h3>
 <p class="text-[13px] text-[#65676b] dark:text-gray-400 mt-0.5" data-info-role>Active now</p>
