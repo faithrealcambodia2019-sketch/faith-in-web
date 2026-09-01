@@ -399,8 +399,9 @@ check('search users returns list', r.success === true && r.data.items.length ===
 r = await call({ action:'cv_social_open_thread', recipient_uid:'uid-friend' });
 check('open new thread returns thread id and exists 0', r.success === true && r.data.exists === 0 && r.data.other_user.uid === 'uid-friend');
 const directId = r.data.thread_id;
-r = await call({ action:'cv_social_send_message', thread_id: directId, recipient_uid:'uid-friend', body:'Peace be with you!' });
+r = await call({ action:'cv_social_send_message', thread_id:'thread-uid-friend', recipient_uid:'uid-friend', body:'Peace be with you!' });
 check('send message creates thread and message', r.success === true && r.data.thread_id === directId && !!store['messageThreads/' + directId]);
+check('placeholder thread id is never persisted', !store['messageThreads/thread-uid-friend']);
 check('message stored with author and body', Object.keys(store).some(k => k.startsWith('messageThreads/' + directId + '/messages/') && store[k].body === 'Peace be with you!'));
 const longMessage = 'Grace '.repeat(120);
 r = await call({ action:'cv_social_send_message', thread_id: directId, recipient_uid:'uid-friend', body:longMessage });

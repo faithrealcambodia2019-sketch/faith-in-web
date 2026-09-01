@@ -19,12 +19,17 @@
     // backend. It already enforces authentication, Firestore Security Rules,
     // pagination, and message ownership. Keep it first so a missing optional
     // PostgreSQL/NextAuth deployment never blocks or duplicates a real write.
-    try {
-      if (typeof window.cvDataRequest === 'function') {
+    const hasFirebaseBackend = typeof window.cvDataRequest === 'function';
+    if (hasFirebaseBackend) {
+      try {
         const res = await window.cvDataRequest(action, params);
         if (res !== undefined && res !== null) return res;
+      } catch (_) {
+        // Firebase is authoritative for the signed-in production app. Do not
+        // retry writes against another database or report a false success.
+        return null;
       }
-    } catch (_) {}
+    }
 
     // Optional compatibility fallback for installations that intentionally
     // configure AUTH_SECRET and DATABASE_URL. Production Faith In does not
@@ -51,50 +56,22 @@
     }
   } catch (e) {}
 
-  /* Default starter members */
-  const DEFAULT_CONVERSATIONS = [
-    {
-      id: 'thread-u-dara',
-      name: 'Dara Chhan',
-      avatar: 'DC',
-      color: '#10b981',
-      unread: 0,
-      status: 'Active now',
-      role: 'Youth Pastor',
-      church: 'Faith Community Church',
-      messages: []
-    },
-    {
-      id: 'thread-u-sophea',
-      name: 'Sophea Sok',
-      avatar: 'SS',
-      color: '#1877f2',
-      unread: 0,
-      status: 'Active now',
-      role: 'Worship Leader',
-      church: 'Phnom Penh Grace Church',
-      messages: []
-    },
-    {
-      id: 'thread-u-kosal',
-      name: 'Kosal Meng',
-      avatar: 'KM',
-      color: '#8b5cf6',
-      unread: 0,
-      status: 'Active now',
-      role: 'Bible Teacher',
-      church: 'Siem Reap Hope Fellowship',
-      messages: []
-    }
-  ];
+  // Earlier builds seeded three fictional conversations in local storage.
+  // Keep the layout, but show only real members and real Firebase threads.
+  const LEGACY_STARTER_IDS = new Set(['thread-u-dara', 'thread-u-sophea', 'thread-u-kosal']);
+  const DEFAULT_CONVERSATIONS = [];
 
   function loadSavedConversations() {
     try {
       const stored = localStorage.getItem('fi_real_conversations_v1');
       if (stored) {
         const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          return parsed;
+        if (Array.isArray(parsed)) {
+          const realItems = parsed.filter(chat => chat && !LEGACY_STARTER_IDS.has(chat.id));
+          if (realItems.length !== parsed.length) {
+            localStorage.setItem('fi_real_conversations_v1', JSON.stringify(realItems));
+          }
+          if (realItems.length > 0) return realItems;
         }
       }
     } catch (e) {}
@@ -242,9 +219,13 @@
     if (input) input.focus();
 
     // Fetch real messages from database API for this thread
-    if (chat) {
-      const data = await callApi('cv_social_get_message_thread', { thread_id: chat.id, recipient_uid: chat.id.replace(/^thread-/, '') });
+    if (chat && chat.exists !== false) {
+      const data = await callApi('cv_social_get_message_thread', {
+        thread_id: chat.id,
+        recipient_uid: chat.recipientUid || chat.id.replace(/^thread-/, '')
+      });
       if (data && Array.isArray(data.items)) {
+        chat.exists = true;
         chat.messages = data.items.map(m => ({
           id: m.id || ('msg-' + Date.now()),
           sender: m.mine ? 'me' : 'them',
@@ -440,7 +421,7 @@
   }
 
   /* ── Sending Message ────────────────────────────────────────────────────── */
-  function sendMessage() {
+  async function sendMessage() {
     const text = input.value.trim();
     const attach = state.attachment;
     if (!text && !attach) return;
@@ -467,13 +448,32 @@
     renderInbox();
     scrollToBottom();
 
-    // Persist to Postgres database via /api/compat
-    callApi('cv_social_send_message', {
+    // Firebase confirms the write before the optimistic local message is kept.
+    const result = await callApi('cv_social_send_message', {
       thread_id: chat.id,
-      recipient_uid: chat.id.replace(/^thread-/, ''),
+      recipient_uid: chat.recipientUid || chat.id.replace(/^thread-/, ''),
       body: text,
       attachment: attach ? JSON.stringify(attach) : ''
     });
+
+    if (!result || !result.message_id) {
+      chat.messages = chat.messages.filter(message => message !== newMsg);
+      saveConversations(state.conversations);
+      renderConversation();
+      renderInbox();
+      toast('Message could not be sent. Please try again.');
+      return;
+    }
+
+    newMsg.id = result.message_id;
+    chat.exists = true;
+    if (result.thread_id && result.thread_id !== chat.id) {
+      const previousId = chat.id;
+      chat.id = result.thread_id;
+      if (state.activeChatId === previousId) state.activeChatId = result.thread_id;
+    }
+    saveConversations(state.conversations);
+    renderInbox();
   }
 
   /* ── Attachments ────────────────────────────────────────────────────────── */
@@ -693,12 +693,7 @@
   });
 
   async function searchPeople(query) {
-    let items = [
-      { uid: 'u-sophea', name: 'Sophea Sok', role: 'Worship Leader', church: 'Phnom Penh Grace' },
-      { uid: 'u-dara', name: 'Dara Chhan', role: 'Youth Pastor', church: 'Faith Community' },
-      { uid: 'u-kosal', name: 'Kosal Meng', role: 'Bible Teacher', church: 'Siem Reap Hope' },
-      { uid: 'u-bopha', name: 'Bopha Vong', role: 'Choir Director', church: 'Battambang Fellowship' }
-    ];
+    let items = [];
 
     const data = await callApi('cv_social_search_message_users', { q: query });
     if (data && Array.isArray(data.items) && data.items.length) {
@@ -726,15 +721,21 @@
     searchTimeout = setTimeout(() => searchPeople(e.target.value), 200);
   });
 
-  peopleList?.addEventListener('click', e => {
+  peopleList?.addEventListener('click', async e => {
     const btn = e.target.closest('[data-create-chat]');
     if (btn) {
       const name = btn.dataset.createChat;
       const uid = btn.dataset.userUid;
-      let existing = state.conversations.find(c => c.name.toLowerCase() === name.toLowerCase() || (uid && c.id === `thread-${uid}`));
+      let existing = state.conversations.find(c =>
+        c.name.toLowerCase() === name.toLowerCase()
+        || (uid && (c.recipientUid === uid || c.id === `thread-${uid}`))
+      );
       if (!existing) {
+        const opened = uid ? await callApi('cv_social_open_thread', { recipient_uid: uid }) : null;
         existing = {
-          id: uid ? `thread-${uid}` : 'chat-' + Date.now(),
+          id: opened?.thread_id || (uid ? `pending:${uid}` : 'chat-' + Date.now()),
+          recipientUid: uid || opened?.other_user?.uid || '',
+          exists: Boolean(opened?.exists),
           name: name,
           avatar: getInitials(name),
           color: getAvatarColor(name),
@@ -756,13 +757,21 @@
   /* ── Realtime Backend Sync ───────────────────────────────── */
   async function syncWithBackend() {
     const data = await callApi('cv_social_get_message_threads', {});
-    if (data && Array.isArray(data.items) && data.items.length) {
+    if (data && Array.isArray(data.items)) {
+      const liveThreadIds = new Set();
       data.items.forEach(backendThread => {
         const name = backendThread.other_user?.name || 'Faith In Member';
-        const existing = state.conversations.find(c => c.id === backendThread.id || c.name.toLowerCase() === name.toLowerCase());
+        const recipientUid = backendThread.other_user?.uid || '';
+        liveThreadIds.add(backendThread.id);
+        const existing = state.conversations.find(c =>
+          c.id === backendThread.id
+          || (recipientUid && c.recipientUid === recipientUid)
+        );
         if (!existing) {
           state.conversations.push({
             id: backendThread.id,
+            recipientUid: recipientUid,
+            exists: true,
             name: name,
             avatar: getInitials(name),
             color: getAvatarColor(name),
@@ -774,11 +783,25 @@
           });
         } else {
           existing.id = backendThread.id;
+          existing.recipientUid = recipientUid;
+          existing.exists = true;
+          existing.name = name;
           if (backendThread.unread_count !== undefined) existing.unread = backendThread.unread_count;
         }
       });
+      // Keep only actual backend threads and intentionally pending new chats.
+      state.conversations = state.conversations.filter(chat =>
+        chat.exists === false || liveThreadIds.has(chat.id)
+      );
       saveConversations(state.conversations);
       renderInbox();
+      if (!state.activeChatId && state.conversations.length) {
+        selectChat(state.conversations[0].id);
+      } else if (state.activeChatId && !state.conversations.some(chat => chat.id === state.activeChatId)) {
+        state.activeChatId = null;
+        renderConversation();
+        renderInfoPanel();
+      }
     }
   }
 
@@ -788,7 +811,7 @@
     const threadParam = params.get('thread');
     const toParam = params.get('to');
 
-    let initialId = state.conversations[0]?.id || 'thread-u-dara';
+    let initialId = state.conversations[0]?.id || null;
     if (threadParam) {
       const found = state.conversations.find(c => c.id === threadParam);
       if (found) initialId = found.id;
@@ -800,6 +823,9 @@
     renderInbox();
     if (initialId) {
       selectChat(initialId);
+    } else {
+      renderConversation();
+      renderInfoPanel();
     }
 
     // Sync in background without blocking UI
