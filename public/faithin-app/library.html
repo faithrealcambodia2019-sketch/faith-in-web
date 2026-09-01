@@ -15,104 +15,165 @@
 <link href="/faithin-app/assets/faithin-fonts.css" rel="stylesheet"/>
 <link href="/faithin-app/assets/faithin-icons.css" rel="stylesheet"/>
 <link href="/faithin-app/assets/faithin-tw.css" rel="stylesheet"/>
-<link href="/faithin-app/assets/faithin.css?v=20260831-v24" rel="stylesheet"/>
+<link href="/faithin-app/assets/faithin.css?v=20260901-v36" rel="stylesheet"/>
 </head>
-<body class="font-sans min-h-screen pb-16 lg:pb-0" data-page="library" data-search="Search resources, books, sermons…">
-<main class="max-w-[1200px] mx-auto px-3 sm:px-4 py-5 grid gap-5 lg:grid-cols-[232px_minmax(0,1fr)] xl:grid-cols-[232px_minmax(0,1fr)_312px] items-start" id="main">
-<!-- ───── LEFT RAIL ───── -->
-<aside class="hidden lg:block lg:sticky lg:top-[72px] space-y-4">
-<section class="card p-2">
-<h2 class="px-3 py-2 text-[15px] font-bold">My Library</h2>
-<nav class="space-y-0.5">
-<a class="side-link is-active" href="/library"><i class="fa-solid fa-compass"></i>Discover</a>
-<a class="side-link" href="/library?view=saved"><i class="fa-solid fa-bookmark"></i>Saved Items</a>
-</nav>
-</section>
-<section class="card p-2">
-<h2 class="px-3 py-2 text-[15px] font-bold">Browse Formats</h2>
-<nav class="space-y-0.5">
-<a class="side-link" href="/library?format=pdf"><i class="fa-solid fa-file-pdf text-amber-500"></i>PDF Books &amp; Studies</a>
-<a class="side-link" href="/library?format=video"><i class="fa-solid fa-video text-rose"></i>Sermons &amp; Videos</a>
-<a class="side-link" href="/library?format=audio"><i class="fa-solid fa-headphones text-violet-500"></i>Podcasts &amp; Audio</a>
-</nav>
-<div class="my-2 border-t border-line"></div>
-<h2 class="px-3 py-2 text-[15px] font-bold">Categories</h2>
-<nav class="space-y-0.5" data-categories="">
-<a class="side-link" href="/library?category=Theology">Theology</a>
-<a class="side-link" href="/library?category=Christian Living">Christian Living</a>
-<a class="side-link" href="/library?category=Apologetics">Apologetics</a>
-<a class="side-link" href="/library?category=Marriage and Family">Marriage &amp; Family</a>
-<a class="side-link" href="/library?category=Leadership">Leadership</a>
-<a class="side-link" href="/library?category=Daily Devotionals">Daily Devotionals</a>
-<a class="side-link hidden" data-more-cat="" href="/library?category=Missions">Missions</a>
-<a class="side-link hidden" data-more-cat="" href="/library?category=Church History">Church History</a>
-<a class="side-link hidden" data-more-cat="" href="/library?category=Prayer and Fasting">Prayer &amp; Fasting</a>
-<button class="side-link w-full !text-brand" id="show-more-cats">Show more <i class="fa-solid fa-chevron-down text-[10px] ml-auto"></i></button>
-</nav>
-</section>
+<body class="font-sans min-h-screen pb-16 lg:pb-0" data-page="library" data-search="Search Faith In">
+<main class="max-w-[1200px] mx-auto px-4 py-5 flex items-start gap-6 w-full pb-12" id="main">
+
+<!-- ───── LEFT SIDEBAR ───── -->
+<aside class="hidden md:flex flex-col w-[320px] sticky top-[72px] gap-4 flex-shrink-0 max-h-[calc(100vh-72px)] overflow-y-auto pb-4">
+  
+  <!-- Card 1: My Library -->
+  <div class="card p-4 rounded-lg bg-surface shadow-[0_1px_2px_rgba(0,0,0,0.1)] border border-line">
+    <h2 class="text-[17px] font-bold text-ink mb-2 px-1">My Library</h2>
+    <ul class="flex flex-col space-y-1">
+      <li>
+        <a href="/library" class="side-link flex items-center gap-3 px-3 py-2.5 rounded-md transition-colors">
+          <div class="w-6 h-6 flex items-center justify-center">
+            <i class="fa-solid fa-compass text-[18px]"></i>
+          </div>
+          <span class="font-semibold text-[15px]">Discover</span>
+        </a>
+      </li>
+      <li>
+        <a href="/library?view=saved" class="side-link flex items-center gap-3 px-3 py-2.5 rounded-md transition-colors">
+          <div class="w-6 h-6 flex items-center justify-center">
+            <i class="fa-solid fa-bookmark text-[18px]"></i>
+          </div>
+          <span class="font-medium text-[15px]">Saved Items</span>
+        </a>
+      </li>
+    </ul>
+  </div>
+
+  <!-- Card 2: Browse Formats & Categories -->
+  <div class="card p-4 rounded-lg bg-surface shadow-[0_1px_2px_rgba(0,0,0,0.1)] border border-line">
+    <h2 class="text-[17px] font-bold text-ink mb-2 px-1">Browse Formats</h2>
+    <ul class="flex flex-col space-y-1 mb-3">
+      <li>
+        <a href="/library?format=pdf" class="side-link flex items-center gap-3 px-3 py-2.5 rounded-md transition-colors">
+          <div class="w-6 h-6 flex items-center justify-center">
+            <i class="fa-solid fa-file-lines text-orange-500 text-[18px]"></i>
+          </div>
+          <span class="font-medium text-[15px]">PDF Books &amp; Studies</span>
+        </a>
+      </li>
+      <li>
+        <a href="/library?format=video" class="side-link flex items-center gap-3 px-3 py-2.5 rounded-md transition-colors">
+          <div class="w-6 h-6 flex items-center justify-center">
+            <i class="fa-solid fa-video text-red-500 text-[18px]"></i>
+          </div>
+          <span class="font-medium text-[15px]">Sermons &amp; Videos</span>
+        </a>
+      </li>
+      <li>
+        <a href="/library?format=audio" class="side-link flex items-center gap-3 px-3 py-2.5 rounded-md transition-colors">
+          <div class="w-6 h-6 flex items-center justify-center">
+            <i class="fa-solid fa-headphones text-purple-500 text-[18px]"></i>
+          </div>
+          <span class="font-medium text-[15px]">Podcasts &amp; Audio</span>
+        </a>
+      </li>
+    </ul>
+
+    <hr class="border-line my-2 mx-1">
+
+    <h2 class="text-[17px] font-bold text-ink mt-4 mb-2 px-1">Categories</h2>
+    <ul class="flex flex-col space-y-1" data-categories="">
+      <li>
+        <a href="/library?category=Theology" class="side-link flex items-center px-3 py-2 rounded-md transition-colors">
+          <span class="font-medium text-[15px]">Theology</span>
+        </a>
+      </li>
+      <li>
+        <a href="/library?category=Christian Living" class="side-link flex items-center px-3 py-2 rounded-md transition-colors">
+          <span class="font-medium text-[15px]">Christian Living</span>
+        </a>
+      </li>
+      <li>
+        <a href="/library?category=Apologetics" class="side-link flex items-center px-3 py-2 rounded-md transition-colors">
+          <span class="font-medium text-[15px]">Apologetics</span>
+        </a>
+      </li>
+      <li>
+        <a href="/library?category=Marriage and Family" class="side-link flex items-center px-3 py-2 rounded-md transition-colors">
+          <span class="font-medium text-[15px]">Marriage &amp; Family</span>
+        </a>
+      </li>
+      <li>
+        <a href="/library?category=Leadership" class="side-link flex items-center px-3 py-2 rounded-md transition-colors">
+          <span class="font-medium text-[15px]">Leadership</span>
+        </a>
+      </li>
+      <li>
+        <a href="/library?category=Daily Devotionals" class="side-link flex items-center px-3 py-2 rounded-md transition-colors">
+          <span class="font-medium text-[15px]">Daily Devotionals</span>
+        </a>
+      </li>
+      <li>
+        <a href="/library?category=Missions" class="side-link hidden flex items-center px-3 py-2 rounded-md transition-colors" data-more-cat="">
+          <span class="font-medium text-[15px]">Missions</span>
+        </a>
+      </li>
+      <li>
+        <a href="/library?category=Church History" class="side-link hidden flex items-center px-3 py-2 rounded-md transition-colors" data-more-cat="">
+          <span class="font-medium text-[15px]">Church History</span>
+        </a>
+      </li>
+      <li>
+        <a href="/library?category=Prayer and Fasting" class="side-link hidden flex items-center px-3 py-2 rounded-md transition-colors" data-more-cat="">
+          <span class="font-medium text-[15px]">Prayer &amp; Fasting</span>
+        </a>
+      </li>
+      <li>
+        <button class="flex items-center justify-between px-3 py-2 hover:bg-raised rounded-md transition-colors w-full text-left !text-brand" id="show-more-cats">
+          <span class="font-medium text-[15px]">Show more</span>
+          <i class="fa-solid fa-chevron-down text-[12px]"></i>
+        </button>
+      </li>
+    </ul>
+  </div>
 </aside>
-<!-- ───── CENTER ───── -->
-<section class="space-y-5 min-w-0">
-<!-- featured -->
-<!-- jump back in -->
-<!-- recommended shelf -->
-<section class="card p-4">
-<div class="flex items-start justify-between mb-4 gap-3">
-<div>
-<h3 class="text-[15.5px] font-bold">Recommended for you</h3>
-<p class="text-[12.5px] text-muted mt-0.5">Resources published by the Faith In community</p>
-</div>
-<div class="flex gap-1.5 shrink-0">
-<button aria-label="Scroll left" class="icon-btn border border-line" data-rail-prev="#shelf"><i class="fa-solid fa-chevron-left text-[12px]"></i></button>
-<button aria-label="Scroll right" class="icon-btn border border-line" data-rail-next="#shelf"><i class="fa-solid fa-chevron-right text-[12px]"></i></button>
-</div>
-</div>
-<div class="flex gap-5 overflow-x-auto no-scrollbar pb-2 snap-x" id="shelf"><p class="p-6 text-center text-[13.5px] text-muted" data-placeholder="">Loading…</p></div>
+
+<!-- ───── MAIN CONTENT AREA ───── -->
+<section class="flex-1 w-full min-w-0">
+  
+  <!-- Header Section -->
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4 bg-transparent">
+    <div>
+      <h1 class="text-[20px] font-bold text-ink leading-tight" id="library-title">Recommended for you</h1>
+      <p class="text-[14px] text-muted mt-0.5" id="library-subtitle">Resources published by the Faith In community</p>
+    </div>
+    <button class="inline-flex items-center justify-center px-4 py-2 bg-[#1877F2] text-white font-semibold rounded-md hover:bg-blue-700 transition-colors shadow-sm whitespace-nowrap" data-publish-resource>
+      <i class="fa-solid fa-plus mr-2 text-[14px]"></i>
+      Publish resource
+    </button>
+  </div>
+
+  <!-- Cards Grid -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" id="shelf">
+    <p class="p-8 text-center text-[13.5px] text-muted col-span-full" data-placeholder="">Loading resources…</p>
+  </div>
+
 </section>
-<!-- trending media -->
-</section>
-<!-- ───── RIGHT RAIL ───── -->
-<aside class="hidden xl:block xl:sticky xl:top-[72px] space-y-4">
-<section class="card p-4">
-<div class="flex items-center justify-between mb-3">
-<h2 class="font-serif font-semibold text-[15px] flex items-center gap-2"><i class="fa-solid fa-sun text-gold text-[13px]"></i>Verse of the Day</h2>
-<button aria-label="Share verse" class="icon-btn w-8 h-8"><i class="fa-solid fa-share-nodes text-[13px]"></i></button>
-</div>
-<blockquote class="border-l-[3px] border-gold pl-3.5 py-1" id="votd">
-<p class="font-serif italic text-[15px] leading-relaxed">"Your word is a lamp for my feet, a light on my path."</p>
-</blockquote>
-<div class="flex items-center justify-between mt-3.5 pt-3 border-t border-line">
-<a class="text-[13px] font-semibold text-brand hover:underline" href="/bible-study">Open Bible Study</a>
-<span class="text-[11px] font-bold uppercase tracking-wide text-muted" data-votd-ref="">Psalm 119:105</span>
-</div>
-</section>
-<footer class="px-2 pb-4 text-center space-y-2">
-<p class="text-[11.5px] text-muted">
-<a class="hover:text-brand hover:underline" href="/about">About</a> 
-         ·
-        <a class="hover:text-brand hover:underline" href="/contact">Help Center</a> ·
-        <a class="hover:text-brand hover:underline" href="/privacy">Privacy</a> · <a class="hover:text-brand hover:underline" href="/terms">Terms</a>
-</p>
-<p class="text-[11.5px] text-faint">Faith In Corporation © 2026</p>
-</footer>
-</aside>
 </main>
-<script src="/faithin-app/assets/faithin-runtime.js?v=20260831-v24"></script>
-<script src="/faithin-app/assets/faithin-blob-upload.js?v=20260831-v24"></script>
-<script src="/assets/js/faith-in-backend.js?v=20260901-backend-v3"></script>
-<script src="/faithin-app/assets/faithin.js?v=20260831-v24"></script>
+
+<script src="/faithin-app/assets/faithin-runtime.js?v=20260901-v36"></script>
+<script src="/faithin-app/assets/faithin-blob-upload.js?v=20260901-v36"></script>
+<script src="/assets/js/faith-in-backend.js?v=20260901-v36"></script>
+<script src="/faithin-app/assets/faithin.js?v=20260901-v36"></script>
 <script>
-  document.getElementById('show-more-cats').addEventListener('click', function () {
+  document.getElementById('show-more-cats')?.addEventListener('click', function () {
     const hidden = document.querySelectorAll('[data-more-cat].hidden');
     if (hidden.length) {
       hidden.forEach(el => el.classList.remove('hidden'));
-      this.innerHTML = 'Show less <i class="fa-solid fa-chevron-up text-[10px] ml-auto"></i>';
+      this.innerHTML = '<span class="font-medium text-[15px]">Show less</span><i class="fa-solid fa-chevron-up text-[12px]"></i>';
     } else {
       document.querySelectorAll('[data-more-cat]').forEach(el => el.classList.add('hidden'));
-      this.innerHTML = 'Show more <i class="fa-solid fa-chevron-down text-[10px] ml-auto"></i>';
+      this.innerHTML = '<span class="font-medium text-[15px]">Show more</span><i class="fa-solid fa-chevron-down text-[12px]"></i>';
     }
   });
 </script>
-<script src="/faithin-app/assets/faithin-live.js?v=20260831-v24"></script>
+<script src="/faithin-app/assets/faithin-live.js?v=20260901-v36"></script>
 </body>
 </html>

@@ -101,7 +101,16 @@ html.dark .nav-item.is-active{ color:#0b1120; }
 .side-link i{ width:20px; text-align:center; font-size:15px; }
 .side-link:hover{ background: rgb(var(--raised)); color: rgb(var(--ink)); }
 .side-link[aria-current="page"], .side-link.is-active{
-  background: rgb(var(--brand-soft)); color: rgb(var(--brand-strong)); font-weight:600;
+  background: #E7F3FF; color: #1877F2; font-weight:600;
+}
+.side-link[aria-current="page"] i, .side-link.is-active i{
+  color: #1877F2;
+}
+html.dark .side-link[aria-current="page"], html.dark .side-link.is-active{
+  background: rgb(var(--brand-soft)); color: rgb(var(--brand-strong));
+}
+html.dark .side-link[aria-current="page"] i, html.dark .side-link.is-active i{
+  color: rgb(var(--brand-strong));
 }
 
 /* row with a trailing count — network sidebar */

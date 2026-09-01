@@ -360,41 +360,59 @@
   }
 
   function fiResourceCardHtml(resource, savedIds) {
-    const format = String(resource.format || '').toLowerCase();
+    const format = String(resource.format || 'pdf').toLowerCase();
     const id = esc(resource.id);
-    const cover = resource.thumbnail_url
-      ? `<img class="w-full h-full object-cover" src="${esc(resource.thumbnail_url)}" alt="" loading="lazy" decoding="async">`
-      : '';
-    const playOverlay = `<span class="fi-media-play"><span><i class="fa-solid fa-play"></i></span></span>`;
+    const saved = savedIds.has(resource.id);
+    const canDelete = Boolean(resource.can_delete);
+    const authorName = (typeof resource.author === 'object' && resource.author?.name) ? resource.author.name : (resource.contributor_name || resource.author || 'Faith In member');
+    const downloadCount = Number(resource.download_count || 0);
 
-    // Sermons and videos: wide 16:9 card that opens the in-app player.
+    let coverMarkup = '';
     if (format === 'video') {
-      return `<article class="fi-video-card group relative" data-resource-id="${id}" data-resource-format="video">`
-        + `<button type="button" class="fi-video-cover" data-resource-play aria-label="Play ${esc(resource.title)}">`
-        + (cover || `<span class="fi-video-fallback"><i class="fa-solid fa-video text-[24px]"></i>${esc(resource.title)}</span>`)
-        + playOverlay + `<span class="fi-media-badge">Sermon</span></button>`
-        + `<button type="button" class="block w-full text-left" data-resource-play>${fiResourceMeta(resource)}</button>`
-        + fiResourceFooter(resource, savedIds) + `</article>`;
+      coverMarkup = `<div class="w-full max-w-[280px] aspect-video relative rounded-lg overflow-hidden shadow-md bg-gray-900 flex items-center justify-center cursor-pointer group" data-resource-play aria-label="Play ${esc(resource.title)}">`
+        + (resource.thumbnail_url ? `<img class="w-full h-full object-cover" src="${esc(resource.thumbnail_url)}" alt="${esc(resource.title)}" loading="lazy">` : `<span class="text-white font-semibold text-center p-3 text-xs"><i class="fa-solid fa-video text-xl block mb-1"></i>${esc(resource.title)}</span>`)
+        + `<span class="fi-media-play"><span><i class="fa-solid fa-play"></i></span></span>`
+        + `<span class="fi-media-badge">Sermon</span></div>`;
+    } else if (format === 'audio') {
+      coverMarkup = `<div class="w-[180px] h-[180px] relative rounded-lg overflow-hidden shadow-md bg-gradient-to-br from-purple-700 to-indigo-900 flex items-center justify-center cursor-pointer group" data-resource-play aria-label="Play ${esc(resource.title)}">`
+        + (resource.thumbnail_url ? `<img class="w-full h-full object-cover" src="${esc(resource.thumbnail_url)}" alt="${esc(resource.title)}" loading="lazy">` : `<span class="text-white font-semibold text-center p-3 text-xs"><i class="fa-solid fa-headphones text-2xl block mb-1"></i>${esc(resource.title)}</span>`)
+        + `<span class="fi-media-play"><span><i class="fa-solid fa-play"></i></span></span>`
+        + `<span class="fi-media-badge">Audio</span></div>`;
+    } else if (resource.thumbnail_url) {
+      coverMarkup = `<div class="w-[140px] h-[200px] relative shadow-lg rounded-r-md rounded-l-sm flex cursor-pointer transition-transform hover:scale-[1.02]" data-resource-download>`
+        + `<div class="w-4 bg-gray-900 rounded-l-sm flex flex-col justify-evenly items-center py-2 shadow-inner shrink-0"><div class="w-full h-[2px] bg-yellow-600 opacity-80"></div><div class="w-full h-[2px] bg-yellow-600 opacity-80"></div><div class="w-full h-[2px] bg-yellow-600 opacity-80"></div></div>`
+        + `<img class="flex-1 w-full h-full object-cover rounded-r-md shadow-inner" src="${esc(resource.thumbnail_url)}" alt="${esc(resource.title)}" loading="lazy">`
+        + `</div>`;
+    } else {
+      // Authentic 3D Book Cover matching the design
+      coverMarkup = `<div class="w-[140px] h-[200px] relative shadow-lg rounded-r-md rounded-l-sm flex cursor-pointer transition-transform hover:scale-[1.02]" data-resource-download>`
+        + `<div class="w-4 bg-gray-900 rounded-l-sm flex flex-col justify-evenly items-center py-2 shadow-inner shrink-0"><div class="w-full h-[2px] bg-yellow-600 opacity-80"></div><div class="w-full h-[2px] bg-yellow-600 opacity-80"></div><div class="w-full h-[2px] bg-yellow-600 opacity-80"></div></div>`
+        + `<div class="flex-1 bg-[#1e4d3b] rounded-r-md flex flex-col items-center pt-8 border-l border-gray-800 shadow-[inset_4px_0_10px_rgba(0,0,0,0.2)] px-2 overflow-hidden">`
+        + `<div class="border border-yellow-600 p-2 text-center w-[90%] bg-[#1e4d3b]">`
+        + `<p class="text-yellow-500 text-[9px] font-bold tracking-wider leading-tight uppercase truncate max-w-full">${esc(authorName)}</p>`
+        + `<div class="w-full h-[1px] bg-yellow-600 my-[3px] opacity-70"></div>`
+        + `<p class="text-white text-[7.5px] font-medium tracking-wide line-clamp-2 leading-tight">${esc(resource.title)}</p>`
+        + `</div></div></div>`;
     }
 
-    // Audio: square artwork card that opens the music player.
-    if (format === 'audio') {
-      return `<article class="fi-audio-card group relative" data-resource-id="${id}" data-resource-format="audio">`
-        + `<button type="button" class="fi-audio-art" data-resource-play aria-label="Play ${esc(resource.title)}">`
-        + (cover || `<span class="fi-video-fallback"><i class="fa-solid fa-headphones text-[24px]"></i>${esc(resource.title)}</span>`)
-        + playOverlay + `<span class="fi-media-badge">Audio</span></button>`
-        + `<button type="button" class="block w-full text-left" data-resource-play>${fiResourceMeta(resource)}</button>`
-        + fiResourceFooter(resource, savedIds) + `</article>`;
-    }
-
-    // Everything else keeps the book-spine cover.
-    return `<article class="fi-resource-card snap-start group relative" data-resource-id="${id}" data-resource-format="${esc(format)}">`
-      + (resource.open_url ? `<a href="${esc(resource.open_url)}" target="_blank" rel="noopener" class="block">` : '<button type="button" class="block w-full text-left" data-resource-download>')
-      + `<span class="fi-resource-cover book-cover block overflow-hidden bg-[linear-gradient(150deg,#1d4ed8,#172554)]">`
-      + (cover || `<span class="h-full p-3 flex flex-col gap-3 items-center justify-center text-center text-white font-serif font-semibold"><i class="fa-solid fa-${format === 'image' ? 'image' : 'file-lines'} text-[24px]"></i>${esc(resource.title)}</span>`)
-      + `</span>` + fiResourceMeta(resource)
-      + (resource.open_url ? '</a>' : '</button>')
-      + fiResourceFooter(resource, savedIds) + `</article>`;
+    return `<article class="bg-white dark:bg-[#151d2e] rounded-lg shadow-[0_1px_2px_rgba(0,0,0,0.1)] overflow-hidden flex flex-col border border-gray-100 dark:border-slate-800 transition hover:shadow-md" data-resource-id="${id}" data-resource-format="${esc(format)}">`
+      + `<div class="bg-[#F0F2F5] dark:bg-slate-800/60 h-[260px] flex items-center justify-center p-6 relative select-none">${coverMarkup}</div>`
+      + `<div class="p-4 flex flex-col flex-1">`
+      + `<h3 class="text-[17px] font-bold text-gray-900 dark:text-white leading-snug mb-1 truncate" title="${esc(resource.title)}">${esc(resource.title)}</h3>`
+      + `<p class="text-[13px] text-gray-500 dark:text-gray-400 mb-0.5">By <span class="font-semibold text-gray-900 dark:text-gray-200">${esc(authorName)}</span></p>`
+      + (resource.translated_by ? `<p class="text-[13px] text-gray-500 dark:text-gray-400 mb-2">Translated by ${esc(resource.translated_by)}</p>` : '<div class="mb-2"></div>')
+      + `<span class="inline-flex items-center justify-center px-2.5 py-0.5 rounded bg-[#E7F3FF] dark:bg-blue-950/60 text-[#1877F2] dark:text-blue-400 text-[12px] font-bold w-max mb-4 uppercase">${esc(resource.format || 'PDF')}</span>`
+      + `<div class="mt-auto flex items-center justify-between pt-3 border-t border-gray-100 dark:border-slate-800">`
+      + `<button type="button" class="flex items-center text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-slate-800 px-2 py-1.5 rounded-md cursor-pointer transition-colors" data-resource-download title="Download resource">`
+      + `<i class="fa-solid fa-download w-4 h-4 mr-1.5 text-[#1877F2]"></i>`
+      + `<span class="text-[14px] font-medium">${downloadCount}</span>`
+      + `</button>`
+      + `<div class="flex items-center gap-1 text-gray-500 dark:text-gray-400">`
+      + (canDelete ? `<button type="button" class="flex items-center justify-center w-9 h-9 rounded-full hover:bg-gray-100 dark:hover:bg-slate-800 hover:text-red-500 transition-colors" title="Delete" data-resource-delete><i class="fa-regular fa-trash-can text-[14px]"></i></button>` : '')
+      + `<button type="button" class="flex items-center justify-center w-9 h-9 rounded-full hover:bg-gray-100 dark:hover:bg-slate-800 ${saved ? '!text-[#1877F2]' : ''} transition-colors" title="${saved ? 'Remove saved resource' : 'Save resource'}" data-resource-save>`
+      + `<i class="fa-${saved ? 'solid' : 'regular'} fa-bookmark text-[14px]"></i>`
+      + `</button>`
+      + `</div></div></div></article>`;
   }
 
   // In-app player. Video plays in a lightbox; audio gets a music player with a
@@ -484,12 +502,39 @@
 
   async function loadLibrary() {
     const shelf = $('#shelf'); if (!shelf) return;
-    shelf.className = 'fi-media-grid';
+    shelf.className = 'grid grid-cols-1 sm:grid-cols-2 gap-4';
     $$('[data-rail-prev],[data-rail-next]').forEach(button => { button.style.display = 'none'; });
     let resources = [], rendered = [], savedIds = new Set(), searchQuery = '';
     const view = new URLSearchParams(location.search).get('view');
     const format = new URLSearchParams(location.search).get('format');
     const category = new URLSearchParams(location.search).get('category');
+
+    const updateHeaderInfo = () => {
+      const titleEl = $('#library-title');
+      const subtitleEl = $('#library-subtitle');
+      if (!titleEl) return;
+      if (view === 'saved') {
+        titleEl.textContent = 'Saved Items';
+        if (subtitleEl) subtitleEl.textContent = 'Resources you have bookmarked';
+      } else if (format === 'pdf') {
+        titleEl.textContent = 'PDF Books & Studies';
+        if (subtitleEl) subtitleEl.textContent = 'Reading resources published by the Faith In community';
+      } else if (format === 'video') {
+        titleEl.textContent = 'Sermons & Videos';
+        if (subtitleEl) subtitleEl.textContent = 'Watch teachings and sermon series';
+      } else if (format === 'audio') {
+        titleEl.textContent = 'Podcasts & Audio';
+        if (subtitleEl) subtitleEl.textContent = 'Listen to sermons and podcasts';
+      } else if (category) {
+        titleEl.textContent = category;
+        if (subtitleEl) subtitleEl.textContent = `Resources published in ${category}`;
+      } else {
+        titleEl.textContent = 'Recommended for you';
+        if (subtitleEl) subtitleEl.textContent = 'Resources published by the Faith In community';
+      }
+    };
+    updateHeaderInfo();
+
     const render = () => {
       let items = resources.slice();
       if (format) items = items.filter(resource => String(resource.format || '').toLowerCase() === format.toLowerCase());
@@ -508,8 +553,12 @@
       savedIds = new Set((saved.items || []).filter(row => row.object_type === 'resource').map(row => row.object_id));
       render();
     } catch (error) { shelf.innerHTML = emptyState(error.message); }
-    const section = shelf.closest('section'), header = section?.firstElementChild;
-    if (header && !header.querySelector('[data-publish-resource]')) { const button = document.createElement('button'); button.className = 'btn btn-primary !py-2'; button.dataset.publishResource = ''; button.innerHTML = '<i class="fa-solid fa-plus"></i>Publish resource'; header.appendChild(button); button.onclick = () => { if (requireUser()) openResourceEditor(loadLibrary); }; }
+
+    const publishBtn = $('[data-publish-resource]');
+    if (publishBtn) {
+      publishBtn.onclick = (e) => { e.preventDefault(); if (requireUser()) openResourceEditor(loadLibrary); };
+    }
+
     shelf.addEventListener('click', async event => {
       const row = event.target.closest('[data-resource-id]'); if (!row) return;
       const remove = event.target.closest('[data-resource-delete]');
@@ -529,7 +578,6 @@
       const button = event.target.closest('[data-resource-download]'); if (!button) return; event.preventDefault(); const result = await api.request('cv_download_resource', { resource_id: row.dataset.resourceId }); if (result.url) window.open(result.url, '_blank', 'noopener');
     });
     document.addEventListener('fi:search', event => { searchQuery = event.detail.query.toLowerCase(); render(); });
-    $('[aria-label="Share verse"]')?.addEventListener('click', async () => { const textValue = `${$('#votd')?.innerText || ''} — ${$('[data-votd-ref]')?.textContent || ''}`.trim(); try { if (navigator.share) await navigator.share({ title: 'Verse of the Day', text: textValue, url: location.origin + '/bible-study' }); else { await navigator.clipboard.writeText(textValue); toast('Verse copied'); } } catch (_) {} });
     $$('#main section').filter(section => /jump back in|trending sermons|authors to follow/i.test(section.querySelector('h2,h3')?.textContent || '')).forEach(section => section.remove());
   }
 
@@ -2072,8 +2120,16 @@
 
   function markActiveSideLink() {
     const here = location.pathname + location.search;
+    const path = location.pathname;
+    const hasSearch = Boolean(location.search);
     $$('#main a.side-link').forEach(link => {
-      const active = link.getAttribute('href') === here;
+      const href = link.getAttribute('href');
+      let active = false;
+      if (href === here) {
+        active = true;
+      } else if (!hasSearch && (href === path || (path === '/library' && href === '/library'))) {
+        active = true;
+      }
       link.classList.toggle('is-active', active);
       if (active) link.setAttribute('aria-current', 'page'); else link.removeAttribute('aria-current');
     });
