@@ -15,7 +15,7 @@
 <link href="/faithin-app/assets/faithin-fonts.css" rel="stylesheet"/>
 <link href="/faithin-app/assets/faithin-icons.css" rel="stylesheet"/>
 <link href="/faithin-app/assets/faithin-tw.css" rel="stylesheet"/>
-<link href="/faithin-app/assets/faithin.css?v=20260901-v70" rel="stylesheet"/>
+<link href="/faithin-app/assets/faithin.css?v=20260901-v85" rel="stylesheet"/>
 </head>
 <body class="font-sans min-h-screen pb-16 lg:pb-0" data-page="library" data-search="Search Faith In">
 <main class="fi-library-layout" id="main">
@@ -80,6 +80,12 @@
 
     <h2 class="text-[16px] font-bold text-ink mt-3 mb-2 px-1">Categories</h2>
     <ul class="flex flex-col space-y-0.5" data-categories="">
+      <li>
+        <a href="/library?category=Matthew Henry" class="side-link flex items-center px-3 py-1.5 rounded-lg transition-colors text-[14px] font-semibold text-[#1877F2]">
+          <i class="fa-solid fa-book-bible mr-2 text-[#1877F2] text-[13px]"></i>
+          <span>Matthew Henry</span>
+        </a>
+      </li>
       <li>
         <a href="/library?category=Theology" class="side-link flex items-center px-3 py-1.5 rounded-lg transition-colors text-[14px]">
           <span>Theology</span>
@@ -150,11 +156,15 @@
     </button>
   </div>
 
-  <!-- Quick Format Filter Tabs -->
+  <!-- Quick Format & Category Filter Tabs -->
   <div class="fb-filter-bar pt-1 pb-2">
     <a href="/library" class="fb-filter-chip is-active" data-format-filter="all">
       <i class="fa-solid fa-layer-group text-[12px]"></i>
       <span>All Resources</span>
+    </a>
+    <a href="/library?category=Matthew Henry" class="fb-filter-chip" data-category-filter="matthew-henry">
+      <i class="fa-solid fa-book-bible text-[#1877F2] text-[12px]"></i>
+      <span>Matthew Henry</span>
     </a>
     <a href="/library?format=pdf" class="fb-filter-chip" data-format-filter="pdf">
       <i class="fa-solid fa-file-lines text-orange-500 text-[12px]"></i>
@@ -209,10 +219,10 @@
 
 </main>
 
-<script src="/faithin-app/assets/faithin-runtime.js?v=20260901-v70"></script>
-<script src="/faithin-app/assets/faithin-blob-upload.js?v=20260901-v70"></script>
-<script src="/assets/js/faith-in-backend.js?v=20260901-v70"></script>
-<script src="/faithin-app/assets/faithin.js?v=20260901-v70"></script>
+<script src="/faithin-app/assets/faithin-runtime.js?v=20260901-v85"></script>
+<script src="/faithin-app/assets/faithin-blob-upload.js?v=20260901-v85"></script>
+<script src="/assets/js/faith-in-backend.js?v=20260901-v85"></script>
+<script src="/faithin-app/assets/faithin.js?v=20260901-v85"></script>
 <script>
   document.getElementById('show-more-cats')?.addEventListener('click', function () {
     const hidden = document.querySelectorAll('[data-more-cat].hidden');
@@ -225,6 +235,6 @@
     }
   });
 </script>
-<script src="/faithin-app/assets/faithin-live.js?v=20260901-v70"></script>
+<script src="/faithin-app/assets/faithin-live.js?v=20260901-v85"></script>
 </body>
 </html>

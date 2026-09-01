@@ -536,7 +536,15 @@
 
     $$('[data-format-filter]').forEach(chip => {
       const target = chip.dataset.formatFilter;
-      if ((!format && target === 'all') || (format && format.toLowerCase() === target.toLowerCase())) {
+      if (!category && ((!format && target === 'all') || (format && format.toLowerCase() === target.toLowerCase()))) {
+        chip.classList.add('is-active');
+      } else {
+        chip.classList.remove('is-active');
+      }
+    });
+    $$('[data-category-filter]').forEach(chip => {
+      const target = chip.dataset.categoryFilter;
+      if (category && category.toLowerCase().replace(/[^a-z]/g, '') === target.toLowerCase().replace(/[^a-z]/g, '')) {
         chip.classList.add('is-active');
       } else {
         chip.classList.remove('is-active');
@@ -563,7 +571,7 @@
           id: 'mhc-genesis-01-full',
           title: 'MHC លោកុប្បត្តិ ជំពូកទី១ (ពេញលេញ ៣២ ទំព័រ)',
           description: 'អភិប្រាយកណ្ឌគម្ពីរលោកុប្បត្តិ ជំពូក១ ទាំងមូល អមដោយសេចក្តីសង្កេតជាលក្ខណៈអនុវត្ត ដោយ មែធ្យូ ហិនរី បកប្រែដោយ អា៊ាម សំអាត',
-          category: 'Theology',
+          category: 'Matthew Henry',
           format: 'pdf',
           type: 'pdf',
           author: 'មែធ្យូ ហិនរី',
@@ -573,7 +581,7 @@
           file_url: '/library/mhc-gen-01-full-exposition.pdf',
           download_url: '/library/mhc-gen-01-full-exposition.pdf',
           filename: 'mhc-gen-01-full-exposition.pdf',
-          thumbnail_url: '',
+          thumbnail_url: '/library/matthew-henry-cover.jpg',
           download_count: 14,
           view_count: 85,
           allow_download: true,
@@ -583,7 +591,7 @@
           id: 'mhc-genesis-02-complete',
           title: 'MHC លោកុប្បត្តិ ជំពូកទី២',
           description: 'អភិប្រាយព្រះគម្ពីរប៊ីប លោកុប្បត្តិ ជំពូកទី២ អំពីថ្ងៃសប្ប័ទដ៏បរិសុទ្ធ សួនអេដែន និងការបង្កើតមនុស្ស ដោយ មែធ្យូ ហិនរី បកប្រែដោយ អា៊ាម សំអាត',
-          category: 'Bible Study',
+          category: 'Matthew Henry',
           format: 'pdf',
           type: 'pdf',
           author: 'មែធ្យូ ហិនរី',
@@ -593,7 +601,7 @@
           file_url: '/library/mhc-gen-02-complete.pdf',
           download_url: '/library/mhc-gen-02-complete.pdf',
           filename: 'mhc-gen-02-complete.pdf',
-          thumbnail_url: '',
+          thumbnail_url: '/library/matthew-henry-cover.jpg',
           download_count: 11,
           view_count: 64,
           allow_download: true,
@@ -603,7 +611,7 @@
           id: 'mhc-genesis-01-14-19',
           title: 'MHC លោកុប្បត្តិ ១:១៤-១៩',
           description: 'អភិប្រាយព្រះគម្ពីរប៊ីប លោកុប្បត្តិ ១:១៤-១៩ អំពីការបង្កើតថ្ងៃ ខែ និងផ្កាយនៅថ្ងៃទី៤ ដោយ មែធ្យូ ហិនរី បកប្រែដោយ អា៊ាម សំអាត',
-          category: 'Bible Study',
+          category: 'Matthew Henry',
           format: 'pdf',
           type: 'pdf',
           author: 'មែធ្យូ ហិនរី',
@@ -613,7 +621,7 @@
           file_url: '/library/mhc-gen-01-14-19.pdf',
           download_url: '/library/mhc-gen-01-14-19.pdf',
           filename: 'mhc-gen-01-14-19.pdf',
-          thumbnail_url: '',
+          thumbnail_url: '/library/matthew-henry-cover.jpg',
           download_count: 8,
           view_count: 52,
           allow_download: true,
@@ -623,7 +631,7 @@
           id: 'mhc-genesis-01-06-13',
           title: 'MHC លោកុប្បត្តិ ១:៦-១៣',
           description: 'អភិប្រាយព្រះគម្ពីរប៊ីប លោកុប្បត្តិ ១:៦-៨ និង ១:៩-១៣ អំពីការបង្កើតផ្ទៃមេឃ និងដីគោកនៅថ្ងៃទី២ និងទី៣ ដោយ មែធ្យូ ហិនរី បកប្រែដោយ អា៊ាម សំអាត',
-          category: 'Bible Study',
+          category: 'Matthew Henry',
           format: 'pdf',
           type: 'pdf',
           author: 'មែធ្យូ ហិនរី',
@@ -633,7 +641,7 @@
           file_url: '/library/mhc-gen-01-06-13.pdf',
           download_url: '/library/mhc-gen-01-06-13.pdf',
           filename: 'mhc-gen-01-06-13.pdf',
-          thumbnail_url: '',
+          thumbnail_url: '/library/matthew-henry-cover.jpg',
           download_count: 6,
           view_count: 41,
           allow_download: true,
