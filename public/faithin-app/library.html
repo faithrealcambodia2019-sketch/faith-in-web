@@ -1,316 +1,118 @@
 <!DOCTYPE html>
-<html lang="en">
+
+<html class="scroll-smooth" lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Facebook-style Library Interface</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <style>
-        body {
-            /* Facebook standard background color */
-            background-color: #F0F2F5;
-            /* Facebook standard font stack */
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            overflow-y: scroll;
-        }
-
-        /* Custom scrollbar for a cleaner look */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        ::-webkit-scrollbar-thumb {
-            background-color: #bcc0c4;
-            border-radius: 10px;
-        }
-    </style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
+<meta content="#ffffff" media="(prefers-color-scheme: light)" name="theme-color"/>
+<meta content="#0b1120" media="(prefers-color-scheme: dark)" name="theme-color"/>
+<meta content="Books, sermons, podcasts and study plans in the Faith In library." name="description"/>
+<title>Faith In — Library</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg"/>
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/images/favicon-32x32.png"/>
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/images/favicon-16x16.png"/>
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/images/favicon-180x180.png"/>
+<link href="/faithin-app/assets/faithin-fonts.css" rel="stylesheet"/>
+<link href="/faithin-app/assets/faithin-icons.css" rel="stylesheet"/>
+<link href="/faithin-app/assets/faithin-tw.css" rel="stylesheet"/>
+<link href="/faithin-app/assets/faithin.css?v=20260831-v24" rel="stylesheet"/>
 </head>
-<body class="min-h-screen flex flex-col text-gray-900">
-
-    <!-- Top Navigation -->
-    <header class="bg-white shadow-sm fixed top-0 w-full z-50 h-[56px] flex items-center justify-between px-4 border-b border-gray-200">
-        <!-- Left Side: Logo & Search -->
-        <div class="flex items-center gap-2">
-            <div class="w-10 h-10 bg-[#1877F2] rounded-full flex items-center justify-center text-white font-bold text-2xl cursor-pointer">
-                f
-            </div>
-            <div class="hidden md:flex relative items-center ml-2">
-                <i data-lucide="search" class="w-4 h-4 text-gray-500 absolute left-3"></i>
-                <input type="text" placeholder="Search Faith In" class="bg-[#F0F2F5] rounded-full py-2 pl-9 pr-4 w-60 text-[15px] outline-none focus:ring-2 focus:ring-blue-100">
-            </div>
-            <div class="md:hidden w-10 h-10 rounded-full bg-[#F0F2F5] flex items-center justify-center cursor-pointer">
-                <i data-lucide="search" class="w-5 h-5 text-gray-700"></i>
-            </div>
-        </div>
-
-        <!-- Center: Navigation Icons -->
-        <div class="hidden lg:flex items-center justify-center gap-2 flex-1 max-w-2xl px-12 h-full">
-            <button class="flex-1 h-full flex items-center justify-center hover:bg-gray-100 rounded-lg group border-b-[3px] border-transparent my-1">
-                <i data-lucide="home" class="w-6 h-6 text-gray-500 group-hover:text-gray-700"></i>
-            </button>
-            <button class="flex-1 h-full flex items-center justify-center hover:bg-gray-100 rounded-lg group border-b-[3px] border-transparent my-1">
-                <i data-lucide="monitor-play" class="w-6 h-6 text-gray-500 group-hover:text-gray-700"></i>
-            </button>
-            <button class="flex-1 h-full flex items-center justify-center hover:bg-gray-100 rounded-lg group border-b-[3px] border-[#1877F2] my-1 relative">
-                <i data-lucide="book-open" class="w-6 h-6 text-[#1877F2]"></i>
-            </button>
-            <button class="flex-1 h-full flex items-center justify-center hover:bg-gray-100 rounded-lg group border-b-[3px] border-transparent my-1">
-                <i data-lucide="users" class="w-6 h-6 text-gray-500 group-hover:text-gray-700"></i>
-            </button>
-        </div>
-
-        <!-- Right Side: Actions & Profile -->
-        <div class="flex items-center gap-2">
-            <div class="w-10 h-10 rounded-full bg-[#E4E6EB] flex items-center justify-center cursor-pointer hover:bg-[#D8DADF] transition-colors">
-                <i data-lucide="grid" class="w-5 h-5 text-gray-900"></i>
-            </div>
-            <div class="w-10 h-10 rounded-full bg-[#E4E6EB] flex items-center justify-center cursor-pointer hover:bg-[#D8DADF] transition-colors">
-                <i data-lucide="message-circle" class="w-5 h-5 text-gray-900 fill-current"></i>
-            </div>
-            <div class="w-10 h-10 rounded-full bg-[#E4E6EB] flex items-center justify-center cursor-pointer hover:bg-[#D8DADF] transition-colors relative">
-                <i data-lucide="bell" class="w-5 h-5 text-gray-900 fill-current"></i>
-                <span class="absolute top-0 right-0 w-3 h-3 bg-red-500 rounded-full border-2 border-white"></span>
-            </div>
-            <div class="w-10 h-10 rounded-full overflow-hidden ml-1 cursor-pointer border border-gray-200">
-                <img src="https://placehold.co/40x40/3b82f6/ffffff?text=U" alt="Profile" class="w-full h-full object-cover">
-            </div>
-        </div>
-    </header>
-
-    <!-- Main Layout Container -->
-    <div class="max-w-[1200px] mx-auto pt-[72px] px-4 flex items-start gap-6 pb-12 w-full">
-
-        <!-- Left Sidebar -->
-        <aside class="hidden md:flex flex-col w-[320px] sticky top-[72px] gap-4 flex-shrink-0 max-h-[calc(100vh-72px)] overflow-y-auto pb-4">
-            
-            <!-- Card 1: My Library -->
-            <div class="bg-white rounded-lg shadow-[0_1px_2px_rgba(0,0,0,0.1)] p-4">
-                <h2 class="text-[17px] font-bold text-gray-900 mb-2 px-1">My Library</h2>
-                <ul class="flex flex-col space-y-1">
-                    <li>
-                        <a href="#" class="flex items-center gap-3 px-3 py-2.5 bg-[#E7F3FF] rounded-md transition-colors">
-                            <div class="w-6 h-6 flex items-center justify-center">
-                                <i data-lucide="compass" class="w-5 h-5 text-[#1877F2]"></i>
-                            </div>
-                            <span class="font-semibold text-[15px] text-[#1877F2]">Discover</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#" class="flex items-center gap-3 px-3 py-2.5 hover:bg-gray-100 rounded-md transition-colors">
-                            <div class="w-6 h-6 flex items-center justify-center">
-                                <i data-lucide="bookmark" class="w-5 h-5 text-gray-500 fill-gray-500"></i>
-                            </div>
-                            <span class="font-medium text-[15px] text-gray-700">Saved Items</span>
-                        </a>
-                    </li>
-                </ul>
-            </div>
-
-            <!-- Card 2: Browse Formats & Categories -->
-            <div class="bg-white rounded-lg shadow-[0_1px_2px_rgba(0,0,0,0.1)] p-4">
-                <h2 class="text-[17px] font-bold text-gray-900 mb-2 px-1">Browse Formats</h2>
-                <ul class="flex flex-col space-y-1 mb-3">
-                    <li>
-                        <a href="#" class="flex items-center gap-3 px-3 py-2.5 hover:bg-gray-100 rounded-md transition-colors">
-                            <i data-lucide="file-text" class="w-5 h-5 text-orange-500"></i>
-                            <span class="font-medium text-[15px] text-gray-700">PDF Books & Studies</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#" class="flex items-center gap-3 px-3 py-2.5 hover:bg-gray-100 rounded-md transition-colors">
-                            <i data-lucide="video" class="w-5 h-5 text-red-500"></i>
-                            <span class="font-medium text-[15px] text-gray-700">Sermons & Videos</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#" class="flex items-center gap-3 px-3 py-2.5 hover:bg-gray-100 rounded-md transition-colors">
-                            <i data-lucide="headphones" class="w-5 h-5 text-purple-500"></i>
-                            <span class="font-medium text-[15px] text-gray-700">Podcasts & Audio</span>
-                        </a>
-                    </li>
-                </ul>
-
-                <hr class="border-gray-200 my-2 mx-1">
-
-                <h2 class="text-[17px] font-bold text-gray-900 mt-4 mb-2 px-1">Categories</h2>
-                <ul class="flex flex-col space-y-1">
-                    <li>
-                        <a href="#" class="flex items-center px-3 py-2 hover:bg-gray-100 rounded-md transition-colors">
-                            <span class="font-medium text-[15px] text-gray-700">Theology</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#" class="flex items-center px-3 py-2 hover:bg-gray-100 rounded-md transition-colors">
-                            <span class="font-medium text-[15px] text-gray-700">Christian Living</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#" class="flex items-center px-3 py-2 hover:bg-gray-100 rounded-md transition-colors">
-                            <span class="font-medium text-[15px] text-gray-700">Apologetics</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#" class="flex items-center px-3 py-2 hover:bg-gray-100 rounded-md transition-colors">
-                            <span class="font-medium text-[15px] text-gray-700">Marriage & Family</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#" class="flex items-center px-3 py-2 hover:bg-gray-100 rounded-md transition-colors">
-                            <span class="font-medium text-[15px] text-gray-700">Leadership</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#" class="flex items-center px-3 py-2 hover:bg-gray-100 rounded-md transition-colors">
-                            <span class="font-medium text-[15px] text-gray-700">Daily Devotionals</span>
-                        </a>
-                    </li>
-                    <li>
-                        <button class="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 rounded-md transition-colors w-full text-left">
-                            <span class="font-medium text-[15px] text-[#1877F2]">Show more</span>
-                            <i data-lucide="chevron-down" class="w-5 h-5 text-[#1877F2]"></i>
-                        </button>
-                    </li>
-                </ul>
-            </div>
-        </aside>
-
-        <!-- Main Content Area -->
-        <main class="flex-1 w-full min-w-0">
-            
-            <!-- Header Section -->
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4 bg-transparent">
-                <div>
-                    <h1 class="text-[20px] font-bold text-gray-900 leading-tight">Recommended for you</h1>
-                    <p class="text-[15px] text-gray-500">Resources published by the Faith In community</p>
-                </div>
-                <button class="inline-flex items-center justify-center px-4 py-2 bg-[#1877F2] text-white font-semibold rounded-md hover:bg-blue-700 transition-colors shadow-sm whitespace-nowrap">
-                    <i data-lucide="plus" class="w-4 h-4 mr-2"></i>
-                    Publish resource
-                </button>
-            </div>
-
-            <!-- Cards Grid -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-
-                <!-- Book Card 1 -->
-                <article class="bg-white rounded-lg shadow-[0_1px_2px_rgba(0,0,0,0.1)] overflow-hidden flex flex-col border border-gray-100">
-                    <!-- Image Container -->
-                    <div class="bg-[#F0F2F5] h-[260px] flex items-center justify-center p-6 relative">
-                        <!-- 3D Book Cover -->
-                        <div class="w-[140px] h-[200px] relative shadow-lg rounded-r-md rounded-l-sm flex">
-                            <!-- Book Spine -->
-                            <div class="w-4 bg-gray-900 rounded-l-sm flex flex-col justify-evenly items-center py-2 shadow-inner">
-                                <div class="w-full h-[2px] bg-yellow-600 opacity-80"></div>
-                                <div class="w-full h-[2px] bg-yellow-600 opacity-80"></div>
-                                <div class="w-full h-[2px] bg-yellow-600 opacity-80"></div>
-                            </div>
-                            <!-- Book Front Cover -->
-                            <div class="flex-1 bg-[#1e4d3b] rounded-r-md flex flex-col items-center pt-8 border-l border-gray-800 shadow-[inset_4px_0_10px_rgba(0,0,0,0.2)]">
-                                <div class="border border-yellow-600 p-2 mx-3 text-center w-[85%] bg-[#1e4d3b]">
-                                    <p class="text-yellow-500 text-[9px] font-bold tracking-wider leading-tight">MATTHEW<br>HENRY'S</p>
-                                    <div class="w-full h-[1px] bg-yellow-600 my-[3px] opacity-70"></div>
-                                    <p class="text-white text-[7px] font-medium tracking-wide">Commentary</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Card Details -->
-                    <div class="p-4 flex flex-col flex-1">
-                        <h3 class="text-[17px] font-bold text-gray-900 leading-snug mb-1">MHC Gen 011-2</h3>
-                        <p class="text-[13px] text-gray-500 mb-0.5">By <span class="font-semibold text-gray-900">Hun Chet</span></p>
-                        <p class="text-[13px] text-gray-500 mb-2">Translated by SamAth Em</p>
-                        
-                        <span class="inline-flex items-center justify-center px-2.5 py-1 rounded bg-[#E7F3FF] text-[#1877F2] text-[12px] font-bold w-max mb-4">
-                            PDF
-                        </span>
-                        
-                        <div class="mt-auto flex items-center justify-between pt-3 border-t border-gray-100">
-                            <!-- Download Info -->
-                            <div class="flex items-center text-gray-500 hover:bg-gray-100 px-2 py-1.5 rounded-md cursor-pointer transition-colors">
-                                <i data-lucide="download" class="w-4 h-4 mr-1.5 text-[#1877F2]"></i>
-                                <span class="text-[14px] font-medium">0</span>
-                            </div>
-                            
-                            <!-- Actions -->
-                            <div class="flex items-center gap-1 text-gray-500">
-                                <button class="flex items-center justify-center w-9 h-9 rounded-full hover:bg-gray-100 transition-colors" title="Delete">
-                                    <i data-lucide="trash-2" class="w-4 h-4"></i>
-                                </button>
-                                <button class="flex items-center justify-center w-9 h-9 rounded-full hover:bg-gray-100 transition-colors" title="Save">
-                                    <i data-lucide="bookmark" class="w-4 h-4"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </article>
-
-                <!-- Book Card 2 -->
-                <article class="bg-white rounded-lg shadow-[0_1px_2px_rgba(0,0,0,0.1)] overflow-hidden flex flex-col border border-gray-100">
-                    <!-- Image Container -->
-                    <div class="bg-[#F0F2F5] h-[260px] flex items-center justify-center p-6 relative">
-                        <!-- 3D Book Cover -->
-                        <div class="w-[140px] h-[200px] relative shadow-lg rounded-r-md rounded-l-sm flex">
-                            <!-- Book Spine -->
-                            <div class="w-4 bg-gray-900 rounded-l-sm flex flex-col justify-evenly items-center py-2 shadow-inner">
-                                <div class="w-full h-[2px] bg-yellow-600 opacity-80"></div>
-                                <div class="w-full h-[2px] bg-yellow-600 opacity-80"></div>
-                                <div class="w-full h-[2px] bg-yellow-600 opacity-80"></div>
-                            </div>
-                            <!-- Book Front Cover -->
-                            <div class="flex-1 bg-[#1e4d3b] rounded-r-md flex flex-col items-center pt-8 border-l border-gray-800 shadow-[inset_4px_0_10px_rgba(0,0,0,0.2)]">
-                                <div class="border border-yellow-600 p-2 mx-3 text-center w-[85%] bg-[#1e4d3b]">
-                                    <p class="text-yellow-500 text-[9px] font-bold tracking-wider leading-tight">MATTHEW<br>HENRY'S</p>
-                                    <div class="w-full h-[1px] bg-yellow-600 my-[3px] opacity-70"></div>
-                                    <p class="text-white text-[7px] font-medium tracking-wide">Commentary</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Card Details -->
-                    <div class="p-4 flex flex-col flex-1">
-                        <h3 class="text-[17px] font-bold text-gray-900 leading-snug mb-1 truncate" title="MHC Preface to the First Volume.pdf">MHC Preface to the First Volume.pdf</h3>
-                        <p class="text-[13px] text-gray-500 mb-0.5">By <span class="font-semibold text-gray-900">Hun Chet</span></p>
-                        <p class="text-[13px] text-gray-500 mb-2">Translated by Ps SamAth Em</p>
-                        
-                        <span class="inline-flex items-center justify-center px-2.5 py-1 rounded bg-[#E7F3FF] text-[#1877F2] text-[12px] font-bold w-max mb-4">
-                            PDF
-                        </span>
-                        
-                        <div class="mt-auto flex items-center justify-between pt-3 border-t border-gray-100">
-                            <!-- Download Info -->
-                            <div class="flex items-center text-gray-500 hover:bg-gray-100 px-2 py-1.5 rounded-md cursor-pointer transition-colors">
-                                <i data-lucide="download" class="w-4 h-4 mr-1.5 text-[#1877F2]"></i>
-                                <span class="text-[14px] font-medium">6</span>
-                            </div>
-                            
-                            <!-- Actions -->
-                            <div class="flex items-center gap-1 text-gray-500">
-                                <button class="flex items-center justify-center w-9 h-9 rounded-full hover:bg-gray-100 transition-colors" title="Delete">
-                                    <i data-lucide="trash-2" class="w-4 h-4"></i>
-                                </button>
-                                <button class="flex items-center justify-center w-9 h-9 rounded-full hover:bg-gray-100 transition-colors" title="Save">
-                                    <i data-lucide="bookmark" class="w-4 h-4"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </article>
-
-            </div>
-        </main>
-    </div>
-
-    <script>
-        // Initialize Lucide icons
-        lucide.createIcons();
-    </script>
+<body class="font-sans min-h-screen pb-16 lg:pb-0" data-page="library" data-search="Search resources, books, sermons…">
+<main class="max-w-[1200px] mx-auto px-3 sm:px-4 py-5 grid gap-5 lg:grid-cols-[232px_minmax(0,1fr)] xl:grid-cols-[232px_minmax(0,1fr)_312px] items-start" id="main">
+<!-- ───── LEFT RAIL ───── -->
+<aside class="hidden lg:block lg:sticky lg:top-[72px] space-y-4">
+<section class="card p-2">
+<h2 class="px-3 py-2 text-[15px] font-bold">My Library</h2>
+<nav class="space-y-0.5">
+<a class="side-link is-active" href="/library"><i class="fa-solid fa-compass"></i>Discover</a>
+<a class="side-link" href="/library?view=saved"><i class="fa-solid fa-bookmark"></i>Saved Items</a>
+</nav>
+</section>
+<section class="card p-2">
+<h2 class="px-3 py-2 text-[15px] font-bold">Browse Formats</h2>
+<nav class="space-y-0.5">
+<a class="side-link" href="/library?format=pdf"><i class="fa-solid fa-file-pdf text-amber-500"></i>PDF Books &amp; Studies</a>
+<a class="side-link" href="/library?format=video"><i class="fa-solid fa-video text-rose"></i>Sermons &amp; Videos</a>
+<a class="side-link" href="/library?format=audio"><i class="fa-solid fa-headphones text-violet-500"></i>Podcasts &amp; Audio</a>
+</nav>
+<div class="my-2 border-t border-line"></div>
+<h2 class="px-3 py-2 text-[15px] font-bold">Categories</h2>
+<nav class="space-y-0.5" data-categories="">
+<a class="side-link" href="/library?category=Theology">Theology</a>
+<a class="side-link" href="/library?category=Christian Living">Christian Living</a>
+<a class="side-link" href="/library?category=Apologetics">Apologetics</a>
+<a class="side-link" href="/library?category=Marriage and Family">Marriage &amp; Family</a>
+<a class="side-link" href="/library?category=Leadership">Leadership</a>
+<a class="side-link" href="/library?category=Daily Devotionals">Daily Devotionals</a>
+<a class="side-link hidden" data-more-cat="" href="/library?category=Missions">Missions</a>
+<a class="side-link hidden" data-more-cat="" href="/library?category=Church History">Church History</a>
+<a class="side-link hidden" data-more-cat="" href="/library?category=Prayer and Fasting">Prayer &amp; Fasting</a>
+<button class="side-link w-full !text-brand" id="show-more-cats">Show more <i class="fa-solid fa-chevron-down text-[10px] ml-auto"></i></button>
+</nav>
+</section>
+</aside>
+<!-- ───── CENTER ───── -->
+<section class="space-y-5 min-w-0">
+<!-- featured -->
+<!-- jump back in -->
+<!-- recommended shelf -->
+<section class="card p-4">
+<div class="flex items-start justify-between mb-4 gap-3">
+<div>
+<h3 class="text-[15.5px] font-bold">Recommended for you</h3>
+<p class="text-[12.5px] text-muted mt-0.5">Resources published by the Faith In community</p>
+</div>
+<div class="flex gap-1.5 shrink-0">
+<button aria-label="Scroll left" class="icon-btn border border-line" data-rail-prev="#shelf"><i class="fa-solid fa-chevron-left text-[12px]"></i></button>
+<button aria-label="Scroll right" class="icon-btn border border-line" data-rail-next="#shelf"><i class="fa-solid fa-chevron-right text-[12px]"></i></button>
+</div>
+</div>
+<div class="flex gap-5 overflow-x-auto no-scrollbar pb-2 snap-x" id="shelf"><p class="p-6 text-center text-[13.5px] text-muted" data-placeholder="">Loading…</p></div>
+</section>
+<!-- trending media -->
+</section>
+<!-- ───── RIGHT RAIL ───── -->
+<aside class="hidden xl:block xl:sticky xl:top-[72px] space-y-4">
+<section class="card p-4">
+<div class="flex items-center justify-between mb-3">
+<h2 class="font-serif font-semibold text-[15px] flex items-center gap-2"><i class="fa-solid fa-sun text-gold text-[13px]"></i>Verse of the Day</h2>
+<button aria-label="Share verse" class="icon-btn w-8 h-8"><i class="fa-solid fa-share-nodes text-[13px]"></i></button>
+</div>
+<blockquote class="border-l-[3px] border-gold pl-3.5 py-1" id="votd">
+<p class="font-serif italic text-[15px] leading-relaxed">"Your word is a lamp for my feet, a light on my path."</p>
+</blockquote>
+<div class="flex items-center justify-between mt-3.5 pt-3 border-t border-line">
+<a class="text-[13px] font-semibold text-brand hover:underline" href="/bible-study">Open Bible Study</a>
+<span class="text-[11px] font-bold uppercase tracking-wide text-muted" data-votd-ref="">Psalm 119:105</span>
+</div>
+</section>
+<footer class="px-2 pb-4 text-center space-y-2">
+<p class="text-[11.5px] text-muted">
+<a class="hover:text-brand hover:underline" href="/about">About</a> 
+         ·
+        <a class="hover:text-brand hover:underline" href="/contact">Help Center</a> ·
+        <a class="hover:text-brand hover:underline" href="/privacy">Privacy</a> · <a class="hover:text-brand hover:underline" href="/terms">Terms</a>
+</p>
+<p class="text-[11.5px] text-faint">Faith In Corporation © 2026</p>
+</footer>
+</aside>
+</main>
+<script src="/faithin-app/assets/faithin-runtime.js?v=20260831-v24"></script>
+<script src="/faithin-app/assets/faithin-blob-upload.js?v=20260831-v24"></script>
+<script src="/assets/js/faith-in-backend.js?v=20260901-backend-v3"></script>
+<script src="/faithin-app/assets/faithin.js?v=20260831-v24"></script>
+<script>
+  document.getElementById('show-more-cats').addEventListener('click', function () {
+    const hidden = document.querySelectorAll('[data-more-cat].hidden');
+    if (hidden.length) {
+      hidden.forEach(el => el.classList.remove('hidden'));
+      this.innerHTML = 'Show less <i class="fa-solid fa-chevron-up text-[10px] ml-auto"></i>';
+    } else {
+      document.querySelectorAll('[data-more-cat]').forEach(el => el.classList.add('hidden'));
+      this.innerHTML = 'Show more <i class="fa-solid fa-chevron-down text-[10px] ml-auto"></i>';
+    }
+  });
+</script>
+<script src="/faithin-app/assets/faithin-live.js?v=20260831-v24"></script>
 </body>
 </html>
