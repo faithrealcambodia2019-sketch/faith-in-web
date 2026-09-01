@@ -169,7 +169,18 @@
       ${post.article_title ? `<div class="px-3 pt-1 sm:px-4"><h3 class="font-serif text-[18px] sm:text-[22px] font-semibold">${esc(post.article_title)}</h3></div>` : ''}
       ${body ? `<div class="px-3 pb-2 sm:px-4 sm:pb-3"><p class="text-[13.5px] sm:text-[14.5px] leading-relaxed whitespace-pre-wrap">${esc(body)}</p></div>` : ''}
       ${mediaHTML(post)}
-      <div class="px-3 py-1.5 sm:px-4 sm:py-2 flex items-center justify-between text-[11px] sm:text-[12px] text-muted border-b border-line"><span class="flex items-center gap-1.5"><span class="w-[16px] h-[16px] sm:w-[18px] sm:h-[18px] rounded-full bg-brand text-white grid place-items-center text-[8px] sm:text-[9px]"><i class="fa-solid fa-hands-praying"></i></span><span data-likecount>${Number(post.reaction_count || 0)}</span></span><span class="flex gap-3"><button type="button" data-comment-toggle>${Number(post.comment_count || 0)} comments</button><span data-sharecount>${Number(post.share_count || 0)} shares</span></span></div>
+      <div class="px-3 py-1.5 sm:px-4 sm:py-2 flex items-center justify-between text-[11px] sm:text-[12px] text-muted border-b border-line">
+        <div class="flex items-center gap-1.5">
+          <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-brand text-white text-[9px] shadow-xs" data-reaction-badge>
+            <i class="fa-solid ${selectedReaction ? selectedMeta.icon : 'fa-hands-praying'}"></i>
+          </span>
+          <span class="font-medium text-ink/80 text-[12px]" data-likecount>${Number(post.reaction_count || 0)}</span>
+        </div>
+        <div class="flex items-center gap-3">
+          <button type="button" class="hover:underline" data-comment-toggle>${Number(post.comment_count || 0)} comments</button>
+          <span data-sharecount>${Number(post.share_count || 0)} shares</span>
+        </div>
+      </div>
       <div class="flex items-center justify-between gap-1 px-1.5 py-0.5 sm:px-2 sm:py-1">
         <div class="faith-reaction-wrap relative flex-1" data-faith-reaction-wrap>
           <div class="faith-reaction-popup" role="menu" aria-label="Choose a faith reaction">
@@ -721,10 +732,15 @@
     const trigger = $('[data-live-reaction-trigger]', article);
     if (trigger) {
       const meta = faithReactionMeta(selectedReaction || 'like');
-      trigger.className = `action-btn faith-reaction-trigger${selectedReaction ? ` is-on ${meta.tone}` : ''}`;
+      trigger.className = `action-btn w-full faith-reaction-trigger${selectedReaction ? ` is-on ${meta.tone}` : ''}`;
       trigger.dataset.selectedReaction = selectedReaction || '';
       trigger.setAttribute('aria-pressed', String(!!selectedReaction));
       trigger.innerHTML = `<i class="fa-solid ${meta.icon}"></i><span>${selectedReaction ? meta.label : 'Amen'}</span>`;
+    }
+    const badge = $('[data-reaction-badge]', article);
+    if (badge) {
+      const meta = faithReactionMeta(selectedReaction || 'like');
+      badge.innerHTML = `<i class="fa-solid ${selectedReaction ? meta.icon : 'fa-hands-praying'}"></i>`;
     }
     const counter = $('[data-likecount]', article);
     if (counter && count != null) counter.textContent = String(count);
