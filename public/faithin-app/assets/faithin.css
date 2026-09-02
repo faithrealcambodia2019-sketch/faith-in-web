@@ -1299,6 +1299,249 @@ html.dark .fb-action-icon-btn:hover {
   .fi-media-grid .fi-resource-cover{ width:142px; height:181px; }
 }
 
+/* --- Library: toolbar, shelf states and card refinements ---------------- */
+
+.fi-library-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.fi-library-search {
+  position: relative;
+  flex: 1 1 260px;
+  min-width: 200px;
+}
+.fi-library-search > i {
+  position: absolute;
+  left: 13px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 13px;
+  color: #94a3b8;
+  pointer-events: none;
+}
+.fi-library-search input {
+  width: 100%;
+  height: 40px;
+  padding: 0 34px 0 36px;
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: rgb(var(--ink));
+  background: rgb(var(--surface));
+  border: 1px solid rgb(var(--line));
+  border-radius: 10px;
+  outline: none;
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+.fi-library-search input::placeholder { color: #94a3b8; text-overflow: ellipsis; }
+.fi-library-search input:focus {
+  border-color: #1877F2;
+  box-shadow: 0 0 0 3px rgba(24, 119, 242, .15);
+}
+.fi-library-search button {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 24px;
+  height: 24px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: #94a3b8;
+  cursor: pointer;
+}
+.fi-library-search button:hover { color: rgb(var(--ink)); background: rgb(var(--raised)); }
+
+.fi-library-sort {
+  height: 40px;
+  padding: 0 32px 0 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: rgb(var(--ink));
+  background: rgb(var(--surface));
+  border: 1px solid rgb(var(--line));
+  border-radius: 10px;
+  outline: none;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2394a3b8' d='M6 8.2 1.8 4l.9-.9L6 6.4l3.3-3.3.9.9z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 11px center;
+}
+.fi-library-sort:focus { border-color: #1877F2; box-shadow: 0 0 0 3px rgba(24, 119, 242, .15); }
+
+.fi-library-count {
+  font-size: 12.5px;
+  color: rgb(var(--muted));
+  font-variant-numeric: tabular-nums;
+}
+
+/* Loading: shaped placeholders rather than a line of text, so the shelf does
+   not jump when the resources arrive. */
+.fb-skeleton-card {
+  border-radius: 12px;
+  border: 1px solid rgb(var(--line));
+  background: rgb(var(--surface));
+  overflow: hidden;
+}
+.fb-skeleton-card > span {
+  display: block;
+  background: linear-gradient(90deg, rgb(var(--raised)) 25%, rgb(var(--line)) 37%, rgb(var(--raised)) 63%);
+  background-size: 400% 100%;
+  animation: fi-shimmer 1.4s ease-in-out infinite;
+}
+.fb-skeleton-card .fb-skeleton-cover { height: 220px; }
+.fb-skeleton-card .fb-skeleton-line { height: 12px; border-radius: 6px; margin: 14px 16px 0; }
+.fb-skeleton-card .fb-skeleton-line.is-short { width: 55%; margin-bottom: 18px; }
+@keyframes fi-shimmer { 0% { background-position: 100% 50%; } 100% { background-position: 0 50%; } }
+@media (prefers-reduced-motion: reduce) {
+  .fb-skeleton-card > span { animation: none; }
+}
+
+.fi-library-empty {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 6px;
+  padding: 56px 24px;
+  border: 1px dashed rgb(var(--line));
+  border-radius: 14px;
+  background: rgb(var(--surface));
+}
+.fi-library-empty i { font-size: 26px; color: #cbd5e1; }
+.fi-library-empty h3 { font-size: 15px; font-weight: 700; color: rgb(var(--ink)); margin-top: 6px; }
+.fi-library-empty p { font-size: 13px; color: rgb(var(--muted)); max-width: 42ch; line-height: 1.6; }
+
+.fi-load-more {
+  grid-column: 1 / -1;
+  justify-self: center;
+  margin-top: 4px;
+  height: 40px;
+  padding: 0 22px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: rgb(var(--ink));
+  background: rgb(var(--surface));
+  border: 1px solid rgb(var(--line));
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background .15s ease, border-color .15s ease;
+}
+.fi-load-more:hover { background: rgb(var(--raised)); border-color: #cbd5e1; }
+
+/* Cards: keyboard focus, and full-bleed covers for the formats that have a
+   real picture — a sermon should look like a sermon, not a book. */
+.fb-library-card:focus-within {
+  border-color: #1877F2;
+  box-shadow: 0 0 0 3px rgba(24, 119, 242, .18);
+}
+.fb-library-card .fb-action-icon-btn:focus-visible,
+.fb-library-card .fb-download-btn:focus-visible {
+  outline: 2px solid #1877F2;
+  outline-offset: 2px;
+}
+.fb-library-cover-box.is-media {
+  height: auto;
+  padding: 0;
+  display: block;
+  background: none;
+}
+.fb-library-cover-box.is-media .fi-cover-media {
+  position: relative;
+  display: block;
+  width: 100%;
+  border: 0;
+  padding: 0;
+  overflow: hidden;
+  cursor: pointer;
+  background: linear-gradient(150deg, #1d4ed8, #172554);
+}
+/* On a mixed shelf every cover is the same height, so the grid reads as one
+   row of resources rather than a ragged pile. A shelf filtered to one medium
+   gets that medium's natural ratio instead — 16:9 for sermons, square for
+   audio. */
+.fb-library-cover-box.is-media .fi-cover-media { height: 220px; }
+.fb-library-cover-box.is-audio .fi-cover-media { background: linear-gradient(150deg, #7c3aed, #3b1d94); }
+.fi-library-shelf.is-video-shelf .fb-library-cover-box.is-video .fi-cover-media { height: auto; aspect-ratio: 16 / 9; }
+.fi-library-shelf.is-audio-shelf .fb-library-cover-box.is-audio .fi-cover-media { height: auto; aspect-ratio: 1 / 1; }
+.fb-library-cover-box.is-media .fi-cover-fallback .fi-cover-fallback-title {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.fb-library-cover-box.is-media .fi-cover-media img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.fb-library-cover-box.is-media .fi-cover-fallback {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+  padding: 14px;
+  color: #fff;
+  font-size: 12.5px;
+  font-weight: 600;
+  line-height: 1.5;
+  text-align: center;
+}
+
+/* Format badge, coloured by what the resource actually is */
+.fb-format-pill { gap: 5px; letter-spacing: .04em; }
+.fb-format-pill i { font-size: 10px; }
+.fb-format-pill.is-video { background: #FFE9E9; color: #DC2626; }
+.fb-format-pill.is-audio { background: #F3E8FF; color: #7C3AED; }
+.fb-format-pill.is-image { background: #E6FBF4; color: #0F766E; }
+.fb-format-pill.is-zip   { background: #EEF2F7; color: #475569; }
+html.dark .fb-format-pill.is-video { background: rgba(220, 38, 38, .18); color: #FCA5A5; }
+html.dark .fb-format-pill.is-audio { background: rgba(124, 58, 237, .2); color: #C4B5FD; }
+html.dark .fb-format-pill.is-image { background: rgba(15, 118, 110, .2); color: #5EEAD4; }
+html.dark .fb-format-pill.is-zip   { background: rgba(71, 85, 105, .3); color: #CBD5E1; }
+
+/* One quiet line for language and category, so a card says where a resource
+   belongs without shouting. */
+.fi-library-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.fi-library-stats > div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 7px 0;
+  border-top: 1px solid rgb(var(--line));
+}
+.fi-library-stats > div:first-child { border-top: 0; padding-top: 0; }
+.fi-library-stats dt { font-size: 13px; color: rgb(var(--muted)); }
+.fi-library-stats dd { font-size: 14px; font-weight: 700; color: rgb(var(--ink)); font-variant-numeric: tabular-nums; }
+
+/* A resource with no translator still reserves that line, so the format
+   badges line up across a row. */
+.fb-card-translator-gap {
+  height: 19px;
+  margin-bottom: 6px;
+}
+
+.fb-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 2px;
+  margin-bottom: 10px;
+  font-size: 11.5px;
+  line-height: 1.6;
+  color: rgb(var(--muted));
+}
+.fb-card-meta .fb-meta-dot { opacity: .5; }
+
 /* --- in-app player ------------------------------------------------------ */
 .fi-player-backdrop{
   position:fixed; inset:0; z-index:260; display:flex; align-items:center; justify-content:center;

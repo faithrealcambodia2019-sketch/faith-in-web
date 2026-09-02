@@ -15,7 +15,7 @@
 <link href="/faithin-app/assets/faithin-fonts.css" rel="stylesheet"/>
 <link href="/faithin-app/assets/faithin-icons.css" rel="stylesheet"/>
 <link href="/faithin-app/assets/faithin-tw.css?v=20260902-tw-v2" rel="stylesheet"/>
-<link href="/faithin-app/assets/faithin.css?v=20260902-lib-v2" rel="stylesheet"/>
+<link href="/faithin-app/assets/faithin.css?v=20260903-lib-v3" rel="stylesheet"/>
 </head>
 <body class="font-sans min-h-screen pb-16 lg:pb-0" data-page="library" data-search="Search Faith In">
 <main class="fi-library-layout" id="main">
@@ -188,9 +188,26 @@
     </a>
   </div>
 
+  <!-- Search, sort and result count -->
+  <div class="fi-library-toolbar" data-library-toolbar>
+    <label class="fi-library-search">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <input type="search" id="library-search" placeholder="Search titles, authors, translators…" aria-label="Search the library" autocomplete="off">
+      <button type="button" data-library-search-clear aria-label="Clear search" hidden><i class="fa-solid fa-xmark"></i></button>
+    </label>
+    <select class="fi-library-sort" id="library-sort" aria-label="Sort resources">
+      <option value="recent">Newest first</option>
+      <option value="downloads">Most downloaded</option>
+      <option value="title">Title A–Z</option>
+    </select>
+    <span class="fi-library-count" id="library-count" aria-live="polite"></span>
+  </div>
+
   <!-- Cards Grid -->
-  <div class="fi-library-shelf" id="shelf">
-    <p class="p-8 text-center text-[13.5px] text-muted col-span-full" data-placeholder="">Loading resources…</p>
+  <div class="fi-library-shelf" id="shelf" aria-busy="true">
+    <div class="fb-skeleton-card" aria-hidden="true"><span class="fb-skeleton-cover"></span><span class="fb-skeleton-line"></span><span class="fb-skeleton-line is-short"></span></div>
+    <div class="fb-skeleton-card" aria-hidden="true"><span class="fb-skeleton-cover"></span><span class="fb-skeleton-line"></span><span class="fb-skeleton-line is-short"></span></div>
+    <div class="fb-skeleton-card" aria-hidden="true"><span class="fb-skeleton-cover"></span><span class="fb-skeleton-line"></span><span class="fb-skeleton-line is-short"></span></div>
   </div>
 
 </section>
@@ -214,6 +231,12 @@
       <span class="text-[11px] font-bold uppercase tracking-wide text-muted" data-votd-ref="">Psalm 119:105</span>
     </div>
   </section>
+  <section class="card p-4 rounded-xl bg-surface shadow-[0_1px_2px_rgba(0,0,0,0.06)] border border-line" id="library-stats" hidden>
+    <h2 class="font-serif font-semibold text-[15px] flex items-center gap-2 text-ink mb-3">
+      <i class="fa-solid fa-layer-group text-brand text-[13px]"></i>Library at a glance
+    </h2>
+    <dl class="fi-library-stats" data-library-stats></dl>
+  </section>
   <footer class="px-2 pb-4 text-center space-y-2">
     <p class="text-[11.5px] text-muted">
       <a class="hover:text-brand hover:underline" href="/about">About</a> ·
@@ -226,10 +249,10 @@
 </aside>
 
 </main>
-<script src="/faithin-app/assets/faithin-runtime.js?v=20260902-bible-v1"></script>
+<script src="/faithin-app/assets/faithin-runtime.js?v=20260903-lib-v3"></script>
 <script src="/faithin-app/assets/faithin-blob-upload.js?v=20260901-v85"></script>
 <script src="/assets/js/faith-in-backend.js?v=20260902-bible-v1"></script>
-<script src="/faithin-app/assets/faithin.js?v=20260902-bible-v1"></script>
+<script src="/faithin-app/assets/faithin.js?v=20260903-lib-v3"></script>
 <script>
   document.getElementById('show-more-cats')?.addEventListener('click', function () {
     const hidden = document.querySelectorAll('[data-more-cat].hidden');
@@ -242,6 +265,6 @@
     }
   });
 </script>
-<script src="/faithin-app/assets/faithin-live.js?v=20260902-lib-v2"></script>
+<script src="/faithin-app/assets/faithin-live.js?v=20260903-lib-v3"></script>
 </body>
 </html>

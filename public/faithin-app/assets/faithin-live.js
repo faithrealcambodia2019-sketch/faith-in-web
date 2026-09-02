@@ -359,49 +359,69 @@
       + `</span></div>`;
   }
 
+  const FI_FORMAT_META = {
+    pdf:   { label: 'PDF',   icon: 'fa-file-lines',  cls: '' },
+    video: { label: 'Video', icon: 'fa-video',       cls: 'is-video' },
+    audio: { label: 'Audio', icon: 'fa-headphones',  cls: 'is-audio' },
+    image: { label: 'Image', icon: 'fa-image',       cls: 'is-image' },
+    zip:   { label: 'ZIP',   icon: 'fa-file-zipper', cls: 'is-zip' },
+  };
+
   function fiResourceCardHtml(resource, savedIds) {
     const format = String(resource.format || 'pdf').toLowerCase();
+    const meta = FI_FORMAT_META[format] || { label: format.toUpperCase(), icon: 'fa-file', cls: '' };
     const id = esc(resource.id);
     const saved = savedIds.has(resource.id);
     const canDelete = Boolean(resource.can_delete);
     const canEdit = Boolean(resource.can_edit || resource.can_delete);
     const authorName = (typeof resource.author === 'object' && resource.author?.name) ? resource.author.name : (resource.contributor_name || resource.author || 'Faith In member');
     const downloadCount = Number(resource.download_count || 0);
+    const isMedia = format === 'video' || format === 'audio';
 
-    let coverMarkup = '';
-    if (format === 'video') {
-      coverMarkup = `<div class="w-full max-w-[240px] aspect-video relative rounded-md overflow-hidden shadow bg-gray-900 flex items-center justify-center cursor-pointer group" data-resource-play aria-label="Play ${esc(resource.title)}">`
-        + (resource.thumbnail_url ? `<img class="w-full h-full object-cover" src="${esc(resource.thumbnail_url)}" alt="${esc(resource.title)}" loading="lazy">` : `<span class="text-white font-semibold text-center p-3 text-xs"><i class="fa-solid fa-video text-lg block mb-1"></i>${esc(resource.title)}</span>`)
+    // Sermons and audio carry their own artwork, so they fill the top of the
+    // card at their natural ratio instead of sitting inside a book shelf box.
+    let coverBox = '';
+    if (isMedia) {
+      const badge = format === 'video' ? 'Sermon' : 'Audio';
+      const fallbackIcon = format === 'video' ? 'fa-video' : 'fa-headphones';
+      coverBox = `<div class="fb-library-cover-box is-media is-${format}">`
+        + `<button type="button" class="fi-cover-media" data-resource-play aria-label="Play ${esc(resource.title)}">`
+        + (resource.thumbnail_url
+            ? `<img src="${esc(resource.thumbnail_url)}" alt="" loading="lazy">`
+            : `<span class="fi-cover-fallback"><i class="fa-solid ${fallbackIcon} text-xl"></i><span class="fi-cover-fallback-title">${esc(resource.title)}</span></span>`)
         + `<span class="fi-media-play"><span><i class="fa-solid fa-play text-sm"></i></span></span>`
-        + `<span class="fi-media-badge">Sermon</span></div>`;
-    } else if (format === 'audio') {
-      coverMarkup = `<div class="w-[140px] h-[140px] relative rounded-md overflow-hidden shadow bg-gradient-to-br from-purple-700 to-indigo-900 flex items-center justify-center cursor-pointer group" data-resource-play aria-label="Play ${esc(resource.title)}">`
-        + (resource.thumbnail_url ? `<img class="w-full h-full object-cover" src="${esc(resource.thumbnail_url)}" alt="${esc(resource.title)}" loading="lazy">` : `<span class="text-white font-semibold text-center p-3 text-xs"><i class="fa-solid fa-headphones text-xl block mb-1"></i>${esc(resource.title)}</span>`)
-        + `<span class="fi-media-play"><span><i class="fa-solid fa-play text-sm"></i></span></span>`
-        + `<span class="fi-media-badge">Audio</span></div>`;
+        + `<span class="fi-media-badge">${badge}</span>`
+        + `</button></div>`;
     } else if (resource.thumbnail_url) {
-      coverMarkup = `<div class="fb-book-3d-wrap" data-resource-download title="Download ${esc(resource.title)}">`
-        + `<img src="${esc(resource.thumbnail_url)}" alt="${esc(resource.title)}" loading="lazy">`
-        + `</div>`;
+      coverBox = `<div class="fb-library-cover-box">`
+        + `<div class="fb-book-3d-wrap" data-resource-download title="Download ${esc(resource.title)}">`
+        + `<img src="${esc(resource.thumbnail_url)}" alt="" loading="lazy">`
+        + `</div></div>`;
     } else {
-      // 3D Book Cover Fallback
-      coverMarkup = `<div class="fb-book-3d-wrap" data-resource-download title="Download ${esc(resource.title)}">`
+      coverBox = `<div class="fb-library-cover-box">`
+        + `<div class="fb-book-3d-wrap" data-resource-download title="Download ${esc(resource.title)}">`
         + `<div class="fb-book-fallback">`
         + `<div class="fb-book-spine"><div class="fb-spine-line"></div><div class="fb-spine-line"></div><div class="fb-spine-line"></div></div>`
         + `<div class="fb-book-front"><div class="fb-book-badge">`
         + `<p class="fb-book-author">${esc(authorName)}</p>`
         + `<div class="fb-book-divider"></div>`
         + `<p class="fb-book-title">${esc(resource.title)}</p>`
-        + `</div></div></div></div>`;
+        + `</div></div></div></div></div>`;
     }
 
+    const metaBits = [resource.language, resource.category].filter(Boolean).map(esc);
+    const metaLine = metaBits.length
+      ? `<p class="fb-card-meta">${metaBits.join('<span class="fb-meta-dot">·</span>')}</p>`
+      : '';
+
     return `<article class="fb-library-card group" data-resource-id="${id}" data-resource-format="${esc(format)}">`
-      + `<div class="fb-library-cover-box">${coverMarkup}</div>`
+      + coverBox
       + `<div class="fb-card-body">`
       + `<h3 class="fb-card-title" title="${esc(resource.title)}">${esc(resource.title)}</h3>`
       + `<p class="fb-card-author">By <strong>${esc(authorName)}</strong></p>`
-      + (resource.translated_by ? `<p class="fb-card-translator">Translated by ${esc(resource.translated_by)}</p>` : '<div class="mb-1"></div>')
-      + `<span class="fb-format-pill">${esc(resource.format || 'PDF')}</span>`
+      + (resource.translated_by ? `<p class="fb-card-translator">Translated by ${esc(resource.translated_by)}</p>` : '<div class="fb-card-translator-gap"></div>')
+      + `<span class="fb-format-pill ${meta.cls}"><i class="fa-solid ${meta.icon}"></i>${meta.label}</span>`
+      + metaLine
       + `<div class="fb-card-footer">`
       + `<button type="button" class="fb-download-btn" data-resource-download title="Download resource">`
       + `<i class="fa-solid fa-download"></i>`
@@ -414,6 +434,23 @@
       + `<i class="fa-${saved ? 'solid' : 'regular'} fa-bookmark text-[15px]"></i>`
       + `</button>`
       + `</div></div></div></article>`;
+  }
+
+  function fiShelfSkeleton(count) {
+    return Array.from({ length: count || 6 }, () =>
+      `<div class="fb-skeleton-card" aria-hidden="true">`
+      + `<span class="fb-skeleton-cover"></span>`
+      + `<span class="fb-skeleton-line"></span>`
+      + `<span class="fb-skeleton-line is-short"></span>`
+      + `</div>`).join('');
+  }
+
+  function fiLibraryEmpty(headline, detail) {
+    return `<div class="fi-library-empty">`
+      + `<i class="fa-regular fa-folder-open"></i>`
+      + `<h3>${esc(headline)}</h3>`
+      + `<p>${esc(detail)}</p>`
+      + `</div>`;
   }
 
   // In-app player. Video plays in a lightbox; audio gets a music player with a
@@ -503,9 +540,17 @@
 
   async function loadLibrary() {
     const shelf = $('#shelf'); if (!shelf) return;
-    shelf.className = 'fi-library-shelf';
+    const shelfFormat = String(new URLSearchParams(location.search).get('format') || '').toLowerCase();
+    shelf.className = 'fi-library-shelf'
+      + (shelfFormat === 'video' ? ' is-video-shelf' : '')
+      + (shelfFormat === 'audio' ? ' is-audio-shelf' : '');
+    shelf.innerHTML = fiShelfSkeleton(6);
     $$('[data-rail-prev],[data-rail-next]').forEach(button => { button.style.display = 'none'; });
     let resources = [], rendered = [], savedIds = new Set(), searchQuery = '';
+    const PAGE_SIZE = 24;
+    let visible = PAGE_SIZE, sortMode = 'recent';
+    const searchInput = $('#library-search'), searchClear = $('[data-library-search-clear]');
+    const sortSelect = $('#library-sort'), countEl = $('#library-count');
     const view = new URLSearchParams(location.search).get('view');
     const format = new URLSearchParams(location.search).get('format');
     const category = new URLSearchParams(location.search).get('category');
@@ -553,6 +598,15 @@
       }
     });
 
+    const stampOf = resource => Date.parse(resource.created_at || resource.published_at || resource.updated_at || '') || 0;
+    const sortItems = items => {
+      if (sortMode === 'downloads') return items.sort((a, b) => Number(b.download_count || 0) - Number(a.download_count || 0));
+      if (sortMode === 'title') return items.sort((a, b) => String(a.title || '').localeCompare(String(b.title || ''), undefined, { numeric: true, sensitivity: 'base' }));
+      // Newest first, but only when the resources actually carry a date —
+      // otherwise keep the order the API gave us.
+      return items.some(stampOf) ? items.sort((a, b) => stampOf(b) - stampOf(a)) : items;
+    };
+
     const render = () => {
       let items = resources.slice();
       if (format) items = items.filter(resource => String(resource.format || '').toLowerCase() === format.toLowerCase());
@@ -561,10 +615,55 @@
         items = items.filter(resource => String(resource.category || '').replace(/[^a-z]/gi, '').toLowerCase() === wanted);
       }
       if (view === 'saved') items = items.filter(resource => savedIds.has(resource.id));
-      if (searchQuery) items = items.filter(resource => [resource.title, resource.author, resource.category, resource.description].some(value => String(value || '').toLowerCase().includes(searchQuery)));
+      if (searchQuery) items = items.filter(resource => [resource.title, resource.author, resource.contributor_name, resource.translated_by, resource.category, resource.language, resource.description].some(value => String(value || '').toLowerCase().includes(searchQuery)));
+      items = sortItems(items);
       rendered = items;
-      shelf.innerHTML = items.length ? items.map(resource => fiResourceCardHtml(resource, savedIds)).join('') : emptyState(view || format || category || searchQuery ? 'Nothing in this shelf yet.' : 'No community resources have been published yet.');
+
+      if (!items.length) {
+        shelf.innerHTML = searchQuery
+          ? fiLibraryEmpty('Nothing matches that search', 'Try another title, author, translator or category.')
+          : (view || format || category)
+            ? fiLibraryEmpty('Nothing on this shelf yet', 'When a resource is published in this format, it appears here.')
+            : fiLibraryEmpty('The library is empty', 'No community resources have been published yet — use Publish resource to add the first one.');
+      } else {
+        const page = items.slice(0, visible);
+        const remaining = items.length - page.length;
+        shelf.innerHTML = page.map(resource => fiResourceCardHtml(resource, savedIds)).join('')
+          + (remaining > 0 ? `<button type="button" class="fi-load-more" data-load-more>Show ${Math.min(remaining, PAGE_SIZE)} more</button>` : '');
+      }
+      if (countEl) countEl.textContent = items.length ? `${items.length} resource${items.length === 1 ? '' : 's'}` : '';
     };
+
+    // A short, honest summary of what the shelf actually holds.
+    const renderStats = () => {
+      const panel = $('#library-stats'), list = $('[data-library-stats]');
+      if (!panel || !list || !resources.length) return;
+      const countOf = kind => resources.filter(resource => String(resource.format || '').toLowerCase() === kind).length;
+      const rows = [
+        ['Resources', resources.length],
+        ['PDF books', countOf('pdf')],
+        ['Sermons', countOf('video')],
+        ['Audio', countOf('audio')],
+        ['Saved by you', savedIds.size],
+      ];
+      list.innerHTML = rows.map(([label, value]) => `<div><dt>${esc(label)}</dt><dd>${value}</dd></div>`).join('');
+      panel.hidden = false;
+    };
+
+    const applySearch = value => {
+      searchQuery = String(value || '').trim().toLowerCase();
+      visible = PAGE_SIZE;
+      if (searchClear) searchClear.hidden = !searchQuery;
+      render();
+    };
+    if (searchInput) searchInput.addEventListener('input', event => applySearch(event.target.value));
+    if (searchClear) searchClear.addEventListener('click', () => { if (searchInput) searchInput.value = ''; applySearch(''); searchInput?.focus(); });
+    if (sortSelect) sortSelect.addEventListener('change', event => { sortMode = event.target.value; visible = PAGE_SIZE; render(); });
+    shelf.addEventListener('click', event => {
+      if (!event.target.closest('[data-load-more]')) return;
+      visible += PAGE_SIZE;
+      render();
+    });
     try {
       const [result, saved] = await Promise.all([api.request('cv_get_resources'), api.request('cv_get_bookmarks').catch(() => ({ items: [] }))]);
       const fetched = result.items || [];
@@ -653,8 +752,10 @@
       const existingIds = new Set(fetched.map(it => it.id));
       resources = fetched.concat(builtin.filter(b => !existingIds.has(b.id)));
       savedIds = new Set((saved.items || []).filter(row => row.object_type === 'resource').map(row => row.object_id));
+      shelf.removeAttribute('aria-busy');
       render();
-    } catch (error) { shelf.innerHTML = emptyState(error.message); }
+      renderStats();
+    } catch (error) { shelf.innerHTML = fiLibraryEmpty('The library could not load', error.message || 'Please try again in a moment.'); }
 
     const publishBtn = $('[data-publish-resource]');
     if (publishBtn) {
@@ -673,7 +774,7 @@
       const remove = event.target.closest('[data-resource-delete]');
       if (remove) { event.preventDefault(); if (!confirm('Delete this resource?')) return; await api.request('cv_delete_resource', { resource_id: row.dataset.resourceId }); resources = resources.filter(resource => resource.id !== row.dataset.resourceId); render(); toast('Resource deleted'); return; }
       const save = event.target.closest('[data-resource-save]');
-      if (save) { event.preventDefault(); const id = row.dataset.resourceId; await api.request('cv_toggle_bookmark', { object_id: id, object_type: 'resource' }); if (savedIds.has(id)) savedIds.delete(id); else savedIds.add(id); toast(savedIds.has(id) ? 'Resource saved' : 'Resource removed'); render(); return; }
+      if (save) { event.preventDefault(); const id = row.dataset.resourceId; await api.request('cv_toggle_bookmark', { object_id: id, object_type: 'resource' }); if (savedIds.has(id)) savedIds.delete(id); else savedIds.add(id); toast(savedIds.has(id) ? 'Resource saved' : 'Resource removed'); render(); renderStats(); return; }
       const play = event.target.closest('[data-resource-play]');
       if (play) {
         event.preventDefault();
@@ -686,7 +787,12 @@
       }
       const button = event.target.closest('[data-resource-download]'); if (!button) return; event.preventDefault(); const result = await api.request('cv_download_resource', { resource_id: row.dataset.resourceId }); if (result.url) window.open(result.url, '_blank', 'noopener');
     });
-    document.addEventListener('fi:search', event => { searchQuery = event.detail.query.toLowerCase(); render(); });
+    // The header search drives the same filter, and keeps the library's own
+    // field in step so the two never disagree.
+    document.addEventListener('fi:search', event => {
+      if (searchInput) searchInput.value = event.detail.query;
+      applySearch(event.detail.query);
+    });
     $$('#main section').filter(section => /jump back in|trending sermons|authors to follow/i.test(section.querySelector('h2,h3')?.textContent || '')).forEach(section => section.remove());
   }
 

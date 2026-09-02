@@ -33,10 +33,14 @@ test("messaging contains no demo contacts or compatibility-route fallback", () =
 });
 
 test("the messaging page cache-busts every restored runtime asset", () => {
-  for (const asset of ["faithin-runtime.js", "faithin.js", "faithin-live.js", "faithin-messaging.js"]) {
-    assert.match(
-      messagingPage,
-      new RegExp(`${asset.replace(".", "\\.")}\\?v=20260902-lib-v2`),
+  // Pin the invariant, not today's string: every restored runtime asset is
+  // versioned, and they all move together.
+  const versions = ["faithin-runtime.js", "faithin.js", "faithin-live.js", "faithin-messaging.js"].map(asset => {
+    const found = messagingPage.match(
+      new RegExp(`${asset.replace(".", "\\.")}\\?v=([\\w.-]+)`),
     );
-  }
+    assert.ok(found, `${asset} is not cache-busted`);
+    return found[1];
+  });
+  assert.equal(new Set(versions).size, 1, "restored runtime assets should share one version");
 });
