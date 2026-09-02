@@ -15,10 +15,10 @@
 <link rel="preconnect" href="https://nckvrhdyrikrbpgjlqlw.supabase.co" crossorigin>
 <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
 <link rel="dns-prefetch" href="https://bible-api.com">
-<link href="/faithin-app/assets/faithin-fonts.css?v=20260902-koh-v3" rel="stylesheet"/>
-<link href="/faithin-app/assets/faithin-icons.css?v=20260902-koh-v3" rel="stylesheet"/>
-<link href="/faithin-app/assets/faithin-tw.css?v=20260902-koh-v3" rel="stylesheet"/>
-<link href="/faithin-app/assets/faithin.css?v=20260902-koh-v3" rel="stylesheet"/>
+<link href="/faithin-app/assets/faithin-fonts.css?v=20260902-cpti-v1" rel="stylesheet"/>
+<link href="/faithin-app/assets/faithin-icons.css?v=20260902-cpti-v1" rel="stylesheet"/>
+<link href="/faithin-app/assets/faithin-tw.css?v=20260902-cpti-v1" rel="stylesheet"/>
+<link href="/faithin-app/assets/faithin.css?v=20260902-cpti-v1" rel="stylesheet"/>
 <style>
   .bible-tab-btn {
     display: inline-flex;
@@ -33,20 +33,26 @@
     transition: all 0.15s ease;
     cursor: pointer;
     white-space: nowrap;
-    border: 1px solid transparent;
   }
   .bible-tab-btn:hover {
-    background-color: rgb(var(--raised));
     color: rgb(var(--ink));
+    background-color: rgb(var(--raised));
   }
   .bible-tab-btn.is-active {
-    background-color: #1877f2;
-    color: #ffffff;
-    border-color: #1877f2;
-    box-shadow: 0 1px 2px rgba(24, 119, 242, 0.2);
+    background-color: rgb(var(--brand)) !important;
+    color: #ffffff !important;
+    box-shadow: 0 2px 6px rgba(47, 91, 234, 0.35);
+  }
+  .side-link {
+    transition: all 0.15s ease;
+  }
+  .side-link.is-active {
+    background-color: rgb(var(--brand-soft));
+    color: rgb(var(--brand));
+    font-weight: 700;
   }
   .verse-row {
-    padding: 0.65rem 0.85rem;
+    padding: 0.65rem 0.75rem;
     border-radius: 0.5rem;
     transition: background-color 0.15s ease;
     line-height: 1.85;
@@ -54,7 +60,7 @@
   .verse-row:hover {
     background-color: rgb(var(--raised));
   }
-  .verse-badge {
+  .verse-num {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -62,129 +68,152 @@
     height: 1.5rem;
     font-size: 0.75rem;
     font-weight: 700;
-    color: #1877f2;
-    background-color: rgba(24, 119, 242, 0.1);
+    color: rgb(var(--brand));
+    background-color: rgb(var(--brand-soft));
     border-radius: 9999px;
     margin-right: 0.5rem;
     vertical-align: middle;
+  }
+  .memory-word-hidden {
+    display: inline-block;
+    background-color: rgb(var(--brand-soft));
+    color: transparent;
+    border-bottom: 2px dashed rgb(var(--brand));
+    border-radius: 4px;
+    padding: 0 6px;
+    margin: 0 2px;
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.2s ease;
+  }
+  .memory-word-hidden.is-revealed {
+    color: rgb(var(--ink)) !important;
+    background-color: rgba(16, 185, 129, 0.15) !important;
+    border-color: rgb(16, 185, 129) !important;
   }
 </style>
 </head>
 <body class="font-sans min-h-screen pb-16 lg:pb-6" data-page="bible" data-search="Search Bible chapters, books & verses">
 
-<main class="max-w-[1200px] mx-auto px-3 sm:px-4 py-5 grid gap-5 lg:grid-cols-[232px_minmax(0,1fr)] xl:grid-cols-[232px_minmax(0,1fr)_312px] items-start" id="main">
+<main class="fi-bible-layout" id="main">
 
-  <!-- ───── LEFT RAIL: STANDARD USER PROFILE & NAV ───── -->
-  <aside class="hidden lg:block sticky top-[72px] space-y-4">
+  <!-- ───── LEFT RAIL (232px) ───── -->
+  <aside class="fi-bible-sidebar" id="left-sidebar">
     
-    <!-- User Profile Card -->
-    <section class="card overflow-hidden">
-      <div class="h-[62px] bg-[linear-gradient(120deg,#1877f2,#3b82f6_50%,#1e40af)]"></div>
-      <div class="px-4 pb-4 -mt-8 flex flex-col items-center text-center">
-        <span class="avatar w-16 h-16 text-[20px] ring-4 ring-surface" data-current-user-avatar style="background:linear-gradient(135deg,#1877f2,#1e40af)">FI</span>
-        <a class="mt-2.5 font-bold text-[15px] hover:underline inline-flex items-center text-ink" href="/profile" data-current-user-name>
-          Faith In
-          <span class="fi-verified-tick ml-1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"></polyline></svg></span>
-        </a>
-        <p class="text-[12.5px] text-muted mt-0.5">Bible Studio • ព្រះគម្ពីរ</p>
+    <!-- User / App Quick Card -->
+    <div class="card p-3 flex items-center gap-3">
+      <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-600 to-indigo-700 text-white flex items-center justify-center font-bold text-base shadow-sm shrink-0">
+        <i class="fa-solid fa-book-bible"></i>
       </div>
-      <div class="border-t border-line grid grid-cols-2 divide-x divide-line text-center text-xs">
-        <div class="py-2.5 px-1">
-          <span class="block text-muted text-[11px]">Old Testament</span>
-          <span class="font-bold text-[#1877F2]">39 Books</span>
-        </div>
-        <div class="py-2.5 px-1">
-          <span class="block text-muted text-[11px]">New Testament</span>
-          <span class="font-bold text-[#1877F2]">27 Books</span>
-        </div>
+      <div class="min-w-0">
+        <h2 class="font-bold text-sm text-ink truncate">Bible Studio</h2>
+        <p class="text-[12px] text-muted truncate">Khmer &amp; English</p>
       </div>
-    </section>
+    </div>
 
-    <!-- Main Navigation Links -->
-    <nav aria-label="Sections" class="space-y-1">
-      <a class="nav-item" href="/home"><i class="fa-solid fa-house"></i>Home Feed</a>
-      <a aria-current="page" class="nav-item is-active" href="/bible"><i class="fa-solid fa-book-bible text-[#1877F2]"></i>Bible Studio</a>
-      <a class="nav-item" href="/library"><i class="fa-solid fa-book-open text-amber-500"></i>Resource Library</a>
-      <a class="nav-item" href="/network"><i class="fa-solid fa-globe text-indigo-500"></i>Find Users</a>
-      <a class="nav-item" href="/jobs"><i class="fa-solid fa-briefcase text-emerald-600"></i>Find Jobs</a>
-    </nav>
-
-    <!-- Studio Tools Menu Card -->
-    <div class="card p-3 rounded-xl bg-surface border border-line space-y-1">
+    <!-- Navigation List -->
+    <div class="card p-2 space-y-1">
       <h3 class="text-xs font-bold uppercase tracking-wider text-muted px-2 py-1">Studio Tools</h3>
-      <button class="side-link w-full text-left flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-[13.5px] font-semibold text-ink hover:bg-raised" onclick="window.switchTool('reader')">
-        <i class="fa-solid fa-book-open text-blue-500 w-4 text-center"></i> Bible Reader
+      
+      <button class="side-link w-full text-left flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-[13.5px] font-semibold text-ink hover:bg-raised is-active" data-side-tool="reader" onclick="window.switchTool('reader')">
+        <span class="w-7 h-7 rounded-lg bg-blue-500/10 text-blue-600 flex items-center justify-center shrink-0"><i class="fa-solid fa-book-open"></i></span>
+        <span class="truncate">Reader • អានគម្ពីរ</span>
       </button>
-      <button class="side-link w-full text-left flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-[13.5px] font-semibold text-ink hover:bg-raised" onclick="window.switchTool('parallel')">
-        <i class="fa-solid fa-columns-3 text-indigo-500 w-4 text-center"></i> Parallel Study
+
+      <button class="side-link w-full text-left flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-[13.5px] font-semibold text-ink hover:bg-raised" data-side-tool="parallel" onclick="window.switchTool('parallel')">
+        <span class="w-7 h-7 rounded-lg bg-indigo-500/10 text-indigo-600 flex items-center justify-center shrink-0"><i class="fa-solid fa-columns"></i></span>
+        <span class="truncate">Parallel • ទន្ទឹមគ្នា</span>
       </button>
-      <button class="side-link w-full text-left flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-[13.5px] font-semibold text-ink hover:bg-raised" onclick="window.switchTool('designer')">
-        <i class="fa-solid fa-palette text-purple-500 w-4 text-center"></i> Card Designer
+
+      <button class="side-link w-full text-left flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-[13.5px] font-semibold text-ink hover:bg-raised" data-side-tool="typing" onclick="window.switchTool('typing')">
+        <span class="w-7 h-7 rounded-lg bg-rose-500/10 text-rose-600 flex items-center justify-center shrink-0"><i class="fa-solid fa-brain"></i></span>
+        <span class="truncate">Memory • ខគម្ពីរចងចាំ</span>
       </button>
-      <button class="side-link w-full text-left flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-[13.5px] font-semibold text-ink hover:bg-raised" onclick="window.switchTool('daily')">
-        <i class="fa-solid fa-sun text-amber-500 w-4 text-center"></i> Verse of the Day
+
+      <button class="side-link w-full text-left flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-[13.5px] font-semibold text-ink hover:bg-raised" data-side-tool="designer" onclick="window.switchTool('designer')">
+        <span class="w-7 h-7 rounded-lg bg-purple-500/10 text-purple-600 flex items-center justify-center shrink-0"><i class="fa-solid fa-palette"></i></span>
+        <span class="truncate">Card Designer</span>
       </button>
-      <button class="side-link w-full text-left flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-[13.5px] font-semibold text-ink hover:bg-raised" onclick="window.switchTool('concordance')">
-        <i class="fa-solid fa-magnifying-glass text-emerald-500 w-4 text-center"></i> Word Study (Greek)
+
+      <button class="side-link w-full text-left flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-[13.5px] font-semibold text-ink hover:bg-raised" data-side-tool="daily" onclick="window.switchTool('daily')">
+        <span class="w-7 h-7 rounded-lg bg-amber-500/10 text-amber-600 flex items-center justify-center shrink-0"><i class="fa-solid fa-sun"></i></span>
+        <span class="truncate">Daily Verse</span>
       </button>
-      <button class="side-link w-full text-left flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-[13.5px] font-semibold text-ink hover:bg-raised" onclick="window.switchTool('typing')">
-        <i class="fa-solid fa-keyboard text-rose w-4 text-center"></i> Scripture Typing
+
+      <button class="side-link w-full text-left flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-[13.5px] font-semibold text-ink hover:bg-raised" data-side-tool="concordance" onclick="window.switchTool('concordance')">
+        <span class="w-7 h-7 rounded-lg bg-emerald-500/10 text-emerald-600 flex items-center justify-center shrink-0"><i class="fa-solid fa-spell-check"></i></span>
+        <span class="truncate">Concordance</span>
       </button>
-      <button class="side-link w-full text-left flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-[13.5px] font-semibold text-ink hover:bg-raised" onclick="window.switchTool('notes')">
-        <i class="fa-solid fa-pen-to-square text-cyan-600 w-4 text-center"></i> Sermon Notes
+
+      <button class="side-link w-full text-left flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-[13.5px] font-semibold text-ink hover:bg-raised" data-side-tool="notes" onclick="window.switchTool('notes')">
+        <span class="w-7 h-7 rounded-lg bg-cyan-500/10 text-cyan-600 flex items-center justify-center shrink-0"><i class="fa-solid fa-pen-to-square"></i></span>
+        <span class="truncate">Sermon Notes</span>
       </button>
+    </div>
+
+    <!-- Community Links -->
+    <div class="card p-2 space-y-0.5 text-[13px]">
+      <a href="/home" class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-muted hover:text-ink hover:bg-raised font-medium transition">
+        <i class="fa-solid fa-house text-brand"></i>
+        <span>Community Feed</span>
+      </a>
+      <a href="/library" class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-muted hover:text-ink hover:bg-raised font-medium transition">
+        <i class="fa-solid fa-book text-amber-500"></i>
+        <span>Resource Library</span>
+      </a>
     </div>
 
   </aside>
 
-  <!-- ───── CENTER: MAIN BIBLE STUDIO PANE ───── -->
-  <section class="space-y-4 min-w-0" id="center-pane">
+  <!-- ───── CENTER FEED ───── -->
+  <section class="fi-bible-main" id="center-pane">
 
-    <!-- Top Tools Segment Tabs (Facebook Style Pills) -->
-    <div class="card p-2 bg-surface border border-line flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+    <!-- Top Tools Navigation Bar -->
+    <div class="card p-1.5 flex items-center gap-1 overflow-x-auto no-scrollbar">
       <button class="bible-tab-btn is-active shrink-0" data-tab="reader" onclick="window.switchTool('reader')">
-        <i class="fa-solid fa-book-open"></i> Reader
+        <i class="fa-solid fa-book-open"></i><span>Reader</span>
       </button>
       <button class="bible-tab-btn shrink-0" data-tab="parallel" onclick="window.switchTool('parallel')">
-        <i class="fa-solid fa-columns-3"></i> Parallel
-      </button>
-      <button class="bible-tab-btn shrink-0" data-tab="designer" onclick="window.switchTool('designer')">
-        <i class="fa-solid fa-palette"></i> Card Designer
-      </button>
-      <button class="bible-tab-btn shrink-0" data-tab="daily" onclick="window.switchTool('daily')">
-        <i class="fa-solid fa-sun"></i> Verse of the Day
-      </button>
-      <button class="bible-tab-btn shrink-0" data-tab="concordance" onclick="window.switchTool('concordance')">
-        <i class="fa-solid fa-magnifying-glass"></i> Word Study
+        <i class="fa-solid fa-columns"></i><span>Parallel</span>
       </button>
       <button class="bible-tab-btn shrink-0" data-tab="typing" onclick="window.switchTool('typing')">
-        <i class="fa-solid fa-keyboard"></i> Memory
+        <i class="fa-solid fa-brain"></i><span>Memory • ចងចាំ</span>
+      </button>
+      <button class="bible-tab-btn shrink-0" data-tab="designer" onclick="window.switchTool('designer')">
+        <i class="fa-solid fa-palette"></i><span>Designer</span>
+      </button>
+      <button class="bible-tab-btn shrink-0" data-tab="daily" onclick="window.switchTool('daily')">
+        <i class="fa-solid fa-sun"></i><span>Daily Verse</span>
+      </button>
+      <button class="bible-tab-btn shrink-0" data-tab="concordance" onclick="window.switchTool('concordance')">
+        <i class="fa-solid fa-spell-check"></i><span>Word Study</span>
       </button>
       <button class="bible-tab-btn shrink-0" data-tab="notes" onclick="window.switchTool('notes')">
-        <i class="fa-solid fa-pen-to-square"></i> Notes
+        <i class="fa-solid fa-pen-to-square"></i><span>Notes</span>
       </button>
     </div>
 
-    <!-- Active View Host -->
+    <!-- Active Tool View Root -->
     <div id="bible-view-root" class="space-y-4">
       <div class="card p-12 text-center text-muted">
-        <i class="fa-solid fa-circle-notch fa-spin text-3xl text-brand mb-2"></i>
+        <i class="fa-solid fa-circle-notch fa-spin text-2xl text-brand mb-2"></i>
         <p class="font-medium text-sm">Loading Bible Studio...</p>
       </div>
     </div>
 
   </section>
 
-  <!-- ───── RIGHT RAIL: STANDARD HIGHLIGHTS & WIDGETS ───── -->
-  <aside class="hidden xl:block sticky top-[72px] space-y-4">
+  <!-- ───── RIGHT RAIL (312px) ───── -->
+  <aside class="fi-bible-right-rail" id="right-rail">
     
-    <!-- Verse of the Day Widget -->
-    <section class="card p-4 bg-surface border border-line space-y-3">
-      <div class="flex items-center justify-between border-b border-line pb-2.5">
+    <!-- Verse of the Day Right Card -->
+    <section class="card p-4 space-y-3">
+      <div class="flex items-center justify-between border-b border-line pb-2">
         <div class="flex items-center gap-2 text-xs font-bold text-[#1877F2] uppercase tracking-wider">
-          <i class="fa-solid fa-sun text-amber-500"></i> Verse of the Day
+          <i class="fa-solid fa-sun text-amber-500"></i>
+          <span>Verse of the Day</span>
         </div>
-        <button class="w-7 h-7 rounded-full hover:bg-raised flex items-center justify-center text-muted" title="Share" onclick="window.copyDailyVerse()">
+        <button class="w-6 h-6 rounded-full hover:bg-raised flex items-center justify-center text-muted" title="Copy" onclick="window.copyDailyVerse()">
           <i class="fa-regular fa-copy text-xs"></i>
         </button>
       </div>
@@ -193,33 +222,39 @@
         <p class="font-serif italic text-xs text-muted leading-relaxed" id="right-votd-en">“For God so loved the world...”</p>
         <div class="text-xs font-bold text-[#1877F2] pt-1" id="right-votd-ref">John 3:16 • យ៉ូហាន ៣:១៦</div>
       </blockquote>
-      <div class="pt-2 border-t border-line flex items-center justify-between">
-        <button class="btn btn-neutral !py-1 !px-2.5 !text-xs" onclick="window.switchTool('daily')">Open Devotional</button>
-        <button class="btn btn-primary !py-1 !px-2.5 !text-xs" onclick="window.designDailyVerse()">Design Card</button>
+      <div class="pt-2 border-t border-line flex items-center justify-between gap-2">
+        <button class="btn btn-neutral !py-1 !px-2.5 !text-xs flex-1" onclick="window.switchTool('daily')">Devotional</button>
+        <button class="btn btn-primary !py-1 !px-2.5 !text-xs flex-1" onclick="window.designDailyVerse()">Design Card</button>
       </div>
     </section>
 
-    <!-- Word Study Quick Spotlight -->
-    <section class="card p-4 bg-surface border border-line space-y-2.5">
-      <div class="flex items-center gap-2 text-xs font-bold text-emerald-600 uppercase tracking-wider">
-        <i class="fa-solid fa-seedling"></i> Greek Word of the Day
+    <!-- CPTI Scripture Memory Spotlight -->
+    <section class="card p-4 space-y-2">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-1.5 text-xs font-bold text-rose-500 uppercase tracking-wider">
+          <i class="fa-solid fa-brain"></i>
+          <span>CPTI Memory Spotlight</span>
+        </div>
+        <span class="text-[10.5px] font-bold px-2 py-0.5 rounded-full bg-rose-500/10 text-rose-600">34 Passages</span>
       </div>
-      <div>
-        <h4 class="font-bold text-sm text-ink">Grace • <span class="text-xs text-brand font-serif">χάρις (charis)</span></h4>
-        <p class="text-xs text-muted mt-1 leading-relaxed">God's unmerited favor and divine enablement freely bestowed through Jesus Christ.</p>
-      </div>
-      <button class="text-xs text-brand font-semibold hover:underline block pt-1" onclick="window.switchTool('concordance')">
-        Explore 9 biblical word studies →
+      <h4 class="font-bold text-sm text-ink font-khmer">យ៉ូហាន ៣:១៦</h4>
+      <p class="text-xs font-khmer text-muted leading-relaxed line-clamp-2">«ដ្បិតព្រះទ្រង់ស្រឡាញ់មនុស្សលោក ដល់ម៉្លេះបានជាទ្រង់ប្រទានព្រះរាជបុត្រាទ្រង់តែ១...»</p>
+      <button class="text-xs text-brand font-semibold hover:underline block pt-1" onclick="window.switchTool('typing')">
+        Practice CPTI Memorization (៥ ផ្នែក) →
       </button>
     </section>
 
-    <!-- Preacher Quote Spotlight -->
-    <section class="card p-4 bg-surface border border-line space-y-2">
-      <div class="flex items-center gap-2 text-xs font-bold text-purple-600 uppercase tracking-wider">
-        <i class="fa-solid fa-quote-left"></i> Inspiration
+    <!-- Greek Root Study -->
+    <section class="card p-4 space-y-2">
+      <div class="flex items-center gap-2 text-xs font-bold text-emerald-600 uppercase tracking-wider">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <span>Word Study</span>
       </div>
-      <p class="font-serif italic text-xs text-ink/90 leading-relaxed">“Visit many good books, but live in the Bible.”</p>
-      <div class="text-[11px] font-bold text-muted text-right">— Charles Spurgeon</div>
+      <h4 class="font-bold text-sm text-ink">Grace • <span class="text-xs text-brand font-serif">χάリス (charis)</span></h4>
+      <p class="text-xs text-muted leading-relaxed">God's unmerited favor and divine kindness freely bestowed upon us in Jesus Christ.</p>
+      <button class="text-xs text-brand font-semibold hover:underline block pt-1" onclick="window.switchTool('concordance')">
+        Explore 9 biblical word studies →
+      </button>
     </section>
 
   </aside>
@@ -228,9 +263,9 @@
 
 <audio id="bible-audio-player" preload="none" class="hidden"></audio>
 
-<script src="/faithin-app/assets/faithin-runtime.js?v=20260902-std-v1"></script>
-<script src="/assets/js/faith-in-backend.js?v=20260902-std-v1"></script>
-<script src="/faithin-app/assets/faithin.js?v=20260902-std-v1"></script>
+<script src="/faithin-app/assets/faithin-runtime.js?v=20260902-cpti-v1"></script>
+<script src="/assets/js/faith-in-backend.js?v=20260902-cpti-v1"></script>
+<script src="/faithin-app/assets/faithin.js?v=20260902-cpti-v1"></script>
 <script>
 (() => {
   'use strict';
@@ -261,6 +296,13 @@
     concordanceQuery: '',
     concordanceResult: null,
 
+    // CPTI Scripture Memory
+    memoryPartFilter: 0,
+    memorySearchQuery: '',
+    selectedMemoryId: 'cpti-09-john3-16',
+    memoryMode: 'recite', // 'recite', 'hide', 'typing', 'flashcard'
+    memoryHideLevel: 0, // 0, 25, 50, 75, 100
+    revealedWords: new Set(),
     typingInput: '',
     typingStartTime: 0,
     typingWpm: 0,
@@ -325,6 +367,371 @@
     '/assets/images/wallpapers/wallpaper-08.jpg'
   ];
 
+  // ─── Embedded CPTI Memory Passages Catalog ───
+  const CPTI_PASSAGES = [
+    // PART 1
+    {
+      id: "cpti-01-psalm1",
+      part: 1,
+      partTitleKhmer: "ផ្នែកទី ១: ទំនុកដំកើង & ប្រាជ្ញា",
+      partTitleEnglish: "Part I: Psalms & Wisdom",
+      refKhmer: "ទំនុកដំកើង ១:១-៦",
+      refEnglish: "Psalm 1:1-6",
+      textKhmer: "១មានពរហើយ អ្នកណាដែលមិនដើរតាមដំបូន្មានរបស់មនុស្សអាក្រក់ ក៏មិនឈរនៅក្នុងផ្លូវរបស់មនុស្សមានបាប ឬអង្គុយជាមួយនឹងពួកមនុស្សដែលមើលងាយ ២អ្នកនោះត្រេកអរតែនឹងក្រឹត្យវិន័យរបស់ព្រះយេហូវ៉ាវិញ ក៏រំពឹងគិតក្នុងក្រឹត្យវិន័យទ្រង់ទាំងយប់ទាំងថ្ងៃដែរ ៣អ្នកនោះនឹងដូចជាដើមឈើដែលដុះនៅក្បែរផ្លូវទឹក ដែលបង្កើតផលតាមរដូវកាល ហើយស្លឹកក៏មិនចេះស្រពោនឡើយ ឯការអ្វីដែលអ្នកនោះធ្វើ នោះនឹងចម្រើនឡើងទាំងអស់ ៤ចំណែកមនុស្សអាក្រក់ មិនដូច្នោះទេ គឺគេដូចជាអង្កាមវិញ ដែលខ្យល់ផាត់ខ្ចាត់ខ្ចាយទៅ ៥ដូច្នេះ ពួកមនុស្សអាក្រក់នឹងមិនធន់នៅក្នុងគ្រាជំនុំជម្រះទេ ឯពួកមានបាប ក៏មិនឈរក្នុងជំនុំមនុស្សសុចរិតបានដែរ ៦ដ្បិតព្រះយេហូវ៉ាទ្រង់ជ្រាបផ្លូវរបស់មនុស្សសុចរិត តែផ្លូវរបស់មនុស្សអាក្រក់នឹងវិនាសទៅវិញ។",
+      textEnglish: "Blessed is the man that walketh not in the counsel of the ungodly, nor standeth in the way of sinners, nor sitteth in the seat of the scornful. But his delight is in the law of the LORD; and in his law doth he meditate day and night.",
+      themeKhmer: "ពរជ័យនៃមនុស្សសុចរិតដែលស្រឡាញ់ព្រះបន្ទូល"
+    },
+    {
+      id: "cpti-02-psalm3",
+      part: 1,
+      partTitleKhmer: "ផ្នែកទី ១: ទំនុកដំកើង & ប្រាជ្ញា",
+      partTitleEnglish: "Part I: Psalms & Wisdom",
+      refKhmer: "ទំនុកដំកើង ៣:១-៨",
+      refEnglish: "Psalm 3:1-8",
+      textKhmer: "១ឱព្រះយេហូវ៉ាអើយ ពួកខ្មាំងនៃទូលបង្គំមានគ្នាកាន់តែច្រើនឡើងយ៉ាងណា ន៎មានមនុស្សជាច្រើនបានលើកគ្នាទាស់នឹងទូលបង្គំហើយ ២មានគ្នាជាច្រើននិយាយពីព្រលឹងទូលបង្គំថា នៅក្នងព្រះគ្មានសេចក្តីសង្គ្រោះដល់វាទៀតទេ ៣ប៉ុន្តែឱព្រះយេហូវ៉ាអើយ ទ្រង់ជាខែលបាំងទូលបង្គំជុំវិញ ក៏ជាសិរីល្អនៃទូលបង្គំ ហើយជាអ្នកលើកក្បាលទូលបង្គំឡើងដែរ ៤ខ្ញុំឡើងសំឡេងអំពាវនាវដល់ព្រះយេហូវ៉ា ហើយទ្រង់ឆ្លើយតបមកខ្ញុំពីលើភ្នំបរិសុទ្ធរបស់ទ្រង់ ៥ខ្ញុំបានដេកលក់ទៅ ហើយក៏ភ្ញាក់ឡើងវិញ ដ្បិតព្រះយេហូវ៉ាទ្រង់ទប់ទល់ខ្ញុំ ៦ខ្ញុំមិនខ្លាចដល់មនុស្សទាំងសែននាក់ ដែលបានតាំងខ្លួនព័ទ្ធជុំវិញទាស់នឹងខ្ញុំឡើយ ៧ឱព្រះយេហូវ៉ាអើយ សូមទ្រង់ក្រោកឡើង ឱព្រះនៃទូលបង្គំអើយ សូមទ្រង់ជួយសង្គ្រោះទូលបង្គំផង ៨ឯសេចក្តីសង្គ្រោះ នោះស្រេចនៅព្រះយេហូវ៉ា សូមឲ្យព្រះពរទ្រង់បាននៅលើរាស្ត្រទ្រង់ចុះ។",
+      textEnglish: "But thou, O LORD, art a shield for me; my glory, and the lifter up of mine head. I cried unto the LORD with my voice, and he heard me out of his holy hill.",
+      themeKhmer: "ព្រះជាខែលការពារ និងជាសេចក្តីសង្គ្រោះ"
+    },
+    {
+      id: "cpti-03-psalm8",
+      part: 1,
+      partTitleKhmer: "ផ្នែកទី ១: ទំនុកដំកើង & ប្រាជ្ញា",
+      partTitleEnglish: "Part I: Psalms & Wisdom",
+      refKhmer: "ទំនុកដំកើង ៨:១-៩",
+      refEnglish: "Psalm 8:1-9",
+      textKhmer: "១ឱព្រះយេហូវ៉ា ជាព្រះអម្ចាស់នៃយើងខ្ញុំអើយ ព្រះនាមទ្រង់ប្រសើរបំផុតលើផែនដីយ៉ាងណាហ្ន៎ ទ្រង់បានតម្កល់សិរីល្អទ្រង់ទុកនៅលើស្ថានសួគ៌ ២ទ្រង់បានតាំងឲ្យមានសេចក្តីសរសើរដោយសារមាត់កូនក្មេង និងកូនដែលនៅបៅដោះ ៣កាលណាទូលបង្គំពិចារណាមើលផ្ទៃមេឃជាការដែលព្រះហស្តទ្រង់បានធ្វើ គឺទាំងខែ និងផ្កាយ ដែលទ្រង់បានប្រតិស្ឋានទុក ៤នោះតើមនុស្សជាអ្វី ដែលទ្រង់នឹកគិតដល់ ហើយកូនមនុស្សផង ដែលទ្រង់ប្រោសដូច្នេះ ៩ឱព្រះយេហូវ៉ា ជាព្រះអម្ចាស់នៃយើងខ្ញុំអើយ ព្រះនាមទ្រង់ប្រសើរលើផែនដីយ៉ាងណាហ្ន៎។",
+      textEnglish: "O LORD our Lord, how excellent is thy name in all the earth! who hast set thy glory above the heavens.",
+      themeKhmer: "ភាពឧត្តមនៃព្រះនាមព្រះ និងសេចក្តីស្រឡាញ់ចំពោះមនុស្ស"
+    },
+    {
+      id: "cpti-04-psalm23",
+      part: 1,
+      partTitleKhmer: "ផ្នែកទី ១: ទំនុកដំកើង & ប្រាជ្ញា",
+      partTitleEnglish: "Part I: Psalms & Wisdom",
+      refKhmer: "ទំនុកដំកើង ២៣:១-៦",
+      refEnglish: "Psalm 23:1-6",
+      textKhmer: "១ព្រះយេហូវ៉ាទ្រង់ជាអ្នកគង្វាលខ្ញុំ ខ្ញុំនឹងមិនខ្វះអ្វីសោះ ២ទ្រង់ឲ្យខ្ញុំដេកសម្រាកនៅទីមានស្មៅខៀវខ្ចី ទ្រង់នាំខ្ញុំទៅក្បែរមាត់ទឹកដែលហូរត្រជាក់ ៣ទ្រង់កែប្រលឹងខ្ញុំឡើងវិញ ទ្រង់នាំខ្ញុំទៅតាមផ្លូវសុចរិតដោយយល់ដល់ព្រះនាមទ្រង់ ៤អើ ទោះបើទូលបង្គំដើរកាត់ច្រកភ្នំនៃស្រមោលសេចក្តីស្លាប់ ក៏ដោយគង់តែមិនខ្លាចសេចក្តីអាក្រក់ណាឡើយ ដ្បិតទ្រង់គង់នៅជាមួយនឹងទូលបង្គំ ដំបង និងច្រត់របស់ទ្រង់កម្សាន្តចិត្តទូលបង្គំ ៥ទ្រង់រៀបតុនៅមុខទូលបង្គំ ចំពោះមុខពួកខ្មាំងសត្រូវផង ទ្រង់ចាក់ប្រេងលាបលើក្បាលទូលបង្គំ ពែងនៃទូលបង្គំក៏ពេញហៀរ ៦ប្រាកដជាសេចក្តីសប្បុរស និងសេចក្តីមេត្តាករុណានឹងជាប់តាមខ្ញុំរាល់តែថ្ងៃ ដរាបដល់អស់មួយជីវិតខ្ញុំ ហើយខ្ញុំនឹងនៅក្នុងដំណាក់នៃព្រះយេហូវ៉ាជារៀងដរាបទៅ។",
+      textEnglish: "The LORD is my shepherd; I shall not want. He maketh me to lie down in green pastures: he leadeth me beside the still waters.",
+      themeKhmer: "ព្រះយេហូវ៉ាទ្រង់ជាអ្នកគង្វាលដ៏ល្អ"
+    },
+    {
+      id: "cpti-05-psalm100",
+      part: 1,
+      partTitleKhmer: "ផ្នែកទី ១: ទំនុកដំកើង & ប្រាជ្ញា",
+      partTitleEnglish: "Part I: Psalms & Wisdom",
+      refKhmer: "ទំនុកដំកើង ១០០:១-៥",
+      refEnglish: "Psalm 100:1-5",
+      textKhmer: "១ម្នាល បណ្តាជននៅផែនដីអើយ ចូរឡើងសំឡេងដោយអំណរថ្វាយព្រះយេហូវ៉ា ២ចូរគោរពប្រតិបត្តិដល់ព្រះយេហូវ៉ា ដោយអរសប្បាយ ឲ្យចូលមកនៅចំពោះទ្រង់ ដោយច្រៀងចម្រៀងចុះ ៣ត្រូវឲ្យដឹងថា ព្រះយេហូវ៉ាទ្រង់ជាព្រះ គឺទ្រង់ដែលបានបង្កើតយើងខ្ញុំ យើងខ្ញុំជារបស់ផងទ្រង់ យើងខ្ញុំជារាស្ត្ររបស់ទ្រង់ ហើយជាហ្វូងចៀមនៅទីគង្វាលរបស់ទ្រង់ ៤ចូរនាំគ្នាចូលតាមទ្វារទ្រង់ ដោយពាក្យអរព្រះគុណ ហើយចូលទៅក្នុងទីលានទ្រង់ ដោយសរសើរ ៥ពីព្រោះព្រះយេហូវ៉ាទ្រង់ល្អ សេចក្តីសប្បុរសនៃទ្រង់ស្ថិតស្ថេរនៅជានិច្ច ហើយសេចក្តីស្មោះត្រង់របស់ទ្រង់ ក៏នៅអស់ទាំងដំណមនុស្សតទៅ។",
+      textEnglish: "Make a joyful noise unto the LORD, all ye lands. Serve the LORD with gladness: come before his presence with singing.",
+      themeKhmer: "ការអរព្រះគុណ និងសរសើរតម្កើងព្រះដ៏ល្អ"
+    },
+    {
+      id: "cpti-07-1cor13",
+      part: 1,
+      partTitleKhmer: "ផ្នែកទី ១: ទំនុកដំកើង & ប្រាជ្ញា",
+      partTitleEnglish: "Part I: Psalms & Wisdom",
+      refKhmer: "១ កូរិនថូស ១៣:៤-៨, ១៣",
+      refEnglish: "1 Corinthians 13:4-8, 13",
+      textKhmer: "៤ឯសេចក្តីស្រឡាញ់ តែងតែអត់ធ្មត់ ហើយក៏សប្បុរស សេចក្តីស្រឡាញ់មិនចេះច្រណែន មិនចេះអួតខ្លួន ក៏មិនដែលមានចិត្តធំផង ៥មិនដែលប្រព្រឹត្តបែបមិនគួរសម មិនដែលរកប្រយោជន៍ផ្ទាល់ខ្លួន មិនរហ័សខឹង មិនប្រកាន់ទោស ៦មិនដែលអរសប្បាយចំពោះសេចក្តីទុច្ចរិតឡើយ គឺអរសប្បាយតែនឹងសេចក្តីស្មោះត្រង់វិញ ៧ក៏គ្របបាំងទាំងអស់ ជឿទាំងអស់ សង្ឃឹមទាំងអស់ ហើយទ្រាំទ្រទាំងអស់ ៨សេចក្តីស្រឡាញ់មិនដែលផុតឡើយ... ១៣ឥឡូវនេះ នៅមានសេចក្តីជំនឿ សេចក្តីសង្ឃឹម និងសេចក្តីស្រឡាញ់ ទាំង៣មុខនេះ តែសេចក្តីដែលវិសេសជាងគេ គឺជាសេចក្តីស្រឡាញ់។",
+      textEnglish: "Charity suffereth long, and is kind; charity envieth not; charity vaunteth not itself, is not puffed up... And now abideth faith, hope, charity, these three; but the greatest of these is charity.",
+      themeKhmer: "លក្ខណៈនៃសេចក្តីស្រឡាញ់ដ៏ពិតរបស់ព្រះ"
+    },
+    {
+      id: "cpti-08-ephesians6",
+      part: 1,
+      partTitleKhmer: "ផ្នែកទី ១: ទំនុកដំកើង & ប្រាជ្ញា",
+      partTitleEnglish: "Part I: Psalms & Wisdom",
+      refKhmer: "អេភេសូរ ៦:១០-១៨",
+      refEnglish: "Ephesians 6:10-18",
+      textKhmer: "១០ឯសេចក្តីឯទៀត បងប្អូនអើយ ចូរឲ្យមានកម្លាំងឡើងក្នុងព្រះអម្ចាស់ ដោយឫទ្ធិបារមីនៃព្រះចេស្ដាទ្រង់ ១១ចូរពាក់គ្រប់គ្រឿងសឹករបស់ព្រះ ដើម្បីឲ្យអាចនឹងឈរមាំមួន ទាស់នឹងឧបាយកលទាំងអម្បាលម៉ានរបស់អារក្ស... ១៤ដូច្នេះ ចូរឈរមាំមួនចុះ ដោយក្រវាត់សេចក្តីពិតនៅចង្កេះ ពាក់សេចក្តីសុចរិតជាប្រដាប់បាំងទ្រូង ១៥ពាក់សេចក្តីប្រុងប្រៀបនៃដំណឹងល្អ ១៦យកសេចក្តីជំនឿជាខែល ១៧ពាក់មួកសឹកនៃសេចក្តីសង្គ្រោះ និងដាវនៃព្រះវិញ្ញាណ គឺជាព្រះបន្ទូលនៃព្រះ។",
+      textEnglish: "Put on the whole armour of God, that ye may be able to stand against the wiles of the devil.",
+      themeKhmer: "គ្រឿងសឹកទាំងមូលរបស់ព្រះសម្រាប់ចម្បាំងវិញ្ញាណ"
+    },
+
+    // PART 2
+    {
+      id: "cpti-09-john3-16",
+      part: 2,
+      partTitleKhmer: "ផ្នែកទី ២: ព្រះយេស៊ូវគ្រីស្ទ & ការសង្គ្រោះ",
+      partTitleEnglish: "Part II: Christ & Salvation",
+      refKhmer: "យ៉ូហាន ៣:១៦",
+      refEnglish: "John 3:16",
+      textKhmer: "«ដ្បិតព្រះទ្រង់ស្រឡាញ់មនុស្សលោក ដល់ម៉្លេះបានជាទ្រង់ប្រទានព្រះរាជបុត្រាទ្រង់តែ១ ដើម្បីឲ្យអ្នកណាដែលជឿដល់ព្រះរាជបុត្រានោះ មិនត្រូវវិនាសឡើយ គឺឲ្យមានជីវិតអស់កល្បជានិច្ចវិញ»។",
+      textEnglish: "For God so loved the world, that he gave his only begotten Son, that whosoever believeth in him should not perish, but have everlasting life.",
+      themeKhmer: "បេះដូងនៃដំណឹងល្អ៖ ជីវិតអស់កល្បជានិច្ចក្នុងព្រះគ្រីស្ទ"
+    },
+    {
+      id: "cpti-10-isaiah53",
+      part: 2,
+      partTitleKhmer: "ផ្នែកទី ២: ព្រះយេស៊ូវគ្រីស្ទ & ការសង្គ្រោះ",
+      partTitleEnglish: "Part II: Christ & Salvation",
+      refKhmer: "អេសាយ ៥៣:៤-៦",
+      refEnglish: "Isaiah 53:4-6",
+      textKhmer: "៤ទ្រង់បានទ្រាំទ្រ រងអស់ទាំងសេចក្តីឈឺចាប់របស់យើង ហើយបានទទួលផ្ទុកអស់ទាំងសេចក្តីទុក្ខព្រួយរបស់យើងជាពិត ៥តែទ្រង់ត្រូវរបួស ដោយព្រោះអំពើរំលងរបស់យើង ក៏ត្រូវវាយជាំ ដោយព្រោះអំពើទុច្ចរិតរបស់យើងទេ ឯការវាយផ្ចាលដែលនាំឲ្យយើងបានជាមេត្រីនោះ បានធ្លាក់ទៅលើទ្រង់ ហើយយើងរាល់គ្នាបានប្រោសឲ្យជា ដោយសារស្នាមរំពាត់នៅអង្គទ្រង់ ៦យើងទាំងអស់គ្នាបានវង្វេងចេញដូចជាចៀម... ហើយព្រះយេហូវ៉ាបានទម្លាក់អំពើទុច្ចរិតរបស់យើងទាំងអស់គ្នាទៅលើទ្រង់។",
+      textEnglish: "Surely he hath borne our griefs, and carried our sorrows... But he was wounded for our transgressions, he was bruised for our iniquities.",
+      themeKhmer: "ការរងទុក្ខ និងការលោះបាបដោយព្រះគ្រីស្ទនៅលើឈើឆ្កាង"
+    },
+    {
+      id: "cpti-11-romans3-23-24",
+      part: 2,
+      partTitleKhmer: "ផ្នែកទី ២: ព្រះយេស៊ូវគ្រីស្ទ & ការសង្គ្រោះ",
+      partTitleEnglish: "Part II: Christ & Salvation",
+      refKhmer: "រ៉ូម ៣:២៣-២៤",
+      refEnglish: "Romans 3:23-24",
+      textKhmer: "២៣ពីព្រោះគ្រប់គ្នាបានធ្វើបាប ហើយខ្វះមិនដល់សិរីល្អនៃព្រះ ២៤តែដោយពឹងដល់ព្រះគុណទ្រង់ នោះបានរាប់ជាសុចរិតទទេ ដោយសារសេចក្តីប្រោសលោះ ដែលនៅក្នងព្រះគ្រីស្ទយេស៊ូវ។",
+      textEnglish: "For all have sinned, and come short of the glory of God; Being justified freely by his grace through the redemption that is in Christ Jesus.",
+      themeKhmer: "ការរាប់ជាសុចរិតដោយសារព្រះគុណតាមរយៈសេចក្តីជំនឿ"
+    },
+    {
+      id: "cpti-12-romans6-23",
+      part: 2,
+      partTitleKhmer: "ផ្នែកទី ២: ព្រះយេស៊ូវគ្រីស្ទ & ការសង្គ្រោះ",
+      partTitleEnglish: "Part II: Christ & Salvation",
+      refKhmer: "រ៉ូម ៦:២៣",
+      refEnglish: "Romans 6:23",
+      textKhmer: "«ដ្បិតឈ្នួលរបស់អំពើបាប នោះជាសេចក្តីស្លាប់ តែអំណោយទាននៃព្រះវិញ គឺជាជីវិតដ៏នៅអស់កល្បជានិច្ច ដោយសារព្រះគ្រីស្ទយេស៊ូវ ជាព្រះអម្ចាស់នៃយើងរាល់គ្នា»។",
+      textEnglish: "For the wages of sin is death; but the gift of God is eternal life through Jesus Christ our Lord.",
+      themeKhmer: "ឈ្នួលនៃអំពើបាប និងអំណោយទាននៃជីវិតអស់កល្ប"
+    },
+    {
+      id: "cpti-13-acts4-12",
+      part: 2,
+      partTitleKhmer: "ផ្នែកទី ២: ព្រះយេស៊ូវគ្រីស្ទ & ការសង្គ្រោះ",
+      partTitleEnglish: "Part II: Christ & Salvation",
+      refKhmer: "កិច្ចការ ៤:១២",
+      refEnglish: "Acts 4:12",
+      textKhmer: "«ហើយគ្មានសេចក្តីសង្គ្រោះ ដោយសារអ្នកណាក្រៅទៀតសោះ ដ្បិតនៅក្រោមមេឃ គ្មាននាមឈ្មោះណាក្រៅទៀតបានប្រទានមកមនុស្សលោក ឲ្យយើងរាល់គ្នាបានសង្គ្រោះនោះឡើយ»។",
+      textEnglish: "Neither is there salvation in any other: for there is none other name under heaven given among men, whereby we must be saved.",
+      themeKhmer: "ព្រះនាមព្រះយេស៊ូវជាផ្លូវសង្គ្រោះតែមួយគត់"
+    },
+    {
+      id: "cpti-14-philippians2",
+      part: 2,
+      partTitleKhmer: "ផ្នែកទី ២: ព្រះយេស៊ូវគ្រីស្ទ & ការសង្គ្រោះ",
+      partTitleEnglish: "Part II: Christ & Salvation",
+      refKhmer: "ភីលីព ២:៥-១១",
+      refEnglish: "Philippians 2:5-11",
+      textKhmer: "៥ត្រូវតែមានគំនិតគិតដូចជាព្រះគ្រីស្ទយេស៊ូវវិញ ៦ដែលទោះបើទ្រង់មានរូបអង្គជាព្រះក៏ដោយ គង់តែមិនបានរាប់សេចក្តីដែលស្មើនឹងព្រះនោះ ទុកជាសេចក្តីដែលគួរកាន់ខ្ជាប់ឡើយ ៧គឺទ្រង់បានលះបង់ព្រះអង្គទ្រង់ មកយករូបភាពជាបាវបម្រើវិញ ៨ទ្រង់ក៏បន្ទាបព្រះអង្គទ្រង់ ទាំងចុះចូលស្តាប់បង្គាប់ រហូតដល់ទីមរណៈ គឺទ្រង់ទទួលសុគតជាប់លើឈើឆ្កាង ៩ហេតុនោះបានជាព្រះបានលើកទ្រង់ឡើងយ៉ាងខ្ពស់ ហើយបានប្រទានឲ្យមាននាមដ៏ប្រសើរលើសជាងអស់ទាំងនាមផង។",
+      textEnglish: "Let this mind be in you, which was also in Christ Jesus... Wherefore God also hath highly exalted him, and given him a name which is above every name.",
+      themeKhmer: "ការបន្ទាបខ្លួន និងការតម្កើងឡើងនៃព្រះគ្រីស្ទ"
+    },
+    {
+      id: "cpti-15-galatians2-20",
+      part: 2,
+      partTitleKhmer: "ផ្នែកទី ២: ព្រះយេស៊ូវគ្រីស្ទ & ការសង្គ្រោះ",
+      partTitleEnglish: "Part II: Christ & Salvation",
+      refKhmer: "កាឡាទី ២:២០",
+      refEnglish: "Galatians 2:20",
+      textKhmer: "«ខ្ញុំបានជាប់ឆ្កាងជាមួយនឹងព្រះគ្រីស្ទ ប៉ុន្តែខ្ញុំរស់នៅ មិនមែនជាខ្ញុំទៀត គឺជាព្រះគ្រីស្ទទ្រង់រស់ក្នុងខ្ញុំវិញ ហើយដែលខ្ញុំរស់ក្នុងសាច់ឈាមឥឡូវនេះ នោះគឺរស់ដោយសេចក្តីជំនឿ ជឿដល់ព្រះរាជបុត្រានៃព្រះ ដែលទ្រង់ស្រឡាញ់ខ្ញុំ ក៏បានប្រគល់ព្រះអង្គទ្រង់ជំនួសខ្ញុំហើយ»។",
+      textEnglish: "I am crucified with Christ: nevertheless I live; yet not I, but Christ liveth in me.",
+      themeKhmer: "ជីវិតដែលត្រូវឆ្កាង និងរស់នៅដោយព្រះគ្រីស្ទ"
+    },
+    {
+      id: "cpti-16-matthew28-18-20",
+      part: 2,
+      partTitleKhmer: "ផ្នែកទី ២: ព្រះយេស៊ូវគ្រីស្ទ & ការសង្គ្រោះ",
+      partTitleEnglish: "Part II: Christ & Salvation",
+      refKhmer: "ម៉ាថាយ ២៨:១៨-២០",
+      refEnglish: "Matthew 28:18-20",
+      textKhmer: "១៨ឯព្រះយេស៊ូវ ទ្រង់យាងមកមានបន្ទូលនឹងគេថា គ្រប់ទាំងអំណាចបានប្រគល់មកខ្ញុំនៅលើស្ថានសួគ៌ និងលើផែនដីផង ១៩ដូច្នេះ ចូរទៅបញ្ចុះបញ្ចូលឲ្យមានសិស្សនៅគ្រប់ទាំងសាសន៍ ព្រមទាំងធ្វើបុណ្យជ្រមុជទឹកឲ្យ ដោយនូវព្រះនាមព្រះវរបិតា ព្រះរាជបុត្រា និងព្រះវិញ្ញាណបរិសុទ្ធចុះ ២០ហើយបង្រៀនឲ្យគេកាន់តាមគ្រប់ទាំងសេចក្តី ដែលខ្ញុំបានបង្គាប់មកអ្នករាល់គ្នាផង ហើយមើល ខ្ញុំក៏នៅជាមួយអ្នករាល់គ្នាជារាល់ថ្ងៃដែរ ដរាបដល់បំផុតកល្ប។ អាមែន។",
+      textEnglish: "Go ye therefore, and teach all nations, baptizing them in the name of the Father, and of the Son, and of the Holy Ghost.",
+      themeKhmer: "បញ្ជាបេសកកម្មដ៏អស្ចារ្យ (The Great Commission)"
+    },
+
+    // PART 3
+    {
+      id: "cpti-17-zechariah4-6",
+      part: 3,
+      partTitleKhmer: "ផ្នែកទី ៣: ព្រះវិញ្ញាណបរិសុទ្ធ & ការអធិស្ឋាន",
+      partTitleEnglish: "Part III: Holy Spirit & Prayer",
+      refKhmer: "សាការី ៤:៦",
+      refEnglish: "Zechariah 4:6",
+      textKhmer: "«មិនមែនដោយឥទ្ធិឫទ្ធិ ឬដោយអំណាចទេ គឺដោយសារវិញ្ញាណរបស់អញវិញ នេះជាព្រះបន្ទូលនៃព្រះយេហូវ៉ានៃពួកពលបរិវារ»។",
+      textEnglish: "Not by might, nor by power, but by my spirit, saith the LORD of hosts.",
+      themeKhmer: "ការធ្វើកិច្ចការដោយព្រះវិញ្ញាណ មិនមែនដោយកម្លាំងមនុស្ស"
+    },
+    {
+      id: "cpti-18-romans8-26-27",
+      part: 3,
+      partTitleKhmer: "ផ្នែកទី ៣: ព្រះវិញ្ញាណបរិសុទ្ធ & ការអធិស្ឋាន",
+      partTitleEnglish: "Part III: Holy Spirit & Prayer",
+      refKhmer: "រ៉ូម ៨:២៦-២៧",
+      refEnglish: "Romans 8:26-27",
+      textKhmer: "២៦ព្រះវិញ្ញាណទ្រង់ក៏ជួយសេចក្តីកម្សោយរបស់យើងបែបដូច្នោះដែរ ដ្បិតយើងមិនដឹងជាគួរអធិស្ឋានសូមអ្វីទេ តែព្រះវិញ្ញាណទ្រង់ជួយអង្វរជំនួសយើង ដោយដំងូរដែលរកថ្លែងពុំបានវិញ ២៧ប៉ុន្តែព្រះអង្គដែលស្ទង់ចិត្ត ទ្រង់ជ្រាបនូវគំនិតនៃព្រះវិញ្ញាណ ដ្បិតព្រះវិញ្ញាណជួយអង្វរជួសពួកបរិសុទ្ធឲ្យត្រូវនឹងព្រះហឫទ័យព្រះ។",
+      textEnglish: "Likewise the Spirit also helpeth our infirmities: for we know not what we should pray for as we ought.",
+      themeKhmer: "ព្រះវិញ្ញាណបរិសុទ្ធជួយក្នុងការអធិស្ឋាន"
+    },
+    {
+      id: "cpti-19-matthew6-6-7",
+      part: 3,
+      partTitleKhmer: "ផ្នែកទី ៣: ព្រះវិញ្ញាណបរិសុទ្ធ & ការអធិស្ឋាន",
+      partTitleEnglish: "Part III: Holy Spirit & Prayer",
+      refKhmer: "ម៉ាថាយ ៦:៦-៧",
+      refEnglish: "Matthew 6:6-7",
+      textKhmer: "៦តែឯអ្នក កាលណាអធិស្ឋាន នោះត្រូវឲ្យចូលទៅក្នុងបន្ទប់ ហើយបិទទ្វារ រួចអធិស្ឋានដល់ព្រះវរបិតានៃអ្នក ដែលទ្រង់គង់នៅទីលាក់កំបាំងចុះ នោះព្រះវរបិតានៃអ្នក ដែលទតឃើញក្នុងទីលាក់កំបាំង ទ្រង់នឹងប្រទានរង្វាន់ដល់អ្នកនៅទីប្រចក្សច្បាស់ ៧ហើយកាលណាអធិស្ឋាន នោះកុំឲ្យពោលពាក្យឥតប្រយោជន៍ផ្ទួនៗ ដូចពួកសាសន៍ដទៃឡើយ។",
+      textEnglish: "But thou, when thou prayest, enter into thy closet, and when thou hast shut thy door, pray to thy Father which is in secret.",
+      themeKhmer: "ការអធិស្ឋានដោយចិត្តស្មោះត្រង់ក្នុងទីស្ងាត់កំបាំង"
+    },
+    {
+      id: "cpti-20-matthew7-7-8",
+      part: 3,
+      partTitleKhmer: "ផ្នែកទី ៣: ព្រះវិញ្ញាណបរិសុទ្ធ & ការអធិស្ឋាន",
+      partTitleEnglish: "Part III: Holy Spirit & Prayer",
+      refKhmer: "ម៉ាថាយ ៧:៧-៨",
+      refEnglish: "Matthew 7:7-8",
+      textKhmer: "៧ចូរសូម នោះតែងនឹងឲ្យមកអ្នក ចូររក នោះតែងនឹងឃើញ ចូរគោះ នោះតែងនឹងបើកឲ្យអ្នក ៨ដ្បិតអស់អ្នកណាដែលសូម នោះរមែងបាន អ្នកណាដែលរក នោះរមែងឃើញ ហើយនឹងបើកឲ្យអ្នកណាដែលគោះដែរ។",
+      textEnglish: "Ask, and it shall be given you; seek, and ye shall find; knock, and it shall be opened unto you.",
+      themeKhmer: "ចូរសូម ចូររក ចូរគោះទ្វារ"
+    },
+    {
+      id: "cpti-21-john15-7",
+      part: 3,
+      partTitleKhmer: "ផ្នែកទី ៣: ព្រះវិញ្ញាណបរិសុទ្ធ & ការអធិស្ឋាន",
+      partTitleEnglish: "Part III: Holy Spirit & Prayer",
+      refKhmer: "យ៉ូហាន ១៥:៧",
+      refEnglish: "John 15:7",
+      textKhmer: "«បើអ្នករាល់គ្នានៅជាប់នឹងខ្ញុំ ហើយពាក្យខ្ញុំនៅជាប់ក្នុងអ្នករាល់គ្នា នោះចូរសូមអ្វីតាមតែប្រាថ្នាចុះ សេចក្តីនោះនឹងបានសម្រេចដល់អ្នករាល់គ្នាជាមិនខាន»។",
+      textEnglish: "If ye abide in me, and my words abide in you, ye shall ask what ye will, and it shall be done unto you.",
+      themeKhmer: "ការនៅជាប់ក្នុងព្រះគ្រីស្ទ និងការឆ្លើយតបនៃការអធិស្ឋាន"
+    },
+    {
+      id: "cpti-22-acts1-8",
+      part: 3,
+      partTitleKhmer: "ផ្នែកទី ៣: ព្រះវិញ្ញាណបរិសុទ្ធ & ការអធិស្ឋាន",
+      partTitleEnglish: "Part III: Holy Spirit & Prayer",
+      refKhmer: "កិច្ចការ ១:៨",
+      refEnglish: "Acts 1:8",
+      textKhmer: "«ប៉ុន្តែ កាលណាព្រះវិញ្ញាណបរិសុទ្ធបានយាងមកសណ្ឋិតលើអ្នករាល់គ្នា នោះអ្នករាល់គ្នានឹងបានព្រះចេស្ដា ហើយនឹងធ្វើជាទីបន្ទាល់ពីខ្ញុំ នៅក្រុងយេរូសាឡិម ព្រមទាំងស្រុកយូដា និងស្រុកសាម៉ារីទាំងមូល ហើយរហូតដល់ចុងផែនដីបំផុតផង»។",
+      textEnglish: "But ye shall receive power, after that the Holy Ghost is come upon you: and ye shall be witnesses unto me.",
+      themeKhmer: "ព្រះចេស្ដានៃព្រះវិញ្ញាណបរិសុទ្ធដើម្បីធ្វើជាទីបន្ទាល់"
+    },
+
+    // PART 4
+    {
+      id: "cpti-23-romans8-28",
+      part: 4,
+      partTitleKhmer: "ផ្នែកទី ៤: ព្រះបន្ទូល & ជំនឿ",
+      partTitleEnglish: "Part IV: The Word & Faith",
+      refKhmer: "រ៉ូម ៨:២៨",
+      refEnglish: "Romans 8:28",
+      textKhmer: "«តែយើងដឹងថា គ្រប់ការទាំងអស់ផ្សំគ្នា សម្រាប់សេចក្តីល្អដល់ពួកអ្នកដែលស្រឡាញ់ព្រះ គឺដល់ពួកអ្នកដែលទ្រង់ហៅមក តាមព្រះតម្រិះទ្រង់»។",
+      textEnglish: "And we know that all things work together for good to them that love God, to them who are the called according to his purpose.",
+      themeKhmer: "គ្រប់ការទាំងអស់ផ្សំគ្នាសម្រាប់សេចក្តីល្អ"
+    },
+    {
+      id: "cpti-24-romans8-38-39",
+      part: 4,
+      partTitleKhmer: "ផ្នែកទី ៤: ព្រះបន្ទូល & ជំនឿ",
+      partTitleEnglish: "Part IV: The Word & Faith",
+      refKhmer: "រ៉ូម ៨:៣៨-៣៩",
+      refEnglish: "Romans 8:38-39",
+      textKhmer: "៣៨ដ្បិតខ្ញុំជឿជាក់ថា ទោះស្លាប់ ឬរស់ ពួកទេវតា ឬអំណាចអ្វី ការអ្វីនៅជាន់នោះ ឬនៅមុខ ឬឥទ្ធិឫទ្ធិអ្វី ៣៩ទីមានកម្ពស់ ទីជម្រៅ ឬរបស់អ្វីដែលកើតមកឯទៀតក្តី នោះពុំអាចនឹងពង្រាត់យើង ចេញពីសេចក្តីស្រឡាញ់របស់ព្រះ ដែលនៅក្នុងព្រះគ្រីស្ទយេស៊ូវ ជាព្រះអម្ចាស់នៃយើងរាល់គ្នាទៅ បានឡើយ។",
+      textEnglish: "For I am persuaded, that neither death, nor life, nor angels... shall be able to separate us from the love of God, which is in Christ Jesus our Lord.",
+      themeKhmer: "គ្មានអ្វីអាចពង្រាត់យើងពីសេចក្តីស្រឡាញ់របស់ព្រះបានឡើយ"
+    },
+    {
+      id: "cpti-26-hebrews11-1",
+      part: 4,
+      partTitleKhmer: "ផ្នែកទី ៤: ព្រះបន្ទូល & ជំនឿ",
+      partTitleEnglish: "Part IV: The Word & Faith",
+      refKhmer: "ហេព្រើរ ១១:១, ៦",
+      refEnglish: "Hebrews 11:1, 6",
+      textKhmer: "១ឯសេចក្តីជំនឿ គឺជាសេចក្តីពិតជាក់នៃរបស់ទាំងឡាយដែលយើងសង្ឃឹម នឹងជាភស្តុតាងនៃរបស់ទាំងឡាយដែលមើលមិនឃើញ ៦តែបើឥតមានសេចក្តីជំនឿទេ នោះមិនអាចនឹងគាប់ដល់ព្រះហឫទ័យព្រះបានឡើយ ដ្បិតអ្នកណាដែលចូលទៅឯព្រះ នោះត្រូវតែជឿថា មានព្រះមែន ហើយថា ទ្រង់ប្រទានរង្វាន់ ដល់អស់អ្នកដែលស្វែងរកទ្រង់។",
+      textEnglish: "Now faith is the substance of things hoped for, the evidence of things not seen... But without faith it is impossible to please him.",
+      themeKhmer: "អត្ថន័យនៃសេចក្តីជំនឿ និងការគាប់ព្រះហឫទ័យព្រះ"
+    },
+    {
+      id: "cpti-27-genesis50-20",
+      part: 4,
+      partTitleKhmer: "ផ្នែកទី ៤: ព្រះបន្ទូល & ជំនឿ",
+      partTitleEnglish: "Part IV: The Word & Faith",
+      refKhmer: "លោកុប្បត្តិ ៥០:២០",
+      refEnglish: "Genesis 50:20",
+      textKhmer: "«អ្នករាល់គ្នាបានគិតធ្វើអាក្រក់ដល់ខ្ញុំ តែព្រះទ្រង់សម្រេចជាការល្អវិញ ដើម្បីនឹងសង្គ្រោះដល់ជីវិតនៃមនុស្សជាច្រើន ដូចជាបានកើតមានសព្វថ្ងៃនោះ»។",
+      textEnglish: "But as for you, ye thought evil against me; but God meant it unto good, to bring to pass, as it is this day, to save much people alive.",
+      themeKhmer: "ការគ្រប់គ្រងរបស់ព្រះបង្វែររឿងអាក្រក់ជាការល្អ (យ៉ូសែប)"
+    },
+
+    // PART 5
+    {
+      id: "cpti-28-philippians4-13",
+      part: 5,
+      partTitleKhmer: "ផ្នែកទី ៥: ជីវិតសិស្ស & ជ័យជម្នះ",
+      partTitleEnglish: "Part V: Discipleship & Victory",
+      refKhmer: "ភីលីព ៤:១៣",
+      refEnglish: "Philippians 4:13",
+      textKhmer: "«ខ្ញុំអាចនឹងធ្វើគ្រប់ទាំងអស់បាន ដោយសារព្រះគ្រីស្ទដែលទ្រង់ចម្រើនកម្លាំងដល់ខ្ញុំ»។",
+      textEnglish: "I can do all things through Christ which strengtheneth me.",
+      themeKhmer: "កម្លាំង និងជ័យជម្នះក្នុងព្រះគ្រីស្ទ"
+    },
+    {
+      id: "cpti-29-philippians4-6-7",
+      part: 5,
+      partTitleKhmer: "ផ្នែកទី ៥: ជីវិតសិស្ស & ជ័យជម្នះ",
+      partTitleEnglish: "Part V: Discipleship & Victory",
+      refKhmer: "ភីលីព ៤:៦-៧",
+      refEnglish: "Philippians 4:6-7",
+      textKhmer: "៦កុំឲ្យខ្វល់ខ្វាយអ្វីឡើយ ចូរទូលដល់ព្រះ ឲ្យជ្រាបពីសេចក្តីសំណូមរបស់អ្នករាល់គ្នាក្នុងគ្រប់ការទាំងអស់ដោយសេចក្តីអធិស្ឋាន និងពាក្យទូលអង្វរ ទាំងពោលពាក្យអរព្រះគុណផង ៧យ៉ាងនោះ សេចក្តីសុខសាន្តរបស់ព្រះ ដែលហួសលើសពីអស់ទាំងគំនិត នឹងជួយការពារចិត្ត ហើយនឹងគំនិតរបស់អ្នករាល់គ្នា ក្នុងព្រះគ្រីស្ទយេស៊ូវ។",
+      textEnglish: "Be careful for nothing; but in every thing by prayer and supplication with thanksgiving let your requests be made known unto God.",
+      themeKhmer: "សេចក្តីសុខសាន្តរបស់ព្រះ និងការឈប់ខ្វល់ខ្វាយ"
+    },
+    {
+      id: "cpti-30-galatians5-22-23",
+      part: 5,
+      partTitleKhmer: "ផ្នែកទី ៥: ជីវិតសិស្ស & ជ័យជម្នះ",
+      partTitleEnglish: "Part V: Discipleship & Victory",
+      refKhmer: "កាឡាទី ៥:២២-២៣",
+      refEnglish: "Galatians 5:22-23",
+      textKhmer: "២២តែឯផលផ្លែនៃព្រះវិញ្ញាណវិញ នោះគឺសេចក្តីស្រឡាញ់ អំណរអរ មេត្រីភាព អត់ធ្មត់ សុភាព សប្បុរស ស្មោះត្រង់ ២៣ស្លូតបូត ហើយដឹងខ្នាត គ្មានក្រឹត្យវិន័យណាទាស់នឹងសេចក្តីយ៉ាងនោះឡើយ។",
+      textEnglish: "But the fruit of the Spirit is love, joy, peace, longsuffering, gentleness, goodness, faith, Meekness, temperance: against such there is no law.",
+      themeKhmer: "ផលផ្លែទាំង ៩ នៃព្រះវិញ្ញាណបរិសុទ្ធ"
+    },
+    {
+      id: "cpti-31-2corinthians5-17",
+      part: 5,
+      partTitleKhmer: "ផ្នែកទី ៥: ជីវិតសិស្ស & ជ័យជម្នះ",
+      partTitleEnglish: "Part V: Discipleship & Victory",
+      refKhmer: "២ កូរិនថូស ៥:១៧",
+      refEnglish: "2 Corinthians 5:17",
+      textKhmer: "«បានជាបើអ្នកណានៅក្នុងព្រះគ្រីស្ទ នោះឈ្មោះថាបានកើតជាថ្មីហើយ អស់ទាំងសេចក្តីចាស់បានកន្លងបាត់ទៅ មើល គ្រប់ទាំងអស់បានត្រឡប់ជាថ្មីវិញ»។",
+      textEnglish: "Therefore if any man be in Christ, he is a new creature: old things are passed away; behold, all things are become new.",
+      themeKhmer: "ការកើតជាថ្មីក្នុងព្រះគ្រីស្ទ"
+    },
+    {
+      id: "cpti-32-matthew11-28-30",
+      part: 5,
+      partTitleKhmer: "ផ្នែកទី ៥: ជីវិតសិស្ស & ជ័យជម្នះ",
+      partTitleEnglish: "Part V: Discipleship & Victory",
+      refKhmer: "ម៉ាថាយ ១១:២៨-៣០",
+      refEnglish: "Matthew 11:28-30",
+      textKhmer: "២៨អស់អ្នកដែលនឿយព្រួយ ហើយផ្ទុកធ្ងន់អើយ ចូរមកឯខ្ញុំ ខ្ញុំនឹងឲ្យអ្នករាល់គ្នាឈប់សម្រាក ២៩ចូរទទួលនឹមខ្ញុំ ហើយរៀននឹងខ្ញុំចុះ ដ្បិតខ្ញុំស្លូត ហើយមានចិត្តសុភាព នោះអ្នករាល់គ្នានឹងបានសេចក្តីសម្រាកដល់ព្រលឹង ៣០ពីព្រោះនឹមខ្ញុំងាយទេ ហើយបន្ទុកខ្ញុំក៏ស្រាល។",
+      textEnglish: "Come unto me, all ye that labour and are heavy laden, and I will give you rest. Take my yoke upon you, and learn of me.",
+      themeKhmer: "ការអញ្ជើញឲ្យមកទទួលសេចក្តីសម្រាកក្នុងព្រះគ្រីស្ទ"
+    },
+    {
+      id: "cpti-33-2timothy4-7-8",
+      part: 5,
+      partTitleKhmer: "ផ្នែកទី ៥: ជីវិតសិស្ស & ជ័យជម្នះ",
+      partTitleEnglish: "Part V: Discipleship & Victory",
+      refKhmer: "២ ធីម៉ូថេ ៤:៧-៨",
+      refEnglish: "2 Timothy 4:7-8",
+      textKhmer: "៧ខ្ញុំបានតយុទ្ធយ៉ាងល្អ ខ្ញុំបានរត់ប្រណាំងជាស្រេច ខ្ញុំបានរក្សាសេចក្តីជំនឿនៅឡើយ ៨ពីនោះទៅមុខ នឹងមានមកុដនៃសេចក្តីសុចរិត បម្រុងទុកឲ្យខ្ញុំ ដែលព្រះអម្ចាស់ដ៏ជាចៅក្រមសុចរិត ទ្រង់នឹងប្រទានមកខ្ញុំនៅថ្ងៃនោះ។",
+      textEnglish: "I have fought a good fight, I have finished my course, I have kept the faith: Henceforth there is laid up for me a crown of righteousness.",
+      themeKhmer: "ការរត់ប្រណាំងដ៏ល្អ និងមកុដនៃសេចក្តីសុចរិត"
+    },
+    {
+      id: "cpti-34-matthew6-33",
+      part: 5,
+      partTitleKhmer: "ផ្នែកទី ៥: ជីវិតសិស្ស & ជ័យជម្នះ",
+      partTitleEnglish: "Part V: Discipleship & Victory",
+      refKhmer: "ម៉ាថាយ ៦:៣៣-៣៤",
+      refEnglish: "Matthew 6:33-34",
+      textKhmer: "៣៣ចូរស្វែងរកនគរ និងសេចក្តីសុចរិតនៃព្រះជាមុនសិន ទើបគ្រប់របស់ទាំងអស់នោះ នឹងបានប្រទានមកអ្នករាល់គ្នាថែមទៀតផង ៣៤ដូច្នេះ កុំឲ្យខ្វល់ខ្វាយនឹងថ្ងៃស្អែកឡើយ ពីព្រោះថ្ងៃស្អែកនឹងខ្វល់ខ្វាយ ចំពោះការរបស់ថ្ងៃនោះឯង សេចក្តីលំបាកនៅថ្ងៃណា នោះគឺល្មមត្រឹមថ្ងៃនោះហើយ។",
+      textEnglish: "But seek ye first the kingdom of God, and his righteousness; and all these things shall be added unto you.",
+      themeKhmer: "ចូរស្វែងរកនគរ និងសេចក្តីសុចរិតនៃព្រះជាមុនសិន"
+    }
+  ];
+
   const $ = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => [...r.querySelectorAll(s)];
   const esc = (s) => String(s || '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -333,6 +740,9 @@
     state.activeTool = toolName;
     $$('.bible-tab-btn').forEach(btn => {
       btn.classList.toggle('is-active', btn.dataset.tab === toolName);
+    });
+    $$('[data-side-tool]').forEach(btn => {
+      btn.classList.toggle('is-active', btn.dataset.sideTool === toolName);
     });
     render();
   };
@@ -386,7 +796,7 @@
   }
 
   // ---------------------------------------------------------------------------
-  // Selectors Controls Header
+  // Top Controls Header
   // ---------------------------------------------------------------------------
   function renderControlsBar(isParallel = false) {
     const curBook = BOOKS.find(b => b.name === state.book) || BOOKS[0];
@@ -435,7 +845,7 @@
             <button id="btn-font-dec" class="btn btn-neutral !py-1.5 !px-2.5 text-xs" title="Smaller font">A-</button>
             <button id="btn-font-inc" class="btn btn-neutral !py-1.5 !px-2.5 text-xs font-bold" title="Larger font">A+</button>
             <button id="btn-play-audio" class="btn btn-primary !py-1.5 !px-3 text-xs ml-auto" title="Listen to Devotional">
-              <i class="fa-solid fa-headphones mr-1"></i> Audio
+              <i class="fa-solid fa-volume-high mr-1"></i> Audio
             </button>
           </div>
           `}
@@ -452,8 +862,8 @@
       <div class="space-y-4">
         ${renderControlsBar(false)}
 
-        <div class="card p-5 sm:p-6 bg-surface border border-line space-y-5">
-          <div class="flex items-center justify-between border-b border-line pb-3.5">
+        <div class="card p-5 sm:p-6 bg-surface border border-line space-y-4">
+          <div class="flex items-center justify-between border-b border-line pb-3">
             <div>
               <h1 class="text-xl sm:text-2xl font-bold font-khmer text-ink flex items-center gap-2">
                 ${curBook.km} <span class="text-base text-muted font-sans font-normal">(${curBook.name}) ${state.chapter}</span>
@@ -461,28 +871,28 @@
               <p class="text-[12px] text-muted mt-0.5">${state.version === 'KHMER_OLD_1954' ? 'ព្រះគម្ពីរបរិសុទ្ធ ១៩៥៤ (ពគប - Khmer Old Version)' : state.version}</p>
             </div>
             
-            <button class="btn btn-primary !py-1.5 !px-3 text-xs" onclick="window.sendChapterToDesigner()">
-              <i class="fa-solid fa-wand-magic-sparkles mr-1"></i> Make Card
+            <button class="btn btn-primary text-xs shadow-sm" onclick="window.sendChapterToDesigner()">
+              <i class="fa-solid fa-palette mr-1"></i> Make Card
             </button>
           </div>
 
           ${state.loading ? `
             <div class="py-16 text-center text-muted">
-              <i class="fa-solid fa-circle-notch fa-spin text-3xl text-brand mb-2"></i>
+              <i class="fa-solid fa-circle-notch fa-spin text-2xl text-brand mb-2"></i>
               <p class="text-sm">Loading Scripture verses...</p>
             </div>
           ` : `
             <div class="space-y-1" style="font-size: ${state.fontSize}px;">
               ${state.verses.length === 0 ? '<p class="text-muted p-4">No verses found.</p>' : state.verses.map(v => `
-                <div class="verse-row group flex items-start gap-2.5">
-                  <span class="verse-badge shrink-0 select-none mt-1">${v.v}</span>
+                <div class="verse-row group flex items-start gap-2">
+                  <span class="verse-num shrink-0 select-none">${v.v}</span>
                   <p class="flex-1 text-ink font-khmer leading-relaxed font-normal">${esc(v.text)}</p>
                   
                   <div class="opacity-0 group-hover:opacity-100 flex items-center gap-1 shrink-0 transition-opacity">
-                    <button class="w-7 h-7 rounded hover:bg-raised flex items-center justify-center text-muted" title="Copy Verse" onclick="window.copyVerseText('${esc(v.text)}', '${curBook.km} ${state.chapter}:${v.v}')">
+                    <button class="w-6 h-6 rounded hover:bg-raised flex items-center justify-center text-muted" title="Copy Verse" onclick="window.copyVerseText('${esc(v.text)}', '${curBook.km} ${state.chapter}:${v.v}')">
                       <i class="fa-regular fa-copy text-xs"></i>
                     </button>
-                    <button class="w-7 h-7 rounded hover:bg-raised flex items-center justify-center text-brand" title="Design Verse Card" onclick="window.designSingleVerse('${esc(v.text)}', '${curBook.km} ${state.chapter}:${v.v}')">
+                    <button class="w-6 h-6 rounded hover:bg-raised flex items-center justify-center text-brand" title="Design Verse Card" onclick="window.designSingleVerse('${esc(v.text)}', '${curBook.km} ${state.chapter}:${v.v}')">
                       <i class="fa-solid fa-palette text-xs"></i>
                     </button>
                   </div>
@@ -517,7 +927,7 @@
               </div>
               <div class="space-y-2 text-[14.5px]">
                 ${state.verses.map(v => `
-                  <div class="p-2.5 rounded-lg bg-raised/50 border border-line/50">
+                  <div class="p-2.5 rounded-lg bg-raised/40 border border-line/50">
                     <span class="font-bold text-xs text-[#1877F2] mr-1">${v.v}.</span>
                     <span class="font-khmer text-ink leading-relaxed">${esc(v.text)}</span>
                   </div>
@@ -531,7 +941,7 @@
               </div>
               <div class="space-y-2 text-[14.5px]">
                 ${state.verses2.map(v => `
-                  <div class="p-2.5 rounded-lg bg-raised/50 border border-line/50">
+                  <div class="p-2.5 rounded-lg bg-raised/40 border border-line/50">
                     <span class="font-bold text-xs text-emerald-600 mr-1">${v.v}.</span>
                     <span class="font-serif italic text-ink/90 leading-relaxed">${esc(v.text)}</span>
                   </div>
@@ -544,7 +954,7 @@
     `;
   }
 
-  // 3. Scripture Card Designer Tool (Balanced 2-Column Standard Card)
+  // 3. Scripture Card Designer Tool
   function renderDesigner() {
     const d = state.designer;
     return `
@@ -553,7 +963,8 @@
         <div class="card p-4 bg-surface border border-line flex items-center justify-between">
           <div>
             <h1 class="text-xl font-bold text-ink flex items-center gap-2">
-              <i class="fa-solid fa-palette text-brand"></i> Scripture Card Designer
+              <i class="fa-solid fa-palette text-brand"></i>
+              <span>Scripture Card Designer</span>
             </h1>
             <p class="text-xs text-muted">Generate shareable HD Gospel verse graphics formatted for Facebook, Stories, and Telegram.</p>
           </div>
@@ -566,11 +977,11 @@
           
           <!-- Left: Canvas Card Preview -->
           <div class="md:col-span-6 card p-4 bg-surface border border-line flex flex-col items-center justify-center space-y-3">
-            <div class="relative w-full max-w-[340px] aspect-square overflow-hidden rounded-xl shadow-md border border-line bg-black">
+            <div class="relative w-full max-w-[320px] aspect-square overflow-hidden rounded-xl shadow-md border border-line bg-black">
               <canvas id="designer-canvas" width="1080" height="1080" class="w-full h-full object-contain block"></canvas>
             </div>
 
-            <div class="flex items-center justify-between w-full max-w-[340px] text-xs text-muted pt-1">
+            <div class="flex items-center justify-between w-full max-w-[320px] text-xs text-muted pt-1">
               <span class="font-semibold">1080 &times; 1080px (HD)</span>
               <div class="flex items-center gap-1.5">
                 <button class="btn btn-neutral !py-1 !px-2.5 text-xs" onclick="window.copyCardImageToClipboard()">
@@ -584,7 +995,7 @@
           </div>
 
           <!-- Right: Customizer Form -->
-          <div class="md:col-span-6 card p-4 bg-surface border border-line space-y-3.5">
+          <div class="md:col-span-6 card p-4 bg-surface border border-line space-y-3">
             
             <div class="space-y-1">
               <label class="text-xs font-bold uppercase tracking-wider text-muted">Khmer Scripture Text</label>
@@ -651,10 +1062,10 @@
           </div>
 
           <blockquote class="space-y-3 max-w-2xl">
-            <h2 class="text-xl sm:text-2xl font-bold font-khmer leading-relaxed text-white">
+            <h2 class="text-xl sm:text-2xl font-bold font-khmer leading-relaxed">
               «${esc(d.khmer)}»
             </h2>
-            <p class="text-sm sm:text-base font-serif italic text-white/90 leading-relaxed">
+            <p class="text-sm sm:text-base font-serif italic leading-relaxed text-white/90">
               &ldquo;${esc(d.text)}&rdquo;
             </p>
             <div class="text-amber-300 font-bold text-xs tracking-wide">
@@ -665,19 +1076,19 @@
           <div class="p-3 rounded-xl bg-black/20 backdrop-blur-md flex flex-wrap items-center justify-between gap-3">
             <div class="flex items-center gap-3">
               <button class="w-9 h-9 rounded-full bg-white text-[#1877F2] flex items-center justify-center font-bold shadow hover:scale-105 transition" onclick="window.playAudioTrack('${d.audioUrl}')">
-                <i class="fa-solid fa-play ml-0.5 text-xs"></i>
+                <i class="fa-solid fa-play ml-0.5"></i>
               </button>
               <div>
-                <h4 class="font-bold text-xs text-white">${esc(d.audioTitle)}</h4>
-                <p class="text-[11px] text-white/70">Spoken Audio Blessing</p>
+                <h4 class="font-bold text-xs">${esc(d.audioTitle)}</h4>
+                <p class="text-[11px] text-white/80">Spoken Audio Blessing</p>
               </div>
             </div>
 
             <div class="flex items-center gap-1.5">
-              <button class="btn !bg-white/20 !text-white hover:!bg-white/30 text-xs !py-1 !px-2.5" onclick="window.designDailyVerse()">
+              <button class="btn btn-neutral !bg-white/20 hover:!bg-white/30 text-white text-xs !py-1 !px-2.5" onclick="window.designDailyVerse()">
                 <i class="fa-solid fa-palette mr-1"></i> Create Card
               </button>
-              <button class="btn !bg-white/20 !text-white hover:!bg-white/30 text-xs !py-1 !px-2.5" onclick="window.copyDailyVerse()">
+              <button class="btn btn-neutral !bg-white/20 hover:!bg-white/30 text-white text-xs !py-1 !px-2.5" onclick="window.copyDailyVerse()">
                 <i class="fa-regular fa-copy mr-1"></i> Copy
               </button>
             </div>
@@ -686,7 +1097,7 @@
 
         <div class="card p-5 bg-surface border border-line space-y-2.5">
           <div class="flex items-center gap-2 text-brand text-xs font-bold uppercase tracking-wider">
-            <i class="fa-solid fa-seedling"></i>
+            <i class="fa-solid fa-book-bible"></i>
             <span>Daily Devotional Reflection</span>
           </div>
           <h3 class="text-base font-bold text-ink">${esc(d.devotionalTitle)}</h3>
@@ -737,33 +1148,223 @@
     `;
   }
 
-  // 6. Focus Typing Tool
+  // 6. CPTI Scripture Memory Suite (ខគម្ពីរចងចាំ)
   function renderTyping() {
-    const text = 'The LORD is my shepherd; I shall not want. He maketh me to lie down in green pastures: he leadeth me beside the still waters.';
+    let list = CPTI_PASSAGES;
+    if (state.memoryPartFilter > 0) {
+      list = list.filter(p => p.part === state.memoryPartFilter);
+    }
+    if (state.memorySearchQuery && state.memorySearchQuery.trim()) {
+      const q = state.memorySearchQuery.trim().toLowerCase();
+      list = list.filter(p => 
+        p.refKhmer.toLowerCase().includes(q) ||
+        p.refEnglish.toLowerCase().includes(q) ||
+        p.textKhmer.toLowerCase().includes(q) ||
+        p.themeKhmer.toLowerCase().includes(q)
+      );
+    }
+
+    const currentPassage = CPTI_PASSAGES.find(p => p.id === state.selectedMemoryId) || list[0] || CPTI_PASSAGES[0];
+
     return `
       <div class="space-y-4">
-        <div class="card p-4 bg-surface border border-line">
-          <h1 class="text-xl font-bold text-ink">Focus Typing &amp; Memory • ហាត់វាយព្រះបន្ទូល</h1>
-          <p class="text-xs text-muted">Practice scripture memorization and typing accuracy with live feedback.</p>
+        
+        <!-- Header Banner -->
+        <div class="card p-4 sm:p-5 bg-gradient-to-r from-[#1877F2]/10 via-rose-500/10 to-indigo-500/10 border border-brand/20 space-y-2">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div class="flex items-center gap-2">
+              <span class="w-8 h-8 rounded-lg bg-rose-500 text-white flex items-center justify-center font-bold text-sm shadow-sm"><i class="fa-solid fa-brain"></i></span>
+              <div>
+                <h1 class="text-lg sm:text-xl font-bold text-ink flex items-center gap-2 font-khmer">
+                  <span>ខគម្ពីរចងចាំ • Scripture Memory Suite</span>
+                </h1>
+                <p class="text-xs text-muted">សាលាទេវវិទ្យាប្រេសប៊ីទែរានកម្ពុជា — Cambodia Presbyterian Theological Institute (CPTI)</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-2 text-xs font-bold text-ink">
+              <span class="px-2.5 py-1 rounded-full bg-surface border border-line shadow-xs">Total: <strong class="text-brand">${CPTI_PASSAGES.length}</strong> Passages</span>
+              <span class="px-2.5 py-1 rounded-full bg-surface border border-line shadow-xs">Speed: <strong class="text-brand">${state.typingWpm}</strong> WPM</span>
+              <span class="px-2.5 py-1 rounded-full bg-surface border border-line shadow-xs">Accuracy: <strong class="text-emerald-500">${state.typingAccuracy}%</strong></span>
+            </div>
+          </div>
         </div>
 
-        <div class="card p-5 bg-surface border border-line space-y-4">
-          <div class="flex flex-wrap items-center justify-between gap-3 border-b border-line pb-3">
-            <span class="text-xs font-bold text-brand bg-brand/10 px-3 py-1 rounded-full">Psalm 23:1-3</span>
-            <div class="flex items-center gap-3 text-xs font-bold text-ink">
-              <span class="px-2.5 py-1 rounded bg-raised">Speed: <strong class="text-brand">${state.typingWpm}</strong> WPM</span>
-              <span class="px-2.5 py-1 rounded bg-raised">Accuracy: <strong class="text-emerald-500">${state.typingAccuracy}%</strong></span>
+        <!-- 5-Section Part Filter Tabs -->
+        <div class="card p-1.5 bg-surface border border-line flex items-center gap-1.5 overflow-x-auto no-scrollbar text-xs font-semibold">
+          <button class="px-3 py-1.5 rounded-lg whitespace-nowrap transition ${state.memoryPartFilter === 0 ? 'bg-brand text-white shadow-xs font-bold' : 'text-muted hover:text-ink hover:bg-raised'}" onclick="window.filterMemoryPart(0)">
+            ទាំងអស់ (All 34)
+          </button>
+          <button class="px-3 py-1.5 rounded-lg whitespace-nowrap transition ${state.memoryPartFilter === 1 ? 'bg-brand text-white shadow-xs font-bold' : 'text-muted hover:text-ink hover:bg-raised'}" onclick="window.filterMemoryPart(1)">
+            ផ្នែកទី ១: ទំនុកដំកើង &amp; ប្រាជ្ញា
+          </button>
+          <button class="px-3 py-1.5 rounded-lg whitespace-nowrap transition ${state.memoryPartFilter === 2 ? 'bg-brand text-white shadow-xs font-bold' : 'text-muted hover:text-ink hover:bg-raised'}" onclick="window.filterMemoryPart(2)">
+            ផ្នែកទី ២: ព្រះគ្រីស្ទ &amp; ការសង្គ្រោះ
+          </button>
+          <button class="px-3 py-1.5 rounded-lg whitespace-nowrap transition ${state.memoryPartFilter === 3 ? 'bg-brand text-white shadow-xs font-bold' : 'text-muted hover:text-ink hover:bg-raised'}" onclick="window.filterMemoryPart(3)">
+            ផ្នែកទី ៣: ព្រះវិញ្ញាណ &amp; ការអធិស្ឋាន
+          </button>
+          <button class="px-3 py-1.5 rounded-lg whitespace-nowrap transition ${state.memoryPartFilter === 4 ? 'bg-brand text-white shadow-xs font-bold' : 'text-muted hover:text-ink hover:bg-raised'}" onclick="window.filterMemoryPart(4)">
+            ផ្នែកទី ៤: ព្រះបន្ទូល &amp; ជំនឿ
+          </button>
+          <button class="px-3 py-1.5 rounded-lg whitespace-nowrap transition ${state.memoryPartFilter === 5 ? 'bg-brand text-white shadow-xs font-bold' : 'text-muted hover:text-ink hover:bg-raised'}" onclick="window.filterMemoryPart(5)">
+            ផ្នែកទី ៥: ជីវិតសិស្ស &amp; ជ័យជម្នះ
+          </button>
+        </div>
+
+        <!-- Search and Passage Selector -->
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-3">
+          
+          <!-- Left: Passage Selection List (4 cols) -->
+          <div class="md:col-span-4 card p-3 bg-surface border border-line space-y-2">
+            <div class="relative">
+              <i class="fa-solid fa-magnifying-glass text-muted text-xs absolute left-2.5 top-2.5"></i>
+              <input type="text" id="memory-search-input" value="${esc(state.memorySearchQuery)}" placeholder="Search verse or topic..." class="w-full pl-7 pr-2.5 py-1 text-xs rounded-lg bg-raised border border-line text-ink outline-none focus:border-brand">
+            </div>
+
+            <div class="max-h-[360px] overflow-y-auto space-y-1 pr-1">
+              ${list.map(p => `
+                <button class="w-full text-left p-2 rounded-lg text-xs transition border ${p.id === currentPassage.id ? 'bg-brand/10 border-brand text-brand font-bold' : 'border-transparent text-ink hover:bg-raised'}" onclick="window.selectMemoryPassage('${p.id}')">
+                  <div class="flex items-center justify-between">
+                    <span class="font-khmer truncate">${p.refKhmer}</span>
+                    <span class="text-[10px] text-muted font-normal">${p.refEnglish}</span>
+                  </div>
+                  <div class="text-[11px] text-muted font-khmer truncate font-normal mt-0.5">${p.themeKhmer}</div>
+                </button>
+              `).join('')}
             </div>
           </div>
 
-          <div class="p-4 rounded-xl bg-raised/60 border border-line font-serif text-base leading-relaxed text-ink select-none">
-            ${text}
-          </div>
+          <!-- Right: Interactive Memorization Workbench (8 cols) -->
+          <div class="md:col-span-8 card p-5 bg-surface border border-line space-y-4">
+            
+            <!-- Passage Header & Mode Selector -->
+            <div class="flex flex-wrap items-center justify-between gap-2 border-b border-line pb-3">
+              <div>
+                <span class="text-[11px] font-bold uppercase tracking-wider text-rose-500 bg-rose-500/10 px-2.5 py-0.5 rounded-full font-khmer">${currentPassage.partTitleKhmer}</span>
+                <h2 class="text-lg font-bold text-ink font-khmer mt-1.5 flex items-center gap-2">
+                  ${currentPassage.refKhmer} <span class="text-xs text-muted font-sans font-normal">(${currentPassage.refEnglish})</span>
+                </h2>
+                <p class="text-xs font-khmer text-muted mt-0.5">${currentPassage.themeKhmer}</p>
+              </div>
 
-          <textarea id="typing-input-box" rows="3" placeholder="Start typing the passage here to test your memory and speed..." class="w-full p-3 text-sm rounded-xl bg-raised border border-line text-ink outline-none focus:border-brand leading-relaxed"></textarea>
+              <!-- Practice Modes Switcher -->
+              <div class="flex items-center gap-1 bg-raised p-1 rounded-lg text-xs font-semibold">
+                <button class="px-2.5 py-1 rounded-md transition ${state.memoryMode === 'recite' ? 'bg-brand text-white shadow-xs' : 'text-muted hover:text-ink'}" onclick="window.setMemoryMode('recite')">
+                  <i class="fa-solid fa-book-open mr-1"></i> អាន
+                </button>
+                <button class="px-2.5 py-1 rounded-md transition ${state.memoryMode === 'hide' ? 'bg-brand text-white shadow-xs' : 'text-muted hover:text-ink'}" onclick="window.setMemoryMode('hide')">
+                  <i class="fa-solid fa-puzzle-piece mr-1"></i> លាក់ពាក្យ
+                </button>
+                <button class="px-2.5 py-1 rounded-md transition ${state.memoryMode === 'typing' ? 'bg-brand text-white shadow-xs' : 'text-muted hover:text-ink'}" onclick="window.setMemoryMode('typing')">
+                  <i class="fa-solid fa-keyboard mr-1"></i> វាយអក្សរ
+                </button>
+                <button class="px-2.5 py-1 rounded-md transition ${state.memoryMode === 'flashcard' ? 'bg-brand text-white shadow-xs' : 'text-muted hover:text-ink'}" onclick="window.setMemoryMode('flashcard')">
+                  <i class="fa-solid fa-repeat mr-1"></i> កាត
+                </button>
+              </div>
+            </div>
+
+            <!-- Mode 1: Recite & Read -->
+            ${state.memoryMode === 'recite' ? `
+              <div class="space-y-4">
+                <div class="p-4 rounded-xl bg-raised/50 border border-line font-khmer text-base leading-relaxed text-ink shadow-xs">
+                  ${esc(currentPassage.textKhmer)}
+                </div>
+                
+                <div class="p-3 rounded-lg bg-surface border border-line text-xs font-serif italic text-muted leading-relaxed">
+                  ${esc(currentPassage.textEnglish)}
+                </div>
+              </div>
+            ` : ''}
+
+            <!-- Mode 2: Fill in the Blanks / Word Hide -->
+            ${state.memoryMode === 'hide' ? `
+              <div class="space-y-3">
+                <div class="flex items-center justify-between text-xs text-muted">
+                  <span>Click any hidden box to reveal the word:</span>
+                  <div class="flex items-center gap-1.5 font-semibold">
+                    <span>Hide:</span>
+                    <button class="px-2 py-0.5 rounded border ${state.memoryHideLevel === 25 ? 'bg-brand text-white border-brand' : 'bg-raised border-line'}" onclick="window.setMemoryHideLevel(25)">25%</button>
+                    <button class="px-2 py-0.5 rounded border ${state.memoryHideLevel === 50 ? 'bg-brand text-white border-brand' : 'bg-raised border-line'}" onclick="window.setMemoryHideLevel(50)">50%</button>
+                    <button class="px-2 py-0.5 rounded border ${state.memoryHideLevel === 100 ? 'bg-brand text-white border-brand' : 'bg-raised border-line'}" onclick="window.setMemoryHideLevel(100)">100%</button>
+                    <button class="px-2 py-0.5 rounded border bg-raised border-line text-brand" onclick="window.revealAllWords()">Reveal All</button>
+                  </div>
+                </div>
+
+                <div class="p-4 rounded-xl bg-raised/50 border border-line font-khmer text-base leading-relaxed text-ink shadow-xs select-none" id="hide-words-container">
+                  ${renderHiddenWords(currentPassage.textKhmer, state.memoryHideLevel)}
+                </div>
+              </div>
+            ` : ''}
+
+            <!-- Mode 3: Interactive Typing Trainer -->
+            ${state.memoryMode === 'typing' ? `
+              <div class="space-y-3">
+                <div class="p-3.5 rounded-xl bg-raised/50 border border-line font-khmer text-sm leading-relaxed text-ink select-none">
+                  ${esc(currentPassage.textKhmer)}
+                </div>
+
+                <textarea id="typing-memory-box" rows="3" placeholder="Type the Scripture passage above in Khmer (or English) to test your recall and speed..." class="w-full p-3 text-sm font-khmer rounded-xl bg-raised border border-line text-ink outline-none focus:border-brand leading-relaxed">${esc(state.typingInput)}</textarea>
+              </div>
+            ` : ''}
+
+            <!-- Mode 4: Flashcard Flip -->
+            ${state.memoryMode === 'flashcard' ? `
+              <div class="p-8 rounded-2xl bg-gradient-to-br from-brand/10 to-indigo-600/10 border-2 border-brand/30 text-center cursor-pointer space-y-4 hover:shadow-md transition" onclick="window.toggleFlashcard()" id="memory-flashcard">
+                <div class="text-xs font-bold text-brand uppercase tracking-wider">Tap to Flip Card 🔄</div>
+                <h3 class="text-2xl font-bold font-khmer text-ink py-4" id="flashcard-front">
+                  ${currentPassage.refKhmer}
+                  <div class="text-sm font-sans text-muted font-normal mt-1">(${currentPassage.refEnglish})</div>
+                </h3>
+                <div class="text-base font-khmer text-ink leading-relaxed hidden py-2" id="flashcard-back">
+                  «${esc(currentPassage.textKhmer)}»
+                </div>
+                <div class="text-xs text-muted">${currentPassage.themeKhmer}</div>
+              </div>
+            ` : ''}
+
+            <!-- Bottom Action Controls -->
+            <div class="pt-3 border-t border-line flex flex-wrap items-center justify-between gap-2">
+              <div class="flex items-center gap-1.5">
+                <button class="btn btn-neutral text-xs" onclick="window.copyMemoryText('${esc(currentPassage.textKhmer)}', '${currentPassage.refKhmer}')">
+                  <i class="fa-regular fa-copy mr-1"></i> Copy
+                </button>
+                <button class="btn btn-primary text-xs" onclick="window.designMemoryCard('${esc(currentPassage.textKhmer)}', '${esc(currentPassage.textEnglish)}', '${currentPassage.refKhmer} • ${currentPassage.refEnglish}')">
+                  <i class="fa-solid fa-palette mr-1"></i> Design Card
+                </button>
+                <button class="btn btn-neutral text-xs" onclick="window.postMemoryToFeed('${esc(currentPassage.textKhmer)}', '${currentPassage.refKhmer}')">
+                  <i class="fa-solid fa-share-nodes mr-1"></i> Share to Feed
+                </button>
+              </div>
+
+              <div class="flex items-center gap-1">
+                <button class="btn btn-neutral !py-1 !px-2.5 text-xs" onclick="window.prevMemoryPassage()">
+                  <i class="fa-solid fa-chevron-left"></i> Previous
+                </button>
+                <button class="btn btn-neutral !py-1 !px-2.5 text-xs" onclick="window.nextMemoryPassage()">
+                  Next <i class="fa-solid fa-chevron-right"></i>
+                </button>
+              </div>
+            </div>
+
+          </div>
         </div>
+
       </div>
     `;
+  }
+
+  function renderHiddenWords(text, hidePercent) {
+    if (!hidePercent || hidePercent === 0) return esc(text);
+    const words = text.split(/([\s,.:;?!«»—]+)/);
+    return words.map((w, idx) => {
+      if (!w.trim() || /^[0-9,.:;?!«»—]+$/.test(w)) return esc(w);
+      const shouldHide = ((idx * 17) % 100) < hidePercent;
+      if (shouldHide && !state.revealedWords.has(idx)) {
+        return `<span class="memory-word-hidden" data-word-idx="${idx}" onclick="window.revealSingleWord(${idx})">${esc(w)}</span>`;
+      }
+      return esc(w);
+    }).join('');
   }
 
   // 7. Sermon Notes Planner
@@ -799,7 +1400,7 @@
 
           <div class="card p-4 bg-surface border border-line space-y-2">
             <div class="flex items-center gap-2 text-purple-600 font-bold text-sm">
-              <i class="fa-solid fa-person-walking"></i>
+              <i class="fa-solid fa-bolt"></i>
               <span>3. Application</span>
             </div>
             <textarea id="notes-application" rows="10" class="w-full p-2.5 text-xs rounded-lg bg-raised border border-line text-ink outline-none focus:border-brand leading-relaxed" placeholder="Write application steps here...">${esc(state.notes.Application)}</textarea>
@@ -903,8 +1504,14 @@
       }
     });
 
-    $('#typing-input-box')?.addEventListener('input', (e) => {
+    $('#memory-search-input')?.addEventListener('input', (e) => {
+      state.memorySearchQuery = e.target.value;
+      render();
+    });
+
+    $('#typing-memory-box')?.addEventListener('input', (e) => {
       const val = e.target.value;
+      state.typingInput = val;
       if (!state.typingStartTime) state.typingStartTime = Date.now();
       const words = val.trim().split(/\s+/).length;
       const elapsedMin = (Date.now() - state.typingStartTime) / 60000;
@@ -1066,6 +1673,87 @@
     if (window.toast) window.toast('Sermon notes saved!');
   };
 
+  // ─── Scripture Memory Helpers ───
+  window.filterMemoryPart = (partNum) => {
+    state.memoryPartFilter = partNum;
+    render();
+  };
+
+  window.selectMemoryPassage = (id) => {
+    state.selectedMemoryId = id;
+    state.revealedWords.clear();
+    state.typingInput = '';
+    state.typingStartTime = 0;
+    render();
+  };
+
+  window.setMemoryMode = (mode) => {
+    state.memoryMode = mode;
+    if (mode === 'hide' && state.memoryHideLevel === 0) state.memoryHideLevel = 50;
+    render();
+  };
+
+  window.setMemoryHideLevel = (level) => {
+    state.memoryHideLevel = level;
+    state.revealedWords.clear();
+    render();
+  };
+
+  window.revealSingleWord = (idx) => {
+    state.revealedWords.add(idx);
+    const el = $(`[data-word-idx="${idx}"]`);
+    if (el) el.classList.add('is-revealed');
+  };
+
+  window.revealAllWords = () => {
+    $$('.memory-word-hidden').forEach(el => el.classList.add('is-revealed'));
+  };
+
+  window.toggleFlashcard = () => {
+    const front = $('#flashcard-front');
+    const back = $('#flashcard-back');
+    if (front && back) {
+      front.classList.toggle('hidden');
+      back.classList.toggle('hidden');
+    }
+  };
+
+  window.prevMemoryPassage = () => {
+    const idx = CPTI_PASSAGES.findIndex(p => p.id === state.selectedMemoryId);
+    if (idx > 0) {
+      state.selectedMemoryId = CPTI_PASSAGES[idx - 1].id;
+      state.revealedWords.clear();
+      render();
+    }
+  };
+
+  window.nextMemoryPassage = () => {
+    const idx = CPTI_PASSAGES.findIndex(p => p.id === state.selectedMemoryId);
+    if (idx >= 0 && idx < CPTI_PASSAGES.length - 1) {
+      state.selectedMemoryId = CPTI_PASSAGES[idx + 1].id;
+      state.revealedWords.clear();
+      render();
+    }
+  };
+
+  window.copyMemoryText = (text, ref) => {
+    navigator.clipboard.writeText(`${text}\n— ${ref}`);
+    if (window.toast) window.toast('Memory passage copied!');
+  };
+
+  window.designMemoryCard = (textKm, textEn, ref) => {
+    state.designer.textKhmer = textKm;
+    state.designer.textEnglish = textEn || '';
+    state.designer.ref = ref;
+    window.switchTool('designer');
+  };
+
+  window.postMemoryToFeed = (text, ref) => {
+    const content = `${text}\n\n— ${ref} (CPTI ខគម្ពីរចងចាំ)`;
+    localStorage.setItem('faithin_draft_post', content);
+    window.location.href = '/home';
+  };
+
   document.addEventListener('DOMContentLoaded', () => {
     const params = new URLSearchParams(window.location.search);
     if (params.get('tool')) state.activeTool = params.get('tool');
@@ -1080,6 +1768,6 @@
 
 })();
 </script>
-<script src="/faithin-app/assets/faithin-live.js?v=20260902-std-v1"></script>
+<script src="/faithin-app/assets/faithin-live.js?v=20260902-cpti-v1"></script>
 </body>
 </html>

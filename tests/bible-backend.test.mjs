@@ -11,7 +11,28 @@ import {
   getBibleMediaList,
   getTypingPassages,
   searchBible,
+  getMemoryPassages,
 } from '../lib/bible-service.ts';
+
+test('Bible Service: CPTI Scripture Memory Catalog (5 Sections)', () => {
+  const all = getMemoryPassages();
+  assert.ok(all.items.length >= 30, 'Should contain all memorization passages');
+  assert.equal(all.parts.length, 5, 'Should have 5 structured theological parts');
+
+  // Part 1: Psalms & Wisdom
+  const part1 = getMemoryPassages(1);
+  assert.ok(part1.items.length >= 5, 'Part 1 should have Psalms and 1 Cor 13');
+  assert.ok(part1.items.some(p => p.refKhmer.includes('ទំនុកដំកើង ២៣') || p.refKhmer.includes('ទំនុកដំកើង ១')));
+
+  // Part 2: Christ & Salvation
+  const part2 = getMemoryPassages(2);
+  assert.ok(part2.items.some(p => p.refKhmer.includes('យ៉ូហាន ៣:១៦')));
+  assert.ok(part2.items.some(p => p.refKhmer.includes('រ៉ូម ៦:២៣')));
+
+  // Search in memory catalog
+  const searchResult = getMemoryPassages(undefined, 'សេចក្តីស្រឡាញ់');
+  assert.ok(searchResult.items.length > 0, 'Should find memory verses matching search term');
+});
 
 test('Bible Service: 66 Books Catalog', () => {
   assert.equal(BIBLE_BOOKS.length, 66, 'Should have all 66 canonical Bible books');
