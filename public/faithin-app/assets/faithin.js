@@ -131,9 +131,9 @@
               </div>
               <a href="/profile" class="side-link${page === 'profile' ? ' is-active' : ''}" role="menuitem"><i class="fa-regular fa-user"></i>View profile</a>
               <a href="/bible" class="side-link${page === 'bible' ? ' is-active' : ''}" role="menuitem"><i class="fa-solid fa-book-bible text-[#1877F2]"></i>Bible Studio</a>
+              <a href="/bible?tool=memory" class="side-link font-khmer" role="menuitem"><i class="fa-solid fa-brain text-rose-500"></i>ខគម្ពីរចងចាំ • Memory</a>
               <a href="/studio" class="side-link${page === 'studio' ? ' is-active' : ''}" role="menuitem"><i class="fa-solid fa-chart-line text-blue-500"></i>Creator Studio</a>
               <a href="/library?view=saved" class="side-link" role="menuitem"><i class="fa-solid fa-bookmark"></i>Saved items</a>
-              <a href="/bible" class="side-link${page === 'bible' ? ' is-active' : ''}" role="menuitem"><i class="fa-solid fa-book-bible"></i>Bible reader</a>
               <a href="/settings" class="side-link${page === 'settings' ? ' is-active' : ''}" role="menuitem"><i class="fa-solid fa-gear"></i>Settings</a>
               <div class="my-1.5 border-t border-line"></div>
               <a href="/home" class="side-link" role="menuitem"><i class="fa-solid fa-arrow-right-from-bracket"></i>Sign out</a>
