@@ -46,6 +46,7 @@
   }
 
   function safeExternalUrl(value) {
+    if (!String(value || '').trim()) return '';
     try {
       const parsed = new URL(String(value || ''), location.origin);
       return parsed.protocol === 'https:' ? parsed.href : '';
@@ -201,8 +202,15 @@
     $('[data-bible-version]', panel).textContent = data.versionLabel || version.label;
     renderAttribution(panel, data, version);
 
-    if (data.status !== 'ready') {
+    const hasVerses = Array.isArray(data.items) && data.items.length > 0;
+    const needsOfficialAccess = data.status === 'setup_required' || data.status === 'publisher_access_required';
+    if (!hasVerses && needsOfficialAccess) {
       renderSetup(panel, data, version);
+      return;
+    }
+
+    if (!hasVerses && data.status !== 'ready') {
+      renderPanelError(side, data.message || 'This translation did not return any verses.');
       return;
     }
 
@@ -234,7 +242,9 @@
     setPanelLoading('secondary');
     elements.status.textContent = `Loading ${state.book} ${state.chapter}…`;
     savePreferences();
-    const params = { book: state.book, chapter: state.chapter };
+    // schema distinguishes the new normalized backend payload from older
+    // chapter responses that may still exist in a member's browser cache.
+    const params = { book: state.book, chapter: state.chapter, schema: 2 };
     const primaryRequest = api.request('cv_bible_get_verses', { ...params, version: state.primaryVersion });
     const secondaryRequest = api.request('cv_bible_get_verses', { ...params, version: state.secondaryVersion });
     const results = await Promise.allSettled([primaryRequest, secondaryRequest]);
