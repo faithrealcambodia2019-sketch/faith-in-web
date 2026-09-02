@@ -95,10 +95,10 @@
 </head>
 <body class="font-sans min-h-screen pb-16 lg:pb-6" data-page="bible" data-search="Search Bible chapters, books & verses">
 
-<main class="fi-bible-layout" id="main">
+<main class="max-w-[1200px] mx-auto px-3 sm:px-4 py-5 grid gap-5 lg:grid-cols-[232px_minmax(0,1fr)] items-start" id="main">
 
   <!-- ───── LEFT RAIL (232px) ───── -->
-  <aside class="fi-bible-sidebar" id="left-sidebar">
+  <aside class="hidden lg:block sticky top-[72px] space-y-4" id="left-sidebar">
     
     <!-- User / App Quick Card -->
     <div class="card p-3 flex items-center gap-3">
@@ -166,10 +166,10 @@
   </aside>
 
   <!-- ───── CENTER FEED ───── -->
-  <section class="fi-bible-main" id="center-pane">
+  <section class="min-w-0 flex flex-col gap-4" id="center-pane">
 
-    <!-- Top Tools Navigation Bar -->
-    <div class="card p-1.5 flex items-center gap-1 overflow-x-auto no-scrollbar">
+    <!-- Top Tools Navigation Bar (Mobile Only) -->
+    <div class="lg:hidden card p-1.5 flex items-center gap-1 overflow-x-auto no-scrollbar">
       <button class="bible-tab-btn is-active shrink-0" data-tab="reader" onclick="window.switchTool('reader')">
         <i class="fa-solid fa-book-open"></i><span>Reader</span>
       </button>
