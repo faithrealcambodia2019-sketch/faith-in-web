@@ -36,7 +36,7 @@ test("the messaging page cache-busts every restored runtime asset", () => {
   for (const asset of ["faithin-runtime.js", "faithin.js", "faithin-live.js", "faithin-messaging.js"]) {
     assert.match(
       messagingPage,
-      new RegExp(`${asset.replace(".", "\\.")}\\?v=20260902-bible-v1`),
+      new RegExp(`${asset.replace(".", "\\.")}\\?v=20260902-lib-v2`),
     );
   }
 });

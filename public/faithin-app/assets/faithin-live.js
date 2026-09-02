@@ -273,7 +273,7 @@
   }
 
   function emptyState(label) {
-    return `<div class="p-8 text-center text-muted"><i class="fa-regular fa-folder-open text-2xl text-faint"></i><p class="mt-2 text-[13.5px]">${esc(label)}</p></div>`;
+    return `<div class="col-span-full p-8 text-center text-muted"><i class="fa-regular fa-folder-open text-2xl text-faint"></i><p class="mt-2 text-[13.5px]">${esc(label)}</p></div>`;
   }
 
   async function loadJobs() {

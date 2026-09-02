@@ -787,6 +787,12 @@ html.dark .msg-bubble.is-mine{ color:#0b1120; }
     grid-template-columns: 280px minmax(0, 1fr) 280px;
   }
 }
+@media (min-width: 1280px) {
+  .fi-library-layout { max-width: 1360px; }
+}
+@media (min-width: 1536px) {
+  .fi-library-layout { max-width: 1440px; }
+}
 
 .fi-library-sidebar {
   display: flex;
@@ -837,6 +843,11 @@ html.dark .msg-bubble.is-mine{ color:#0b1120; }
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+@media (min-width: 1280px) {
+  .fi-library-shelf {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
 
 .fb-publish-btn {
   display: inline-flex !important;
@@ -880,6 +891,13 @@ html.dark .msg-bubble.is-mine{ color:#0b1120; }
   scrollbar-width: none;
 }
 .fb-filter-bar::-webkit-scrollbar { display: none; }
+@media (min-width: 900px) {
+  .fb-filter-bar {
+    flex-wrap: wrap;
+    overflow-x: visible;
+    row-gap: 8px;
+  }
+}
 .fb-filter-chip {
   display: inline-flex;
   align-items: center;
@@ -1065,11 +1083,14 @@ html.dark .fb-library-cover-box {
   font-size: 15px;
   font-weight: 700;
   color: #0f172a;
-  line-height: 1.35;
+  line-height: 1.55;
   margin-bottom: 3px;
-  white-space: nowrap;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  min-height: calc(2 * 1.55em);
   overflow: hidden;
-  text-overflow: ellipsis;
+  overflow-wrap: break-word;
   transition: color 0.15s ease;
 }
 .fb-library-card:hover .fb-card-title {
@@ -1084,6 +1105,7 @@ html.dark .fb-library-card:hover .fb-card-title {
 .fb-card-author {
   font-size: 12.5px;
   color: #64748b;
+  line-height: 1.6;
   margin-bottom: 2px;
   white-space: nowrap;
   overflow: hidden;
@@ -1099,6 +1121,7 @@ html.dark .fb-card-author strong {
 .fb-card-translator {
   font-size: 12px;
   color: #64748b;
+  line-height: 1.6;
   margin-bottom: 6px;
   white-space: nowrap;
   overflow: hidden;
@@ -1125,6 +1148,14 @@ html.dark .fb-card-translator {
 html.dark .fb-format-pill {
   background: rgba(24, 119, 242, 0.2);
   color: #60a5fa;
+}
+
+/* Khmer sits on a taller line box than Latin: Koh Santepheap stacks
+   subscript consonants below the baseline and vowel signs above it, so a
+   default line box clips them — visibly so inside the cards, which hide
+   their overflow. */
+body[data-page="library"] .font-khmer:not(.truncate):not(.whitespace-nowrap) {
+  line-height: 1.65;
 }
 
 .fb-card-footer {
