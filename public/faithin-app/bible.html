@@ -267,7 +267,7 @@
     // CPTI Scripture Memory
     memoryPartFilter: 0,
     memorySearchQuery: '',
-    selectedMemoryId: 'cpti-09-john3-16',
+    selectedMemoryId: 'p1-psalm-1',
     memoryMode: 'recite', // 'recite', 'hide', 'typing', 'flashcard'
     memoryHideLevel: 0, // 0, 25, 50, 75, 100
     revealedWords: new Set(),
@@ -2642,7 +2642,7 @@
       );
     }
 
-    const currentPassage = state.selectedMemoryId ? CPTI_PASSAGES.find(p => p.id === state.selectedMemoryId) : (list[0] || CPTI_PASSAGES[0]);
+    const currentPassage = (state.selectedMemoryId && CPTI_PASSAGES.find(p => p.id === state.selectedMemoryId)) || list[0] || CPTI_PASSAGES[0];
 
     return `
       <div class="space-y-4">
@@ -2792,7 +2792,7 @@
         root.innerHTML = renderTyping(); 
         const rightMemoryWidget = $('#right-memory-widget');
         if (rightMemoryWidget) {
-          const passage = state.selectedMemoryId ? CPTI_PASSAGES.find(p => p.id === state.selectedMemoryId) : CPTI_PASSAGES[0];
+          const passage = (state.selectedMemoryId && CPTI_PASSAGES.find(p => p.id === state.selectedMemoryId)) || CPTI_PASSAGES[0];
           rightMemoryWidget.innerHTML = getMemoryDetailHtml(passage);
         }
         break;
