@@ -354,11 +354,62 @@
   #bible-view-root span.rounded-full {
     white-space: nowrap;
   }
+  /* ── Reader themes ──────────────────────────────────────────────
+     The verses carry .text-ink / .text-muted, which pin their colour,
+     so neither the sepia nor the night surface ever reached the text —
+     night mode was near-black type on a near-black card. */
+  .reader-theme-sepia,
+  .reader-theme-sepia .text-ink { color: #433422; }
+  .reader-theme-sepia .text-muted { color: #7c6a4f; }
+  .reader-theme-sepia .border-line { border-color: #e7dabd; }
+  .reader-theme-dark,
+  .reader-theme-dark .text-ink { color: #e2e8f0; }
+  .reader-theme-dark .text-muted { color: #94a3b8; }
+  .reader-theme-dark .border-line { border-color: #1e293b; }
+  .reader-theme-dark .verse-num { color: #93c5fd; background-color: rgba(147, 197, 253, 0.12); }
+  .reader-theme-sepia .verse-num { color: #8a5a1a; background-color: rgba(138, 90, 26, 0.12); }
+
+  /* ── Search fields ──────────────────────────────────────────────
+     One control height and one text size across the tools, and a
+     placeholder that ellipses instead of being sliced mid-word. */
+  #reader-search-input,
+  #concordance-search,
+  #resource-search-input,
+  #history-search-input { font-size: 13px; }
+  #history-search-input { height: 40px; }
+  #concordance-search,
+  #resource-search-input { padding-top: 0.4rem; padding-bottom: 0.4rem; }
+  #reader-search-input::placeholder,
+  #concordance-search::placeholder,
+  #resource-search-input::placeholder,
+  #history-search-input::placeholder,
+  #memory-search-input::placeholder { text-overflow: ellipsis; }
+  /* The uppercase micro-labels in the controls row are wider than their
+     column once it is 2/12; keep them on one line where there is room. */
+  @media (min-width: 1280px) {
+    #bible-view-root .grid.items-end > div > label {
+      white-space: nowrap;
+      letter-spacing: 0.03em;
+    }
+  }
+
+  /* Neutral buttons inside a themed reader pick up the theme, not the
+     app chrome */
+  .reader-theme-dark .btn-neutral {
+    background: #1e293b;
+    color: #e2e8f0;
+    border-color: #334155;
+  }
+  .reader-theme-sepia .btn-neutral {
+    background: #f2e7cf;
+    color: #433422;
+    border-color: #e0d0ac;
+  }
 </style>
 </head>
 <body class="font-sans min-h-screen pb-16 lg:pb-6" data-page="bible" data-search="Search Bible chapters, books & verses">
 
-<main class="max-w-[1200px] mx-auto px-3 sm:px-4 py-5 grid gap-5 lg:grid-cols-[232px_minmax(0,1fr)] xl:grid-cols-[232px_minmax(0,1fr)_312px] items-start" id="main">
+<main class="max-w-[1200px] xl:max-w-[1360px] 2xl:max-w-[1440px] mx-auto px-3 sm:px-4 py-5 grid gap-5 lg:grid-cols-[232px_minmax(0,1fr)] xl:grid-cols-[232px_minmax(0,1fr)_312px] items-start" id="main">
 
   <!-- ───── LEFT RAIL: STANDARD USER PROFILE & NAV ───── -->
   <aside class="hidden lg:block sticky top-[72px] space-y-4 rail-scroll pb-6">
@@ -3356,9 +3407,9 @@
       <div class="card p-3 bg-surface border border-line space-y-2.5 shadow-2xs">
         
         <!-- Row 1: Book, Chapter, Translation selectors + Quick Nav -->
-        <div class="grid grid-cols-2 sm:grid-cols-12 gap-2 items-end">
+        <div class="grid grid-cols-2 xl:grid-cols-12 gap-2 items-end">
           
-          <div class="col-span-1 sm:col-span-4 space-y-0.5">
+          <div class="col-span-1 xl:col-span-4 space-y-0.5">
             <label class="text-[10.5px] font-bold uppercase tracking-wider text-muted flex items-center justify-between">
               <span>Book • គម្ពីរ</span>
               <span class="text-[9.5px] text-brand font-semibold">${curBook.test === 'OT' ? 'Old Testament' : 'New Testament'}</span>
@@ -3373,14 +3424,14 @@
             </select>
           </div>
 
-          <div class="col-span-1 sm:col-span-2 space-y-0.5">
+          <div class="col-span-1 xl:col-span-2 space-y-0.5">
             <label class="text-[10.5px] font-bold uppercase tracking-wider text-muted">Chapter • ជំពូក</label>
             <select id="sel-chapter" class="w-full bg-raised border border-line rounded-lg px-2 py-1.5 text-xs font-semibold text-ink outline-none focus:border-brand">
-              ${chaptersList.map(c => `<option value="${c}" ${c === Number(state.chapter) ? 'selected' : ''}>Chapter ${c}</option>`).join('')}
+              ${chaptersList.map(c => `<option value="${c}" ${c === Number(state.chapter) ? 'selected' : ''}>${c}</option>`).join('')}
             </select>
           </div>
 
-          <div class="col-span-1 sm:col-span-3 space-y-0.5">
+          <div class="col-span-1 xl:col-span-3 space-y-0.5">
             <label class="text-[10.5px] font-bold uppercase tracking-wider text-muted">Translation</label>
             <select id="sel-version" class="w-full bg-raised border border-line rounded-lg px-2 py-1.5 text-xs font-medium text-ink outline-none focus:border-brand">
               <option value="KHMER_OLD_1954" ${state.version === 'KHMER_OLD_1954' ? 'selected' : ''}>🇰🇭 ខ្មែរ ១៩៥៤ (ពគប)</option>
@@ -3391,7 +3442,7 @@
           </div>
 
           ${isParallel ? `
-          <div class="col-span-1 sm:col-span-3 space-y-0.5">
+          <div class="col-span-1 xl:col-span-3 space-y-0.5">
             <label class="text-[10.5px] font-bold uppercase tracking-wider text-muted">Compare With</label>
             <select id="sel-version2" class="w-full bg-raised border border-line rounded-lg px-2 py-1.5 text-xs font-medium text-ink outline-none focus:border-brand">
               <option value="KJV" ${state.version2 === 'KJV' ? 'selected' : ''}>🇺🇸 King James (KJV)</option>
@@ -3402,7 +3453,7 @@
           </div>
           ` : `
           <!-- Chapter Nav & Audio Action -->
-          <div class="col-span-2 sm:col-span-3 flex items-center justify-end gap-1 pt-0.5">
+          <div class="col-span-2 xl:col-span-3 flex items-center justify-end gap-1 pt-0.5">
             <button class="btn btn-neutral !py-1.5 !px-2 text-xs" onclick="window.prevChapter()" title="Previous Chapter (Left Arrow)">
               <i class="fa-solid fa-chevron-left text-[11px]"></i>
             </button>
@@ -4727,7 +4778,7 @@
               id="history-search-input" 
               type="text" 
               class="w-full pl-8 pr-8 py-1.5 rounded-lg text-xs bg-surface border border-line focus:outline-none focus:border-brand text-ink"
-              placeholder="Search chapters, topics (e.g., Gnosticism, Nicaea, Luther, Wesley, Monasticism, Vatican II)..."
+              placeholder="Search chapters and topics — Nicaea, Luther, Wesley…"
               value="${esc(state.history.searchQuery || '')}"
               oninput="window.searchHistory(this.value)"
             >
@@ -4766,7 +4817,7 @@
                   </div>
                   <h4 class="text-xs font-bold text-ink">${ch.title}</h4>
                   <div class="text-[11px] font-semibold text-brand">${ch.topic}</div>
-                  <p class="text-[11px] text-muted leading-relaxed text-justify">${ch.summary}</p>
+                  <p class="text-[11px] text-muted leading-relaxed">${ch.summary}</p>
                 </div>
               `).join('') : `
                 <div class="col-span-2 card p-8 text-center text-muted text-xs bg-surface border border-line">
@@ -4798,7 +4849,7 @@
                     </div>
                     <h4 class="text-[13px] font-bold text-ink leading-snug">${ch.title}</h4>
                     <div class="text-xs font-semibold text-brand">${ch.topic}</div>
-                    <p class="text-[11.5px] text-muted leading-relaxed text-justify pt-1 border-t border-line/60">${ch.summary}</p>
+                    <p class="text-[11.5px] text-muted leading-relaxed pt-1 border-t border-line/60">${ch.summary}</p>
                   </div>
                 </div>
               `).join('')}
@@ -4830,7 +4881,7 @@
                   <i class="fa-solid fa-book-open-reader text-brand text-xs"></i>
                   <span>Age Overview • Bruce L. Shelley</span>
                 </h3>
-                <p class="text-xs text-ink/90 leading-relaxed whitespace-pre-line text-justify">${selectedEra.overview}</p>
+                <p class="text-xs text-ink/90 leading-relaxed whitespace-pre-line">${selectedEra.overview}</p>
               </div>
 
               <!-- Book Chapters in this Era (Quick Pills) -->
@@ -4936,7 +4987,7 @@
                       </div>
                       <div class="text-[10.5px] font-semibold text-brand">${fig.role}</div>
                     </div>
-                    <p class="text-[11px] text-muted leading-relaxed text-justify">${fig.detail}</p>
+                    <p class="text-[11px] text-muted leading-relaxed">${fig.detail}</p>
                   </div>
                 `).join('')}
               </div>

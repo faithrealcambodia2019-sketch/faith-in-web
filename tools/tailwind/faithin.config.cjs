@@ -17,6 +17,9 @@ module.exports = {
   content: [
     './public/faithin-app/**/*.html',
     './public/faithin-app/assets/**/*.js',
+    // The legacy front-end scripts share this stylesheet too, so their
+    // utility classes have to be scanned or they compile away.
+    './public/assets/js/**/*.js',
   ],
   theme: {
     extend: {
