@@ -2758,15 +2758,27 @@
         </div>
 
         <!-- Passage Selection List -->
-        <div class="card p-3 bg-surface border border-line space-y-2">
-          <div class="relative">
-            <i class="fa-solid fa-magnifying-glass text-muted text-xs absolute left-2.5 top-2.5"></i>
-            <input type="text" id="memory-search-input" value="${esc(state.memorySearchQuery)}" placeholder="Search verse or topic..." class="w-full pl-7 pr-2.5 py-1 text-xs rounded-lg bg-raised border border-line text-ink outline-none focus:border-brand">
+        <div class="card p-3.5 bg-surface border border-line space-y-3 shadow-xs">
+          <div class="relative flex items-center">
+            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-muted">
+              <i class="fa-solid fa-magnifying-glass text-xs"></i>
+            </div>
+            <input type="text" id="memory-search-input" value="${esc(state.memorySearchQuery)}" placeholder="Search verse or topic..." class="w-full pl-9 pr-8 py-2 text-xs sm:text-sm rounded-xl bg-raised border border-line text-ink outline-none focus:border-brand placeholder:text-muted/70 transition">
+            ${state.memorySearchQuery ? `
+              <button class="absolute inset-y-0 right-0 pr-2.5 flex items-center text-muted hover:text-ink text-xs transition" onclick="window.clearMemorySearch()" title="Clear search">
+                <i class="fa-solid fa-circle-xmark"></i>
+              </button>
+            ` : ''}
           </div>
 
           <div class="memory-list-scroll space-y-1 pr-1">
-            ${list.map(p => `
-              <button class="w-full text-left p-2.5 rounded-lg text-sm transition border ${p.id === currentPassage.id ? 'bg-brand/10 border-brand text-brand font-bold' : 'border-transparent text-ink hover:bg-raised'}" onclick="window.selectMemoryPassage('${p.id}')">
+            ${list.length === 0 ? `
+              <div class="text-center py-8 text-muted space-y-1">
+                <i class="fa-solid fa-magnifying-glass text-xl opacity-30"></i>
+                <p class="text-xs">រកមិនឃើញខគម្ពីរទេ (No matching verses)</p>
+              </div>
+            ` : list.map(p => `
+              <button class="w-full text-left p-2.5 rounded-lg text-sm transition border ${p.id === currentPassage.id ? 'bg-brand/10 border-brand text-brand font-bold shadow-xs' : 'border-transparent text-ink hover:bg-raised'}" onclick="window.selectMemoryPassage('${p.id}')">
                 <div class="flex items-center justify-between">
                   <span class="font-khmer truncate">${p.refKhmer}</span>
                   <span class="text-[10px] sm:text-xs text-muted font-normal">${p.pageNumber ? 'ទំព័រ ' + p.pageNumber : p.refEnglish}</span>
@@ -2849,6 +2861,11 @@
     const root = $('#bible-view-root');
     if (!root) return;
 
+    const searchInput = $('#memory-search-input');
+    const wasSearchFocused = document.activeElement && document.activeElement.id === 'memory-search-input';
+    const cursorStart = wasSearchFocused ? searchInput?.selectionStart : null;
+    const cursorEnd = wasSearchFocused ? searchInput?.selectionEnd : null;
+
     switch (state.activeTool) {
       case 'reader': root.innerHTML = renderReader(); break;
       case 'parallel': root.innerHTML = renderParallel(); break;
@@ -2869,6 +2886,16 @@
     }
 
     bindEvents();
+
+    if (wasSearchFocused) {
+      const newSearchInput = $('#memory-search-input');
+      if (newSearchInput) {
+        newSearchInput.focus();
+        if (cursorStart !== null && cursorEnd !== null) {
+          try { newSearchInput.setSelectionRange(cursorStart, cursorEnd); } catch(e) {}
+        }
+      }
+    }
   }
 
   function bindEvents() {
@@ -3174,6 +3201,11 @@
       state.revealedWords.clear();
       render();
     }
+  };
+
+  window.clearMemorySearch = () => {
+    state.memorySearchQuery = '';
+    render();
   };
 
   window.copyMemoryText = (text, ref) => {
