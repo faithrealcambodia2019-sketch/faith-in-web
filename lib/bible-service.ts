@@ -955,4 +955,4 @@ export function getTypingPassages() {
   return { items: TYPING_PASSAGES };
 }
 
-export { CPTI_MEMORY_PASSAGES, getMemoryPassages } from "./bible-memory-data.ts";
+export { CPTI_ALL_PASSAGES, CPTI_MEMORY_PASSAGES, getMemoryPassages } from "./bible-memory-data.ts";
