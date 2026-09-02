@@ -379,15 +379,26 @@
     loading: false,
     fontSize: 16,
     
-    // Designer
+    // Designer Pro
     designer: {
       textKhmer: '«ដ្បិតព្រះទ្រង់ស្រឡាញ់មនុស្សលោក ដល់ម៉្លេះបានជាទ្រង់ប្រទានព្រះរាជបុត្រាទ្រង់តែ១ ដើម្បីឲ្យអ្នកណាដែលជឿដល់ព្រះរាជបុត្រានោះ មិនត្រូវវិនាសឡើយ គឺឲ្យមានជីវិតអស់កល្បជានិច្ចវិញ»',
       textEnglish: '“For God so loved the world, that he gave his only begotten Son.”',
       ref: 'យ៉ូហាន ៣:១៦ • John 3:16',
       bgIndex: 0,
+      bgCategory: 'all',
       customBg: null,
       fontFamily: 'Koh Santepheap',
-      overlayOpacity: 45
+      fontEnglish: 'Lora',
+      fontSizeScale: 1.0,
+      textAlign: 'center',
+      overlayOpacity: 45,
+      aspectRatio: '1:1',
+      textColor: '#ffffff',
+      accentColor: '#EBB94F',
+      borderStyle: 'none',
+      brandingText: 'FAITH IN • ព្រះគម្ពីរ',
+      showBranding: true,
+      blurLevel: 0
     },
 
     daily: null,
@@ -454,15 +465,80 @@
     { name: 'Revelation', km: 'វិវរណៈ', ch: 22, test: 'NT' }
   ];
 
-  const WALLPAPERS = [
-    '/assets/images/wallpapers/wallpaper-01.jpg',
-    '/assets/images/wallpapers/wallpaper-02.jpg',
-    '/assets/images/wallpapers/wallpaper-03.jpg',
-    '/assets/images/wallpapers/wallpaper-04.jpg',
-    '/assets/images/wallpapers/wallpaper-05.jpg',
-    '/assets/images/wallpapers/wallpaper-06.jpg',
-    '/assets/images/wallpapers/wallpaper-07.jpg',
-    '/assets/images/wallpapers/wallpaper-08.jpg'
+  const WALLPAPER_PRESETS = [
+    // Nature & Mountains
+    { id: 0, cat: 'nature', title: 'Mountain Lake Sunrise', url: '/assets/images/wallpapers/wallpaper-01.jpg' },
+    { id: 1, cat: 'nature', title: 'Sunlit Forest Trees', url: '/assets/images/wallpapers/wallpaper-02.jpg' },
+    { id: 2, cat: 'nature', title: 'Cascade Waterfall', url: '/assets/images/wallpapers/wallpaper-03.jpg' },
+    { id: 3, cat: 'nature', title: 'Spring Flower Meadow', url: '/assets/images/wallpapers/wallpaper-05.jpg' },
+    { id: 4, cat: 'nature', title: 'Misty Pine Forest', url: '/assets/images/wallpapers/wallpaper-06.jpg' },
+    { id: 5, cat: 'nature', title: 'Alpine Peak Majesty', url: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1200&q=80' },
+    { id: 6, cat: 'nature', title: 'Emerald Green Valley', url: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80' },
+    { id: 7, cat: 'nature', title: 'Sunbeams in Autumn Mist', url: 'https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=1200&q=80' },
+
+    // Sunset & Horizon
+    { id: 8, cat: 'sunset', title: 'Golden Ocean Sunset', url: '/assets/images/wallpapers/wallpaper-04.jpg' },
+    { id: 9, cat: 'sunset', title: 'Tropical Calm Water', url: '/assets/images/wallpapers/wallpaper-08.jpg' },
+    { id: 10, cat: 'sunset', title: 'Heavenly Golden Cloud', url: 'https://images.unsplash.com/photo-1495616811223-4d98c6e9c869?auto=format&fit=crop&w=1200&q=80' },
+    { id: 11, cat: 'sunset', title: 'Evening Alpine Glow', url: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=1200&q=80' },
+    { id: 12, cat: 'sunset', title: 'Golden Desert Dunes', url: '/assets/images/wallpapers/wallpaper-07.jpg' },
+    { id: 13, cat: 'sunset', title: 'Calm Twilight Lake', url: 'https://images.unsplash.com/photo-1439853941329-a9f1a9a4b3d7?auto=format&fit=crop&w=1200&q=80' },
+
+    // Night Sky & Stars
+    { id: 14, cat: 'night', title: 'Cosmic Milky Way', url: 'https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?auto=format&fit=crop&w=1200&q=80' },
+    { id: 15, cat: 'night', title: 'Deep Space Nebula', url: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1200&q=80' },
+    { id: 16, cat: 'night', title: 'Starry Forest Night', url: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=1200&q=80' },
+
+    // Devotion & Scripture
+    { id: 17, cat: 'devotion', title: 'Open Bible Light', url: 'https://images.unsplash.com/photo-1504052434569-70ad5836ab65?auto=format&fit=crop&w=1200&q=80' },
+    { id: 18, cat: 'devotion', title: 'Warm Candle & Scripture', url: 'https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=1200&q=80' },
+    { id: 19, cat: 'devotion', title: 'Sunrise Mountain Cross', url: 'https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=1200&q=80' },
+
+    // Modern Gradients & Textures
+    { id: 20, cat: 'gradients', title: 'Midnight Obsidian Dark', url: 'https://images.unsplash.com/photo-1550684848-fac1c5b4e853?auto=format&fit=crop&w=1200&q=80' },
+    { id: 21, cat: 'gradients', title: 'Royal Velvet Purple', url: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1200&q=80' },
+    { id: 22, cat: 'gradients', title: 'Deep Ocean Azure', url: 'https://images.unsplash.com/photo-1579546929518-9e396f3cc809?auto=format&fit=crop&w=1200&q=80' },
+    { id: 23, cat: 'gradients', title: 'Warm Golden Sunlight', url: 'https://images.unsplash.com/photo-1604076913837-52ab5629fba9?auto=format&fit=crop&w=1200&q=80' }
+  ];
+  const WALLPAPERS = WALLPAPER_PRESETS.map(p => p.url);
+
+  const VERSE_PRESETS = [
+    {
+      title: "God's Love • យ៉ូហាន ៣:១៦",
+      km: "«ដ្បិតព្រះទ្រង់ស្រឡាញ់មនុស្សលោក ដល់ម៉្លេះបានជាទ្រង់ប្រទានព្រះរាជបុត្រាទ្រង់តែ១ ដើម្បីឲ្យអ្នកណាដែលជឿដល់ព្រះរាជបុត្រានោះ មិនត្រូវវិនាសឡើយ គឺឲ្យមានជីវិតអស់កល្បជានិច្ចវិញ»",
+      en: "“For God so loved the world, that he gave his only begotten Son, that whosoever believeth in him should not perish, but have everlasting life.”",
+      ref: "យ៉ូហាន ៣:១៦ • John 3:16"
+    },
+    {
+      title: "The Shepherd • ទំនុកដំកើង ២៣:១",
+      km: "«ព្រះយេហូវ៉ាទ្រង់ជាអ្នកគង្វាលខ្ញុំ ខ្ញុំនឹងមិនខ្វះអ្វីសោះ ទ្រង់ឲ្យខ្ញុំដេកសម្រាកនៅទីមានស្មៅខៀវខ្ចី ទ្រង់នាំខ្ញុំទៅក្បែរមាត់ទឹកដែលហូរត្រជាក់»",
+      en: "“The LORD is my shepherd; I shall not want. He maketh me to lie down in green pastures: he leadeth me beside the still waters.”",
+      ref: "ទំនុកដំកើង ២៣:១-២ • Psalm 23:1-2"
+    },
+    {
+      title: "Strength • ភីលីព ៤:១៣",
+      km: "«ខ្ញុំអាចនឹងធ្វើគ្រប់ទាំងអស់បាន ដោយសារព្រះគ្រីស្ទ ដែលទ្រង់ចំរើនកំឡាំងដល់ខ្ញុំ»",
+      en: "“I can do all things through Christ which strengtheneth me.”",
+      ref: "ភីលីព ៤:១៣ • Philippians 4:13"
+    },
+    {
+      title: "Hope • យេរេមា ២៩:១១",
+      km: "«ដ្បិតព្រះយេហូវ៉ាទ្រង់មានព្រះបន្ទូលថា អញស្គាល់គំនិតដែលអញគិតពីឯងរាល់គ្នាហើយ គឺគិតការសុខសាន្តត្រាណ មិនមែនការអាក្រក់ទេ ដើម្បីនឹងឲ្យឯងរាល់គ្នាមានសេចក្តីសង្ឃឹមនៅចុងបំផុត»",
+      en: "“For I know the thoughts that I think toward you, saith the LORD, thoughts of peace, and not of evil, to give you an expected end.”",
+      ref: "យេរេមា ២៩:១១ • Jeremiah 29:11"
+    },
+    {
+      title: "Trust • សុភាសិត ៣:៥-៦",
+      km: "«ចូរទីពឹងផ្អែកលើព្រះយេហូវ៉ាឲ្យអស់អំពីចិត្ត កុំឲ្យពឹងផ្អែកលើការយល់ដឹងរបស់ខ្លួនឡើយ ត្រូវទទួលស្គាល់ទ្រង់ក្នុងគ្រប់ទាំងផ្លូវឯង នោះទ្រង់នឹងតម្រង់អស់ទាំងផ្លូវច្រករបស់ឯង»",
+      en: "“Trust in the LORD with all thine heart; and lean not unto thine own understanding. In all thy ways acknowledge him, and he shall direct thy paths.”",
+      ref: "សុភាសិត ៣:៥-៦ • Proverbs 3:5-6"
+    },
+    {
+      title: "Light • ទំនុកដំកើង ២៧:១",
+      km: "«ព្រះយេហូវ៉ាទ្រង់ជាពន្លឺ និងជាសេចក្តីសង្គ្រោះនៃខ្ញុំ តើខ្ញុំនឹងត្រូវខ្លាចអ្នកណា ព្រះយេហូវ៉ាទ្រង់ជាទីពំនាក់នៃជីវិតខ្ញុំ តើខ្ញុំនឹងត្រូវភិតភ័យនឹងអ្នកណា»",
+      en: "“The LORD is my light and my salvation; whom shall I fear? the LORD is the strength of my life; of whom shall I be afraid?”",
+      ref: "ទំនុកដំកើង ២៧:១ • Psalm 27:1"
+    }
   ];
 
   // ─── Embedded CPTI Memory Passages Catalog ───
@@ -2446,96 +2522,288 @@
     `;
   }
 
-  // 3. Scripture Card Designer Tool
+  // 3. Scripture Card Designer Tool (Pro Studio)
   function renderDesigner() {
     const d = state.designer;
+    
+    // Determine canvas dimension label based on ratio
+    let dims = { w: 1080, h: 1080, label: '1080 × 1080px (Square)' };
+    if (d.aspectRatio === '9:16') dims = { w: 1080, h: 1920, label: '1080 × 1920px (Story / Reel)' };
+    else if (d.aspectRatio === '16:9') dims = { w: 1920, h: 1080, label: '1920 × 1080px (Landscape)' };
+    else if (d.aspectRatio === '4:5') dims = { w: 1080, h: 1350, label: '1080 × 1350px (Portrait)' };
+
+    const cats = [
+      { id: 'all', label: `All (${WALLPAPER_PRESETS.length})` },
+      { id: 'nature', label: '🏔️ Nature' },
+      { id: 'sunset', label: '🌅 Sunset' },
+      { id: 'night', label: '🌌 Night Sky' },
+      { id: 'devotion', label: '📖 Devotion' },
+      { id: 'gradients', label: '🎨 Gradients' }
+    ];
+
+    const filteredWallpapers = d.bgCategory === 'all' 
+      ? WALLPAPER_PRESETS 
+      : WALLPAPER_PRESETS.filter(w => w.cat === d.bgCategory);
+
+    const accentColors = [
+      { color: '#EBB94F', name: 'Holy Gold' },
+      { color: '#FFFFFF', name: 'Pure White' },
+      { color: '#FEF3C7', name: 'Soft Cream' },
+      { color: '#F472B6', name: 'Rose Gold' },
+      { color: '#34D399', name: 'Emerald Glow' }
+    ];
+
     return `
       <div class="space-y-4">
         
-        <div class="card p-4 bg-surface border border-line flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div class="space-y-0.5">
-            <h1 class="text-xl font-bold text-ink flex items-center gap-2">
-              <i class="fa-solid fa-palette text-brand"></i>
-              <span>Scripture Card Designer</span>
-            </h1>
-            <p class="text-xs text-muted">Generate shareable HD Gospel verse graphics formatted for Facebook, Stories, and Telegram.</p>
+        <!-- Header Banner -->
+        <div class="card p-4 sm:p-5 bg-gradient-to-r from-purple-500/10 via-brand/10 to-amber-500/10 border border-brand/20 space-y-2">
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center gap-2.5">
+              <span class="w-9 h-9 rounded-xl bg-gradient-to-tr from-purple-600 to-indigo-600 text-white flex items-center justify-center font-bold text-base shadow-sm">
+                <i class="fa-solid fa-palette"></i>
+              </span>
+              <div>
+                <h1 class="text-lg sm:text-xl font-bold text-ink flex items-center gap-2">
+                  <span>Scripture Card Studio Pro • បង្កើតផ្ទាំងគម្ពីរ HD</span>
+                  <span class="text-[10px] font-bold uppercase tracking-wider text-amber-600 bg-amber-500/10 px-2 py-0.5 rounded-full">Pro Studio</span>
+                </h1>
+                <p class="text-xs text-muted">Generate shareable HD & 4K Gospel verse graphics formatted for Facebook, Stories, and Telegram.</p>
+              </div>
+            </div>
+            
+            <div class="flex items-center gap-2">
+              <button class="btn btn-neutral text-xs shrink-0 whitespace-nowrap shadow-xs" onclick="window.downloadCardImage(1)">
+                <i class="fa-solid fa-download mr-1 text-brand"></i> Export HD PNG
+              </button>
+              <button class="btn btn-primary text-xs shrink-0 whitespace-nowrap shadow-sm" onclick="window.downloadCardImage(2)">
+                <i class="fa-solid fa-wand-magic-sparkles mr-1"></i> Export 4K Ultra HD
+              </button>
+            </div>
           </div>
-          <button class="btn btn-primary text-xs shrink-0 whitespace-nowrap shadow-sm" onclick="window.downloadCardImage()">
-            <i class="fa-solid fa-download mr-1"></i> Export HD PNG
-          </button>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-start">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
           
-          <!-- Left: Canvas Card Preview -->
-          <div class="md:col-span-6 card p-4 bg-surface border border-line flex flex-col items-center justify-center space-y-3">
-            <div class="relative w-full max-w-[320px] aspect-square overflow-hidden rounded-xl shadow-md border border-line bg-black">
-              <canvas id="designer-canvas" width="1080" height="1080" class="w-full h-full object-contain block"></canvas>
+          <!-- Left Column: Canvas Preview Studio (5 cols) -->
+          <div class="lg:col-span-5 card p-4 bg-surface border border-line space-y-3 lg:sticky lg:top-[76px]">
+            
+            <!-- Format Aspect Ratio Switcher -->
+            <div class="flex items-center justify-between text-xs font-semibold pb-2 border-b border-line">
+              <span class="text-muted text-[11px] uppercase tracking-wider font-bold">Ratio Format</span>
+              <div class="flex items-center gap-1 bg-raised p-1 rounded-lg">
+                <button class="px-2 py-1 rounded text-xs transition ${d.aspectRatio === '1:1' ? 'bg-brand text-white font-bold shadow-xs' : 'text-muted hover:text-ink'}" onclick="window.setDesignerRatio('1:1')" title="1:1 Square">1:1</button>
+                <button class="px-2 py-1 rounded text-xs transition ${d.aspectRatio === '9:16' ? 'bg-brand text-white font-bold shadow-xs' : 'text-muted hover:text-ink'}" onclick="window.setDesignerRatio('9:16')" title="9:16 Story / Reel">9:16</button>
+                <button class="px-2 py-1 rounded text-xs transition ${d.aspectRatio === '16:9' ? 'bg-brand text-white font-bold shadow-xs' : 'text-muted hover:text-ink'}" onclick="window.setDesignerRatio('16:9')" title="16:9 Landscape">16:9</button>
+                <button class="px-2 py-1 rounded text-xs transition ${d.aspectRatio === '4:5' ? 'bg-brand text-white font-bold shadow-xs' : 'text-muted hover:text-ink'}" onclick="window.setDesignerRatio('4:5')" title="4:5 Portrait">4:5</button>
+              </div>
             </div>
 
-            <div class="flex items-center justify-between w-full max-w-[320px] text-xs text-muted pt-1">
-              <span class="font-semibold">1080 &times; 1080px (HD)</span>
+            <!-- Canvas Container -->
+            <div class="flex items-center justify-center p-2 rounded-xl bg-black/5 dark:bg-black/40 border border-line overflow-hidden">
+              <div class="relative max-w-full max-h-[460px] flex items-center justify-center overflow-hidden rounded-lg shadow-md border border-white/10 bg-black">
+                <canvas id="designer-canvas" width="${dims.w}" height="${dims.h}" class="max-w-full max-h-[440px] w-auto h-auto object-contain block"></canvas>
+              </div>
+            </div>
+
+            <!-- Quick Action Bar Under Canvas -->
+            <div class="pt-1 flex items-center justify-between text-xs border-t border-line">
+              <span class="text-muted font-medium text-[11px]">${dims.label}</span>
               <div class="flex items-center gap-1.5">
-                <button class="btn btn-neutral !py-1 !px-2.5 text-xs" onclick="window.copyCardImageToClipboard()">
+                <button class="btn btn-neutral !py-1 !px-2.5 text-xs" onclick="window.randomizeCardStyle()" title="Shuffle wallpaper & theme">
+                  <i class="fa-solid fa-shuffle mr-1 text-purple-500"></i> Shuffle
+                </button>
+                <button class="btn btn-neutral !py-1 !px-2.5 text-xs" onclick="window.copyCardImageToClipboard()" title="Copy to clipboard">
                   <i class="fa-regular fa-copy mr-1"></i> Copy
                 </button>
-                <button class="btn btn-primary !py-1 !px-2.5 text-xs" onclick="window.shareCardToFaithInFeed()">
+                <button class="btn btn-primary !py-1 !px-2.5 text-xs" onclick="window.shareCardToFaithInFeed()" title="Share to Community Feed">
                   <i class="fa-solid fa-share-nodes mr-1"></i> Post
                 </button>
               </div>
             </div>
+
           </div>
 
-          <!-- Right: Customizer Form -->
-          <div class="md:col-span-6 card p-4 bg-surface border border-line space-y-3">
+          <!-- Right Column: Professional Customizer Toolkit (7 cols) -->
+          <div class="lg:col-span-7 space-y-4">
             
-            <div class="space-y-1">
-              <label class="text-xs font-bold uppercase tracking-wider text-muted">Khmer Scripture Text</label>
-              <textarea id="card-txt-khmer" rows="3" class="w-full p-2.5 text-sm font-khmer rounded-lg bg-raised border border-line text-ink outline-none focus:border-brand leading-relaxed">${esc(d.textKhmer)}</textarea>
-            </div>
-
-            <div class="space-y-1">
-              <label class="text-xs font-bold uppercase tracking-wider text-muted">English Verse (Optional)</label>
-              <textarea id="card-txt-english" rows="2" class="w-full p-2.5 text-xs font-serif italic rounded-lg bg-raised border border-line text-ink outline-none focus:border-brand leading-relaxed">${esc(d.textEnglish)}</textarea>
-            </div>
-
-            <div class="space-y-1">
-              <label class="text-xs font-bold uppercase tracking-wider text-muted">Reference Label</label>
-              <input type="text" id="card-txt-ref" value="${esc(d.ref)}" class="w-full px-3 py-1.5 text-xs font-bold rounded-lg bg-raised border border-line text-ink outline-none focus:border-brand">
-            </div>
-
-            <div class="space-y-2 pt-2 border-t border-line">
-              <div class="flex justify-between items-center text-xs font-bold text-muted">
-                <span>Select Wallpaper</span>
-                <label for="card-upload-bg" class="text-brand font-semibold hover:underline cursor-pointer">Upload Photo</label>
-                <input type="file" id="card-upload-bg" accept="image/*" class="hidden">
+            <!-- Tool Section 1: Quick Verse Presets & Text Content -->
+            <div class="card p-4 sm:p-5 bg-surface border border-line space-y-3.5 shadow-xs">
+              <div class="flex items-center justify-between border-b border-line pb-2.5">
+                <h3 class="text-xs font-bold uppercase tracking-wider text-ink flex items-center gap-2">
+                  <i class="fa-solid fa-quote-left text-brand"></i>
+                  <span>Scripture Text &amp; Quick Presets</span>
+                </h3>
+                <span class="text-[11px] text-muted font-normal">Choose preset or type below</span>
               </div>
-              <div class="grid grid-cols-4 gap-2">
-                ${WALLPAPERS.map((url, i) => `
-                  <button class="relative h-12 rounded-lg overflow-hidden border-2 ${d.bgIndex === i && !d.customBg ? 'border-brand ring-2 ring-brand/30' : 'border-transparent'} transition" onclick="window.selectCardBg(${i})">
-                    <img src="${url}" alt="" class="w-full h-full object-cover">
+
+              <!-- Quick Famous Verse Chips -->
+              <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1 text-xs">
+                ${VERSE_PRESETS.map((v, i) => `
+                  <button class="px-2.5 py-1 rounded-lg bg-raised hover:bg-brand/10 hover:text-brand border border-line text-ink whitespace-nowrap transition text-[11.5px] font-medium" onclick="window.applyVersePreset(${i})">
+                    ${v.title}
                   </button>
                 `).join('')}
               </div>
+
+              <div class="space-y-1">
+                <label class="text-[11px] font-bold uppercase tracking-wider text-muted">Khmer Scripture Text (អត្ថបទគម្ពីរភាសាខ្មែរ)</label>
+                <textarea id="card-txt-khmer" rows="3" class="w-full p-2.5 text-sm font-khmer rounded-xl bg-raised border border-line text-ink outline-none focus:border-brand leading-relaxed">${esc(d.textKhmer)}</textarea>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div class="space-y-1">
+                  <label class="text-[11px] font-bold uppercase tracking-wider text-muted">English Verse (Optional)</label>
+                  <textarea id="card-txt-english" rows="2" class="w-full p-2.5 text-xs font-serif italic rounded-xl bg-raised border border-line text-ink outline-none focus:border-brand leading-relaxed">${esc(d.textEnglish)}</textarea>
+                </div>
+
+                <div class="space-y-1">
+                  <label class="text-[11px] font-bold uppercase tracking-wider text-muted">Reference Label (ជំពូក &amp; ខ)</label>
+                  <input type="text" id="card-txt-ref" value="${esc(d.ref)}" class="w-full px-3 py-2 text-xs font-bold rounded-xl bg-raised border border-line text-ink outline-none focus:border-brand">
+                  <p class="text-[10px] text-muted mt-0.5">e.g. យ៉ូហាន ៣:១៦ • John 3:16</p>
+                </div>
+              </div>
             </div>
 
-            <div class="grid grid-cols-2 gap-3 pt-2 border-t border-line">
-              <div class="space-y-1">
-                <label class="text-[11px] font-bold text-muted">Font Family</label>
-                <select id="card-font" class="w-full p-1.5 text-xs bg-raised border border-line rounded-lg text-ink font-semibold">
-                  <option value="Koh Santepheap" ${d.fontFamily === 'Koh Santepheap' ? 'selected' : ''}>Koh Santepheap</option>
-                  <option value="Lora" ${d.fontFamily === 'Lora' ? 'selected' : ''}>Lora</option>
-                  <option value="Inter" ${d.fontFamily === 'Inter' ? 'selected' : ''}>Inter Sans</option>
-                </select>
+            <!-- Tool Section 2: 24 Wallpaper Gallery & Photo Upload -->
+            <div class="card p-4 sm:p-5 bg-surface border border-line space-y-3.5 shadow-xs">
+              <div class="flex flex-wrap items-center justify-between gap-2 border-b border-line pb-2.5">
+                <h3 class="text-xs font-bold uppercase tracking-wider text-ink flex items-center gap-2">
+                  <i class="fa-solid fa-image text-emerald-500"></i>
+                  <span>Wallpaper Gallery (24 Presets)</span>
+                </h3>
+                
+                <label for="card-upload-bg" class="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-semibold text-brand bg-brand/10 hover:bg-brand/20 rounded-lg cursor-pointer transition">
+                  <i class="fa-solid fa-cloud-arrow-up"></i> Upload Custom Photo
+                  <input type="file" id="card-upload-bg" accept="image/*" class="hidden">
+                </label>
               </div>
 
-              <div class="space-y-1">
-                <label class="text-[11px] font-bold text-muted">Dark Tint Overlay</label>
-                <input type="range" min="15" max="80" value="${d.overlayOpacity}" id="card-overlay" class="w-full accent-brand mt-1.5">
+              <!-- Category Filter Tabs -->
+              <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar text-xs font-medium pb-1">
+                ${cats.map(c => `
+                  <button class="px-2.5 py-1 rounded-lg whitespace-nowrap transition ${d.bgCategory === c.id ? 'bg-brand text-white font-bold shadow-xs' : 'bg-raised text-muted hover:text-ink'}" onclick="window.setDesignerBgCategory('${c.id}')">
+                    ${c.label}
+                  </button>
+                `).join('')}
               </div>
+
+              <!-- 24 Wallpaper Grid -->
+              <div class="grid grid-cols-4 sm:grid-cols-6 gap-2 max-h-[220px] overflow-y-auto pr-1">
+                ${filteredWallpapers.map(wp => `
+                  <button class="group relative h-16 rounded-xl overflow-hidden border-2 ${d.bgIndex === wp.id && !d.customBg ? 'border-brand ring-2 ring-brand/40 shadow-sm' : 'border-transparent hover:opacity-90'} transition" onclick="window.selectCardBg(${wp.id})" title="${wp.title}">
+                    <img src="${wp.url}" alt="${wp.title}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+                    <span class="absolute inset-x-0 bottom-0 bg-black/60 text-[9px] text-white/90 truncate px-1 py-0.5 text-center font-normal">${wp.title}</span>
+                  </button>
+                `).join('')}
+              </div>
+
+              <!-- Overlay & Blur Tuning -->
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-line">
+                <div class="space-y-1">
+                  <div class="flex justify-between text-xs font-semibold">
+                    <span class="text-muted">Dark Tint Overlay</span>
+                    <span class="text-brand font-bold">${d.overlayOpacity}%</span>
+                  </div>
+                  <input type="range" min="15" max="85" value="${d.overlayOpacity}" id="card-overlay" class="w-full accent-brand">
+                </div>
+
+                <div class="space-y-1">
+                  <div class="flex justify-between text-xs font-semibold">
+                    <span class="text-muted">Background Blur</span>
+                    <span class="text-muted font-normal">${d.blurLevel === 0 ? 'Sharp (0px)' : (d.blurLevel === 3 ? 'Soft (3px)' : 'Dreamy (6px)')}</span>
+                  </div>
+                  <div class="flex items-center gap-1">
+                    <button class="flex-1 py-1 rounded text-xs transition ${d.blurLevel === 0 ? 'bg-brand text-white font-bold' : 'bg-raised text-muted'}" onclick="window.setDesignerBlur(0)">Sharp</button>
+                    <button class="flex-1 py-1 rounded text-xs transition ${d.blurLevel === 3 ? 'bg-brand text-white font-bold' : 'bg-raised text-muted'}" onclick="window.setDesignerBlur(3)">Soft</button>
+                    <button class="flex-1 py-1 rounded text-xs transition ${d.blurLevel === 6 ? 'bg-brand text-white font-bold' : 'bg-raised text-muted'}" onclick="window.setDesignerBlur(6)">Dreamy</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tool Section 3: Typography, Colors & Frames -->
+            <div class="card p-4 sm:p-5 bg-surface border border-line space-y-3.5 shadow-xs">
+              <div class="flex items-center justify-between border-b border-line pb-2.5">
+                <h3 class="text-xs font-bold uppercase tracking-wider text-ink flex items-center gap-2">
+                  <i class="fa-solid fa-sliders text-purple-500"></i>
+                  <span>Typography, Colors &amp; Frame</span>
+                </h3>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div class="space-y-1">
+                  <label class="text-[11px] font-bold text-muted">Khmer Font</label>
+                  <select id="card-font" class="w-full p-2 text-xs bg-raised border border-line rounded-xl text-ink font-semibold">
+                    <option value="Koh Santepheap" ${d.fontFamily === 'Koh Santepheap' ? 'selected' : ''}>Koh Santepheap</option>
+                    <option value="Kantumruy Pro" ${d.fontFamily === 'Kantumruy Pro' ? 'selected' : ''}>Kantumruy Pro</option>
+                    <option value="Siemreap" ${d.fontFamily === 'Siemreap' ? 'selected' : ''}>Siemreap</option>
+                    <option value="Battambang" ${d.fontFamily === 'Battambang' ? 'selected' : ''}>Battambang</option>
+                    <option value="Koulen" ${d.fontFamily === 'Koulen' ? 'selected' : ''}>Koulen (Bold)</option>
+                  </select>
+                </div>
+
+                <div class="space-y-1">
+                  <label class="text-[11px] font-bold text-muted">English Font</label>
+                  <select id="card-font-en" class="w-full p-2 text-xs bg-raised border border-line rounded-xl text-ink font-semibold" onchange="window.setDesignerFontEnglish(this.value)">
+                    <option value="Lora" ${d.fontEnglish === 'Lora' ? 'selected' : ''}>Lora (Classic Serif)</option>
+                    <option value="Playfair Display" ${d.fontEnglish === 'Playfair Display' ? 'selected' : ''}>Playfair (Luxury Serif)</option>
+                    <option value="Inter" ${d.fontEnglish === 'Inter' ? 'selected' : ''}>Inter (Modern Sans)</option>
+                    <option value="Montserrat" ${d.fontEnglish === 'Montserrat' ? 'selected' : ''}>Montserrat (Bold Sans)</option>
+                  </select>
+                </div>
+
+                <div class="space-y-1">
+                  <label class="text-[11px] font-bold text-muted">Frame Style</label>
+                  <select class="w-full p-2 text-xs bg-raised border border-line rounded-xl text-ink font-semibold" onchange="window.setDesignerBorderStyle(this.value)">
+                    <option value="none" ${d.borderStyle === 'none' ? 'selected' : ''}>No Frame (Clean)</option>
+                    <option value="gold-minimal" ${d.borderStyle === 'gold-minimal' ? 'selected' : ''}>Minimalist Line Frame</option>
+                    <option value="double" ${d.borderStyle === 'double' ? 'selected' : ''}>Double Elegant Frame</option>
+                    <option value="corners" ${d.borderStyle === 'corners' ? 'selected' : ''}>Ornate Gold Corners</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Colors & Alignment -->
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-line">
+                <div class="space-y-1.5">
+                  <label class="text-[11px] font-bold text-muted">Accent Gold / Color Theme</label>
+                  <div class="flex items-center gap-2">
+                    ${accentColors.map(ac => `
+                      <button class="w-7 h-7 rounded-full border-2 transition ${d.accentColor === ac.color ? 'border-brand scale-110 shadow-sm ring-2 ring-brand/30' : 'border-line'}" style="background-color: ${ac.color};" onclick="window.setDesignerAccentColor('${ac.color}')" title="${ac.name}"></button>
+                    `).join('')}
+                  </div>
+                </div>
+
+                <div class="space-y-1.5">
+                  <label class="text-[11px] font-bold text-muted">Text Alignment</label>
+                  <div class="flex items-center gap-1">
+                    <button class="flex-1 py-1 rounded-lg text-xs transition ${d.textAlign === 'left' ? 'bg-brand text-white font-bold' : 'bg-raised text-muted hover:text-ink'}" onclick="window.setDesignerTextAlign('left')">
+                      <i class="fa-solid fa-align-left mr-1"></i> Left
+                    </button>
+                    <button class="flex-1 py-1 rounded-lg text-xs transition ${d.textAlign === 'center' ? 'bg-brand text-white font-bold' : 'bg-raised text-muted hover:text-ink'}" onclick="window.setDesignerTextAlign('center')">
+                      <i class="fa-solid fa-align-center mr-1"></i> Center
+                    </button>
+                    <button class="flex-1 py-1 rounded-lg text-xs transition ${d.textAlign === 'right' ? 'bg-brand text-white font-bold' : 'bg-raised text-muted hover:text-ink'}" onclick="window.setDesignerTextAlign('right')">
+                      <i class="fa-solid fa-align-right mr-1"></i> Right
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Watermark toggle -->
+              <div class="pt-2 border-t border-line flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <input type="checkbox" id="designer-branding-check" ${d.showBranding ? 'checked' : ''} onchange="window.toggleDesignerBranding(this.checked)" class="rounded text-brand accent-brand">
+                  <label for="designer-branding-check" class="text-xs font-semibold text-ink cursor-pointer">Show "FAITH IN • ព្រះគម្ពីរ" Branding Header</label>
+                </div>
+                <span class="text-[10px] text-muted">Can be toggled off for clean wallpaper export</span>
+              </div>
+
             </div>
 
           </div>
+
         </div>
       </div>
     `;
@@ -3055,74 +3323,409 @@
     if (!ctx) return;
 
     const d = state.designer;
-    const W = canvas.width;
-    const H = canvas.height;
+    
+    // Set aspect ratio canvas resolution
+    let W = 1080, H = 1080;
+    if (d.aspectRatio === '9:16') { W = 1080; H = 1920; }
+    else if (d.aspectRatio === '16:9') { W = 1920; H = 1080; }
+    else if (d.aspectRatio === '4:5') { W = 1080; H = 1350; }
+
+    canvas.width = W;
+    canvas.height = H;
 
     const bgImg = new Image();
     bgImg.crossOrigin = 'anonymous';
     bgImg.src = d.customBg || WALLPAPERS[d.bgIndex] || WALLPAPERS[0];
 
-    bgImg.onload = () => {
-      ctx.drawImage(bgImg, 0, 0, W, H);
+    const drawContent = () => {
+      // 1. Draw Background Image with Cover Scaling
+      const imgRatio = (bgImg.naturalWidth || bgImg.width || 1) / (bgImg.naturalHeight || bgImg.height || 1);
+      const canvasRatio = W / H;
+      let renderW, renderH, offsetX, offsetY;
+      if (imgRatio > canvasRatio) {
+        renderH = H;
+        renderW = H * imgRatio;
+        offsetX = (W - renderW) / 2;
+        offsetY = 0;
+      } else {
+        renderW = W;
+        renderH = W / imgRatio;
+        offsetX = 0;
+        offsetY = (H - renderH) / 2;
+      }
+
+      if (d.blurLevel > 0) {
+        ctx.filter = `blur(${d.blurLevel}px)`;
+      }
+      ctx.drawImage(bgImg, offsetX, offsetY, renderW, renderH);
+      ctx.filter = 'none';
+
+      // 2. Dark Tint Overlay
       ctx.fillStyle = `rgba(0, 0, 0, ${d.overlayOpacity / 100})`;
       ctx.fillRect(0, 0, W, H);
 
-      ctx.fillStyle = '#EBB94F';
-      ctx.font = 'bold 22px Inter, sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText('FAITH IN • ព្រះគម្ពីរ', W / 2, 100);
+      // 3. Radial Vignette for Depth & Focus
+      const radGrad = ctx.createRadialGradient(W / 2, H / 2, W * 0.2, W / 2, H / 2, Math.max(W, H) * 0.75);
+      radGrad.addColorStop(0, 'rgba(0,0,0,0)');
+      radGrad.addColorStop(1, 'rgba(0,0,0,0.45)');
+      ctx.fillStyle = radGrad;
+      ctx.fillRect(0, 0, W, H);
 
-      ctx.fillStyle = '#ffffff';
-      ctx.font = `bold 36px "${d.fontFamily}", sans-serif`;
-      ctx.textAlign = 'center';
-
-      wrapText(ctx, d.textKhmer, W / 2, H / 2 - 80, W - 180, 58);
-
-      if (d.textEnglish) {
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
-        ctx.font = 'italic 24px Lora, Georgia, serif';
-        wrapText(ctx, d.textEnglish, W / 2, H / 2 + 130, W - 220, 38);
+      // 4. Decorative Frame / Border
+      if (d.borderStyle === 'gold-minimal') {
+        ctx.strokeStyle = d.accentColor;
+        ctx.lineWidth = 3;
+        ctx.strokeRect(48, 48, W - 96, H - 96);
+      } else if (d.borderStyle === 'double') {
+        ctx.strokeStyle = d.accentColor;
+        ctx.lineWidth = 1.5;
+        ctx.strokeRect(44, 44, W - 88, H - 88);
+        ctx.strokeRect(54, 54, W - 108, H - 108);
+      } else if (d.borderStyle === 'corners') {
+        ctx.strokeStyle = d.accentColor;
+        ctx.lineWidth = 3.5;
+        const cLen = 40, margin = 48;
+        ctx.beginPath(); ctx.moveTo(margin, margin + cLen); ctx.lineTo(margin, margin); ctx.lineTo(margin + cLen, margin); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(W - margin - cLen, margin); ctx.lineTo(W - margin, margin); ctx.lineTo(W - margin, margin + cLen); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(margin, H - margin - cLen); ctx.lineTo(margin, H - margin); ctx.lineTo(margin + cLen, H - margin); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(W - margin - cLen, H - margin); ctx.lineTo(W - margin, H - margin); ctx.lineTo(W - margin, H - margin - cLen); ctx.stroke();
       }
 
-      ctx.fillStyle = '#EBB94F';
-      ctx.font = 'bold 24px Inter, sans-serif';
-      ctx.fillText(d.ref, W / 2, H - 100);
+      // 5. Header Branding Watermark
+      if (d.showBranding) {
+        ctx.fillStyle = d.accentColor;
+        ctx.font = 'bold 22px Inter, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.shadowColor = 'rgba(0,0,0,0.9)';
+        ctx.shadowBlur = 8;
+        ctx.fillText(d.brandingText || 'FAITH IN • ព្រះគម្ពីរ', W / 2, H * 0.08);
+      }
+
+      // 6. Calculate Text Placement & Metrics
+      const maxTextW = W - (W > 1200 ? 320 : 200);
+      const alignX = d.textAlign === 'left' ? (W - maxTextW) / 2 : (d.textAlign === 'right' ? (W + maxTextW) / 2 : W / 2);
+      ctx.textAlign = d.textAlign;
+
+      // Base Khmer Font Size
+      let kmFontSize = Math.round(38 * (d.fontSizeScale || 1.0));
+      if (d.textKhmer.length > 200) kmFontSize = Math.round(30 * (d.fontSizeScale || 1.0));
+      else if (d.textKhmer.length > 120) kmFontSize = Math.round(34 * (d.fontSizeScale || 1.0));
+
+      const kmLineHeight = Math.round(kmFontSize * 1.6);
+      
+      // Measure lines to perfectly center vertically
+      ctx.font = `bold ${kmFontSize}px "${d.fontFamily}", sans-serif`;
+      const kmLines = getWrappedLines(ctx, d.textKhmer, maxTextW);
+
+      let enLines = [];
+      let enFontSize = Math.round(22 * (d.fontSizeScale || 1.0));
+      let enLineHeight = Math.round(enFontSize * 1.5);
+      if (d.textEnglish) {
+        ctx.font = `italic ${enFontSize}px "${d.fontEnglish || 'Lora'}", serif`;
+        enLines = getWrappedLines(ctx, d.textEnglish, maxTextW - 40);
+      }
+
+      const totalContentHeight = (kmLines.length * kmLineHeight) + 
+        (d.textEnglish ? (enLines.length * enLineHeight + 40) : 0) + 
+        80;
+
+      let startY = (H / 2) - (totalContentHeight / 2) + 20;
+      if (d.aspectRatio === '9:16') startY = Math.max(H * 0.28, startY);
+
+      // 7. Draw Khmer Text
+      ctx.fillStyle = d.textColor || '#ffffff';
+      ctx.font = `bold ${kmFontSize}px "${d.fontFamily}", sans-serif`;
+      ctx.shadowColor = 'rgba(0, 0, 0, 0.95)';
+      ctx.shadowBlur = 14;
+
+      for (let i = 0; i < kmLines.length; i++) {
+        ctx.fillText(kmLines[i], alignX, startY + (i * kmLineHeight));
+      }
+
+      let curY = startY + (kmLines.length * kmLineHeight) + 15;
+
+      // 8. Draw English Verse (if provided)
+      if (d.textEnglish && enLines.length > 0) {
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.88)';
+        ctx.font = `italic ${enFontSize}px "${d.fontEnglish || 'Lora'}", serif`;
+        ctx.shadowBlur = 10;
+        for (let i = 0; i < enLines.length; i++) {
+          ctx.fillText(enLines[i], alignX, curY + (i * enLineHeight));
+        }
+        curY += (enLines.length * enLineHeight) + 15;
+      }
+
+      // 9. Draw Reference Label & Elegant Divider
+      curY += 20;
+      
+      // Divider
+      ctx.strokeStyle = d.accentColor;
+      ctx.lineWidth = 1.5;
+      ctx.shadowBlur = 6;
+      ctx.shadowColor = 'rgba(0,0,0,0.8)';
+      
+      if (d.textAlign === 'center') {
+        const divW = 80;
+        ctx.beginPath();
+        ctx.moveTo((W / 2) - divW, curY);
+        ctx.lineTo((W / 2) + divW, curY);
+        ctx.stroke();
+
+        ctx.fillStyle = d.accentColor;
+        ctx.font = '14px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('❖', W / 2, curY + 5);
+      }
+
+      curY += 35;
+
+      // Reference Label
+      ctx.fillStyle = d.accentColor;
+      ctx.font = `bold ${Math.round(24 * (d.fontSizeScale || 1.0))}px Inter, sans-serif`;
+      ctx.textAlign = d.textAlign;
+      ctx.shadowColor = 'rgba(0, 0, 0, 0.9)';
+      ctx.shadowBlur = 12;
+      ctx.fillText(d.ref, alignX, curY);
     };
+
+    bgImg.onload = drawContent;
+    if (bgImg.complete && bgImg.naturalWidth !== 0) {
+      drawContent();
+    }
   }
 
-  function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
+  function getWrappedLines(ctx, text, maxWidth) {
     const words = text.split(' ');
-    let line = '';
-    let curY = y;
+    const lines = [];
+    let currentLine = words[0] || '';
 
-    for (let n = 0; n < words.length; n++) {
-      const testLine = line + words[n] + ' ';
-      const metrics = ctx.measureText(testLine);
-      const testWidth = metrics.width;
-      if (testWidth > maxWidth && n > 0) {
-        ctx.fillText(line, x, curY);
-        line = words[n] + ' ';
-        curY += lineHeight;
+    for (let i = 1; i < words.length; i++) {
+      const word = words[i];
+      const width = ctx.measureText(currentLine + ' ' + word).width;
+      if (width < maxWidth) {
+        currentLine += ' ' + word;
       } else {
-        line = testLine;
+        lines.push(currentLine);
+        currentLine = word;
       }
     }
-    ctx.fillText(line, x, curY);
+    if (currentLine) lines.push(currentLine);
+    return lines;
   }
 
   window.selectCardBg = (index) => {
     state.designer.bgIndex = index;
     state.designer.customBg = null;
+    render();
     drawDesignerCanvas();
   };
 
-  window.downloadCardImage = () => {
+  window.setDesignerRatio = (ratio) => {
+    state.designer.aspectRatio = ratio;
+    render();
+    drawDesignerCanvas();
+  };
+
+  window.setDesignerBgCategory = (cat) => {
+    state.designer.bgCategory = cat;
+    render();
+    drawDesignerCanvas();
+  };
+
+  window.setDesignerFontEnglish = (font) => {
+    state.designer.fontEnglish = font;
+    drawDesignerCanvas();
+  };
+
+  window.setDesignerTextAlign = (align) => {
+    state.designer.textAlign = align;
+    render();
+    drawDesignerCanvas();
+  };
+
+  window.setDesignerAccentColor = (color) => {
+    state.designer.accentColor = color;
+    render();
+    drawDesignerCanvas();
+  };
+
+  window.setDesignerBorderStyle = (style) => {
+    state.designer.borderStyle = style;
+    drawDesignerCanvas();
+  };
+
+  window.toggleDesignerBranding = (show) => {
+    state.designer.showBranding = show;
+    drawDesignerCanvas();
+  };
+
+  window.setDesignerBlur = (level) => {
+    state.designer.blurLevel = level;
+    render();
+    drawDesignerCanvas();
+  };
+
+  window.applyVersePreset = (idx) => {
+    const vp = VERSE_PRESETS[idx];
+    if (vp) {
+      state.designer.textKhmer = vp.km;
+      state.designer.textEnglish = vp.en;
+      state.designer.ref = vp.ref;
+      render();
+      drawDesignerCanvas();
+    }
+  };
+
+  window.randomizeCardStyle = () => {
+    state.designer.bgIndex = Math.floor(Math.random() * WALLPAPERS.length);
+    state.designer.customBg = null;
+    const colors = ['#EBB94F', '#FFFFFF', '#FEF3C7', '#F472B6', '#34D399'];
+    state.designer.accentColor = colors[Math.floor(Math.random() * colors.length)];
+    const frames = ['none', 'gold-minimal', 'double', 'corners'];
+    state.designer.borderStyle = frames[Math.floor(Math.random() * frames.length)];
+    render();
+    drawDesignerCanvas();
+  };
+
+  window.downloadCardImage = (scale = 1) => {
     const canvas = $('#designer-canvas');
     if (!canvas) return;
-    const link = document.createElement('a');
-    link.download = `FaithIn-Scripture-${Date.now()}.png`;
-    link.href = canvas.toDataURL('image/png');
-    link.click();
+
+    if (scale === 1) {
+      const link = document.createElement('a');
+      link.download = `FaithIn-${state.designer.aspectRatio.replace(':', 'x')}-${Date.now()}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+      if (window.toast) window.toast('Exported 1080p HD image!');
+    } else {
+      const exportCanvas = document.createElement('canvas');
+      exportCanvas.width = canvas.width * 2;
+      exportCanvas.height = canvas.height * 2;
+      const expCtx = exportCanvas.getContext('2d');
+      expCtx.scale(2, 2);
+      
+      const link = document.createElement('a');
+      link.download = `FaithIn-4K-UltraHD-${Date.now()}.png`;
+      
+      const d = state.designer;
+      const W = exportCanvas.width / 2;
+      const H = exportCanvas.height / 2;
+      
+      const bgImg = new Image();
+      bgImg.crossOrigin = 'anonymous';
+      bgImg.src = d.customBg || WALLPAPERS[d.bgIndex] || WALLPAPERS[0];
+      
+      bgImg.onload = () => {
+        const imgRatio = (bgImg.naturalWidth || bgImg.width || 1) / (bgImg.naturalHeight || bgImg.height || 1);
+        const canvasRatio = W / H;
+        let renderW, renderH, offsetX, offsetY;
+        if (imgRatio > canvasRatio) {
+          renderH = H; renderW = H * imgRatio;
+          offsetX = (W - renderW) / 2; offsetY = 0;
+        } else {
+          renderW = W; renderH = W / imgRatio;
+          offsetX = 0; offsetY = (H - renderH) / 2;
+        }
+
+        if (d.blurLevel > 0) expCtx.filter = `blur(${d.blurLevel}px)`;
+        expCtx.drawImage(bgImg, offsetX, offsetY, renderW, renderH);
+        expCtx.filter = 'none';
+
+        expCtx.fillStyle = `rgba(0, 0, 0, ${d.overlayOpacity / 100})`;
+        expCtx.fillRect(0, 0, W, H);
+
+        if (d.borderStyle === 'gold-minimal') {
+          expCtx.strokeStyle = d.accentColor; expCtx.lineWidth = 3;
+          expCtx.strokeRect(48, 48, W - 96, H - 96);
+        } else if (d.borderStyle === 'double') {
+          expCtx.strokeStyle = d.accentColor; expCtx.lineWidth = 1.5;
+          expCtx.strokeRect(44, 44, W - 88, H - 88);
+          expCtx.strokeRect(54, 54, W - 108, H - 108);
+        } else if (d.borderStyle === 'corners') {
+          expCtx.strokeStyle = d.accentColor; expCtx.lineWidth = 3.5;
+          const cLen = 40, margin = 48;
+          expCtx.beginPath(); expCtx.moveTo(margin, margin + cLen); expCtx.lineTo(margin, margin); expCtx.lineTo(margin + cLen, margin); expCtx.stroke();
+          expCtx.beginPath(); expCtx.moveTo(W - margin - cLen, margin); expCtx.lineTo(W - margin, margin); expCtx.lineTo(W - margin, margin + cLen); expCtx.stroke();
+          expCtx.beginPath(); expCtx.moveTo(margin, H - margin - cLen); expCtx.lineTo(margin, H - margin); expCtx.lineTo(margin + cLen, H - margin); expCtx.stroke();
+          expCtx.beginPath(); expCtx.moveTo(W - margin - cLen, H - margin); expCtx.lineTo(W - margin, H - margin); expCtx.lineTo(W - margin, H - margin - cLen); expCtx.stroke();
+        }
+
+        if (d.showBranding) {
+          expCtx.fillStyle = d.accentColor;
+          expCtx.font = 'bold 22px Inter, sans-serif';
+          expCtx.textAlign = 'center';
+          expCtx.shadowColor = 'rgba(0,0,0,0.9)'; expCtx.shadowBlur = 8;
+          expCtx.fillText(d.brandingText || 'FAITH IN • ព្រះគម្ពីរ', W / 2, H * 0.08);
+        }
+
+        const maxTextW = W - (W > 1200 ? 320 : 200);
+        const alignX = d.textAlign === 'left' ? (W - maxTextW) / 2 : (d.textAlign === 'right' ? (W + maxTextW) / 2 : W / 2);
+        expCtx.textAlign = d.textAlign;
+
+        let kmFontSize = Math.round(38 * (d.fontSizeScale || 1.0));
+        if (d.textKhmer.length > 200) kmFontSize = Math.round(30 * (d.fontSizeScale || 1.0));
+        else if (d.textKhmer.length > 120) kmFontSize = Math.round(34 * (d.fontSizeScale || 1.0));
+        const kmLineHeight = Math.round(kmFontSize * 1.6);
+        
+        expCtx.font = `bold ${kmFontSize}px "${d.fontFamily}", sans-serif`;
+        const kmLines = getWrappedLines(expCtx, d.textKhmer, maxTextW);
+
+        let enLines = [];
+        let enFontSize = Math.round(22 * (d.fontSizeScale || 1.0));
+        let enLineHeight = Math.round(enFontSize * 1.5);
+        if (d.textEnglish) {
+          expCtx.font = `italic ${enFontSize}px "${d.fontEnglish || 'Lora'}", serif`;
+          enLines = getWrappedLines(expCtx, d.textEnglish, maxTextW - 40);
+        }
+
+        const totalContentHeight = (kmLines.length * kmLineHeight) + 
+          (d.textEnglish ? (enLines.length * enLineHeight + 40) : 0) + 80;
+
+        let startY = (H / 2) - (totalContentHeight / 2) + 20;
+        if (d.aspectRatio === '9:16') startY = Math.max(H * 0.28, startY);
+
+        expCtx.fillStyle = d.textColor || '#ffffff';
+        expCtx.font = `bold ${kmFontSize}px "${d.fontFamily}", sans-serif`;
+        expCtx.shadowColor = 'rgba(0, 0, 0, 0.95)'; expCtx.shadowBlur = 14;
+
+        for (let i = 0; i < kmLines.length; i++) {
+          expCtx.fillText(kmLines[i], alignX, startY + (i * kmLineHeight));
+        }
+
+        let curY = startY + (kmLines.length * kmLineHeight) + 15;
+
+        if (d.textEnglish && enLines.length > 0) {
+          expCtx.fillStyle = 'rgba(255, 255, 255, 0.88)';
+          expCtx.font = `italic ${enFontSize}px "${d.fontEnglish || 'Lora'}", serif`;
+          expCtx.shadowBlur = 10;
+          for (let i = 0; i < enLines.length; i++) {
+            expCtx.fillText(enLines[i], alignX, curY + (i * enLineHeight));
+          }
+          curY += (enLines.length * enLineHeight) + 15;
+        }
+
+        curY += 20;
+        if (d.textAlign === 'center') {
+          expCtx.strokeStyle = d.accentColor; expCtx.lineWidth = 1.5;
+          expCtx.shadowBlur = 6;
+          const divW = 80;
+          expCtx.beginPath(); expCtx.moveTo((W / 2) - divW, curY); expCtx.lineTo((W / 2) + divW, curY); expCtx.stroke();
+          expCtx.fillStyle = d.accentColor; expCtx.font = '14px sans-serif'; expCtx.textAlign = 'center';
+          expCtx.fillText('❖', W / 2, curY + 5);
+        }
+
+        curY += 35;
+        expCtx.fillStyle = d.accentColor;
+        expCtx.font = `bold ${Math.round(24 * (d.fontSizeScale || 1.0))}px Inter, sans-serif`;
+        expCtx.textAlign = d.textAlign;
+        expCtx.shadowColor = 'rgba(0, 0, 0, 0.9)'; expCtx.shadowBlur = 12;
+        expCtx.fillText(d.ref, alignX, curY);
+
+        link.href = exportCanvas.toDataURL('image/png');
+        link.click();
+        if (window.toast) window.toast('Exported 4K Ultra HD image!');
+      };
+    }
   };
 
   window.copyCardImageToClipboard = async () => {
