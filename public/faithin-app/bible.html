@@ -198,6 +198,60 @@
   .memory-search-clear:hover {
     color: rgb(var(--ink));
   }
+  .verse-highlight-gold {
+    background-color: rgba(235, 185, 79, 0.2) !important;
+    border-left: 3px solid #EBB94F !important;
+  }
+  .verse-highlight-emerald {
+    background-color: rgba(52, 211, 153, 0.2) !important;
+    border-left: 3px solid #10B981 !important;
+  }
+  .verse-highlight-sky {
+    background-color: rgba(56, 189, 248, 0.2) !important;
+    border-left: 3px solid #0EA5E9 !important;
+  }
+  .verse-highlight-rose {
+    background-color: rgba(244, 114, 182, 0.2) !important;
+    border-left: 3px solid #EC4899 !important;
+  }
+  .verse-speaking {
+    background-color: rgba(24, 119, 242, 0.15) !important;
+    border-left: 3px solid #1877f2 !important;
+    transition: all 0.2s ease;
+  }
+  .reader-theme-sepia {
+    background-color: #fcf6e8 !important;
+    color: #433422 !important;
+  }
+  .reader-theme-sepia .verse-row:hover {
+    background-color: #f4ebd4 !important;
+  }
+  .reader-theme-dark {
+    background-color: #0b1120 !important;
+    color: #e2e8f0 !important;
+  }
+  .reader-theme-dark .verse-row:hover {
+    background-color: #1e293b !important;
+  }
+  .verse-row {
+    position: relative;
+    border-left: 3px solid transparent;
+  }
+  .verse-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 24px;
+    height: 24px;
+    padding: 0 4px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #1877f2;
+    background-color: rgba(24, 119, 242, 0.1);
+    border-radius: 6px;
+    margin-right: 6px;
+    vertical-align: middle;
+  }
 </style>
 </head>
 <body class="font-sans min-h-screen pb-16 lg:pb-6" data-page="bible" data-search="Search Bible chapters, books & verses">
@@ -473,12 +527,22 @@
       selectedEra: 'jesus'
     },
 
+    // Reader Customization & Audio Engine
+    readerTheme: 'default', // 'default', 'sepia', 'dark'
+    readerLineHeight: 'relaxed', // 'compact', 'normal', 'relaxed'
+    readerSearchQuery: '',
+    audioSpeechActive: false,
+    audioSpeakingVerse: null,
+    audioSpeed: 1.0,
+    highlights: JSON.parse(localStorage.getItem('faithin_verse_highlights') || '{}'),
+
     // Prayer Journal
     prayer: {
       filter: 'all',
       items: JSON.parse(localStorage.getItem('faithin_prayers_v1') || 'null'),
       timerRunning: false,
-      timerSeconds: 300
+      timerSeconds: 300,
+      timerInterval: null
     }
   };
 
@@ -2653,33 +2717,44 @@
   }
 
   // ---------------------------------------------------------------------------
-  // Top Controls Header
+  // Top Controls Header (Professional Toolbar)
   // ---------------------------------------------------------------------------
   function renderControlsBar(isParallel = false) {
     const curBook = BOOKS.find(b => b.name === state.book) || BOOKS[0];
     const chaptersList = Array.from({ length: curBook.ch }, (_, i) => i + 1);
+    const bookIdx = BOOKS.findIndex(b => b.name === state.book);
 
     return `
-      <div class="card p-3.5 bg-surface border border-line space-y-3">
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 items-end">
+      <div class="card p-3.5 sm:p-4 bg-surface border border-line space-y-3 shadow-xs">
+        
+        <!-- Row 1: Book, Chapter, Translation selectors + Quick Nav -->
+        <div class="grid grid-cols-2 sm:grid-cols-12 gap-2.5 items-end">
           
-          <div class="space-y-1">
-            <label class="text-[11px] font-bold uppercase tracking-wider text-muted">Book • គម្ពីរ</label>
-            <select id="sel-book" class="w-full bg-raised border border-line rounded-lg px-2.5 py-1.5 text-[13.5px] font-semibold text-ink outline-none focus:border-brand">
-              ${BOOKS.map(b => `<option value="${b.name}" ${b.name === state.book ? 'selected' : ''}>${b.km} (${b.name})</option>`).join('')}
+          <div class="col-span-1 sm:col-span-4 space-y-1">
+            <label class="text-[11px] font-bold uppercase tracking-wider text-muted flex items-center justify-between">
+              <span>Book • គម្ពីរ</span>
+              <span class="text-[10px] text-brand font-semibold">${curBook.test === 'OT' ? 'Old Testament' : 'New Testament'}</span>
+            </label>
+            <select id="sel-book" class="w-full bg-raised border border-line rounded-xl px-3 py-2 text-[13.5px] font-semibold text-ink outline-none focus:border-brand">
+              <optgroup label="Old Testament • គម្ពីរសញ្ញាចាស់">
+                ${BOOKS.filter(b => b.test === 'OT').map(b => `<option value="${b.name}" ${b.name === state.book ? 'selected' : ''}>${b.km} (${b.name})</option>`).join('')}
+              </optgroup>
+              <optgroup label="New Testament • គម្ពីរសញ្ញាថ្មី">
+                ${BOOKS.filter(b => b.test === 'NT').map(b => `<option value="${b.name}" ${b.name === state.book ? 'selected' : ''}>${b.km} (${b.name})</option>`).join('')}
+              </optgroup>
             </select>
           </div>
 
-          <div class="space-y-1">
+          <div class="col-span-1 sm:col-span-2 space-y-1">
             <label class="text-[11px] font-bold uppercase tracking-wider text-muted">Chapter • ជំពូក</label>
-            <select id="sel-chapter" class="w-full bg-raised border border-line rounded-lg px-2.5 py-1.5 text-[13.5px] font-semibold text-ink outline-none focus:border-brand">
+            <select id="sel-chapter" class="w-full bg-raised border border-line rounded-xl px-2.5 py-2 text-[13.5px] font-semibold text-ink outline-none focus:border-brand">
               ${chaptersList.map(c => `<option value="${c}" ${c === Number(state.chapter) ? 'selected' : ''}>Chapter ${c}</option>`).join('')}
             </select>
           </div>
 
-          <div class="space-y-1">
+          <div class="col-span-1 sm:col-span-3 space-y-1">
             <label class="text-[11px] font-bold uppercase tracking-wider text-muted">Translation</label>
-            <select id="sel-version" class="w-full bg-raised border border-line rounded-lg px-2.5 py-1.5 text-[13px] font-medium text-ink outline-none focus:border-brand">
+            <select id="sel-version" class="w-full bg-raised border border-line rounded-xl px-2.5 py-2 text-[13px] font-medium text-ink outline-none focus:border-brand">
               <option value="KHMER_OLD_1954" ${state.version === 'KHMER_OLD_1954' ? 'selected' : ''}>🇰🇭 ខ្មែរ ១៩៥៤ (ពគប)</option>
               <option value="KJV" ${state.version === 'KJV' ? 'selected' : ''}>🇺🇸 King James (KJV)</option>
               <option value="WEB" ${state.version === 'WEB' ? 'selected' : ''}>🌐 World English (WEB)</option>
@@ -2688,9 +2763,9 @@
           </div>
 
           ${isParallel ? `
-          <div class="space-y-1">
+          <div class="col-span-1 sm:col-span-3 space-y-1">
             <label class="text-[11px] font-bold uppercase tracking-wider text-muted">Compare With</label>
-            <select id="sel-version2" class="w-full bg-raised border border-line rounded-lg px-2.5 py-1.5 text-[13px] font-medium text-ink outline-none focus:border-brand">
+            <select id="sel-version2" class="w-full bg-raised border border-line rounded-xl px-2.5 py-2 text-[13px] font-medium text-ink outline-none focus:border-brand">
               <option value="KJV" ${state.version2 === 'KJV' ? 'selected' : ''}>🇺🇸 King James (KJV)</option>
               <option value="WEB" ${state.version2 === 'WEB' ? 'selected' : ''}>🌐 World English (WEB)</option>
               <option value="KHMER_OLD_1954" ${state.version2 === 'KHMER_OLD_1954' ? 'selected' : ''}>🇰🇭 ខ្មែរ ១៩៥៤</option>
@@ -2698,130 +2773,214 @@
             </select>
           </div>
           ` : `
-          <div class="flex items-center justify-end gap-1.5 pt-4 sm:pt-0">
-            <button id="btn-font-dec" class="btn btn-neutral !py-1.5 !px-2.5 text-xs" title="Smaller font">A-</button>
-            <button id="btn-font-inc" class="btn btn-neutral !py-1.5 !px-2.5 text-xs font-bold" title="Larger font">A+</button>
-            <button id="btn-play-audio" class="btn btn-primary !py-1.5 !px-3 text-xs ml-auto" title="Listen to Devotional">
-              <i class="fa-solid fa-volume-high mr-1"></i> Audio
+          <!-- Chapter Nav & Audio Action -->
+          <div class="col-span-2 sm:col-span-3 flex items-center justify-end gap-1.5 pt-1">
+            <button class="btn btn-neutral !py-2 !px-2.5 text-xs" onclick="window.prevChapter()" title="Previous Chapter (Left Arrow)">
+              <i class="fa-solid fa-chevron-left"></i>
+            </button>
+            <button class="btn btn-neutral !py-2 !px-2.5 text-xs" onclick="window.nextChapter()" title="Next Chapter (Right Arrow)">
+              <i class="fa-solid fa-chevron-right"></i>
+            </button>
+            <button class="btn ${state.audioSpeechActive ? 'btn-neutral !bg-rose-500 text-white' : 'btn-primary'} !py-2 !px-3 text-xs ml-1 shadow-xs" onclick="window.toggleChapterAudioSpeech()">
+              <i class="fa-solid ${state.audioSpeechActive ? 'fa-stop' : 'fa-volume-high'} mr-1"></i>
+              <span>${state.audioSpeechActive ? 'Stop' : 'Listen'}</span>
             </button>
           </div>
           `}
 
         </div>
+
+        <!-- Row 2: Reading Accessibility Bar & In-Chapter Filter -->
+        <div class="flex flex-wrap items-center justify-between gap-3 pt-2.5 border-t border-line text-xs">
+          
+          <!-- Search Filter Inside Chapter -->
+          <div class="flex items-center gap-2 bg-raised px-3 py-1.5 rounded-xl border border-line flex-1 max-w-sm">
+            <i class="fa-solid fa-magnifying-glass text-muted text-xs"></i>
+            <input type="text" id="reader-search-input" value="${esc(state.readerSearchQuery)}" placeholder="Filter verses in ${curBook.km} ${state.chapter}..." class="bg-transparent text-xs text-ink outline-none flex-1">
+            ${state.readerSearchQuery ? `<button onclick="window.clearReaderSearch()" class="text-muted hover:text-ink text-xs">✕</button>` : ''}
+          </div>
+
+          <!-- Display & Font Controls -->
+          <div class="flex items-center gap-2">
+            <!-- Theme Switcher -->
+            <div class="flex items-center gap-1 bg-raised p-1 rounded-lg border border-line">
+              <button class="px-2 py-0.5 rounded text-[11px] font-semibold transition ${state.readerTheme === 'default' ? 'bg-surface text-brand shadow-2xs' : 'text-muted'}" onclick="window.setReaderTheme('default')" title="Default Light/Dark">Standard</button>
+              <button class="px-2 py-0.5 rounded text-[11px] font-semibold transition ${state.readerTheme === 'sepia' ? 'bg-[#f4ebd4] text-[#433422] font-bold shadow-2xs' : 'text-muted'}" onclick="window.setReaderTheme('sepia')" title="Warm Sepia">Sepia</button>
+              <button class="px-2 py-0.5 rounded text-[11px] font-semibold transition ${state.readerTheme === 'dark' ? 'bg-[#0f172a] text-sky-400 font-bold shadow-2xs' : 'text-muted'}" onclick="window.setReaderTheme('dark')" title="Deep Midnight">Night</button>
+            </div>
+
+            <!-- Font Size -->
+            <div class="flex items-center gap-1 bg-raised px-2 py-1 rounded-lg border border-line text-xs font-semibold">
+              <button id="btn-font-dec" class="text-muted hover:text-ink px-1" title="Smaller font">A-</button>
+              <span class="text-[11px] text-ink font-bold px-1">${state.fontSize}px</span>
+              <button id="btn-font-inc" class="text-muted hover:text-ink px-1" title="Larger font">A+</button>
+            </div>
+          </div>
+
+        </div>
+
       </div>
     `;
   }
 
-  // 1. Reader Tool
+  // 1. Reader Tool (Professional Studio)
   function renderReader() {
     const curBook = BOOKS.find(b => b.name === state.book) || BOOKS[0];
+    const filteredVerses = state.readerSearchQuery 
+      ? state.verses.filter(v => v.text.toLowerCase().includes(state.readerSearchQuery.toLowerCase()))
+      : state.verses;
+
+    const themeClass = state.readerTheme === 'sepia' ? 'reader-theme-sepia' : (state.readerTheme === 'dark' ? 'reader-theme-dark' : '');
+
     return `
       <div class="space-y-4">
-        <!-- CPTI Scripture Memory Quick Banner -->
-        <div class="card p-3.5 bg-gradient-to-r from-rose-500/10 via-brand/10 to-indigo-500/10 border border-rose-500/20 flex flex-wrap items-center justify-between gap-3 shadow-xs">
-          <div class="flex items-center gap-2.5">
-            <div class="w-8 h-8 rounded-lg bg-rose-500 text-white flex items-center justify-center font-bold text-sm shrink-0 shadow-xs"><i class="fa-solid fa-brain"></i></div>
-            <div>
-              <h4 class="font-bold text-xs text-ink font-khmer flex items-center gap-2">
-                <span>ខគម្ពីរចងចាំ CPTI • Scripture Memory Suite</span>
-                <span class="text-[10px] font-bold px-2 py-0.2 rounded-full bg-rose-500/15 text-rose-600 font-sans">34 Verses</span>
-              </h4>
-              <p class="text-[11.5px] text-muted font-khmer mt-0.5">៥ ផ្នែកទេវវិទ្យា (ទំនុកដំកើង ដំណឹងល្អ ព្រះវិញ្ញាណ ជំនឿ និងជីវិតសិស្ស)</p>
-            </div>
-          </div>
-          <button class="btn btn-primary !py-1.5 !px-3 text-xs shrink-0 font-khmer shadow-xs" onclick="window.switchTool('memory')">
-            <i class="fa-solid fa-brain mr-1.5"></i> ចូលរៀនចងចាំ →
-          </button>
-        </div>
-
+        
+        <!-- Controls Bar -->
         ${renderControlsBar(false)}
 
-        <div class="card p-5 sm:p-6 bg-surface border border-line space-y-4">
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-line pb-3">
+        <!-- Main Reading Canvas -->
+        <div class="card p-5 sm:p-7 bg-surface border border-line space-y-4 ${themeClass} shadow-xs">
+          
+          <!-- Chapter Header & Action Bar -->
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-line pb-3.5">
             <div>
-              <h1 class="text-xl sm:text-2xl font-bold font-khmer text-ink flex items-center gap-2">
-                ${curBook.km} <span class="text-base text-muted font-sans font-normal">(${curBook.name}) ${state.chapter}</span>
+              <div class="flex items-center gap-2">
+                <span class="text-[11px] font-bold uppercase tracking-wider text-brand bg-brand/10 px-2.5 py-0.5 rounded-full font-khmer">${curBook.test === 'OT' ? 'គម្ពីរសញ្ញាចាស់' : 'គម្ពីរសញ្ញាថ្មី'}</span>
+                <span class="text-xs text-muted font-mono">${curBook.name} ${state.chapter}</span>
+              </div>
+              <h1 class="text-2xl sm:text-3xl font-bold font-khmer text-ink mt-1 flex items-center gap-2">
+                ${curBook.km} <span class="text-lg font-sans font-normal text-muted">ជំពូក ${state.chapter}</span>
               </h1>
               <p class="text-[12px] text-muted mt-0.5">${state.version === 'KHMER_OLD_1954' ? 'ព្រះគម្ពីរបរិសុទ្ធ ១៩៥៤ (ពគប - Khmer Old Version)' : state.version}</p>
             </div>
             
-            <button class="btn btn-primary text-xs shrink-0 whitespace-nowrap shadow-sm" onclick="window.sendChapterToDesigner()">
-              <i class="fa-solid fa-palette mr-1"></i> Make Card
+            <div class="flex items-center gap-2">
+              <button class="btn btn-neutral text-xs shrink-0 !py-1.5 !px-3" onclick="window.copyChapterPassage()" title="Copy entire chapter">
+                <i class="fa-regular fa-copy mr-1"></i> Copy Chapter
+              </button>
+              <button class="btn btn-primary text-xs shrink-0 whitespace-nowrap shadow-sm !py-1.5 !px-3.5" onclick="window.sendChapterToDesigner()">
+                <i class="fa-solid fa-palette mr-1.5"></i> Make Scripture Card
+              </button>
+            </div>
+          </div>
+
+          <!-- Verses Content Area -->
+          ${state.loading ? `
+            <div class="py-20 text-center text-muted space-y-2">
+              <i class="fa-solid fa-circle-notch fa-spin text-3xl text-brand mb-2"></i>
+              <p class="text-sm font-semibold text-ink">Loading Scripture verses...</p>
+              <p class="text-xs text-muted">Fetching ${curBook.km} Chapter ${state.chapter}</p>
+            </div>
+          ` : `
+            <div class="space-y-1.5" style="font-size: ${state.fontSize}px;">
+              ${filteredVerses.length === 0 ? `
+                <div class="p-8 text-center text-muted space-y-1">
+                  <p class="text-sm font-bold text-ink">No verses matching "${esc(state.readerSearchQuery)}"</p>
+                  <button class="text-xs text-brand hover:underline" onclick="window.clearReaderSearch()">Clear search filter</button>
+                </div>
+              ` : filteredVerses.map(v => {
+                const isSpeaking = state.audioSpeakingVerse === v.v;
+                const highlightColor = state.highlights[`${state.book}-${state.chapter}-${v.v}`];
+                const highlightClass = highlightColor ? `verse-highlight-${highlightColor}` : '';
+                const speakingClass = isSpeaking ? 'verse-speaking' : '';
+
+                return `
+                  <div class="verse-row group flex items-start gap-2.5 rounded-xl ${highlightClass} ${speakingClass} transition duration-150" id="verse-row-${v.v}">
+                    <span class="verse-num shrink-0 select-none">${v.v}</span>
+                    <p class="flex-1 text-ink font-khmer leading-relaxed font-normal">${esc(v.text)}</p>
+                    
+                    <!-- Interactive Verse Action Hub -->
+                    <div class="opacity-0 group-hover:opacity-100 flex items-center gap-1 shrink-0 transition-opacity bg-surface/90 backdrop-blur-xs p-1 rounded-lg border border-line shadow-2xs">
+                      <button class="w-6 h-6 rounded hover:bg-raised flex items-center justify-center text-muted hover:text-ink" title="Listen to verse" onclick="window.speakSingleVerse('${esc(v.text)}', ${v.v})">
+                        <i class="fa-solid fa-volume-high text-[11px]"></i>
+                      </button>
+                      <button class="w-6 h-6 rounded hover:bg-raised flex items-center justify-center text-muted hover:text-ink" title="Copy verse" onclick="window.copyVerseText('${esc(v.text)}', '${curBook.km} ${state.chapter}:${v.v}')">
+                        <i class="fa-regular fa-copy text-[11px]"></i>
+                      </button>
+                      <button class="w-6 h-6 rounded hover:bg-raised flex items-center justify-center text-purple-600 hover:text-purple-700" title="Create Card in Studio" onclick="window.designSingleVerse('${esc(v.text)}', '${curBook.km} ${state.chapter}:${v.v}')">
+                        <i class="fa-solid fa-palette text-[11px]"></i>
+                      </button>
+                      <button class="w-6 h-6 rounded hover:bg-raised flex items-center justify-center text-amber-500 hover:text-amber-600" title="Highlight (Gold)" onclick="window.toggleVerseHighlight('${state.book}', ${state.chapter}, ${v.v}, 'gold')">
+                        <i class="fa-solid fa-highlighter text-[11px]"></i>
+                      </button>
+                      <button class="w-6 h-6 rounded hover:bg-raised flex items-center justify-center text-cyan-600 hover:text-cyan-700" title="Add to Sermon Notes" onclick="window.appendVerseToNotes('${curBook.km} ${state.chapter}:${v.v}', '${esc(v.text)}')">
+                        <i class="fa-solid fa-note-sticky text-[11px]"></i>
+                      </button>
+                    </div>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          `}
+
+          <!-- Bottom Chapter Navigation -->
+          <div class="flex items-center justify-between pt-6 border-t border-line">
+            <button class="btn btn-neutral text-xs !py-2 !px-3.5 flex items-center gap-1.5" onclick="window.prevChapter()">
+              <i class="fa-solid fa-arrow-left"></i> Previous Chapter
+            </button>
+            <span class="text-xs text-muted font-semibold">${curBook.km} ${state.chapter} of ${curBook.ch}</span>
+            <button class="btn btn-neutral text-xs !py-2 !px-3.5 flex items-center gap-1.5" onclick="window.nextChapter()">
+              Next Chapter <i class="fa-solid fa-arrow-right"></i>
             </button>
           </div>
 
-          ${state.loading ? `
-            <div class="py-16 text-center text-muted">
-              <i class="fa-solid fa-circle-notch fa-spin text-2xl text-brand mb-2"></i>
-              <p class="text-sm">Loading Scripture verses...</p>
-            </div>
-          ` : `
-            <div class="space-y-1" style="font-size: ${state.fontSize}px;">
-              ${state.verses.length === 0 ? '<p class="text-muted p-4">No verses found.</p>' : state.verses.map(v => `
-                <div class="verse-row group flex items-start gap-2">
-                  <span class="verse-num shrink-0 select-none">${v.v}</span>
-                  <p class="flex-1 text-ink font-khmer leading-relaxed font-normal">${esc(v.text)}</p>
-                  
-                  <div class="opacity-0 group-hover:opacity-100 flex items-center gap-1 shrink-0 transition-opacity">
-                    <button class="w-6 h-6 rounded hover:bg-raised flex items-center justify-center text-muted" title="Copy Verse" onclick="window.copyVerseText('${esc(v.text)}', '${curBook.km} ${state.chapter}:${v.v}')">
-                      <i class="fa-regular fa-copy text-xs"></i>
-                    </button>
-                    <button class="w-6 h-6 rounded hover:bg-raised flex items-center justify-center text-brand" title="Design Verse Card" onclick="window.designSingleVerse('${esc(v.text)}', '${curBook.km} ${state.chapter}:${v.v}')">
-                      <i class="fa-solid fa-palette text-xs"></i>
-                    </button>
-                  </div>
-                </div>
-              `).join('')}
-            </div>
-          `}
         </div>
       </div>
     `;
   }
 
-  // 2. Parallel Study Tool
+  // 2. Parallel Study Tool (Professional Side-by-Side)
   function renderParallel() {
     const curBook = BOOKS.find(b => b.name === state.book) || BOOKS[0];
     return `
       <div class="space-y-4">
         ${renderControlsBar(true)}
 
-        <div class="card p-5 sm:p-6 bg-surface border border-line space-y-4">
+        <div class="card p-5 sm:p-6 bg-surface border border-line space-y-4 shadow-xs">
           <div class="flex items-center justify-between border-b border-line pb-3">
-            <h1 class="text-lg sm:text-xl font-bold font-khmer text-ink">
-              ${curBook.km} ${state.chapter} • <span class="text-sm text-muted font-sans font-normal">${curBook.name} ${state.chapter}</span>
-            </h1>
-            <span class="text-xs font-bold text-brand bg-brand/10 px-2.5 py-0.5 rounded-full">Bilingual Parallel</span>
+            <div>
+              <h1 class="text-lg sm:text-xl font-bold font-khmer text-ink">
+                ${curBook.km} ${state.chapter} • <span class="text-sm text-muted font-sans font-normal">${curBook.name} ${state.chapter}</span>
+              </h1>
+              <p class="text-xs text-muted mt-0.5">Bilingual comparative study with synchronized verse matching.</p>
+            </div>
+            <span class="text-xs font-bold text-brand bg-brand/10 px-2.5 py-1 rounded-full">Bilingual Parallel</span>
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4 divide-y md:divide-y-0 md:divide-x divide-line">
+            
+            <!-- Left Column: Primary Version -->
             <div class="space-y-2 pr-0 md:pr-3">
-              <div class="font-bold text-xs uppercase tracking-wider text-[#1877F2] pb-1 border-b border-line/60">
-                ${state.version}
+              <div class="font-bold text-xs uppercase tracking-wider text-brand pb-1.5 border-b border-line/60 flex items-center justify-between">
+                <span>${state.version === 'KHMER_OLD_1954' ? '🇰🇭 ខ្មែរ ១៩៥៤ (ពគប)' : state.version}</span>
+                <span class="text-[10px] text-muted font-normal">${state.verses.length} verses</span>
               </div>
               <div class="space-y-2 text-[14.5px]">
                 ${state.verses.map(v => `
-                  <div class="p-2.5 rounded-lg bg-raised/40 border border-line/50">
-                    <span class="font-bold text-xs text-[#1877F2] mr-1">${v.v}.</span>
+                  <div class="p-3 rounded-xl bg-raised/40 border border-line/50 hover:border-brand/40 hover:bg-brand/5 transition duration-150" id="parallel-v1-${v.v}">
+                    <span class="font-bold text-xs text-brand mr-1.5">${v.v}.</span>
                     <span class="font-khmer text-ink leading-relaxed">${esc(v.text)}</span>
                   </div>
                 `).join('')}
               </div>
             </div>
 
+            <!-- Right Column: Comparison Version -->
             <div class="space-y-2 pt-3 md:pt-0 pl-0 md:pl-3">
-              <div class="font-bold text-xs uppercase tracking-wider text-emerald-600 pb-1 border-b border-line/60">
-                ${state.version2}
+              <div class="font-bold text-xs uppercase tracking-wider text-emerald-600 pb-1.5 border-b border-line/60 flex items-center justify-between">
+                <span>${state.version2 === 'KJV' ? '🇺🇸 King James Version (KJV)' : state.version2}</span>
+                <span class="text-[10px] text-muted font-normal">${state.verses2.length} verses</span>
               </div>
               <div class="space-y-2 text-[14.5px]">
                 ${state.verses2.map(v => `
-                  <div class="p-2.5 rounded-lg bg-raised/40 border border-line/50">
-                    <span class="font-bold text-xs text-emerald-600 mr-1">${v.v}.</span>
+                  <div class="p-3 rounded-xl bg-raised/40 border border-line/50 hover:border-emerald-500/40 hover:bg-emerald-500/5 transition duration-150" id="parallel-v2-${v.v}">
+                    <span class="font-bold text-xs text-emerald-600 mr-1.5">${v.v}.</span>
                     <span class="font-serif italic text-ink/90 leading-relaxed">${esc(v.text)}</span>
                   </div>
                 `).join('')}
               </div>
             </div>
+
           </div>
         </div>
       </div>
@@ -3892,10 +4051,15 @@
     const root = $('#bible-view-root');
     if (!root) return;
 
-    const searchInput = $('#memory-search-input');
-    const wasSearchFocused = document.activeElement && document.activeElement.id === 'memory-search-input';
-    const cursorStart = wasSearchFocused ? searchInput?.selectionStart : null;
-    const cursorEnd = wasSearchFocused ? searchInput?.selectionEnd : null;
+    const memorySearch = $('#memory-search-input');
+    const wasMemorySearchFocused = document.activeElement && document.activeElement.id === 'memory-search-input';
+    const memCursorStart = wasMemorySearchFocused ? memorySearch?.selectionStart : null;
+    const memCursorEnd = wasMemorySearchFocused ? memorySearch?.selectionEnd : null;
+
+    const readerSearch = $('#reader-search-input');
+    const wasReaderSearchFocused = document.activeElement && document.activeElement.id === 'reader-search-input';
+    const rdrCursorStart = wasReaderSearchFocused ? readerSearch?.selectionStart : null;
+    const rdrCursorEnd = wasReaderSearchFocused ? readerSearch?.selectionEnd : null;
 
     switch (state.activeTool) {
       case 'reader': root.innerHTML = renderReader(); break;
@@ -3921,12 +4085,20 @@
 
     bindEvents();
 
-    if (wasSearchFocused) {
+    if (wasMemorySearchFocused) {
       const newSearchInput = $('#memory-search-input');
       if (newSearchInput) {
         newSearchInput.focus();
-        if (cursorStart !== null && cursorEnd !== null) {
-          try { newSearchInput.setSelectionRange(cursorStart, cursorEnd); } catch(e) {}
+        if (memCursorStart !== null && memCursorEnd !== null) {
+          try { newSearchInput.setSelectionRange(memCursorStart, memCursorEnd); } catch(e) {}
+        }
+      }
+    } else if (wasReaderSearchFocused) {
+      const newRdrSearch = $('#reader-search-input');
+      if (newRdrSearch) {
+        newRdrSearch.focus();
+        if (rdrCursorStart !== null && rdrCursorEnd !== null) {
+          try { newRdrSearch.setSelectionRange(rdrCursorStart, rdrCursorEnd); } catch(e) {}
         }
       }
     }
@@ -3960,12 +4132,13 @@
     });
 
     $('#btn-font-inc')?.addEventListener('click', () => {
-      state.fontSize = Math.min(24, state.fontSize + 2);
+      state.fontSize = Math.min(26, state.fontSize + 2);
       render();
     });
 
-    $('#btn-play-audio')?.addEventListener('click', () => {
-      window.switchTool('daily');
+    $('#reader-search-input')?.addEventListener('input', (e) => {
+      state.readerSearchQuery = e.target.value;
+      render();
     });
 
     $('#card-txt-khmer')?.addEventListener('input', (e) => {
@@ -4595,6 +4768,155 @@
     window.location.href = '/home';
   };
 
+  // ─── Reader Professional Tools & Audio Engine ───
+  window.prevChapter = () => {
+    const curBook = BOOKS.find(b => b.name === state.book) || BOOKS[0];
+    if (state.chapter > 1) {
+      state.chapter -= 1;
+      loadChapterVerses();
+    } else {
+      const idx = BOOKS.findIndex(b => b.name === state.book);
+      if (idx > 0) {
+        state.book = BOOKS[idx - 1].name;
+        state.chapter = BOOKS[idx - 1].ch;
+        loadChapterVerses();
+      }
+    }
+  };
+
+  window.nextChapter = () => {
+    const curBook = BOOKS.find(b => b.name === state.book) || BOOKS[0];
+    if (state.chapter < curBook.ch) {
+      state.chapter += 1;
+      loadChapterVerses();
+    } else {
+      const idx = BOOKS.findIndex(b => b.name === state.book);
+      if (idx < BOOKS.length - 1) {
+        state.book = BOOKS[idx + 1].name;
+        state.chapter = 1;
+        loadChapterVerses();
+      }
+    }
+  };
+
+  window.clearReaderSearch = () => {
+    state.readerSearchQuery = '';
+    render();
+  };
+
+  window.setReaderTheme = (theme) => {
+    state.readerTheme = theme;
+    render();
+  };
+
+  window.toggleVerseHighlight = (book, ch, v, color) => {
+    const key = `${book}-${ch}-${v}`;
+    if (state.highlights[key] === color) {
+      delete state.highlights[key];
+    } else {
+      state.highlights[key] = color;
+      if (window.toast) window.toast(`Verse highlighted! 🔖`);
+    }
+    localStorage.setItem('faithin_verse_highlights', JSON.stringify(state.highlights));
+    render();
+  };
+
+  window.appendVerseToNotes = (ref, text) => {
+    const existing = state.notes.Doctrine ? state.notes.Doctrine + '\n\n' : '';
+    state.notes.Doctrine = existing + `[${ref}]\n${text}`;
+    localStorage.setItem('faithin_sermon_notes', JSON.stringify(state.notes));
+    if (window.toast) window.toast('Verse added to Sermon Notes!');
+  };
+
+  window.copyChapterPassage = () => {
+    const curBook = BOOKS.find(b => b.name === state.book) || BOOKS[0];
+    const text = state.verses.map(v => `${v.v}. ${v.text}`).join('\n');
+    navigator.clipboard.writeText(`${curBook.km} (${curBook.name}) ជំពូក ${state.chapter}\n\n${text}`);
+    if (window.toast) window.toast('Entire chapter copied to clipboard!');
+  };
+
+  window.speakSingleVerse = (text, vNum) => {
+    if (!('speechSynthesis' in window)) {
+      if (window.toast) window.toast('Audio speech synthesis is not supported on this browser');
+      return;
+    }
+    window.speechSynthesis.cancel();
+    state.audioSpeakingVerse = vNum;
+    render();
+
+    const isKhmer = /[\u1780-\u17FF]/.test(text);
+    const cleanText = text.replace(/^[0-9«»\s]+/, '');
+    const utter = new SpeechSynthesisUtterance(cleanText);
+    utter.rate = 0.92;
+    if (isKhmer) utter.lang = 'km-KH';
+    else utter.lang = 'en-US';
+
+    utter.onend = () => {
+      state.audioSpeakingVerse = null;
+      render();
+    };
+    utter.onerror = () => {
+      state.audioSpeakingVerse = null;
+      render();
+    };
+
+    window.speechSynthesis.speak(utter);
+  };
+
+  window.toggleChapterAudioSpeech = () => {
+    if (!('speechSynthesis' in window)) {
+      if (window.toast) window.toast('Audio speech synthesis is not supported on this browser');
+      return;
+    }
+    if (state.audioSpeechActive) {
+      window.speechSynthesis.cancel();
+      state.audioSpeechActive = false;
+      state.audioSpeakingVerse = null;
+      render();
+      if (window.toast) window.toast('Audio stopped');
+      return;
+    }
+
+    if (state.verses.length === 0) return;
+    state.audioSpeechActive = true;
+    let idx = 0;
+
+    const playNext = () => {
+      if (!state.audioSpeechActive || idx >= state.verses.length) {
+        state.audioSpeechActive = false;
+        state.audioSpeakingVerse = null;
+        render();
+        return;
+      }
+      const v = state.verses[idx];
+      state.audioSpeakingVerse = v.v;
+      render();
+
+      const el = document.getElementById(`verse-row-${v.v}`);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+      const isKhmer = /[\u1780-\u17FF]/.test(v.text);
+      const cleanText = v.text.replace(/^[0-9«»\s]+/, '');
+      const utter = new SpeechSynthesisUtterance(cleanText);
+      utter.rate = 0.92;
+      if (isKhmer) utter.lang = 'km-KH';
+      else utter.lang = 'en-US';
+
+      utter.onend = () => {
+        idx++;
+        playNext();
+      };
+      utter.onerror = () => {
+        idx++;
+        playNext();
+      };
+
+      window.speechSynthesis.speak(utter);
+    };
+
+    playNext();
+  };
+
   // ─── Reading Plans Helpers ───
   window.selectReadingPlan = (planId) => {
     state.readingPlans.activePlan = planId;
@@ -4707,6 +5029,18 @@
     loadChapterVerses();
     loadDailyVerse();
     loadConcordance();
+
+    document.addEventListener('keydown', (e) => {
+      const tag = document.activeElement?.tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+      if (state.activeTool === 'reader' || state.activeTool === 'parallel') {
+        if (e.key === 'ArrowLeft') {
+          window.prevChapter();
+        } else if (e.key === 'ArrowRight') {
+          window.nextChapter();
+        }
+      }
+    });
   });
 
 })();
