@@ -15,10 +15,10 @@
 <link rel="preconnect" href="https://nckvrhdyrikrbpgjlqlw.supabase.co" crossorigin>
 <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
 <link rel="dns-prefetch" href="https://bible-api.com">
-<link href="/faithin-app/assets/faithin-fonts.css?v=20260902-cpti-v2" rel="stylesheet"/>
-<link href="/faithin-app/assets/faithin-icons.css?v=20260902-cpti-v2" rel="stylesheet"/>
-<link href="/faithin-app/assets/faithin-tw.css?v=20260902-cpti-v2" rel="stylesheet"/>
-<link href="/faithin-app/assets/faithin.css?v=20260902-cpti-v2" rel="stylesheet"/>
+<link href="/faithin-app/assets/faithin-fonts.css" rel="stylesheet"/>
+<link href="/faithin-app/assets/faithin-icons.css" rel="stylesheet"/>
+<link href="/faithin-app/assets/faithin-tw.css" rel="stylesheet"/>
+<link href="/faithin-app/assets/faithin.css?v=20260902-standard-v1" rel="stylesheet"/>
 <style>
   .bible-tab-btn {
     display: inline-flex;
@@ -33,26 +33,20 @@
     transition: all 0.15s ease;
     cursor: pointer;
     white-space: nowrap;
+    border: 1px solid transparent;
   }
   .bible-tab-btn:hover {
-    color: rgb(var(--ink));
     background-color: rgb(var(--raised));
+    color: rgb(var(--ink));
   }
   .bible-tab-btn.is-active {
-    background-color: rgb(var(--brand)) !important;
-    color: #ffffff !important;
-    box-shadow: 0 2px 6px rgba(47, 91, 234, 0.35);
-  }
-  .side-link {
-    transition: all 0.15s ease;
-  }
-  .side-link.is-active {
-    background-color: rgb(var(--brand-soft));
-    color: rgb(var(--brand));
-    font-weight: 700;
+    background-color: #1877f2;
+    color: #ffffff;
+    border-color: #1877f2;
+    box-shadow: 0 1px 2px rgba(24, 119, 242, 0.2);
   }
   .verse-row {
-    padding: 0.65rem 0.75rem;
+    padding: 0.65rem 0.85rem;
     border-radius: 0.5rem;
     transition: background-color 0.15s ease;
     line-height: 1.85;
@@ -60,7 +54,7 @@
   .verse-row:hover {
     background-color: rgb(var(--raised));
   }
-  .verse-num {
+  .verse-badge {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -68,92 +62,175 @@
     height: 1.5rem;
     font-size: 0.75rem;
     font-weight: 700;
-    color: rgb(var(--brand));
-    background-color: rgb(var(--brand-soft));
+    color: #1877f2;
+    background-color: rgba(24, 119, 242, 0.1);
     border-radius: 9999px;
     margin-right: 0.5rem;
     vertical-align: middle;
-  }
-  .memory-word-hidden {
-    display: inline-block;
-    background-color: rgb(var(--brand-soft));
-    color: transparent;
-    border-bottom: 2px dashed rgb(var(--brand));
-    border-radius: 4px;
-    padding: 0 6px;
-    margin: 0 2px;
-    cursor: pointer;
-    user-select: none;
-    transition: all 0.2s ease;
-  }
-  .memory-word-hidden.is-revealed {
-    color: rgb(var(--ink)) !important;
-    background-color: rgba(16, 185, 129, 0.15) !important;
-    border-color: rgb(16, 185, 129) !important;
   }
 </style>
 </head>
 <body class="font-sans min-h-screen pb-16 lg:pb-6" data-page="bible" data-search="Search Bible chapters, books & verses">
 
-<main class="fi-bible-shell" id="main">
+<main class="max-w-[1200px] mx-auto px-3 sm:px-4 py-5 grid gap-5 lg:grid-cols-[232px_minmax(0,1fr)] xl:grid-cols-[232px_minmax(0,1fr)_312px] items-start" id="main">
 
-  <section class="fi-bible-hero" aria-labelledby="bible-title">
-    <div>
-      <span class="fi-bible-eyebrow">ព្រះគម្ពីរ • Bible Studio</span>
-      <h1 id="bible-title">Khmer &amp; English Bible</h1>
-      <p>Read the Khmer Old Version 1954 beside English. Master scripture with the CPTI Memory Suite.</p>
-    </div>
-    <div class="fi-bible-hero-actions" aria-label="Reader text size">
-      <button class="icon-btn" id="bible-font-decrease" type="button" aria-label="Decrease Bible text size" title="Smaller text">
-        <i class="fa-solid fa-minus" aria-hidden="true"></i>
+  <!-- ───── LEFT RAIL: STANDARD USER PROFILE & NAV ───── -->
+  <aside class="hidden lg:block sticky top-[72px] space-y-4">
+    
+    <!-- User Profile Card -->
+    <section class="card overflow-hidden">
+      <div class="h-[62px] bg-[linear-gradient(120deg,#1877f2,#3b82f6_50%,#1e40af)]"></div>
+      <div class="px-4 pb-4 -mt-8 flex flex-col items-center text-center">
+        <span class="avatar w-16 h-16 text-[20px] ring-4 ring-surface" data-current-user-avatar style="background:linear-gradient(135deg,#1877f2,#1e40af)">FI</span>
+        <a class="mt-2.5 font-bold text-[15px] hover:underline inline-flex items-center text-ink" href="/profile" data-current-user-name>
+          Faith In
+          <span class="fi-verified-tick ml-1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"></polyline></svg></span>
+        </a>
+        <p class="text-[12.5px] text-muted mt-0.5">Bible Studio • ព្រះគម្ពីរ</p>
+      </div>
+      <div class="border-t border-line grid grid-cols-2 divide-x divide-line text-center text-xs">
+        <div class="py-2.5 px-1">
+          <span class="block text-muted text-[11px]">Old Testament</span>
+          <span class="font-bold text-[#1877F2]">39 Books</span>
+        </div>
+        <div class="py-2.5 px-1">
+          <span class="block text-muted text-[11px]">New Testament</span>
+          <span class="font-bold text-[#1877F2]">27 Books</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Main Navigation Links -->
+    <nav aria-label="Sections" class="space-y-1">
+      <a class="nav-item" href="/home"><i class="fa-solid fa-house"></i>Home Feed</a>
+      <a aria-current="page" class="nav-item is-active" href="/bible"><i class="fa-solid fa-book-bible text-[#1877F2]"></i>Bible Studio</a>
+      <a class="nav-item" href="/library"><i class="fa-solid fa-book-open text-amber-500"></i>Resource Library</a>
+      <a class="nav-item" href="/network"><i class="fa-solid fa-globe text-indigo-500"></i>Find Users</a>
+      <a class="nav-item" href="/jobs"><i class="fa-solid fa-briefcase text-emerald-600"></i>Find Jobs</a>
+    </nav>
+
+    <!-- Studio Tools Menu Card -->
+    <div class="card p-3 rounded-xl bg-surface border border-line space-y-1">
+      <h3 class="text-xs font-bold uppercase tracking-wider text-muted px-2 py-1">Studio Tools</h3>
+      <button class="side-link w-full text-left flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-[13.5px] font-semibold text-ink hover:bg-raised" data-side-tool="reader" onclick="window.switchTool('reader')">
+        <i class="fa-solid fa-book-open text-blue-500 w-4 text-center"></i> Bible Reader
       </button>
-      <span class="fi-bible-text-size" id="bible-font-label" aria-live="polite">18px</span>
-      <button class="icon-btn" id="bible-font-increase" type="button" aria-label="Increase Bible text size" title="Larger text">
-        <i class="fa-solid fa-plus" aria-hidden="true"></i>
+      <button class="side-link w-full text-left flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-[13.5px] font-semibold text-ink hover:bg-raised" data-side-tool="parallel" onclick="window.switchTool('parallel')">
+        <i class="fa-solid fa-columns-3 text-indigo-500 w-4 text-center"></i> Parallel Study
+      </button>
+      <button class="side-link w-full text-left flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-[13.5px] font-semibold text-ink hover:bg-raised" data-side-tool="designer" onclick="window.switchTool('designer')">
+        <i class="fa-solid fa-palette text-purple-500 w-4 text-center"></i> Card Designer
+      </button>
+      <button class="side-link w-full text-left flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-[13.5px] font-semibold text-ink hover:bg-raised" data-side-tool="daily" onclick="window.switchTool('daily')">
+        <i class="fa-solid fa-sun text-amber-500 w-4 text-center"></i> Verse of the Day
+      </button>
+      <button class="side-link w-full text-left flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-[13.5px] font-semibold text-ink hover:bg-raised" data-side-tool="concordance" onclick="window.switchTool('concordance')">
+        <i class="fa-solid fa-magnifying-glass text-emerald-500 w-4 text-center"></i> Word Study (Greek)
+      </button>
+      <button class="side-link w-full text-left flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-[13.5px] font-semibold text-ink hover:bg-raised" data-side-tool="typing" onclick="window.switchTool('typing')">
+        <i class="fa-solid fa-brain text-rose-500 w-4 text-center"></i> Memory • ខគម្ពីរចងចាំ
+      </button>
+      <button class="side-link w-full text-left flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-[13.5px] font-semibold text-ink hover:bg-raised" data-side-tool="notes" onclick="window.switchTool('notes')">
+        <i class="fa-solid fa-pen-to-square text-cyan-600 w-4 text-center"></i> Sermon Notes
       </button>
     </div>
+
+  </aside>
+
+  <!-- ───── CENTER: MAIN BIBLE STUDIO PANE ───── -->
+  <section class="space-y-4 min-w-0" id="center-pane">
+
+    <!-- Top Tools Segment Tabs (Facebook Style Pills) -->
+    <div class="card p-2 bg-surface border border-line flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+      <button class="bible-tab-btn is-active shrink-0" data-tab="reader" data-side-tool="reader" onclick="window.switchTool('reader')">
+        <i class="fa-solid fa-book-open"></i> Reader
+      </button>
+      <button class="bible-tab-btn shrink-0" data-tab="parallel" data-side-tool="parallel" onclick="window.switchTool('parallel')">
+        <i class="fa-solid fa-columns-3"></i> Parallel
+      </button>
+      <button class="bible-tab-btn shrink-0" data-tab="designer" data-side-tool="designer" onclick="window.switchTool('designer')">
+        <i class="fa-solid fa-palette"></i> Card Designer
+      </button>
+      <button class="bible-tab-btn shrink-0" data-tab="daily" data-side-tool="daily" onclick="window.switchTool('daily')">
+        <i class="fa-solid fa-sun"></i> Verse of the Day
+      </button>
+      <button class="bible-tab-btn shrink-0" data-tab="concordance" data-side-tool="concordance" onclick="window.switchTool('concordance')">
+        <i class="fa-solid fa-magnifying-glass"></i> Word Study
+      </button>
+      <button class="bible-tab-btn shrink-0" data-tab="typing" data-side-tool="typing" onclick="window.switchTool('typing')">
+        <i class="fa-solid fa-brain text-rose-500"></i><span>Memory • ខគម្ពីរចងចាំ</span>
+      </button>
+      <button class="bible-tab-btn shrink-0" data-tab="notes" data-side-tool="notes" onclick="window.switchTool('notes')">
+        <i class="fa-solid fa-pen-to-square"></i> Notes
+      </button>
+    </div>
+
+    <!-- Active View Host -->
+    <div id="bible-view-root" class="space-y-4">
+      <div class="card p-12 text-center text-muted">
+        <i class="fa-solid fa-circle-notch fa-spin text-3xl text-brand mb-2"></i>
+        <p class="font-medium text-sm">Loading Bible Studio...</p>
+      </div>
+    </div>
+
   </section>
 
-  <!-- Top Tools Navigation Bar -->
-  <div class="card p-1.5 flex items-center gap-1 overflow-x-auto no-scrollbar mb-4 mt-2">
-    <button class="bible-tab-btn is-active shrink-0" data-tab="reader" onclick="window.switchTool('reader')">
-      <i class="fa-solid fa-book-open"></i><span>Reader</span>
-    </button>
-    <button class="bible-tab-btn shrink-0" data-tab="parallel" onclick="window.switchTool('parallel')">
-      <i class="fa-solid fa-columns"></i><span>Parallel</span>
-    </button>
-    <button class="bible-tab-btn shrink-0" data-tab="memory" onclick="window.switchTool('memory')">
-      <i class="fa-solid fa-brain text-rose-500"></i><span>Memory • ខគម្ពីរចងចាំ</span>
-    </button>
-    <button class="bible-tab-btn shrink-0" data-tab="designer" onclick="window.switchTool('designer')">
-      <i class="fa-solid fa-palette"></i><span>Designer</span>
-    </button>
-    <button class="bible-tab-btn shrink-0" data-tab="daily" onclick="window.switchTool('daily')">
-      <i class="fa-solid fa-sun"></i><span>Daily Verse</span>
-    </button>
-    <button class="bible-tab-btn shrink-0" data-tab="concordance" onclick="window.switchTool('concordance')">
-      <i class="fa-solid fa-spell-check"></i><span>Word Study</span>
-    </button>
-    <button class="bible-tab-btn shrink-0" data-tab="notes" onclick="window.switchTool('notes')">
-      <i class="fa-solid fa-pen-to-square"></i><span>Notes</span>
-    </button>
-  </div>
+  <!-- ───── RIGHT RAIL: STANDARD HIGHLIGHTS & WIDGETS ───── -->
+  <aside class="hidden xl:block sticky top-[72px] space-y-4">
+    
+    <!-- Verse of the Day Widget -->
+    <section class="card p-4 bg-surface border border-line space-y-3">
+      <div class="flex items-center justify-between border-b border-line pb-2.5">
+        <div class="flex items-center gap-2 text-xs font-bold text-[#1877F2] uppercase tracking-wider">
+          <i class="fa-solid fa-sun text-amber-500"></i> Verse of the Day
+        </div>
+        <button class="w-7 h-7 rounded-full hover:bg-raised flex items-center justify-center text-muted" title="Share" onclick="window.copyDailyVerse()">
+          <i class="fa-regular fa-copy text-xs"></i>
+        </button>
+      </div>
+      <blockquote class="space-y-1.5" id="right-votd">
+        <p class="font-khmer text-sm text-ink leading-relaxed font-medium" id="right-votd-km">«ដ្បិតព្រះទ្រង់ស្រឡាញ់មនុស្សលោក...»</p>
+        <p class="font-serif italic text-xs text-muted leading-relaxed" id="right-votd-en">“For God so loved the world...”</p>
+        <div class="text-xs font-bold text-[#1877F2] pt-1" id="right-votd-ref">John 3:16 • យ៉ូហាន ៣:១៦</div>
+      </blockquote>
+      <div class="pt-2 border-t border-line flex items-center justify-between">
+        <button class="btn btn-neutral !py-1 !px-2.5 !text-xs" data-side-tool="daily" onclick="window.switchTool('daily')">Open Devotional</button>
+        <button class="btn btn-primary !py-1 !px-2.5 !text-xs" onclick="window.designDailyVerse()">Design Card</button>
+      </div>
+    </section>
 
-  <!-- Active Tool View Root -->
-  <div id="bible-view-root" class="space-y-4">
-    <div class="card p-12 text-center text-muted">
-      <i class="fa-solid fa-circle-notch fa-spin text-2xl text-brand mb-2"></i>
-      <p class="font-medium text-sm">Loading Bible Studio...</p>
-    </div>
-  </div>
+    <!-- Word Study Quick Spotlight -->
+    <section class="card p-4 bg-surface border border-line space-y-2.5">
+      <div class="flex items-center gap-2 text-xs font-bold text-emerald-600 uppercase tracking-wider">
+        <i class="fa-solid fa-seedling"></i> Greek Word of the Day
+      </div>
+      <div>
+        <h4 class="font-bold text-sm text-ink">Grace • <span class="text-xs text-brand font-serif">χάρις (charis)</span></h4>
+        <p class="text-xs text-muted mt-1 leading-relaxed">God's unmerited favor and divine enablement freely bestowed through Jesus Christ.</p>
+      </div>
+      <button class="text-xs text-brand font-semibold hover:underline block pt-1" data-side-tool="concordance" onclick="window.switchTool('concordance')">
+        Explore 9 biblical word studies →
+      </button>
+    </section>
+
+    <!-- Preacher Quote Spotlight -->
+    <section class="card p-4 bg-surface border border-line space-y-2">
+      <div class="flex items-center gap-2 text-xs font-bold text-purple-600 uppercase tracking-wider">
+        <i class="fa-solid fa-quote-left"></i> Inspiration
+      </div>
+      <p class="font-serif italic text-xs text-ink/90 leading-relaxed">“Visit many good books, but live in the Bible.”</p>
+      <div class="text-[11px] font-bold text-muted text-right">— Charles Spurgeon</div>
+    </section>
+
+  </aside>
 
 </main>
 
 <audio id="bible-audio-player" preload="none" class="hidden"></audio>
 
-<script src="/faithin-app/assets/faithin-runtime.js?v=20260902-cpti-v2"></script>
-<script src="/assets/js/faith-in-backend.js?v=20260902-cpti-v2"></script>
-<script src="/faithin-app/assets/faithin.js?v=20260902-cpti-v2"></script>
+<script src="/faithin-app/assets/faithin-runtime.js?v=20260902-cpti-v3"></script>
+<script src="/assets/js/faith-in-backend.js?v=20260902-cpti-v3"></script>
+<script src="/faithin-app/assets/faithin.js?v=20260902-cpti-v3"></script>
 <script>
 (() => {
   'use strict';
