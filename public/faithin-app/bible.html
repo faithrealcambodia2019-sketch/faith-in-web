@@ -954,166 +954,368 @@
     }
   ];
 
-  // ─── Church History Timeline Dataset (ប្រវត្តិសាស្ត្រក្រុមជំនុំ) ───
+  // ─── World Church History Comprehensive Dataset (English Only & Full Detail) ───
   const CHURCH_HISTORY_DATA = [
     {
       id: 'early-church',
       era: '33 – 312 AD',
-      titleKhmer: 'ក្រុមជំនុំដំបូង & ពួកសាវក',
-      titleEnglish: 'Early Church & Apostolic Fathers',
+      title: 'The Apostolic Age & Early Persecution',
+      subtitle: 'Birth of the Church, Apostolic Fathers & Roman Persecutions',
       badge: 'Apostolic Age',
       bgImg: 'https://images.unsplash.com/photo-1548625361-16eb142b4d4b?auto=format&fit=crop&w=1200&q=80',
-      summaryKhmer: 'ចាប់ផ្តើមពីថ្ងៃបុណ្យទី៥០ (Pentecost) ដំណឹងល្អបានរីករាលដាលយ៉ាងឆាប់រហ័សទូទាំងចក្រភពរ៉ូម ទោះបីជាត្រូវឆ្លងកាត់ការបៀតបៀនយ៉ាងធ្ងន់ធ្ងរពីស្តេចនេរ៉ូ និងឌីអូគ្លីធានក៏ដោយ។ ពួកអ្នកដឹកនាំជំនាន់ដំបូង (ដូចជា ប៉ូលីកាប, យូស្ទីន ម៉ាទីរ, អ៊ីរេណេស) បានឈរយ៉ាងរឹងមាំក្នុងការការពារសេចក្តីពិតនៃដំណឹងល្អ។',
-      summaryEnglish: 'From the Day of Pentecost, the Gospel spread rapidly throughout the Roman Empire despite severe persecutions. Apostolic Fathers faithfully preserved biblical doctrine and gave their lives as martyrs.',
+      overview: 'Beginning on the Day of Pentecost in Jerusalem, the New Testament Church was ignited by the Holy Spirit. Despite intense Roman imperial persecution under emperors like Nero, Domitian, and Diocletian, the Gospel spread relentlessly across the Mediterranean world through apostolic witness, house churches, and sacrificial love. Early Christian apologists and Apostolic Fathers defended orthodox Christian doctrine against pagan philosophy and early Gnostic heresies, laying the foundations for the New Testament canon and the historic rule of faith (Regula Fidei).',
       keyQuote: {
-        km: '«ឈាមនៃពួកទុក្ករបុគ្គល គឺជាគ្រាប់ពូជនៃក្រុមជំនុំ»',
-        en: '“The blood of the martyrs is the seed of the Church.”',
-        author: 'Tertullian (១៦០–២២៥ គ.ស.)'
+        text: '“The blood of the martyrs is the seed of the Church.”',
+        author: 'Tertullian of Carthage (c. 155 – 240 AD)',
+        context: 'Written in Apologeticus defending persecuted Christians before Roman governors.'
       },
+      doctrines: [
+        { name: 'Apostolic Kerygma', desc: 'The preaching of Christ crucified, risen from the dead on the third day, and ascended as Lord of all (Acts 2:22-36).' },
+        { name: 'Canon of the New Testament', desc: 'The gradual recognition and collection of the 27 inspired apostolic writings, established against Marcionism and Gnosticism.' },
+        { name: 'Trinitarian Formulation', desc: 'Early articulation of the Godhead as Father, Son, and Holy Spirit by Tertullian, Clement, and Irenaeus.' }
+      ],
       figures: [
-        { name: 'Polycarp of Smyrna (ប៉ូលីកាប)', role: 'Disciple of Apostle John & Bishop', detail: 'Martyred at age 86: "Eighty-six years have I served Christ, and He never did me wrong. How can I blaspheme my King and Savior?"' },
-        { name: 'Justin Martyr (យូស្ទីន ម៉ាទីរ)', role: 'Early Christian Apologist', detail: 'Defended the truth and rationality of Christian faith before the Roman Emperor; martyred for Christ in 165 AD.' },
-        { name: 'Irenaeus of Lyons (អ៊ីរេណេស)', role: 'Bishop & Defender of Orthodoxy', detail: 'Authored "Against Heresies", affirming the four canonical Gospels and the unity of God’s covenant.' }
+        {
+          name: 'Polycarp of Smyrna (c. 69 – 155 AD)',
+          role: 'Disciple of the Apostle John & Bishop of Smyrna',
+          detail: 'One of the earliest Apostolic Fathers. When ordered by the Roman proconsul to renounce Christ, he boldly declared: "Eighty and six years have I served Him, and He never did me any injury: how then can I blaspheme my King and my Savior?" He was martyred at the stake.'
+        },
+        {
+          name: 'Justin Martyr (c. 100 – 165 AD)',
+          role: 'Pioneer Christian Philosopher & Apologist',
+          detail: 'Authored the First and Second Apologies addressed to Roman Emperor Antoninus Pius, demonstrating that Jesus Christ is the divine Logos (Word) and the fulfillment of all Old Testament prophecy.'
+        },
+        {
+          name: 'Irenaeus of Lyons (c. 130 – 202 AD)',
+          role: 'Bishop of Lugdunum (Gaul) & Defender of Orthodoxy',
+          detail: 'Wrote the landmark treatise "Against Heresies" (Adversus Haereses), refuting Gnostic dualism, affirming the unity of the Old and New Testaments, and defending the fourfold Gospel canon (Matthew, Mark, Luke, John).'
+        },
+        {
+          name: 'Tertullian of Carthage (c. 155 – 240 AD)',
+          role: 'Father of Latin Theology & Apologist',
+          detail: 'First major theologian to write extensively in Latin. Coined foundational theological terminology, including the Latin word "Trinitas" (Trinity) and the formula of "one substance, three persons" (una substantia, tres personae).'
+        },
+        {
+          name: 'Origen of Alexandria (c. 185 – 254 AD)',
+          role: 'Biblical Scholar & Exegete',
+          detail: 'Produced the monumental Hexapla (six-column comparative Old Testament Bible) and wrote De Principiis, the first comprehensive systematic presentation of Christian doctrine.'
+        }
       ],
       events: [
-        { year: '33 AD', title: 'Day of Pentecost', desc: 'Outpouring of the Holy Spirit and birth of the New Testament Church in Jerusalem (Acts 2).' },
-        { year: '64–67 AD', title: 'Martyrdom of Peter & Paul', desc: 'Apostles Peter and Paul martyred in Rome under Emperor Nero.' },
-        { year: '303–311 AD', title: 'The Great Persecution', desc: 'Diocletian’s empire-wide persecution failing to stop the explosive growth of Christians.' }
+        { year: '33 AD', title: 'Day of Pentecost', desc: 'Outpouring of the Holy Spirit in Jerusalem; birth of the global Christian Church (Acts 2).' },
+        { year: '49 AD', title: 'Council of Jerusalem', desc: 'Apostles affirm Gentile believers are saved by grace through faith without Jewish ceremonial law (Acts 15).' },
+        { year: '64–67 AD', title: 'Neronian Persecution & Martyrdom', desc: 'First imperial persecution following the Great Fire of Rome; martyrdom of Apostles Peter and Paul in Rome.' },
+        { year: '70 AD', title: 'Destruction of Jerusalem Temple', desc: 'Roman legions under General Titus destroy Jerusalem and the Second Temple, scattering Jewish and Christian communities.' },
+        { year: '303–311 AD', title: 'The Great Diocletianic Persecution', desc: 'The fiercest empire-wide persecution ordering the destruction of churches and burning of all Christian scriptures.' }
       ],
-      keyScripture: { ref: 'Acts 2:42-47', label: 'Birth of the Early Church (កិច្ចការ ២:៤២-៤៧)', book: 'Acts', ch: 2 }
+      creedDocument: {
+        title: 'The Didache & Early Roman Symbol',
+        summary: 'The Didache (Teaching of the Twelve Apostles, c. 90–120 AD) provided early guidelines for baptism, communion, and worship, alongside the early baptismal confession that developed into the Apostles’ Creed.'
+      },
+      scripture: { ref: 'Acts 2:42-47', label: 'The Apostolic Fellowship (Acts 2:42-47)', book: 'Acts', ch: 2 }
     },
     {
       id: 'councils-creeds',
-      era: '313 – 590 AD',
-      titleKhmer: 'ក្រុមប្រឹក្សាអេគូមេនិក & គោលលទ្ធិគ្រីស្ទ',
-      titleEnglish: 'Imperial Church & Ecumenical Councils',
-      badge: 'Great Councils',
+      era: '312 – 590 AD',
+      title: 'The Imperial Church & The Great Councils',
+      subtitle: 'Christian Empire, Trinitarian Orthodoxy & Christological Creeds',
+      badge: 'Ecumenical Councils',
       bgImg: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=1200&q=80',
-      summaryKhmer: 'បន្ទាប់ពីក្រឹត្យក្រមក្រុងមីឡាន (Edict of Milan 313 AD) គ្រីស្ទសាសនាទទួលបានសេរីភាព។ ក្រុមជំនុំបានប្រជុំក្រុមប្រឹក្សាធំៗ (នីសៀ ៣២៥ គ.ស. និងខាល់សេដូន ៤៥១ គ.ស.) ដើម្បីកំណត់យ៉ាងច្បាស់លាស់នូវគោលលទ្ធិព្រះត្រីឯក និងព្រះលក្ខណៈទាំងពីររបស់ព្រះគ្រីស្ទ (ព្រះពិត & មនុស្សពិត)។',
-      summaryEnglish: 'Christianity was legalized, leading to monumental Ecumenical Councils (Nicaea 325 AD, Chalcedon 451 AD) that formulated historic creeds articulating the Trinity and Christ’s dual natures (Fully God, Fully Man).',
+      overview: 'With the conversion of Emperor Constantine and the Edict of Milan (313 AD), Christianity transformed from a persecuted underground movement into the recognized religion of the Roman Empire. This era witnessed monumental theological debates that defined classical Christian orthodoxy through the Four Ecumenical Councils (Nicaea 325, Constantinople 381, Ephesus 431, Chalcedon 451). Church Fathers clarified the Holy Trinity (One God in Three Persons) and the hypostatic union of Jesus Christ (Truly God and Truly Man).',
       keyQuote: {
-        km: '«ព្រះបុត្រាទ្រង់បានត្រឡប់ជាមនុស្ស ដើម្បីឲ្យយើងបានស្គាល់ព្រះ»',
-        en: '“The Son of God became man that we might become partakers of the divine nature.”',
-        author: 'Athanasius of Alexandria (២៩៦–៣៧៣ គ.ស.)'
+        text: '“The Son of God became man that we might become the children of God.”',
+        author: 'Athanasius of Alexandria (296 – 373 AD)',
+        context: 'From On the Incarnation of the Word (De Incarnatione Verbi Dei).'
       },
+      doctrines: [
+        { name: 'Consubstantiality (Homoousios)', desc: 'Jesus Christ is of the identical divine essence and substance with the Father, eternally begotten, not created.' },
+        { name: 'Hypostatic Union', desc: 'The personal union of full divinity and full humanity in the one Person of the Lord Jesus Christ without confusion or division.' },
+        { name: 'Sovereign Grace', desc: 'Augustinian defense of the total necessity of God’s unmerited, regenerating grace against Pelagian self-righteousness.' }
+      ],
       figures: [
-        { name: 'Athanasius of Alexandria (អាថាណាស៊ីយូស)', role: 'Champion of Nicaea & Bishop', detail: 'Stood "Athanasius contra mundum" against Arianism to affirm that Jesus is of the exact same divine essence (Homoousios) as the Father.' },
-        { name: 'Augustine of Hippo (អូស្ទីន)', role: 'Theologian & Bishop', detail: 'Authored "Confessions" and "The City of God", articulating the biblical doctrines of sovereign grace and original sin.' },
-        { name: 'John Chrysostom (យ៉ូហាន គ្រីសូស្តូម)', role: 'Archbishop of Constantinople', detail: 'Known as the "Golden-Mouthed" preacher for his expository sermons and fearless call for biblical righteousness.' }
+        {
+          name: 'Athanasius of Alexandria (296 – 373 AD)',
+          role: 'Bishop of Alexandria & Champion of Nicaea',
+          detail: 'Exiled five times for defending the deity of Christ against the Arian heresy. He stood firm ("Athanasius contra mundum") and in 367 AD wrote the 39th Festal Letter, listing for the first time the exact 27 books of our New Testament canon.'
+        },
+        {
+          name: 'Augustine of Hippo (354 – 430 AD)',
+          role: 'Bishop of Hippo & Doctor of Grace',
+          detail: 'The most influential Western church theologian. Author of "Confessions" (spiritual autobiography), "The City of God" (theology of history), and "On Christian Doctrine". His theology of grace profoundly shaped the Protestant Reformation.'
+        },
+        {
+          name: 'John Chrysostom (347 – 407 AD)',
+          role: 'Archbishop of Constantinople & Expository Preacher',
+          detail: 'Celebrated as the "Golden-Mouthed" orator. Delivered verse-by-verse expository sermons through Paul\'s epistles and Matthew, fearlessly rebuking imperial corruption and calling the church to holy living and charity.'
+        },
+        {
+          name: 'Jerome of Stridon (c. 347 – 420 AD)',
+          role: 'Biblical Scholar & Translator',
+          detail: 'Mastered Hebrew, Greek, and Latin in Bethlehem. Translated the Old Testament directly from original Hebrew manuscripts into the Latin Vulgate, which served as the standard Bible of Western Christendom for over a millennium.'
+        },
+        {
+          name: 'The Cappadocian Fathers (Basil, Gregory of Nazianzus, Gregory of Nyssa)',
+          role: 'Eastern Theologians & Bishops (4th Century)',
+          detail: 'Defended the deity of the Holy Spirit at the Council of Constantinople (381 AD) and formulated the classical Trinitarian formula: One divine essence (ousia) in three distinct Persons (hypostases).'
+        }
       ],
       events: [
-        { year: '313 AD', title: 'Edict of Milan', desc: 'Emperor Constantine grants complete religious liberty to Christians across the Roman Empire.' },
-        { year: '325 AD', title: 'Council of Nicaea', desc: 'Formulation of the Nicene Creed affirming that Jesus Christ is True God of True God.' },
-        { year: '451 AD', title: 'Council of Chalcedon', desc: 'Defined Jesus Christ as one Person in two natures (fully God, fully Man) without confusion or division.' }
+        { year: '313 AD', title: 'Edict of Milan', desc: 'Emperor Constantine legalizes Christianity throughout the Roman Empire, granting full religious liberty.' },
+        { year: '325 AD', title: 'First Council of Nicaea', desc: '318 bishops convene to condemn Arianism; formulate the landmark Nicene Creed declaring Christ to be Homoousios with the Father.' },
+        { year: '381 AD', title: 'Council of Constantinople', desc: 'Affirms the full deity of the Holy Spirit; completes the Nicene-Constantinopolitan Creed confessed to this day.' },
+        { year: '405 AD', title: 'Jerome Completes the Latin Vulgate', desc: 'First authoritative Western translation of the entire Bible from original Hebrew and Greek manuscripts.' },
+        { year: '451 AD', title: 'Council of Chalcedon', desc: 'Defines the Two Natures of Jesus Christ: fully God and fully Man in one Person without confusion, change, division, or separation.' }
       ],
-      keyScripture: { ref: 'Colossians 1:15-20', label: 'The Supremacy of Christ (កូឡូស ១:១៥-២០)', book: 'Colossians', ch: 1 }
+      creedDocument: {
+        title: 'The Nicene Creed (325/381 AD) & Chalcedonian Definition (451 AD)',
+        summary: 'The universal ecumenical standards articulating the Trinity and the dual natures of Christ that remain the standard of Christian orthodoxy worldwide.'
+      },
+      scripture: { ref: 'Colossians 1:15-20', label: 'The Supremacy of Christ (Colossians 1:15-20)', book: 'Colossians', ch: 1 }
     },
     {
       id: 'medieval-monastic',
       era: '590 – 1517 AD',
-      titleKhmer: 'យុគកណ្តាល & ការថែរក្សាព្រះបន្ទូល',
-      titleEnglish: 'Medieval Church & Scriptural Preservation',
-      badge: 'Preservation',
+      title: 'The Medieval Church & Scriptural Preservation',
+      subtitle: 'Monasticism, The Great Schism, Scholasticism & Pre-Reformers',
+      badge: 'Medieval Era',
       bgImg: 'https://images.unsplash.com/photo-1519817650390-64a93db51149?auto=format&fit=crop&w=1200&q=80',
-      summaryKhmer: 'នៅក្នុងយុគកណ្តាល វត្តអារាម និងអ្នកចម្លងគម្ពីរបានថែរក្សាព្រះគម្ពីរយ៉ាងស្មោះត្រង់។ ទន្ទឹមនឹងនេះ ពួកអ្នកត្រួសត្រាយផ្លូវនៃការកែទម្រង់ដូចជា ចន វិគ្លីហ្វ និង យ៉ាន ហ៊ូស បានចាប់ផ្តើមបកប្រែព្រះគម្ពីរជាភាសាប្រជាជន និងអំពាវនាវឲ្យវិលត្រឡប់មករកព្រះបន្ទូលបរិសុទ្ធវិញ។',
-      summaryEnglish: 'Monastic scribes faithfully copied and preserved Biblical manuscripts. "Morning Stars of the Reformation" like John Wycliffe and Jan Hus championed vernacular Scripture and supreme biblical authority.',
+      overview: 'Throughout the Middle Ages, Christian monasteries served as beacons of spiritual life, education, and scriptural preservation. Scribes painstakingly copied and preserved Greek and Latin biblical manuscripts through centuries of political upheaval. While scholastic theologians like Thomas Aquinas and Anselm of Canterbury synthesized Christian doctrine and philosophy, the "Morning Stars of the Reformation"—John Wycliffe and Jan Hus—boldly arose to proclaim the supreme authority of the Bible and translate God\'s Word into the languages of the common people.',
       keyQuote: {
-        km: '«សេចក្តីពិតនឹងឈ្នះលើគ្រប់ឧបសគ្គ និងការកុហក»',
-        en: '“Truth prevails over all things.”',
-        author: 'Jan Hus (១៣៦៩–១៤១៥ គ.ស.)'
+        text: '“Truth prevails over all things. Love the truth, speak the truth, hold the truth, and defend the truth until death.”',
+        author: 'Jan Hus (1369 – 1415 AD)',
+        context: 'Spoken before his martyrdom at the Council of Constance.'
       },
+      doctrines: [
+        { name: 'Preservation of Scripture', desc: 'The faithful scribal preservation of biblical texts in monastic scriptoria, laying the textual foundation for the printed Bible.' },
+        { name: 'Substitutionary Atonement', desc: 'Anselm’s Satisfaction Theory demonstrating that only the God-Man could pay the infinite debt of human sin against God’s holy justice.' },
+        { name: 'Primacy of Scripture', desc: 'Wycliffe and Hus’s foundational assertion that the Bible alone is the supreme, inerrant standard over popes and traditions.' }
+      ],
       figures: [
-        { name: 'John Wycliffe (ចន វិគ្លីហ្វ)', role: 'Morning Star of the Reformation', detail: 'Oxford scholar who produced the first complete English Bible from Latin in 1382, declaring the Bible as the supreme authority.' },
-        { name: 'Jan Hus (យ៉ាន ហ៊ូស)', role: 'Czech Preacher & Reformer', detail: 'Preached in Prague against corruption; burned at the stake at Council of Constance in 1415 for holding Scripture above papal authority.' },
-        { name: 'Anselm of Canterbury (អានសែល)', role: 'Archbishop & Theologian', detail: 'Developed the Satisfaction Theory of Atonement in "Cur Deus Homo" (Why God Became Man).' }
+        {
+          name: 'John Wycliffe (c. 1328 – 1384 AD)',
+          role: 'The Morning Star of the Reformation & Oxford Scholar',
+          detail: 'Produced the first complete translation of the Bible into the English language (1382). He declared that the Bible belongs to all believers and rejected papal claims of infallibility.'
+        },
+        {
+          name: 'Jan Hus (c. 1369 – 1415 AD)',
+          role: 'Bohemian Preacher & Czech Reformer',
+          detail: 'Rector of the University of Prague who preached bold biblical reform against indulgences. Burned at the stake for refusing to recant his biblical convictions; his followers sparked the Hussite movement.'
+        },
+        {
+          name: 'Thomas Aquinas (1225 – 1274 AD)',
+          role: 'Dominican Theologian & Philosopher (Doctor Angelicus)',
+          detail: 'Authored the monumental "Summa Theologiae", systematically addressing God\'s existence, Christology, ethics, and sacraments in one of Christian history\'s greatest intellectual achievements.'
+        },
+        {
+          name: 'Anselm of Canterbury (1033 – 1109 AD)',
+          role: 'Archbishop of Canterbury & Father of Scholasticism',
+          detail: 'Famous for the Ontological Argument for God\'s existence and his groundbreaking book "Cur Deus Homo" (Why God Became Man), which articulated the biblical substitutionary atonement.'
+        },
+        {
+          name: 'Bernard of Clairvaux (1090 – 1153 AD)',
+          role: 'Cistercian Abbot, Theologian & Hymnwriter',
+          detail: 'Known for his deep devotion to Christ and writings on the love of God. His Christ-centered hymns ("O Sacred Head, Now Wounded") were deeply cherished by Martin Luther and John Calvin.'
+        }
       ],
       events: [
-        { year: '1054 AD', title: 'The Great East-West Schism', desc: 'Mutual split between Western Roman Catholicism and Eastern Orthodoxy.' },
-        { year: '1382 AD', title: 'Wycliffe’s Bible', desc: 'First complete translation of the Bible into English from the Vulgate.' },
-        { year: '1453 AD', title: 'Gutenberg Printing Press', desc: 'Invention of movable type printing press, allowing mass distribution of the Holy Bible.' }
+        { year: '590 AD', title: 'Papacy of Gregory the Great', desc: 'Consolidation of medieval church leadership and launching of missionary outreach to England and Northern Europe.' },
+        { year: '1054 AD', title: 'The Great East-West Schism', desc: 'Formal split between the Western Roman Catholic Church and the Eastern Orthodox Church over papal authority and the Filioque clause.' },
+        { year: '1093 AD', title: 'Anselm Formulates the Atonement', desc: 'Publication of Cur Deus Homo establishing the theology of Christ satisfying divine justice on behalf of sinners.' },
+        { year: '1382 AD', title: 'First Complete English Bible', desc: 'John Wycliffe and his associates complete the first translation of the Holy Scriptures into English.' },
+        { year: '1415 AD', title: 'Martyrdom of Jan Hus', desc: 'Jan Hus martyred at the Council of Constance, prophesying the coming Reformation century.' },
+        { year: '1455 AD', title: 'Gutenberg Prints the Latin Bible', desc: 'Johannes Gutenberg invents movable type printing in Mainz, Germany, printing the Bible and transforming world history.' }
       ],
-      keyScripture: { ref: 'Psalm 119:105', label: 'God’s Eternal Word (ទំនុកដំកើង ១១៩:១០៥)', book: 'Psalms', ch: 119 }
+      creedDocument: {
+        title: 'Wycliffe’s English Bible & The Seven Ecumenical Creeds',
+        summary: 'Manuscript translations of the Scriptures distributed secretly by the Lollards, keeping the light of the Gospel burning across Europe.'
+      },
+      scripture: { ref: 'Psalm 119:105', label: 'Lamp unto My Feet (Psalm 119:105)', book: 'Psalms', ch: 119 }
     },
     {
       id: 'reformation',
       era: '1517 – 1648 AD',
-      titleKhmer: 'ការកែទម្រង់ជំនឿប្រូតេស្តង់',
-      titleEnglish: 'The Protestant Reformation',
-      badge: '5 Solas',
+      title: 'The Protestant Reformation',
+      subtitle: 'Recovery of the Gospel, Sola Scriptura & Justification by Faith Alone',
+      badge: 'The Reformation',
       bgImg: 'https://images.unsplash.com/photo-1461360370896-922624d12aa1?auto=format&fit=crop&w=1200&q=80',
-      summaryKhmer: 'នៅឆ្នាំ ១៥១៧ ម៉ាទីន លូសឺរ បានបិទប្រកាស ៩៥ ប្រការនៅក្រុង Wittenberg ដែលជាការចាប់ផ្តើមនៃការកែទម្រង់ប្រូតេស្តង់។ ដំណឹងល្អនៃសេចក្តីសង្គ្រោះដោយព្រះគុណតាមរយៈជំនឿតែមួយគត់ (Sola Fide, Sola Gratia) និងសិទ្ធិអំណាចនៃព្រះបន្ទូល (Sola Scriptura) ត្រូវបានស្តារឡើងវិញ។',
-      summaryEnglish: 'Sparked by Martin Luther’s 95 Theses in 1517, the Reformation recovered the biblical Gospel of justification by grace alone through faith alone in Christ alone, anchored on Scripture alone.',
+      overview: 'Sparked on October 31, 1517, when Martin Luther posted the Ninety-Five Theses in Wittenberg, Germany, the Protestant Reformation was the greatest spiritual recovery since the Apostolic Age. The Reformers recovered the biblical Gospel of justification by God’s grace alone (Sola Gratia) through faith alone (Sola Fide) in Jesus Christ alone (Solus Christus), anchored upon the supreme authority of Scripture alone (Sola Scriptura) to the glory of God alone (Soli Deo Gloria). This era produced widespread vernacular Bible translations, Christ-centered catechisms, and historic confessional standards that established Protestant orthodoxy worldwide.',
       keyQuote: {
-        km: '«ខ្ញុំឈរនៅទីនេះ ខ្ញុំមិនអាចធ្វើផ្សេងពីនេះបានឡើយ សូមព្រះទ្រង់ជួយទូលបង្គំផង»',
-        en: '“Here I stand, I can do no other, so help me God.”',
-        author: 'Martin Luther (១៤៨៣–១៥៤៦ គ.ស.)'
+        text: '“My conscience is captive to the Word of God. I cannot and will not recant anything, for to go against conscience is neither right nor safe. Here I stand, I can do no other, so help me God. Amen.”',
+        author: 'Martin Luther (1483 – 1546 AD)',
+        context: 'Declaration before Holy Roman Emperor Charles V at the Diet of Worms (1521).'
       },
+      doctrines: [
+        { name: 'Sola Scriptura (Scripture Alone)', desc: 'The Bible alone is the inerrant, sufficient, and ultimate authority for Christian doctrine, worship, and practice.' },
+        { name: 'Sola Fide (Faith Alone)', desc: 'Sinners are justified and declared righteous before God solely by the imputed righteousness of Jesus Christ received through faith.' },
+        { name: 'Priesthood of All Believers', desc: 'Every redeemed Christian has direct access to God through the one Mediator, Jesus Christ, without need for earthly sacerdotal priests.' }
+      ],
       figures: [
-        { name: 'Martin Luther (ម៉ាទីន លូសឺរ)', role: 'German Reformer & Scholar', detail: 'Recovered the truth of Justification by Faith Alone (Romans 1:17); translated the Bible into German.' },
-        { name: 'John Calvin (ចន កាល់វីន)', role: 'Geneva Pastor & Reformer', detail: 'Authored the "Institutes of the Christian Religion", providing a comprehensive biblical exposition of the sovereignty and grace of God.' },
-        { name: 'William Tyndale (វីលៀម ធីនដេល)', role: 'English Bible Translator & Martyr', detail: 'Translated the NT directly from original Greek into English (1526); martyred in 1536 praying: "Lord, open the King of England’s eyes!"' }
+        {
+          name: 'Martin Luther (1483 – 1546 AD)',
+          role: 'German Augustinian Monk, Reformer & Professor',
+          detail: 'Leader of the German Reformation. Rediscovered Justification by Faith Alone from Romans 1:17. Translated the New Testament (1522) and Old Testament (1534) into German, wrote the Small Catechism, and composed hymns like "A Mighty Fortress Is Our God".'
+        },
+        {
+          name: 'John Calvin (1509 – 1564 AD)',
+          role: 'French Theologian & Pastor of Geneva',
+          detail: 'Authored the "Institutes of the Christian Religion", one of the greatest systematic expositions of the Christian faith. Founded the Geneva Academy, trained hundreds of missionary pastors across Europe, and shaped Reformed covenant theology.'
+        },
+        {
+          name: 'William Tyndale (c. 1494 – 1536 AD)',
+          role: 'English Bible Translator & Martyr',
+          detail: 'Translated the New Testament directly from the original Greek into English for the first time in history (1526). Betrayed and martyred at the stake in Vilvoorde near Brussels, praying: "Lord, open the King of England\'s eyes!" Over 80% of the King James Bible is Tyndale\'s direct phrasing.'
+        },
+        {
+          name: 'Huldrych Zwingli (1484 – 1531 AD)',
+          role: 'Pioneer of the Swiss Reformation in Zurich',
+          detail: 'Began the Swiss Reformation by preaching verse-by-verse through the Gospel of Matthew (Lectio Continua) and establishing the principle that only what is commanded in Scripture should govern church worship.'
+        },
+        {
+          name: 'John Knox (c. 1514 – 1572 AD)',
+          role: 'Leader of the Scottish Reformation',
+          detail: 'A disciple of Calvin in Geneva. Returned to Scotland to fearlessly preach the Gospel against Queen Mary of Guise, establishing the Presbyterian Church of Scotland. Famously prayed: "Give me Scotland, or I die!"'
+        }
       ],
       events: [
-        { year: '1517 AD', title: '95 Theses at Wittenberg', desc: 'Martin Luther posts 95 theses calling the Church back to biblical repentance and faith.' },
-        { year: '1521 AD', title: 'Diet of Worms', desc: 'Luther defends his writings before Emperor Charles V, declaring his conscience captive to God’s Word.' },
-        { year: '1611 AD', title: 'King James Bible Published', desc: 'Publication of the landmark Authorized King James Version of the Holy Bible.' },
-        { year: '1646 AD', title: 'Westminster Confession of Faith', desc: 'Historic confessional standard outlining Reformed biblical doctrines.' }
+        { year: 'October 31, 1517', title: 'Posting of the 95 Theses', desc: 'Martin Luther nails the 95 Theses to the Castle Church door in Wittenberg, attacking papal indulgences and calling for biblical repentance.' },
+        { year: '1521 AD', title: 'Diet of Worms', desc: 'Luther defends his writings before Holy Roman Emperor Charles V, declaring his conscience captive to the Word of God.' },
+        { year: '1526 AD', title: 'Tyndale’s English New Testament', desc: 'William Tyndale prints the first English New Testament translated directly from the original Greek in Worms.' },
+        { year: '1536 AD', title: 'Calvin’s Institutes of the Christian Religion', desc: 'First publication of Calvin\'s masterwork outlining Reformed systematic theology and the sovereign grace of God.' },
+        { year: '1611 AD', title: 'King James Version Published', desc: 'Publication of the Authorized King James Version of the Holy Bible in England.' },
+        { year: '1618–1619 AD', title: 'Synod of Dort', desc: 'International Reformed council convenes in the Netherlands, formulating the Canons of Dort defending the Doctrines of Grace (T.U.L.I.P.).' },
+        { year: '1646 AD', title: 'Westminster Confession of Faith', desc: '121 Puritan divines at Westminster Abbey formulate the Westminster Confession of Faith and Catechisms.' }
       ],
-      keyScripture: { ref: 'Romans 1:16-17', label: 'Justification by Faith (រ៉ូម ១:១៦-១៧)', book: 'Romans', ch: 1 }
+      creedDocument: {
+        title: 'The Five Solas & The Westminster Confession of Faith (1646)',
+        summary: 'The landmark confessional standards of the Reformation: Sola Scriptura, Sola Fide, Sola Gratia, Solus Christus, and Soli Deo Gloria.'
+      },
+      scripture: { ref: 'Romans 1:16-17', label: 'The Righteous Shall Live by Faith (Romans 1:16-17)', book: 'Romans', ch: 1 }
     },
     {
       id: 'missions-awakenings',
       era: '1648 – 1900 AD',
-      titleKhmer: 'ការភ្ញាក់រឭកធំ & បេសកកម្មពិភពលោក',
-      titleEnglish: 'Great Awakenings & Global Missions',
-      badge: 'Global Missions',
+      title: 'Great Awakenings & Global Frontier Missions',
+      subtitle: 'Transatlantic Revivals, Abolitionism & The Great Century of Missions',
+      badge: 'Global Awakenings',
       bgImg: 'https://images.unsplash.com/photo-1509021436665-8f07dbf5bf1d?auto=format&fit=crop&w=1200&q=80',
-      summaryKhmer: 'យុគសម័យនៃការភ្ញាក់រឭកខាងវិញ្ញាណធំៗនៅអឺរ៉ុប និងអាមេរិក (George Whitefield, John Wesley, Jonathan Edwards) បាននាំទៅរកការបញ្ជូនបេសកជនទៅកាន់គ្រប់ទ្វីប ដូចជា វីលៀម ខារី (ឥណ្ឌា), ហ៊ាត់សុន ថេឡ័រ (ចិន) និង ឆាលស៍ ស្ពើជិន។',
-      summaryEnglish: 'Spiritual awakenings ignited the Modern Missionary Movement. Pioneers like William Carey, Hudson Taylor, and Adoniram Judson carried the Gospel across Asia and the world.',
+      overview: 'The 18th and 19th centuries witnessed extraordinary outpourings of the Holy Spirit across the English-speaking world in the First and Second Great Awakenings. Preachers like Jonathan Edwards, George Whitefield, and John Wesley proclaimed personal conversion, repentance, and holiness. These revivals birthed monumental social reforms—including the abolition of the slave trade led by William Wilberforce—and launched the "Great Century of Christian Missions", sending thousands of pioneer missionaries to India, China, Africa, and the ends of the earth.',
       keyQuote: {
-        km: '«ចូររំពឹងគិតការដ៏ធំពីព្រះ ហើយខិតខំធ្វើការដ៏ធំសម្រាប់ព្រះ»',
-        en: '“Expect great things from God; attempt great things for God.”',
-        author: 'William Carey (១៧៦១–១៨៣៤ គ.ស.)'
+        text: '“Expect great things from God; attempt great things for God.”',
+        author: 'William Carey (1761 – 1834 AD)',
+        context: 'Preached from Isaiah 54:2-3 to the Baptist ministers at Nottingham (1792), launching modern world missions.'
       },
+      doctrines: [
+        { name: 'The Great Commission Mandate', desc: 'The universal and ongoing obligation of the Church to preach the Gospel and make disciples of all nations until Christ returns.' },
+        { name: 'Regeneration & Conversion', desc: 'Emphasis on the biblical necessity of personal spiritual rebirth by the Holy Spirit (the "New Birth") and practical holiness.' },
+        { name: 'Christian Social Transformation', desc: 'The direct application of Gospel principles to human dignity, resulting in the abolition of slavery, modern hospitals, and orphanages.' }
+      ],
       figures: [
-        { name: 'William Carey (វីលៀម ខារី)', role: 'Father of Modern Missions', detail: 'Missionary to India for 41 years; translated the Bible into Bengali, Sanskrit, and numerous Indian languages.' },
-        { name: 'Hudson Taylor (ហ៊ាត់សុន ថេឡ័រ)', role: 'Founder of China Inland Mission', detail: 'Brought the Gospel to the interior provinces of China, relying entirely on faith and prayer.' },
-        { name: 'Charles H. Spurgeon (ឆាលស៍ ស្ពើជិន)', role: 'Prince of Preachers', detail: 'Preached to millions in London Metropolitan Tabernacle with Christ-centered expository power.' }
+        {
+          name: 'Jonathan Edwards (1703 – 1758 AD)',
+          role: 'Theologian, Philosopher & Leader of the First Great Awakening',
+          detail: 'Pastor in Northampton, Massachusetts, and President of Princeton. Preached "Sinners in the Hands of an Angry God" (1741) and authored "Religious Affections", analyzing genuine works of the Holy Spirit in spiritual revival.'
+        },
+        {
+          name: 'George Whitefield (1714 – 1770 AD)',
+          role: 'Great Awakening Evangelist & Preacher',
+          detail: 'Known as the "Grand Itinerant". Preached over 18,000 sermons to an estimated 10 million listeners in open-air fields across Britain and America without amplification, igniting transatlantic revival.'
+        },
+        {
+          name: 'John Wesley (1703 – 1791) & Charles Wesley (1707 – 1788)',
+          role: 'Founders of Methodism & Hymnwriters',
+          detail: 'John traveled over 250,000 miles on horseback preaching personal holiness and forming discipleship class meetings. Charles composed over 6,500 classic hymns including "Hark! The Herald Angels Sing" and "And Can It Be".'
+        },
+        {
+          name: 'William Carey (1761 – 1834 AD)',
+          role: 'Father of Modern Missions & Missionary to India',
+          detail: 'Authored "An Enquiry into the Obligations of Christians" (1792). Labored in India for 41 years without returning home, translating the Bible into Bengali, Sanskrit, Oriya, and 40+ Indian dialects, while working to abolish the practice of widow-burning (Sati).'
+        },
+        {
+          name: 'Hudson Taylor (1832 – 1905 AD)',
+          role: 'Founder of the China Inland Mission (CIM)',
+          detail: 'Pioneered contextualized faith missions by wearing Chinese dress and hairstyle. CIM deployed over 800 missionaries into all 18 interior provinces of China, seeing over 125,000 baptisms through pure reliance on God in prayer.'
+        },
+        {
+          name: 'Charles Haddon Spurgeon (1834 – 1892 AD)',
+          role: 'The Prince of Preachers & London Pastor',
+          detail: 'Pastor of the Metropolitan Tabernacle in London for 38 years. Preached weekly to over 6,000 people and published more than 3,500 expository sermons that remain the most widely read Christian writings in history.'
+        },
+        {
+          name: 'William Wilberforce (1759 – 1833 AD)',
+          role: 'British Evangelical Statesman & Abolitionist',
+          detail: 'Converted through the Great Awakening; dedicated his parliamentary career to abolishing the British transatlantic slave trade (1807) and ending slavery across the entire British Empire (1833).'
+        }
       ],
       events: [
-        { year: '1730s–1740s', title: 'First Great Awakening', desc: 'Powerful revival across Britain and American colonies led by Edwards and Whitefield.' },
-        { year: '1792 AD', title: 'Modern Missions Movement', desc: 'Founding of Baptist Missionary Society by William Carey, launching global missions.' },
-        { year: '1865 AD', title: 'China Inland Mission Founded', desc: 'Hudson Taylor launches faith-based pioneer missionary work across China.' }
+        { year: '1730s–1740s', title: 'The First Great Awakening', desc: 'Widespread spiritual revival across Great Britain and the American colonies led by Edwards and Whitefield.' },
+        { year: '1792 AD', title: 'Founding of Baptist Missionary Society', desc: 'William Carey publishes his Enquiry and forms the society, launching the Modern Missions Movement.' },
+        { year: '1804 AD', title: 'British & Foreign Bible Society Founded', desc: 'Established to print and distribute affordable copies of the Scriptures in every language worldwide.' },
+        { year: '1807 AD', title: 'Abolition of the British Slave Trade', desc: 'Evangelical parliamentary campaign led by William Wilberforce successfully outlaws the slave trade.' },
+        { year: '1865 AD', title: 'China Inland Mission Founded', desc: 'Hudson Taylor establishes CIM to reach the millions in China\'s unreached interior provinces.' },
+        { year: '1875 AD', title: 'Moody & Sankey Revival Crusades', desc: 'D.L. Moody and Ira Sankey hold massive evangelistic campaigns across Britain and America, founding Moody Bible Institute.' }
       ],
-      keyScripture: { ref: 'Matthew 28:18-20', label: 'The Great Commission (ម៉ាថាយ ២៨:១៨-២០)', book: 'Matthew', ch: 28 }
+      scripture: { ref: 'Matthew 28:18-20', label: 'The Great Commission (Matthew 28:18-20)', book: 'Matthew', ch: 28 }
     },
     {
-      id: 'cambodia-heritage',
-      era: '1900 AD – បច្ចុប្បន្ន',
-      titleKhmer: 'ដំណឹងល្អ & ក្រុមជំនុំនៅកម្ពុជា',
-      titleEnglish: 'The Gospel & Church in Cambodia',
-      badge: 'Cambodia Heritage',
+      id: 'modern-church',
+      era: '1900 AD – Present',
+      title: 'The 20th Century to Present: Global Expansion & The World Church',
+      subtitle: 'Pentecostal Revival, Totalitarian Martyrdom & The Global South',
+      badge: 'World Church Today',
       bgImg: 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=1200&q=80',
-      summaryKhmer: 'នៅឆ្នាំ ១៩២៣ បេសកជនដំបូងនៃអង្គការ C&MA បានមកដល់ប្រទេសកម្ពុជា។ លោក អាធើរ ហាមម៉ុន (Arthur Hammond) បានចំណាយពេលជាច្រើនទសវត្សរ៍ដើម្បីបកប្រែព្រះគម្ពីរជាភាសាខ្មែរពេញលេញដំបូង (ចេញផ្សាយនៅឆ្នាំ ១៩៥៤)។ ទោះបីជាត្រូវឆ្លងកាត់របបខ្មែរក្រហម (១៩៧៥–១៩៧៩) ព្រះជាម្ចាស់បានការពារក្រុមជំនុំ ហើយនៅឆ្នាំ ២០២៣ កម្ពុជាបានប្រារព្ធខួប ១០០ ឆ្នាំនៃដំណឹងល្អ។',
-      summaryEnglish: 'In 1923, C&MA missionaries brought the Gospel to Cambodia. Rev. Arthur Hammond translated the landmark 1954 Khmer Holy Bible. Surviving the Khmer Rouge trials, the Cambodian Church stands vibrant, celebrating 100 years of the Gospel (1923–2023).',
+      overview: 'The 20th and 21st centuries witnessed both the greatest expansion of Christianity in history and the greatest persecution. More Christians were martyred for their faith in the 20th century under totalitarian regimes (Soviet Communism, Nazi Fascism, Maoist China, and the Khmer Rouge in Cambodia) than in all previous centuries combined. Simultaneously, the center of global Christianity shifted dramatically from Europe and North America to the Global South (Africa, Asia, and Latin America), where over two-thirds of the world\'s 2.5 billion believers reside today. The Gospel was brought to unreached nations—including Cambodia in 1923—and the complete Bible is now translated into thousands of world languages.',
       keyQuote: {
-        km: '«ព្រះបន្ទូលនៃព្រះគម្ពីរ បានចាក់ឫសយ៉ាងរឹងមាំក្នុងទឹកដីកម្ពុជា ហើយនឹងនៅស្ថិតស្ថេរជានិច្ច»',
-        en: '“The Word of God is firmly rooted in Cambodian soil and shall endure forever.”',
-        author: 'Rev. Arthur Hammond (បេសកជន C&MA និងអ្នកបកប្រែព្រះគម្ពីរខ្មែរ ១៩៥៤)'
+        text: '“He is no fool who gives what he cannot keep to gain what he cannot lose.”',
+        author: 'Jim Elliot (1927 – 1956 AD)',
+        context: 'Missionary martyr to the Waodani people in the Amazon rainforest of Ecuador.'
       },
+      doctrines: [
+        { name: 'Inerrancy of Scripture', desc: 'The historic reaffirmation of the total divine inspiration, truthfulness, and authority of the Bible (The Chicago Statement on Biblical Inerrancy, 1978).' },
+        { name: 'World Evangelization & The Lausanne Covenant', desc: 'Global evangelical consensus on the holistic proclamation of the whole Gospel by the whole Church to the whole world (1974).' },
+        { name: 'The Indwelling & Gifts of the Holy Spirit', desc: 'Global renewal in the power of the Holy Spirit for witness, discipleship, and church planting across every cultural context.' }
+      ],
       figures: [
-        { name: 'Rev. Arthur & Esther Hammond (លោក អាធើរ ហាមម៉ុន)', role: 'C&MA Pioneer & Khmer Bible Translator', detail: 'Arrived in Cambodia in 1923. Dedicated over 30 years to translating both Old and New Testaments into the classic 1954 Khmer Bible.' },
-        { name: 'Pastor Taing Chhork & Early Leaders', role: 'First Generation Cambodian Pastors', detail: 'Faithful leaders who established indigenous Khmer congregations and pastoral training in Phnom Penh and Battambang.' },
-        { name: 'Cambodian Faithful Martyrs & Survivors', role: 'Witnesses of the Khmer Rouge Era', detail: 'Endured extreme persecution (1975–1979); kept their faith underground, praying in secret and rebuilding the church post-1990.' }
+        {
+          name: 'C.S. Lewis (1898 – 1963 AD)',
+          role: 'Oxford Scholar, Literary Critic & Christian Apologist',
+          detail: 'One of the 20th century\'s most widely read Christian writers. Author of "Mere Christianity", "The Screwtape Letters", "The Problem of Pain", and "The Chronicles of Narnia", defending the rationality and beauty of the Gospel.'
+        },
+        {
+          name: 'Dietrich Bonhoeffer (1906 – 1945 AD)',
+          role: 'German Lutheran Pastor, Theologian & Martyr',
+          detail: 'Authored "The Cost of Discipleship" and "Life Together". Leader of the anti-Nazi Confessing Church who opposed Hitler\'s regime and was martyred at Flossenbürg concentration camp weeks before World War II ended.'
+        },
+        {
+          name: 'Billy Graham (1918 – 2018 AD)',
+          role: 'World Evangelist & Founder of the Lausanne Movement',
+          detail: 'Preached the Gospel in person to over 215 million people across 185 countries in landmark stadium crusades. Maintained steadfast integrity, racial integration at his rallies, and founded Christianity Today and the Lausanne Movement.'
+        },
+        {
+          name: 'Dr. Martyn Lloyd-Jones (1899 – 1981 AD)',
+          role: 'Pastor of Westminster Chapel (London) & Physician',
+          detail: 'Leader in 20th-century evangelical expository preaching. Delivered profound verse-by-verse sermons through Romans and Ephesians, championing the authority of Scripture and the power of the Holy Spirit.'
+        },
+        {
+          name: 'Arthur & Esther Hammond (1923 – 1954 AD in Cambodia)',
+          role: 'C&MA Pioneer Missionaries & Khmer Bible Translators',
+          detail: 'Arrived in Cambodia in 1923 as the first Protestant missionaries. Dedicated over 30 years to translating both Old and New Testaments from original languages into the classic 1954 Khmer Holy Bible, which sustained the Cambodian church through the Khmer Rouge genocide (1975–1979).'
+        },
+        {
+          name: 'John Stott (1921 – 2011 AD)',
+          role: 'Rector of All Souls Church (London) & Global Evangelical Leader',
+          detail: 'Chief architect of the Lausanne Covenant (1974). Author of "Basic Christianity" and "The Cross of Christ", dedicated to expository biblical preaching and training church leaders throughout the Global South.'
+        }
       ],
       events: [
-        { year: '1923', title: 'Arrival of C&MA Missionaries', desc: 'First Protestant missionaries arrive in Battambang and Phnom Penh.' },
-        { year: '1954', title: 'First Complete Khmer Bible (១៩៥៤)', desc: 'Arthur Hammond completes the first full translation of the Khmer Holy Bible.' },
-        { year: '1975–1979', title: 'Khmer Rouge Persecution', desc: 'Church buildings destroyed, yet the Church of Christ survives underground through prayer.' },
-        { year: '1990–1995', title: 'Church Reopening & Billy Graham Crusade', desc: 'Churches officially reopen in Cambodia; Billy Graham Crusade held in Phnom Penh in 1995.' },
-        { year: '2023', title: 'Centennial Celebration (១០០ ឆ្នាំនៃដំណឹងល្អ)', desc: 'Over 15,000 Christians gather at Koh Pich, Phnom Penh to celebrate 100 years of the Gospel in Cambodia.' }
+        { year: '1906 AD', title: 'Azusa Street Revival', desc: 'Multi-racial Pentecostal revival in Los Angeles, igniting the fastest-growing spiritual movement in modern history.' },
+        { year: '1910 AD', title: 'Edinburgh World Missionary Conference', desc: '1,200 delegates meet to plan global evangelization, establishing international missionary cooperation.' },
+        { year: '1923 AD', title: 'The Gospel Reaches Cambodia', desc: 'Arthur Hammond and C&MA pioneer missionaries arrive in Cambodia; first Protestant churches established.' },
+        { year: '1947 AD', title: 'Discovery of the Dead Sea Scrolls', desc: 'Ancient biblical manuscripts discovered at Qumran, confirming the extraordinary accuracy and reliability of the Old Testament.' },
+        { year: '1954 AD', title: 'First Complete Khmer Bible Published', desc: 'Arthur and Esther Hammond publish the first complete Khmer translation of the Old and New Testaments.' },
+        { year: '1974 AD', title: 'First Lausanne Congress for World Evangelization', desc: '2,700 leaders from 150 nations convene in Switzerland; adopt the Lausanne Covenant drafted by John Stott and Billy Graham.' },
+        { year: '2000s–Present', title: 'Rise of the Global South Church', desc: 'Christianity becomes truly global, with the majority of believers now living in Africa, Asia, and Latin America.' }
       ],
-      keyScripture: { ref: 'Isaiah 52:7', label: 'Feet that Bring Good Tidings (អេសាយ ៥២:៧)', book: 'Isaiah', ch: 52 }
+      scripture: { ref: 'Revelation 7:9-12', label: 'Every Nation, Tribe, People and Language (Revelation 7:9-12)', book: 'Revelation', ch: 7 }
     }
   ];
 
@@ -4359,7 +4561,7 @@
     `;
   }
 
-  // 11. Church History & Heritage Tool (ប្រវត្តិសាស្ត្រក្រុមជំនុំ)
+  // 11. World Church History & Heritage Tool (Comprehensive English Edition)
   function renderChurchHistory() {
     const selectedEra = CHURCH_HISTORY_DATA.find(e => e.id === state.history.selectedEra) || CHURCH_HISTORY_DATA[0];
 
@@ -4371,14 +4573,14 @@
           <div class="flex flex-wrap items-center justify-between gap-2.5">
             <div class="flex items-center gap-2">
               <span class="w-8 h-8 rounded-lg bg-gradient-to-tr from-amber-600 to-orange-600 text-white flex items-center justify-center font-bold text-sm shadow-2xs">
-                <i class="fa-solid fa-church"></i>
+                <i class="fa-solid fa-earth-americas"></i>
               </span>
               <div>
                 <h1 class="text-base sm:text-lg font-bold text-ink flex items-center gap-1.5">
-                  <span>Church History &amp; Heritage • ប្រវត្តិសាស្ត្រក្រុមជំនុំ</span>
-                  <span class="text-[9.5px] font-bold uppercase tracking-wider text-amber-600 bg-amber-500/10 px-2 py-0.5 rounded-full">Interactive</span>
+                  <span>World Church History</span>
+                  <span class="text-[9.5px] font-bold uppercase tracking-wider text-amber-600 bg-amber-500/10 px-2 py-0.5 rounded-full">2,000 Years of Christian Heritage</span>
                 </h1>
-                <p class="text-[11.5px] text-muted">Trace 2,000 years of God’s faithfulness from the Apostolic Church to the Gospel in Cambodia.</p>
+                <p class="text-[11.5px] text-muted">A comprehensive theological and historical survey of the global Christian Church across 6 major epochs.</p>
               </div>
             </div>
           </div>
@@ -4387,9 +4589,9 @@
         <!-- Timeline Epoch Selector Bar -->
         <div class="card p-1.5 bg-surface border border-line flex items-center gap-1.5 overflow-x-auto no-scrollbar">
           ${CHURCH_HISTORY_DATA.map(era => `
-            <button class="px-2.5 py-1.5 rounded-lg text-xs font-semibold transition shrink-0 text-left border ${state.history.selectedEra === era.id ? 'bg-brand text-white border-brand shadow-2xs font-bold' : 'bg-surface text-ink border-line hover:bg-raised'}" onclick="window.selectHistoryEra('${era.id}')">
-              <div class="text-[9.5px] uppercase opacity-80 tracking-wider">${era.era}</div>
-              <div class="font-khmer text-[11.5px] whitespace-nowrap">${era.titleKhmer}</div>
+            <button class="px-3 py-2 rounded-lg text-xs font-semibold transition shrink-0 text-left border ${state.history.selectedEra === era.id ? 'bg-brand text-white border-brand shadow-2xs font-bold' : 'bg-surface text-ink border-line hover:bg-raised'}" onclick="window.selectHistoryEra('${era.id}')">
+              <div class="text-[9.5px] uppercase opacity-85 tracking-wider font-mono">${era.era}</div>
+              <div class="text-[11.5px] whitespace-nowrap font-medium">${era.title}</div>
             </button>
           `).join('')}
         </div>
@@ -4398,44 +4600,71 @@
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-3.5 items-start">
           
           <!-- Left 7 cols: Historical Overview, Famous Quote & Key Events Timeline -->
-          <div class="lg:col-span-7 card p-4 sm:p-5 bg-surface border border-line space-y-3.5">
-            <div class="relative h-44 sm:h-56 rounded-xl overflow-hidden border border-line shadow-2xs group">
-              <img src="${selectedEra.bgImg}" alt="${selectedEra.titleEnglish}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
-              <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/45 to-transparent p-3.5 sm:p-4 flex flex-col justify-end text-white space-y-0.5">
-                <span class="text-[10.5px] font-bold uppercase tracking-wider text-amber-300">${selectedEra.era} • ${selectedEra.badge}</span>
-                <h2 class="text-base sm:text-lg font-bold font-khmer">${selectedEra.titleKhmer}</h2>
-                <p class="text-[11.5px] text-white/90 font-serif italic">${selectedEra.titleEnglish}</p>
+          <div class="lg:col-span-7 card p-4 sm:p-5 bg-surface border border-line space-y-4">
+            
+            <!-- Era Hero Header Image & Banner -->
+            <div class="relative h-48 sm:h-56 rounded-xl overflow-hidden border border-line shadow-2xs group">
+              <img src="${selectedEra.bgImg}" alt="${selectedEra.title}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+              <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/50 to-transparent p-4 sm:p-5 flex flex-col justify-end text-white space-y-1">
+                <div class="flex items-center gap-2">
+                  <span class="text-[10px] font-bold uppercase tracking-wider text-amber-300 bg-amber-500/30 px-2 py-0.5 rounded-full border border-amber-400/30 font-mono">${selectedEra.era}</span>
+                  <span class="text-[10px] font-bold uppercase tracking-wider text-white/80 bg-white/10 px-2 py-0.5 rounded-full">${selectedEra.badge}</span>
+                </div>
+                <h2 class="text-base sm:text-xl font-bold">${selectedEra.title}</h2>
+                <p class="text-[11.5px] text-white/90 font-serif italic">${selectedEra.subtitle}</p>
               </div>
             </div>
 
             <!-- Historical Overview Text -->
             <div class="space-y-1.5">
-              <h3 class="text-[11px] font-bold uppercase tracking-wider text-muted">Historical &amp; Theological Overview</h3>
-              <p class="text-xs font-khmer text-ink leading-relaxed">${selectedEra.summaryKhmer}</p>
-              <p class="text-[11.5px] font-serif italic text-muted leading-relaxed">${selectedEra.summaryEnglish}</p>
+              <h3 class="text-[11px] font-bold uppercase tracking-wider text-muted flex items-center gap-1.5">
+                <i class="fa-solid fa-book-open-reader text-brand text-xs"></i>
+                <span>Comprehensive Historical &amp; Theological Overview</span>
+              </h3>
+              <p class="text-xs text-ink/90 leading-relaxed whitespace-pre-line text-justify">${selectedEra.overview}</p>
             </div>
 
-            <!-- Landmark Historical Quote -->
-            <div class="p-3 rounded-xl bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-amber-500/30 space-y-1">
+            <!-- Core Doctrinal Themes -->
+            ${selectedEra.doctrines ? `
+              <div class="space-y-2 pt-1 border-t border-line">
+                <h4 class="text-[11px] font-bold uppercase tracking-wider text-ink flex items-center gap-1.5">
+                  <i class="fa-solid fa-scroll text-amber-600 text-xs"></i>
+                  <span>Key Doctrinal &amp; Theological Developments</span>
+                </h4>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                  ${selectedEra.doctrines.map(doc => `
+                    <div class="p-2.5 rounded-lg bg-raised/60 border border-line space-y-1">
+                      <div class="text-[11px] font-bold text-brand">${doc.name}</div>
+                      <p class="text-[10.5px] text-muted leading-relaxed">${doc.desc}</p>
+                    </div>
+                  `).join('')}
+                </div>
+              </div>
+            ` : ''}
+
+            <!-- Landmark Historical Quote Banner -->
+            <div class="p-3.5 rounded-xl bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-amber-500/30 space-y-1.5">
               <div class="text-[10px] font-bold uppercase tracking-wider text-amber-700 dark:text-amber-400 flex items-center gap-1.5">
                 <i class="fa-solid fa-quote-left text-xs"></i>
-                <span>Historical Milestone Quote</span>
+                <span>Historical Milestone Quotation</span>
               </div>
-              <p class="text-xs font-khmer font-bold text-ink leading-relaxed">${selectedEra.keyQuote.km}</p>
-              <p class="text-[11.5px] font-serif italic text-muted">${selectedEra.keyQuote.en}</p>
-              <div class="text-[10.5px] text-brand font-semibold text-right">— ${selectedEra.keyQuote.author}</div>
+              <p class="text-xs sm:text-[12.5px] font-serif italic font-bold text-ink leading-relaxed">${selectedEra.keyQuote.text}</p>
+              <div class="flex flex-wrap items-center justify-between gap-1 text-[10.5px] pt-0.5">
+                <span class="text-muted italic">${selectedEra.keyQuote.context || ''}</span>
+                <span class="text-brand font-bold">— ${selectedEra.keyQuote.author}</span>
+              </div>
             </div>
 
             <!-- Major Historical Events Timeline -->
             <div class="space-y-2 pt-2 border-t border-line">
               <h4 class="text-[11px] font-bold uppercase tracking-wider text-ink flex items-center gap-1.5">
                 <i class="fa-solid fa-timeline text-brand text-xs"></i>
-                <span>Key Historical Events &amp; Milestones</span>
+                <span>Chronology of Major Historical Events &amp; Milestones</span>
               </h4>
               <div class="space-y-1.5">
                 ${selectedEra.events.map(ev => `
-                  <div class="p-2.5 rounded-lg bg-raised/50 border border-line flex items-start gap-2.5">
-                    <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-brand/10 text-brand shrink-0 whitespace-nowrap">${ev.year}</span>
+                  <div class="p-2.5 rounded-lg bg-raised/50 border border-line flex items-start gap-2.5 hover:border-brand/30 transition">
+                    <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-brand/10 text-brand shrink-0 whitespace-nowrap font-mono">${ev.year}</span>
                     <div class="space-y-0.5">
                       <div class="text-xs font-bold text-ink">${ev.title}</div>
                       <p class="text-[11px] text-muted leading-relaxed">${ev.desc}</p>
@@ -4445,36 +4674,50 @@
               </div>
             </div>
 
+            <!-- Historic Creed / Document Spotlight -->
+            ${selectedEra.creedDocument ? `
+              <div class="p-3 rounded-xl bg-surface border border-line space-y-1">
+                <div class="text-[10px] font-bold uppercase tracking-wider text-blue-600 flex items-center gap-1.5">
+                  <i class="fa-solid fa-certificate text-xs"></i>
+                  <span>Historic Creed &amp; Document Spotlight</span>
+                </div>
+                <div class="text-xs font-bold text-ink">${selectedEra.creedDocument.title}</div>
+                <p class="text-[11px] text-muted leading-relaxed">${selectedEra.creedDocument.summary}</p>
+              </div>
+            ` : ''}
+
             <!-- Scripture Bridge -->
-            <div class="pt-2 border-t border-line flex items-center justify-between gap-2">
-              <div class="text-[11px] text-muted">Study the biblical foundation for this era:</div>
-              <button class="btn btn-primary text-xs shrink-0 !py-1 !px-2.5 shadow-2xs" onclick="window.jumpToPlanReading('${selectedEra.keyScripture.book}', ${selectedEra.keyScripture.ch})">
-                <i class="fa-solid fa-book-open mr-1 text-[10px]"></i> Read ${selectedEra.keyScripture.label} ➔
+            <div class="pt-2 border-t border-line flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div class="text-[11px] text-muted">Study the biblical foundation for this epoch:</div>
+              <button class="btn btn-primary text-xs shrink-0 !py-1.5 !px-3 shadow-2xs" onclick="window.jumpToPlanReading('${selectedEra.scripture.book}', ${selectedEra.scripture.ch})">
+                <i class="fa-solid fa-book-open mr-1 text-[11px]"></i> Read ${selectedEra.scripture.label} ➔
               </button>
             </div>
           </div>
 
-          <!-- Right 5 cols: Influential Figures, Theologians & Reformers -->
-          <div class="lg:col-span-5 card p-4 bg-surface border border-line space-y-3">
+          <!-- Right 5 cols: Influential Church Fathers, Theologians, Reformers & Missionaries -->
+          <div class="lg:col-span-5 card p-4 sm:p-5 bg-surface border border-line space-y-3.5">
             <div class="flex items-center justify-between border-b border-line pb-2">
               <h3 class="text-[11px] font-bold uppercase tracking-wider text-ink flex items-center gap-1.5">
-                <i class="fa-solid fa-user-tie text-blue-600 text-xs"></i>
-                <span>Key Theologians &amp; Reformers</span>
+                <i class="fa-solid fa-user-graduate text-blue-600 text-xs"></i>
+                <span>Key Theologians, Fathers &amp; Reformers</span>
               </h3>
-              <span class="text-[10.5px] text-muted">${selectedEra.figures.length} Figures</span>
+              <span class="text-[10.5px] font-bold text-muted">${selectedEra.figures.length} Leaders</span>
             </div>
 
-            <div class="space-y-2.5">
+            <div class="space-y-3 max-h-[750px] overflow-y-auto pr-1">
               ${selectedEra.figures.map(fig => `
-                <div class="p-3 rounded-xl bg-raised/50 border border-line space-y-1">
-                  <div class="flex items-center justify-between gap-2">
-                    <div class="text-xs font-bold text-ink flex items-center gap-1.5">
-                      <i class="fa-solid fa-shield-halved text-brand text-[10px]"></i>
-                      <span>${fig.name}</span>
+                <div class="p-3.5 rounded-xl bg-raised/50 border border-line space-y-1.5 hover:border-brand/40 transition">
+                  <div class="flex items-start justify-between gap-2">
+                    <div class="space-y-0.5">
+                      <div class="text-xs font-bold text-ink flex items-center gap-1.5">
+                        <i class="fa-solid fa-shield-halved text-brand text-[10px]"></i>
+                        <span>${fig.name}</span>
+                      </div>
+                      <div class="text-[10.5px] font-semibold text-brand">${fig.role}</div>
                     </div>
                   </div>
-                  <div class="text-[10.5px] font-semibold text-brand">${fig.role}</div>
-                  <p class="text-[11px] text-muted leading-relaxed font-khmer">${fig.detail}</p>
+                  <p class="text-[11px] text-muted leading-relaxed text-justify">${fig.detail}</p>
                 </div>
               `).join('')}
             </div>
