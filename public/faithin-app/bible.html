@@ -2293,7 +2293,7 @@
         ${renderControlsBar(false)}
 
         <div class="card p-5 sm:p-6 bg-surface border border-line space-y-4">
-          <div class="flex items-center justify-between border-b border-line pb-3">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-line pb-3">
             <div>
               <h1 class="text-xl sm:text-2xl font-bold font-khmer text-ink flex items-center gap-2">
                 ${curBook.km} <span class="text-base text-muted font-sans font-normal">(${curBook.name}) ${state.chapter}</span>
@@ -2301,7 +2301,7 @@
               <p class="text-[12px] text-muted mt-0.5">${state.version === 'KHMER_OLD_1954' ? 'ព្រះគម្ពីរបរិសុទ្ធ ១៩៥៤ (ពគប - Khmer Old Version)' : state.version}</p>
             </div>
             
-            <button class="btn btn-primary text-xs shadow-sm" onclick="window.sendChapterToDesigner()">
+            <button class="btn btn-primary text-xs shrink-0 whitespace-nowrap shadow-sm" onclick="window.sendChapterToDesigner()">
               <i class="fa-solid fa-palette mr-1"></i> Make Card
             </button>
           </div>
@@ -2390,15 +2390,15 @@
     return `
       <div class="space-y-4">
         
-        <div class="card p-4 bg-surface border border-line flex items-center justify-between">
-          <div>
+        <div class="card p-4 bg-surface border border-line flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div class="space-y-0.5">
             <h1 class="text-xl font-bold text-ink flex items-center gap-2">
               <i class="fa-solid fa-palette text-brand"></i>
               <span>Scripture Card Designer</span>
             </h1>
             <p class="text-xs text-muted">Generate shareable HD Gospel verse graphics formatted for Facebook, Stories, and Telegram.</p>
           </div>
-          <button class="btn btn-primary text-xs shadow-sm" onclick="window.downloadCardImage()">
+          <button class="btn btn-primary text-xs shrink-0 whitespace-nowrap shadow-sm" onclick="window.downloadCardImage()">
             <i class="fa-solid fa-download mr-1"></i> Export HD PNG
           </button>
         </div>
@@ -2815,12 +2815,12 @@
   function renderNotes() {
     return `
       <div class="space-y-4">
-        <div class="card p-4 bg-surface border border-line flex items-center justify-between">
-          <div>
+        <div class="card p-4 bg-surface border border-line flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div class="space-y-0.5">
             <h1 class="text-xl font-bold text-ink">Sermon Notes Planner • កំណត់ត្រាទេសនា</h1>
             <p class="text-xs text-muted">Structured 3-part framework for capturing sermons, teachings, and personal insights.</p>
           </div>
-          <button class="btn btn-primary text-xs shadow-sm" onclick="window.saveSermonNotesAction()">
+          <button class="btn btn-primary text-xs shrink-0 whitespace-nowrap shadow-sm" onclick="window.saveSermonNotesAction()">
             <i class="fa-solid fa-save mr-1"></i> Save Notes
           </button>
         </div>
