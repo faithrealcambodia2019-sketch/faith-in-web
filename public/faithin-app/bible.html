@@ -240,29 +240,58 @@
     </nav>
 
     <!-- Studio Tools Menu Card -->
-    <div class="card p-3 rounded-xl bg-surface border border-line space-y-1">
-      <h3 class="text-xs font-bold uppercase tracking-wider text-muted px-2 py-1">Studio Tools</h3>
-      <button class="side-link w-full text-left flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-[13.5px] font-semibold text-ink hover:bg-raised" data-side-tool="reader" onclick="window.switchTool('reader')">
-        <i class="fa-solid fa-book-open text-blue-500 w-4 text-center"></i> Bible Reader
-      </button>
-      <button class="side-link w-full text-left flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-[13.5px] font-semibold text-ink hover:bg-raised" data-side-tool="parallel" onclick="window.switchTool('parallel')">
-        <i class="fa-solid fa-columns-3 text-indigo-500 w-4 text-center"></i> Parallel Study
-      </button>
-      <button class="side-link w-full text-left flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-[13.5px] font-semibold text-ink hover:bg-raised" data-side-tool="designer" onclick="window.switchTool('designer')">
-        <i class="fa-solid fa-palette text-purple-500 w-4 text-center"></i> Card Designer
-      </button>
-      <button class="side-link w-full text-left flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-[13.5px] font-semibold text-ink hover:bg-raised" data-side-tool="daily" onclick="window.switchTool('daily')">
-        <i class="fa-solid fa-sun text-amber-500 w-4 text-center"></i> Verse of the Day
-      </button>
-      <button class="side-link w-full text-left flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-[13.5px] font-semibold text-ink hover:bg-raised" data-side-tool="concordance" onclick="window.switchTool('concordance')">
-        <i class="fa-solid fa-magnifying-glass text-emerald-500 w-4 text-center"></i> Word Study (Greek)
-      </button>
-      <button class="side-link w-full text-left flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-[13.5px] font-semibold text-ink hover:bg-raised" data-side-tool="typing" onclick="window.switchTool('typing')">
-        <i class="fa-solid fa-brain text-rose-500 w-4 text-center"></i> Memory • ខគម្ពីរចងចាំ
-      </button>
-      <button class="side-link w-full text-left flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-[13.5px] font-semibold text-ink hover:bg-raised" data-side-tool="notes" onclick="window.switchTool('notes')">
-        <i class="fa-solid fa-pen-to-square text-cyan-600 w-4 text-center"></i> Sermon Notes
-      </button>
+    <div class="card p-3 rounded-xl bg-surface border border-line space-y-3">
+      
+      <!-- Group 1: Scripture & Study -->
+      <div class="space-y-0.5">
+        <h3 class="text-[11px] font-bold uppercase tracking-wider text-muted px-2 py-0.5">Scripture &amp; Study</h3>
+        <button class="side-link w-full text-left flex items-center justify-between px-2.5 py-1.5 rounded-lg text-[13px] font-semibold text-ink hover:bg-raised" data-side-tool="reader" onclick="window.switchTool('reader')">
+          <span class="flex items-center gap-2.5"><i class="fa-solid fa-book-open text-blue-500 w-4 text-center"></i> Bible Reader</span>
+        </button>
+        <button class="side-link w-full text-left flex items-center justify-between px-2.5 py-1.5 rounded-lg text-[13px] font-semibold text-ink hover:bg-raised" data-side-tool="parallel" onclick="window.switchTool('parallel')">
+          <span class="flex items-center gap-2.5"><i class="fa-solid fa-columns-3 text-indigo-500 w-4 text-center"></i> Parallel Study</span>
+        </button>
+        <button class="side-link w-full text-left flex items-center justify-between px-2.5 py-1.5 rounded-lg text-[13px] font-semibold text-ink hover:bg-raised" data-side-tool="concordance" onclick="window.switchTool('concordance')">
+          <span class="flex items-center gap-2.5"><i class="fa-solid fa-magnifying-glass text-emerald-500 w-4 text-center"></i> Word Study (Greek)</span>
+        </button>
+      </div>
+
+      <!-- Group 2: Creative & Growth -->
+      <div class="space-y-0.5 pt-1 border-t border-line">
+        <h3 class="text-[11px] font-bold uppercase tracking-wider text-muted px-2 py-0.5">Creative &amp; Growth</h3>
+        <button class="side-link w-full text-left flex items-center justify-between px-2.5 py-1.5 rounded-lg text-[13px] font-semibold text-ink hover:bg-raised" data-side-tool="designer" onclick="window.switchTool('designer')">
+          <span class="flex items-center gap-2.5"><i class="fa-solid fa-palette text-purple-500 w-4 text-center"></i> Card Studio Pro</span>
+          <span class="text-[9.5px] font-bold text-amber-600 bg-amber-500/10 px-1.5 py-0.5 rounded-full">PRO</span>
+        </button>
+        <button class="side-link w-full text-left flex items-center justify-between px-2.5 py-1.5 rounded-lg text-[13px] font-semibold text-ink hover:bg-raised" data-side-tool="typing" onclick="window.switchTool('typing')">
+          <span class="flex items-center gap-2.5"><i class="fa-solid fa-brain text-rose-500 w-4 text-center"></i> Memory • ចងចាំ</span>
+          <span class="text-[9.5px] font-bold text-rose-600 bg-rose-500/10 px-1.5 py-0.5 rounded-full">CPTI</span>
+        </button>
+        <button class="side-link w-full text-left flex items-center justify-between px-2.5 py-1.5 rounded-lg text-[13px] font-semibold text-ink hover:bg-raised" data-side-tool="plans" onclick="window.switchTool('plans')">
+          <span class="flex items-center gap-2.5"><i class="fa-solid fa-calendar-check text-blue-600 w-4 text-center"></i> Reading Plans</span>
+          <span class="text-[9.5px] font-bold text-blue-600 bg-blue-500/10 px-1.5 py-0.5 rounded-full">NEW</span>
+        </button>
+      </div>
+
+      <!-- Group 3: Devotional & Life -->
+      <div class="space-y-0.5 pt-1 border-t border-line">
+        <h3 class="text-[11px] font-bold uppercase tracking-wider text-muted px-2 py-0.5">Devotional &amp; Life</h3>
+        <button class="side-link w-full text-left flex items-center justify-between px-2.5 py-1.5 rounded-lg text-[13px] font-semibold text-ink hover:bg-raised" data-side-tool="atlas" onclick="window.switchTool('atlas')">
+          <span class="flex items-center gap-2.5"><i class="fa-solid fa-map-location-dot text-amber-600 w-4 text-center"></i> Atlas &amp; Maps</span>
+          <span class="text-[9.5px] font-bold text-amber-600 bg-amber-500/10 px-1.5 py-0.5 rounded-full">NEW</span>
+        </button>
+        <button class="side-link w-full text-left flex items-center justify-between px-2.5 py-1.5 rounded-lg text-[13px] font-semibold text-ink hover:bg-raised" data-side-tool="prayer" onclick="window.switchTool('prayer')">
+          <span class="flex items-center gap-2.5"><i class="fa-solid fa-hands-praying text-teal-600 w-4 text-center"></i> Prayer Journal</span>
+          <span class="text-[9.5px] font-bold text-teal-600 bg-teal-500/10 px-1.5 py-0.5 rounded-full">NEW</span>
+        </button>
+        <button class="side-link w-full text-left flex items-center justify-between px-2.5 py-1.5 rounded-lg text-[13px] font-semibold text-ink hover:bg-raised" data-side-tool="daily" onclick="window.switchTool('daily')">
+          <span class="flex items-center gap-2.5"><i class="fa-solid fa-sun text-amber-500 w-4 text-center"></i> Verse of the Day</span>
+        </button>
+        <button class="side-link w-full text-left flex items-center justify-between px-2.5 py-1.5 rounded-lg text-[13px] font-semibold text-ink hover:bg-raised" data-side-tool="notes" onclick="window.switchTool('notes')">
+          <span class="flex items-center gap-2.5"><i class="fa-solid fa-pen-to-square text-cyan-600 w-4 text-center"></i> Sermon Notes</span>
+        </button>
+      </div>
+
     </div>
 
   </aside>
@@ -273,25 +302,34 @@
     <!-- Top Tools Segment Tabs (Facebook Style Pills) -->
     <div class="card p-2 bg-surface border border-line flex items-center gap-1.5 overflow-x-auto no-scrollbar">
       <button class="bible-tab-btn is-active shrink-0" data-tab="reader" data-side-tool="reader" onclick="window.switchTool('reader')">
-        <i class="fa-solid fa-book-open"></i> Reader
+        <i class="fa-solid fa-book-open text-blue-500"></i><span>Reader</span>
       </button>
       <button class="bible-tab-btn shrink-0" data-tab="parallel" data-side-tool="parallel" onclick="window.switchTool('parallel')">
-        <i class="fa-solid fa-columns-3"></i> Parallel
+        <i class="fa-solid fa-columns-3 text-indigo-500"></i><span>Parallel</span>
       </button>
       <button class="bible-tab-btn shrink-0" data-tab="designer" data-side-tool="designer" onclick="window.switchTool('designer')">
-        <i class="fa-solid fa-palette"></i> Card Designer
+        <i class="fa-solid fa-palette text-purple-500"></i><span>Card Studio</span>
       </button>
-      <button class="bible-tab-btn shrink-0" data-tab="daily" data-side-tool="daily" onclick="window.switchTool('daily')">
-        <i class="fa-solid fa-sun"></i> Verse of the Day
-      </button>
-      <button class="bible-tab-btn shrink-0" data-tab="concordance" data-side-tool="concordance" onclick="window.switchTool('concordance')">
-        <i class="fa-solid fa-magnifying-glass"></i> Word Study
+      <button class="bible-tab-btn shrink-0" data-tab="plans" data-side-tool="plans" onclick="window.switchTool('plans')">
+        <i class="fa-solid fa-calendar-check text-blue-600"></i><span>Reading Plans</span>
       </button>
       <button class="bible-tab-btn shrink-0" data-tab="typing" data-side-tool="typing" onclick="window.switchTool('typing')">
-        <i class="fa-solid fa-brain text-rose-500"></i><span>Memory • ខគម្ពីរចងចាំ</span>
+        <i class="fa-solid fa-brain text-rose-500"></i><span>Memory (CPTI)</span>
+      </button>
+      <button class="bible-tab-btn shrink-0" data-tab="concordance" data-side-tool="concordance" onclick="window.switchTool('concordance')">
+        <i class="fa-solid fa-magnifying-glass text-emerald-500"></i><span>Word Study</span>
+      </button>
+      <button class="bible-tab-btn shrink-0" data-tab="atlas" data-side-tool="atlas" onclick="window.switchTool('atlas')">
+        <i class="fa-solid fa-map-location-dot text-amber-600"></i><span>Atlas &amp; Maps</span>
+      </button>
+      <button class="bible-tab-btn shrink-0" data-tab="prayer" data-side-tool="prayer" onclick="window.switchTool('prayer')">
+        <i class="fa-solid fa-hands-praying text-teal-600"></i><span>Prayer Journal</span>
+      </button>
+      <button class="bible-tab-btn shrink-0" data-tab="daily" data-side-tool="daily" onclick="window.switchTool('daily')">
+        <i class="fa-solid fa-sun text-amber-500"></i><span>Daily Verse</span>
       </button>
       <button class="bible-tab-btn shrink-0" data-tab="notes" data-side-tool="notes" onclick="window.switchTool('notes')">
-        <i class="fa-solid fa-pen-to-square"></i> Notes
+        <i class="fa-solid fa-pen-to-square text-cyan-600"></i><span>Sermon Notes</span>
       </button>
     </div>
 
@@ -421,6 +459,26 @@
       Doctrine: '',
       Encouragement: '',
       Application: ''
+    },
+
+    // Reading Plans
+    readingPlans: {
+      activePlan: 'gospels-30',
+      completedDays: JSON.parse(localStorage.getItem('faithin_plan_progress') || '{"gospels-30-1":true,"gospels-30-2":true}'),
+      streak: 6
+    },
+
+    // Biblical Atlas
+    atlas: {
+      selectedEra: 'jesus'
+    },
+
+    // Prayer Journal
+    prayer: {
+      filter: 'all',
+      items: JSON.parse(localStorage.getItem('faithin_prayers_v1') || 'null'),
+      timerRunning: false,
+      timerSeconds: 300
     }
   };
 
@@ -538,6 +596,254 @@
       km: "«ព្រះយេហូវ៉ាទ្រង់ជាពន្លឺ និងជាសេចក្តីសង្គ្រោះនៃខ្ញុំ តើខ្ញុំនឹងត្រូវខ្លាចអ្នកណា ព្រះយេហូវ៉ាទ្រង់ជាទីពំនាក់នៃជីវិតខ្ញុំ តើខ្ញុំនឹងត្រូវភិតភ័យនឹងអ្នកណា»",
       en: "“The LORD is my light and my salvation; whom shall I fear? the LORD is the strength of my life; of whom shall I be afraid?”",
       ref: "ទំនុកដំកើង ២៧:១ • Psalm 27:1"
+    }
+  ];
+
+  const READING_PLANS_DATA = [
+    {
+      id: 'gospels-30',
+      titleKhmer: 'ដំណឹងល្អក្នុងរយៈពេល ៣០ ថ្ងៃ',
+      titleEnglish: 'Gospels in 30 Days',
+      desc: 'Follow the life, ministry, cross, and resurrection of Jesus Christ across Matthew, Mark, Luke & John.',
+      durationDays: 30,
+      icon: 'fa-book-bible',
+      color: 'from-blue-600 to-indigo-600',
+      schedule: [
+        { day: 1, title: 'The Word Made Flesh & Genealogy', ref: 'Matthew 1-2 • ម៉ាថាយ ១-២', book: 'Matthew', ch: 1 },
+        { day: 2, title: 'Baptism & Temptation in Desert', ref: 'Matthew 3-4 • ម៉ាថាយ ៣-៤', book: 'Matthew', ch: 3 },
+        { day: 3, title: 'The Sermon on the Mount (Part 1)', ref: 'Matthew 5-6 • ម៉ាថាយ ៥-៦', book: 'Matthew', ch: 5 },
+        { day: 4, title: 'The Sermon on the Mount (Part 2)', ref: 'Matthew 7-8 • ម៉ាថាយ ៧-៨', book: 'Matthew', ch: 7 },
+        { day: 5, title: 'Healing Miracles & Calling of Disciples', ref: 'Matthew 9-10 • ម៉ាថាយ ៩-១០', book: 'Matthew', ch: 9 },
+        { day: 6, title: 'Parables of the Kingdom of Heaven', ref: 'Matthew 13 • ម៉ាថាយ ១៣', book: 'Matthew', ch: 13 },
+        { day: 7, title: 'Walking on Water & Confession of Peter', ref: 'Matthew 14-16 • ម៉ាថាយ ១៤-១៦', book: 'Matthew', ch: 14 },
+        { day: 8, title: 'The Transfiguration & Greatest in Kingdom', ref: 'Matthew 17-18 • ម៉ាថាយ ១៧-១៨', book: 'Matthew', ch: 17 },
+        { day: 9, title: 'Triumphal Entry & Cleansing Temple', ref: 'Matthew 21-22 • ម៉ាថាយ ២១-២២', book: 'Matthew', ch: 21 },
+        { day: 10, title: 'The Last Supper, Gethsemane & Trial', ref: 'Matthew 26 • ម៉ាថាយ ២៦', book: 'Matthew', ch: 26 },
+        { day: 11, title: 'The Crucifixion & Resurrection Power', ref: 'Matthew 27-28 • ម៉ាថាយ ២៧-២៨', book: 'Matthew', ch: 27 },
+        { day: 12, title: 'The Servant King & Powerful Miracles', ref: 'Mark 1-3 • ម៉ាកុស ១-៣', book: 'Mark', ch: 1 },
+        { day: 13, title: 'Calming the Storm & Raising Jairus Daughter', ref: 'Mark 4-5 • ម៉ាកុស ៤-៥', book: 'Mark', ch: 4 },
+        { day: 14, title: 'Cost of Discipleship & The Transfiguration', ref: 'Mark 8-9 • ម៉ាកុស ៨-៩', book: 'Mark', ch: 8 },
+        { day: 15, title: 'Ransom for Many & The Empty Tomb', ref: 'Mark 14-16 • ម៉ាកុស ១៤-១៦', book: 'Mark', ch: 14 },
+        { day: 16, title: 'Good News for All Nations & Birth of Jesus', ref: 'Luke 1-2 • លូកា ១-២', book: 'Luke', ch: 1 },
+        { day: 17, title: 'Sermon on the Plain & Loving Your Enemies', ref: 'Luke 6-7 • លូកា ៦-៧', book: 'Luke', ch: 6 },
+        { day: 18, title: 'The Good Samaritan & The Lord’s Prayer', ref: 'Luke 10-11 • លូកា ១០-១១', book: 'Luke', ch: 10 },
+        { day: 19, title: 'The Prodigal Son & Lost Sheep Parables', ref: 'Luke 15-16 • លូកា ១៥-១៦', book: 'Luke', ch: 15 },
+        { day: 20, title: 'Zacchaeus & The Road to Emmaus', ref: 'Luke 19, 24 • លូកា ១៩, ២៤', book: 'Luke', ch: 19 },
+        { day: 21, title: 'The Eternal Word & First Sign at Cana', ref: 'John 1-2 • យ៉ូហាន ១-២', book: 'John', ch: 1 },
+        { day: 22, title: 'Born Again & The Woman at the Well', ref: 'John 3-4 • យ៉ូហាន ៣-៤', book: 'John', ch: 3 },
+        { day: 23, title: 'The Bread of Life & Rivers of Living Water', ref: 'John 6-7 • យ៉ូហាន ៦-៧', book: 'John', ch: 6 },
+        { day: 24, title: 'The Light of the World & The Good Shepherd', ref: 'John 8-10 • យ៉ូហាន ៨-១០', book: 'John', ch: 8 },
+        { day: 25, title: 'I Am the Resurrection and the Life', ref: 'John 11 • យ៉ូហាន ១១', book: 'John', ch: 11 },
+        { day: 26, title: 'Washing Disciples Feet & The Way, Truth, Life', ref: 'John 13-14 • យ៉ូហាន ១៣-១៤', book: 'John', ch: 13 },
+        { day: 27, title: 'I Am the True Vine & Promise of Holy Spirit', ref: 'John 15-16 • យ៉ូហាន ១៥-១៦', book: 'John', ch: 15 },
+        { day: 28, title: 'The High Priestly Prayer of Jesus', ref: 'John 17 • យ៉ូហាន ១៧', book: 'John', ch: 17 },
+        { day: 29, title: 'It Is Finished — The Cross of Salvation', ref: 'John 18-19 • យ៉ូហាន ១៨-១៩', book: 'John', ch: 18 },
+        { day: 30, title: 'He Is Risen! & Restoration of Peter', ref: 'John 20-21 • យ៉ូហាន ២០-២១', book: 'John', ch: 20 }
+      ]
+    },
+    {
+      id: 'wisdom-60',
+      titleKhmer: 'ប្រាជ្ញា & ទំនុកដំកើង ៦០ ថ្ងៃ',
+      titleEnglish: 'Psalms & Proverbs in 60 Days',
+      desc: 'Nourish your soul with daily worship songs, petitions, and practical Godly wisdom for daily living.',
+      durationDays: 60,
+      icon: 'fa-heart',
+      color: 'from-amber-500 to-rose-600',
+      schedule: [
+        { day: 1, title: 'The Blessed Life & Holy King', ref: 'Psalm 1-3 • ទំនុកដំកើង ១-៣', book: 'Psalms', ch: 1 },
+        { day: 2, title: 'Evening Peace & Morning Prayer', ref: 'Psalm 4-6 • ទំនុកដំកើង ៤-៦', book: 'Psalms', ch: 4 },
+        { day: 3, title: 'The Majesty of God in Creation', ref: 'Psalm 8-9 • ទំនុកដំកើង ៨-៩', book: 'Psalms', ch: 8 },
+        { day: 4, title: 'Trust in God When Wicked Boast', ref: 'Psalm 10-12 • ទំនុកដំកើង ១០-១២', book: 'Psalms', ch: 10 },
+        { day: 5, title: 'The Fullness of Joy in God’s Presence', ref: 'Psalm 16-18 • ទំនុកដំកើង ១៦-១៨', book: 'Psalms', ch: 16 },
+        { day: 6, title: 'The Glory of Heavens & The Good Shepherd', ref: 'Psalm 19, 23 • ទំនុកដំកើង ១៩, ២៣', book: 'Psalms', ch: 23 },
+        { day: 7, title: 'The Fear of the LORD is Beginning of Wisdom', ref: 'Proverbs 1-2 • សុភាសិត ១-២', book: 'Proverbs', ch: 1 },
+        { day: 8, title: 'Trust in the LORD with All Thine Heart', ref: 'Proverbs 3-4 • សុភាសិត ៣-៤', book: 'Proverbs', ch: 3 },
+        { day: 9, title: 'God is Our Refuge and Strength', ref: 'Psalm 46, 51 • ទំនុកដំកើង ៤៦, ៥១', book: 'Psalms', ch: 46 },
+        { day: 10, title: 'Dwelling in the Secret Place of the Most High', ref: 'Psalm 91, 100 • ទំនុកដំកើង ៩១, ១០០', book: 'Psalms', ch: 91 }
+      ]
+    },
+    {
+      id: 'cpti-14',
+      titleKhmer: 'មូលដ្ឋានគ្រឹះនៃក្រសួងបម្រើព្រះ ១៤ ថ្ងៃ',
+      titleEnglish: 'CPTI Ministry Foundations (14 Days)',
+      desc: 'Core pastoral, evangelistic, and discipleship Scripture passages curated by CPTI Seminary.',
+      durationDays: 14,
+      icon: 'fa-brain',
+      color: 'from-emerald-600 to-teal-700',
+      schedule: [
+        { day: 1, title: 'The Great Commission', ref: 'Matthew 28:16-20', book: 'Matthew', ch: 28 },
+        { day: 2, title: 'The Call to Discipleship & Self-Denial', ref: 'Luke 9:23-26', book: 'Luke', ch: 9 },
+        { day: 3, title: 'Power of the Holy Spirit at Pentecost', ref: 'Acts 1-2', book: 'Acts', ch: 1 },
+        { day: 4, title: 'Justification by Faith in Christ Alone', ref: 'Romans 3-5', book: 'Romans', ch: 3 },
+        { day: 5, title: 'Living Sacrifice & Spiritual Gifts in Church', ref: 'Romans 12', book: 'Romans', ch: 12 },
+        { day: 6, title: 'The Whole Armor of God & Prayer', ref: 'Ephesians 6', book: 'Ephesians', ch: 6 },
+        { day: 7, title: 'Pastoral Leadership & A Good Soldier of Christ', ref: '2 Timothy 1-2', book: '2 Timothy', ch: 2 }
+      ]
+    }
+  ];
+
+  const ATLAS_ERAS = [
+    {
+      id: 'abraham',
+      era: '2000 – 1700 BC',
+      titleKhmer: 'ដំណើរជំនឿរបស់លោកអ័ប្រាហាំ',
+      titleEnglish: 'Journey of Abraham & The Patriarchs',
+      color: 'border-amber-500 bg-amber-500/10 text-amber-600',
+      bgImg: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80',
+      summaryKhmer: 'ព្រះបានត្រាស់ហៅអ័ប្រាហាំឲ្យចាកចេញពីស្រុកអ៊ើរនៃសាសន៍ខាល់ដេ ឆ្ពោះទៅកាន់ស្រុកកាណាន ដែលជាស្រុកនៃសេចក្តីសន្យា។',
+      summaryEnglish: 'God called Abraham to leave Ur of the Chaldees to travel to the Promised Land of Canaan, establishing the covenant of faith for all nations.',
+      keyPassages: [
+        { ref: 'Genesis 12:1-4', label: 'Call of Abraham (ការត្រាស់ហៅ)', book: 'Genesis', ch: 12 },
+        { ref: 'Genesis 15:1-6', label: 'Covenant of Faith (សេចក្តីសញ្ញា)', book: 'Genesis', ch: 15 },
+        { ref: 'Hebrews 11:8-10', label: 'Faith of the Patriarchs (ជំនឿអ័ប្រាហាំ)', book: 'Hebrews', ch: 11 }
+      ],
+      locations: [
+        { name: 'Ur of the Chaldees (ស្រុកអ៊ើរ)', note: 'Ancient Mesopotamian city where Abraham began his journey.' },
+        { name: 'Haran (ស្រុកហារ៉ាន)', note: 'Interim stay where Terah passed away.' },
+        { name: 'Shechem & Bethel (ស៊ីឃែម & បេតអែល)', note: 'Where Abraham built altars to worship Yahweh.' },
+        { name: 'Hebron / Mamre (ហេប្រុន)', note: 'Oaks of Mamre where covenant was renewed.' }
+      ]
+    },
+    {
+      id: 'exodus',
+      era: '1446 – 1406 BC',
+      titleKhmer: 'ការចាកចេញពីអេស៊ីព្ទ & ទីរហោស្ថាន',
+      titleEnglish: 'The Exodus & Wilderness Journey',
+      color: 'border-rose-500 bg-rose-500/10 text-rose-600',
+      bgImg: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1200&q=80',
+      summaryKhmer: 'លោកម៉ូសេបានដឹកនាំប្រជារាស្ត្រអ៊ីស្រាអែលឆ្លងកាត់សមុទ្រក្រហម និងបានទទួលក្រឹត្យវិន័យនៅភ្នំស៊ីណាយ។',
+      summaryEnglish: 'Moses led the children of Israel out of Egyptian bondage through the Red Sea, receiving the 10 Commandments at Mount Sinai.',
+      keyPassages: [
+        { ref: 'Exodus 14:13-22', label: 'Crossing the Red Sea (ឆ្លងសមុទ្រក្រហម)', book: 'Exodus', ch: 14 },
+        { ref: 'Exodus 20:1-17', label: 'Ten Commandments (ក្រឹត្យវិន័យទាំង១០)', book: 'Exodus', ch: 20 },
+        { ref: 'Deuteronomy 34:1-5', label: 'Moses at Mt. Nebo (ភ្នំនេបូរ)', book: 'Deuteronomy', ch: 34 }
+      ],
+      locations: [
+        { name: 'Rameses & Goshen (ស្រុកគូសែន)', note: 'Land of bondage and starting point of the Exodus.' },
+        { name: 'Red Sea (សមុទ្រក្រហម)', note: 'Miraculous parting of waters by God’s power.' },
+        { name: 'Mount Sinai (ភ្នំស៊ីណាយ)', note: 'Where God gave the Law and Covenant to Moses.' },
+        { name: 'Kadesh-barnea (កាដេស-បារណេ)', note: 'Oasis where the 12 spies were sent into Canaan.' }
+      ]
+    },
+    {
+      id: 'kingdom',
+      era: '1050 – 586 BC',
+      titleKhmer: 'រាជាណាចក្រក្សត្រដាវីឌ & ព្រះវិហារបរិសុទ្ធ',
+      titleEnglish: 'The United Kingdom & First Temple',
+      color: 'border-amber-600 bg-amber-600/10 text-amber-700',
+      bgImg: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=1200&q=80',
+      summaryKhmer: 'ក្សត្រដាវីឌបានបង្កើតក្រុងយេរូសាឡិមជារាជធានី ហើយក្សត្រសាឡូម៉ូនបានសាងសង់ព្រះវិហារបរិសុទ្ធលើភ្នំម៉ូរីយ៉ា។',
+      summaryEnglish: 'King David established Jerusalem as the capital of worship, and King Solomon constructed the glorious First Temple.',
+      keyPassages: [
+        { ref: '2 Samuel 7:12-16', label: 'Davidic Covenant (សេចក្តីសញ្ញាដាវីឌ)', book: '2 Samuel', ch: 7 },
+        { ref: '1 Kings 8:22-30', label: 'Dedication of the Temple (សម្ពោធព្រះវិហារ)', book: '1 Kings', ch: 8 },
+        { ref: 'Psalm 122:1-6', label: 'Joy of Jerusalem (អរសប្បាយក្នុងយេរូសាឡិម)', book: 'Psalms', ch: 122 }
+      ],
+      locations: [
+        { name: 'Jerusalem / Zion (ក្រុងយេរូសាឡិម)', note: 'City of David and center of God’s kingdom.' },
+        { name: 'Mount Moriah (ភ្នំម៉ូរីយ៉ា)', note: 'Site of the glorious Temple of Solomon.' },
+        { name: 'Hebron (ហេប្រុន)', note: 'Where David reigned for his first 7 years.' }
+      ]
+    },
+    {
+      id: 'jesus',
+      era: '4 BC – 33 AD',
+      titleKhmer: 'កិច្ចការបម្រើ & ដំណើរជីវិតព្រះយេស៊ូវ',
+      titleEnglish: 'Ministry of Jesus in Galilee & Judea',
+      color: 'border-blue-600 bg-blue-600/10 text-blue-600',
+      bgImg: 'https://images.unsplash.com/photo-1504052434569-70ad5836ab65?auto=format&fit=crop&w=1200&q=80',
+      summaryKhmer: 'ព្រះយេស៊ូវបានប្រសូតនៅបេថ្លេហិម ធំឡើងនៅណាសារ៉ែត ផ្សាយដំណឹងល្អនៅកាលីឡេ និងបានសុគត រួចរស់ឡើងវិញនៅយេរូសាឡិម។',
+      summaryEnglish: 'Jesus was born in Bethlehem, raised in Nazareth, performed miracles around the Sea of Galilee, and died and rose in Jerusalem.',
+      keyPassages: [
+        { ref: 'Luke 2:1-14', label: 'Birth in Bethlehem (ការប្រសូតនៅបេថ្លេហិម)', book: 'Luke', ch: 2 },
+        { ref: 'Matthew 4:18-25', label: 'Ministry at Sea of Galilee (បម្រើនៅកាលីឡេ)', book: 'Matthew', ch: 4 },
+        { ref: 'John 19:16-30', label: 'Golgotha & The Cross (ការសុគតលើឈើឆ្កាង)', book: 'John', ch: 19 },
+        { ref: 'Luke 24:1-12', label: 'The Empty Tomb (ការរស់ឡើងវិញ)', book: 'Luke', ch: 24 }
+      ],
+      locations: [
+        { name: 'Bethlehem (បេថ្លេហិម)', note: 'City of David where Jesus was born in a manger.' },
+        { name: 'Nazareth (ណាសារ៉ែត)', note: 'Hometown of Jesus in lower Galilee.' },
+        { name: 'Capernaum & Sea of Galilee (កាពើណិម & សមុទ្រកាលីឡេ)', note: 'Headquarters of Jesus’ Galilean ministry and miracles.' },
+        { name: 'Jerusalem & Mount of Olives (យេរូសាឡិម & ភ្នំដើមអូលីវ)', note: 'The Last Supper, Gethsemane, Golgotha, and Resurrection.' }
+      ]
+    },
+    {
+      id: 'paul',
+      era: '46 – 67 AD',
+      titleKhmer: 'ដំណើរផ្សាយដំណឹងល្អរបស់សាវកប៉ុល',
+      titleEnglish: 'Apostle Paul’s Missionary Journeys',
+      color: 'border-indigo-600 bg-indigo-600/10 text-indigo-600',
+      bgImg: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1200&q=80',
+      summaryKhmer: 'សាវកប៉ុលបានធ្វើដំណើរផ្សាយដំណឹងល្អ ៤ លើក បង្កើតក្រុមជំនុំនៅអាស៊ីតូច ក្រិក និងបានទៅដល់ក្រុងរ៉ូម។',
+      summaryEnglish: 'Paul embarked on 4 epic missionary journeys through Syria, Galatia, Greece, Asia Minor, reaching the capital of Rome.',
+      keyPassages: [
+        { ref: 'Acts 13:1-4', label: 'Sent from Antioch (ចេញដំណើរពីអាន់ទីយ៉ូក)', book: 'Acts', ch: 13 },
+        { ref: 'Acts 16:9-15', label: 'Macedonian Call & Philippi (ការត្រាស់ហៅម៉ាសេដូន)', book: 'Acts', ch: 16 },
+        { ref: 'Acts 17:22-31', label: 'Mars Hill in Athens (ទេសនានៅអាថែន)', book: 'Acts', ch: 17 },
+        { ref: 'Acts 28:16-31', label: 'Proclamation in Rome (ដំណឹងល្អនៅរ៉ូម)', book: 'Acts', ch: 28 }
+      ],
+      locations: [
+        { name: 'Antioch in Syria (អាន់ទីយ៉ូក)', note: 'Sending base of Paul and Barnabas.' },
+        { name: 'Ephesus (អេភេសូរ)', note: 'Major center where Paul taught daily for over 2 years.' },
+        { name: 'Corinth & Athens (កូរិនថូស & អាថែន)', note: 'Where Paul preached Christ crucified and founded the church.' },
+        { name: 'Rome (ក្រុងរ៉ូម)', note: 'Where Paul was imprisoned and wrote Prison Epistles.' }
+      ]
+    },
+    {
+      id: 'revelation',
+      era: '95 AD – Eternity',
+      titleKhmer: 'ក្រុមជំនុំទាំង ៧ & នគរស្ថានសួគ៌ថ្មី',
+      titleEnglish: 'Seven Churches of Revelation & New Creation',
+      color: 'border-purple-600 bg-purple-600/10 text-purple-600',
+      bgImg: 'https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?auto=format&fit=crop&w=1200&q=80',
+      summaryKhmer: 'សាវកយ៉ូហានបានទទួលវិវរណៈនៅកោះប៉ាត់ម៉ុស អំពីជ័យជម្នះរបស់ព្រះគ្រីស្ទ និងផ្ទៃមេឃថ្មី ផែនដីថ្មី។',
+      summaryEnglish: 'On Patmos, John received the vision of Christ victorious, letters to the seven churches, and the glorious New Jerusalem.',
+      keyPassages: [
+        { ref: 'Revelation 1:9-19', label: 'Vision of the Glorified Christ (សិរីល្អព្រះគ្រីស្ទ)', book: 'Revelation', ch: 1 },
+        { ref: 'Revelation 2-3', label: 'Letters to 7 Churches (សារទៅកាន់ក្រុមជំនុំទាំង៧)', book: 'Revelation', ch: 2 },
+        { ref: 'Revelation 21:1-7', label: 'New Heaven & New Earth (ផ្ទៃមេឃថ្មី & ផែនដីថ្មី)', book: 'Revelation', ch: 21 }
+      ],
+      locations: [
+        { name: 'Isle of Patmos (កោះប៉ាត់ម៉ុស)', note: 'Aegean island where Apostle John was exiled.' },
+        { name: 'Seven Cities of Asia Minor (ក្រុងទាំង៧)', note: 'Ephesus, Smyrna, Pergamum, Thyatira, Sardis, Philadelphia, Laodicea.' },
+        { name: 'New Jerusalem (ក្រុងយេរូសាឡិមថ្មី)', note: 'The eternal dwelling place of God with redeemed humanity.' }
+      ]
+    }
+  ];
+
+  const DEFAULT_PRAYERS = [
+    {
+      id: 'pr-1',
+      category: 'personal',
+      title: 'Deepening intimacy with God through daily prayer & fasting',
+      titleKhmer: 'ការស្និទ្ធស្នាលជាមួយព្រះតាមរយៈការអធិស្ឋាន និងតមអាហារ',
+      scripture: 'Psalm 63:1 • ទំនុកដំកើង ៦៣:១',
+      note: 'Praying for wisdom, humility, and hunger for God’s Word every morning.',
+      date: '2026-09-01',
+      answered: false,
+      answeredNote: ''
+    },
+    {
+      id: 'pr-2',
+      category: 'church',
+      title: 'CPTI Ministry & Theological Training in Cambodia',
+      titleKhmer: 'ក្រសួងបម្រើព្រះ CPTI និងការបណ្តុះបណ្តាលគ្រូគង្វាលនៅកម្ពុជា',
+      scripture: '2 Timothy 2:2 • ២ ធីម៉ូថេ ២:២',
+      note: 'Praying for pastors, Bible students, and gospel expansion across all provinces.',
+      date: '2026-08-28',
+      answered: true,
+      answeredNote: 'Praise God for 40 new students enrolled in the Scripture Training program!'
+    },
+    {
+      id: 'pr-3',
+      category: 'family',
+      title: 'Health, unity, and salvation for our family members',
+      titleKhmer: 'សុខភាព សាមគ្គីភាព និងសេចក្តីសង្គ្រោះសម្រាប់សមាជិកគ្រួសារ',
+      scripture: 'Joshua 24:15 • យ៉ូស៊ូវ៉ា ២៤:១៥',
+      note: 'Asking God for protection, peace in the home, and spiritual renewal.',
+      date: '2026-08-25',
+      answered: false,
+      answeredNote: ''
     }
   ];
 
@@ -3184,6 +3490,401 @@
     `;
   }
 
+  // 8. Reading Plans & Daily Devotions Tool
+  function renderReadingPlans() {
+    const plans = READING_PLANS_DATA;
+    const activePlan = plans.find(p => p.id === state.readingPlans.activePlan) || plans[0];
+    const completedMap = state.readingPlans.completedDays || {};
+    
+    const completedCount = activePlan.schedule.filter(s => completedMap[`${activePlan.id}-${s.day}`]).length;
+    const progressPercent = Math.round((completedCount / activePlan.durationDays) * 100);
+
+    const nextItem = activePlan.schedule.find(s => !completedMap[`${activePlan.id}-${s.day}`]) || activePlan.schedule[0];
+
+    return `
+      <div class="space-y-4">
+        
+        <!-- Header Banner -->
+        <div class="card p-4 sm:p-5 bg-gradient-to-r from-blue-600/10 via-indigo-600/10 to-purple-600/10 border border-blue-500/20 space-y-3">
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center gap-2.5">
+              <span class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center font-bold text-lg shadow-sm">
+                <i class="fa-solid fa-calendar-check"></i>
+              </span>
+              <div>
+                <h1 class="text-lg sm:text-xl font-bold text-ink flex items-center gap-2">
+                  <span>Bible Reading Plans • ផែនការអានគម្ពីរ</span>
+                  <span class="text-[10px] font-bold uppercase tracking-wider text-blue-600 bg-blue-500/10 px-2 py-0.5 rounded-full">Interactive</span>
+                </h1>
+                <p class="text-xs text-muted">Daily structured Scripture reading to build a consistent habit with progress tracking.</p>
+              </div>
+            </div>
+
+            <!-- Streak & Progress Indicator -->
+            <div class="flex items-center gap-3 bg-surface border border-line px-3.5 py-1.5 rounded-xl shadow-2xs">
+              <div class="flex items-center gap-1.5 text-amber-500 font-bold text-xs">
+                <i class="fa-solid fa-fire text-base"></i>
+                <span>${state.readingPlans.streak} Days Streak</span>
+              </div>
+              <div class="h-4 w-px bg-line"></div>
+              <div class="text-xs font-semibold text-ink">
+                <span class="text-brand font-bold">${progressPercent}%</span> Complete
+              </div>
+            </div>
+          </div>
+
+          <!-- Plan Switcher Pills -->
+          <div class="flex items-center gap-2 overflow-x-auto no-scrollbar pt-1">
+            ${plans.map(p => `
+              <button class="px-3 py-1.5 rounded-xl text-xs font-semibold transition shrink-0 flex items-center gap-2 border ${state.readingPlans.activePlan === p.id ? 'bg-brand text-white border-brand shadow-xs' : 'bg-surface text-ink border-line hover:bg-raised'}" onclick="window.selectReadingPlan('${p.id}')">
+                <i class="fa-solid ${p.icon}"></i>
+                <span>${p.titleKhmer}</span>
+                <span class="text-[10.5px] opacity-80">(${p.durationDays}d)</span>
+              </button>
+            `).join('')}
+          </div>
+        </div>
+
+        <!-- Today's Focus Card (Hero Action) -->
+        <div class="card p-5 bg-surface border-2 border-brand/40 shadow-sm relative overflow-hidden space-y-3">
+          <div class="flex flex-wrap items-center justify-between gap-2 border-b border-line pb-3">
+            <div class="flex items-center gap-2">
+              <span class="px-2.5 py-0.5 rounded-full bg-brand text-white text-[11px] font-bold">DAY ${nextItem.day} of ${activePlan.durationDays}</span>
+              <h2 class="text-base sm:text-lg font-bold text-ink font-khmer">${nextItem.title}</h2>
+            </div>
+            <span class="text-xs font-bold text-brand bg-brand/10 px-2.5 py-1 rounded-lg">${nextItem.ref}</span>
+          </div>
+
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
+            <div class="text-xs text-muted">
+              Click below to jump directly into the Bible Reader to study this chapter in Khmer &amp; English.
+            </div>
+            
+            <div class="flex items-center gap-2">
+              <button class="btn btn-primary text-xs shrink-0 !py-2 !px-4 shadow-sm" onclick="window.jumpToPlanReading('${nextItem.book}', ${nextItem.ch})">
+                <i class="fa-solid fa-book-open mr-1.5"></i> Read ${nextItem.book} ${nextItem.ch} in Reader ➔
+              </button>
+              <button class="btn btn-neutral text-xs shrink-0 !py-2 !px-3" onclick="window.togglePlanDayCompleted('${activePlan.id}', ${nextItem.day})">
+                <i class="fa-solid ${completedMap[`${activePlan.id}-${nextItem.day}`] ? 'fa-check text-emerald-500' : 'fa-circle-check'} mr-1"></i>
+                ${completedMap[`${activePlan.id}-${nextItem.day}`] ? 'Completed' : 'Mark Done'}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Plan Schedule Checklist -->
+        <div class="card p-4 sm:p-5 bg-surface border border-line space-y-3">
+          <div class="flex items-center justify-between border-b border-line pb-2.5">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-ink flex items-center gap-2">
+              <i class="fa-solid fa-list-check text-blue-500"></i>
+              <span>Full Schedule &amp; Checklist (${activePlan.titleEnglish})</span>
+            </h3>
+            <span class="text-xs text-muted font-medium">${completedCount} of ${activePlan.durationDays} Days Finished</span>
+          </div>
+
+          <!-- Progress Bar -->
+          <div class="w-full bg-raised rounded-full h-2 overflow-hidden border border-line">
+            <div class="bg-brand h-full transition-all duration-300 rounded-full" style="width: ${progressPercent}%"></div>
+          </div>
+
+          <!-- Grid of Days -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 pt-2 max-h-[440px] overflow-y-auto pr-1">
+            ${activePlan.schedule.map(s => {
+              const isDone = !!completedMap[`${activePlan.id}-${s.day}`];
+              return `
+                <div class="p-3 rounded-xl border transition ${isDone ? 'bg-emerald-500/5 border-emerald-500/30' : 'bg-surface border-line hover:border-brand/40'} flex items-start justify-between gap-2">
+                  <div class="space-y-1 min-w-0">
+                    <div class="flex items-center gap-1.5">
+                      <span class="text-[10.5px] font-bold uppercase ${isDone ? 'text-emerald-600 font-bold' : 'text-muted'}">Day ${s.day}</span>
+                      ${isDone ? '<i class="fa-solid fa-circle-check text-emerald-500 text-[11px]"></i>' : ''}
+                    </div>
+                    <div class="text-xs font-bold text-ink truncate">${s.title}</div>
+                    <div class="text-[11px] text-brand font-semibold truncate cursor-pointer hover:underline" onclick="window.jumpToPlanReading('${s.book}', ${s.ch})">
+                      ${s.ref}
+                    </div>
+                  </div>
+
+                  <button class="w-7 h-7 rounded-lg shrink-0 flex items-center justify-center transition ${isDone ? 'bg-emerald-500 text-white shadow-xs' : 'bg-raised text-muted hover:text-ink'}" onclick="window.togglePlanDayCompleted('${activePlan.id}', ${s.day})" title="Toggle completion">
+                    <i class="fa-solid fa-check text-xs"></i>
+                  </button>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        </div>
+
+      </div>
+    `;
+  }
+
+  // 9. Biblical Atlas & Timelines Tool
+  function renderAtlas() {
+    const selectedEra = ATLAS_ERAS.find(e => e.id === state.atlas.selectedEra) || ATLAS_ERAS[3];
+
+    return `
+      <div class="space-y-4">
+        
+        <!-- Header Banner -->
+        <div class="card p-4 sm:p-5 bg-gradient-to-r from-amber-500/10 via-rose-500/10 to-indigo-500/10 border border-amber-500/20 space-y-2">
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center gap-2.5">
+              <span class="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-600 to-rose-600 text-white flex items-center justify-center font-bold text-lg shadow-sm">
+                <i class="fa-solid fa-map-location-dot"></i>
+              </span>
+              <div>
+                <h1 class="text-lg sm:text-xl font-bold text-ink flex items-center gap-2">
+                  <span>Biblical Atlas &amp; Timelines • ផែនទី &amp; ប្រវត្តិសាស្ត្រគម្ពីរ</span>
+                  <span class="text-[10px] font-bold uppercase tracking-wider text-amber-600 bg-amber-500/10 px-2 py-0.5 rounded-full">Interactive</span>
+                </h1>
+                <p class="text-xs text-muted">Explore the geographical journeys, historical eras, and biblical cities from Genesis to Revelation.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Timeline Epoch Selector Bar -->
+        <div class="card p-2 bg-surface border border-line flex items-center gap-2 overflow-x-auto no-scrollbar">
+          ${ATLAS_ERAS.map(era => `
+            <button class="px-3 py-2 rounded-xl text-xs font-semibold transition shrink-0 text-left border ${state.atlas.selectedEra === era.id ? 'bg-brand text-white border-brand shadow-xs font-bold' : 'bg-surface text-ink border-line hover:bg-raised'}" onclick="window.selectAtlasEra('${era.id}')">
+              <div class="text-[10px] uppercase opacity-80 tracking-wider">${era.era}</div>
+              <div class="font-khmer text-xs whitespace-nowrap">${era.titleKhmer}</div>
+            </button>
+          `).join('')}
+        </div>
+
+        <!-- Active Era Display -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
+          
+          <!-- Left 7 cols: Historical Overview & Map Hero -->
+          <div class="lg:col-span-7 card p-5 bg-surface border border-line space-y-4">
+            <div class="relative h-48 sm:h-64 rounded-xl overflow-hidden border border-line shadow-sm group">
+              <img src="${selectedEra.bgImg}" alt="${selectedEra.titleEnglish}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+              <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent p-4 sm:p-5 flex flex-col justify-end text-white space-y-1">
+                <span class="text-xs font-bold uppercase tracking-wider text-amber-300">${selectedEra.era}</span>
+                <h2 class="text-xl sm:text-2xl font-bold font-khmer">${selectedEra.titleKhmer}</h2>
+                <p class="text-xs text-white/90 font-serif italic">${selectedEra.titleEnglish}</p>
+              </div>
+            </div>
+
+            <div class="space-y-2">
+              <h3 class="text-xs font-bold uppercase tracking-wider text-muted">Historical &amp; Theological Context</h3>
+              <p class="text-sm font-khmer text-ink leading-relaxed">${selectedEra.summaryKhmer}</p>
+              <p class="text-xs font-serif italic text-muted leading-relaxed">${selectedEra.summaryEnglish}</p>
+            </div>
+
+            <!-- Key Passage Quick Buttons -->
+            <div class="space-y-2 pt-2 border-t border-line">
+              <h4 class="text-xs font-bold uppercase tracking-wider text-ink flex items-center gap-1.5">
+                <i class="fa-solid fa-book-bookmark text-brand"></i>
+                <span>Key Scripture Passages</span>
+              </h4>
+              <div class="flex flex-wrap gap-2">
+                ${selectedEra.keyPassages.map(kp => `
+                  <button class="px-3 py-1.5 rounded-lg bg-raised hover:bg-brand/10 hover:text-brand border border-line text-xs font-semibold text-ink flex items-center gap-1.5 transition" onclick="window.jumpToPlanReading('${kp.book}', ${kp.ch})">
+                    <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                    <span>${kp.label} (${kp.ref})</span>
+                  </button>
+                `).join('')}
+              </div>
+            </div>
+          </div>
+
+          <!-- Right 5 cols: Key Cities & Geographic Landmarks -->
+          <div class="lg:col-span-5 card p-5 bg-surface border border-line space-y-3.5">
+            <div class="flex items-center justify-between border-b border-line pb-2.5">
+              <h3 class="text-xs font-bold uppercase tracking-wider text-ink flex items-center gap-2">
+                <i class="fa-solid fa-location-dot text-rose-500"></i>
+                <span>Geographic Locations &amp; Cities</span>
+              </h3>
+              <span class="text-[11px] text-muted">${selectedEra.locations.length} Sites</span>
+            </div>
+
+            <div class="space-y-2.5">
+              ${selectedEra.locations.map(loc => `
+                <div class="p-3 rounded-xl bg-raised/50 border border-line space-y-1">
+                  <div class="text-xs font-bold text-ink flex items-center gap-1.5">
+                    <i class="fa-solid fa-map-pin text-brand text-[11px]"></i>
+                    <span>${loc.name}</span>
+                  </div>
+                  <p class="text-[11.5px] text-muted leading-relaxed">${loc.note}</p>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    `;
+  }
+
+  // 10. Prayer Journal & Praise Wall Tool
+  function renderPrayerJournal() {
+    let prayers = state.prayer.items;
+    if (!prayers || prayers.length === 0) {
+      prayers = DEFAULT_PRAYERS;
+      state.prayer.items = prayers;
+    }
+
+    const filter = state.prayer.filter;
+    const filteredPrayers = filter === 'all' 
+      ? prayers 
+      : (filter === 'answered' ? prayers.filter(p => p.answered) : prayers.filter(p => p.category === filter && !p.answered));
+
+    const answeredCount = prayers.filter(p => p.answered).length;
+
+    return `
+      <div class="space-y-4">
+        
+        <!-- Header Banner -->
+        <div class="card p-4 sm:p-5 bg-gradient-to-r from-teal-600/10 via-emerald-600/10 to-cyan-600/10 border border-teal-500/20 space-y-3">
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center gap-2.5">
+              <span class="w-10 h-10 rounded-xl bg-gradient-to-tr from-teal-600 to-emerald-600 text-white flex items-center justify-center font-bold text-lg shadow-sm">
+                <i class="fa-solid fa-hands-praying"></i>
+              </span>
+              <div>
+                <h1 class="text-lg sm:text-xl font-bold text-ink flex items-center gap-2">
+                  <span>Prayer Journal &amp; Praise Wall • កំណត់ត្រាអធិស្ឋាន</span>
+                  <span class="text-[10px] font-bold uppercase tracking-wider text-teal-600 bg-teal-500/10 px-2 py-0.5 rounded-full">Journal</span>
+                </h1>
+                <p class="text-xs text-muted">Keep track of personal petitions, church intercessions, and God’s answered faithfulness.</p>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-2">
+              <button class="btn btn-neutral text-xs shrink-0 !py-1.5 !px-3" onclick="window.startGuidedPrayerTimer()">
+                <i class="fa-solid fa-stopwatch text-teal-600 mr-1.5"></i> 5-Min Guided Prayer
+              </button>
+              <button class="btn btn-primary text-xs shrink-0 !py-1.5 !px-3.5 shadow-sm" onclick="window.openNewPrayerModal(true)">
+                <i class="fa-solid fa-plus mr-1"></i> New Prayer
+              </button>
+            </div>
+          </div>
+
+          <!-- Category Filter Bar -->
+          <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar pt-1 text-xs">
+            <button class="px-3 py-1.5 rounded-lg transition font-semibold shrink-0 ${filter === 'all' ? 'bg-brand text-white shadow-xs' : 'bg-surface text-ink border border-line hover:bg-raised'}" onclick="window.setPrayerFilter('all')">
+              All (${prayers.length})
+            </button>
+            <button class="px-3 py-1.5 rounded-lg transition font-semibold shrink-0 ${filter === 'personal' ? 'bg-brand text-white shadow-xs' : 'bg-surface text-ink border border-line hover:bg-raised'}" onclick="window.setPrayerFilter('personal')">
+              Personal (ផ្ទាល់ខ្លួន)
+            </button>
+            <button class="px-3 py-1.5 rounded-lg transition font-semibold shrink-0 ${filter === 'church' ? 'bg-brand text-white shadow-xs' : 'bg-surface text-ink border border-line hover:bg-raised'}" onclick="window.setPrayerFilter('church')">
+              Church &amp; Ministry
+            </button>
+            <button class="px-3 py-1.5 rounded-lg transition font-semibold shrink-0 ${filter === 'family' ? 'bg-brand text-white shadow-xs' : 'bg-surface text-ink border border-line hover:bg-raised'}" onclick="window.setPrayerFilter('family')">
+              Family &amp; Health
+            </button>
+            <button class="px-3 py-1.5 rounded-lg transition font-semibold shrink-0 ${filter === 'answered' ? 'bg-emerald-600 text-white shadow-xs font-bold' : 'bg-emerald-500/10 text-emerald-700 border border-emerald-500/30 hover:bg-emerald-500/20'}" onclick="window.setPrayerFilter('answered')">
+              🎉 Answered Prayers (${answeredCount})
+            </button>
+          </div>
+        </div>
+
+        <!-- Add New Prayer Card Form -->
+        <div id="new-prayer-form" class="card p-4 sm:p-5 bg-surface border border-line space-y-3 hidden">
+          <div class="flex items-center justify-between border-b border-line pb-2">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-ink flex items-center gap-2">
+              <i class="fa-solid fa-pen text-brand"></i>
+              <span>Add Prayer Request • សរសេរសេចក្តីអធិស្ឋាន</span>
+            </h3>
+            <button class="text-muted hover:text-ink text-xs font-bold" onclick="window.openNewPrayerModal(false)">✕ Cancel</button>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div class="space-y-1">
+              <label class="text-[11px] font-bold text-muted uppercase">Prayer Title</label>
+              <input type="text" id="prayer-input-title" placeholder="e.g. Strength for ministry, health for parents..." class="w-full px-3 py-2 text-xs rounded-xl bg-raised border border-line text-ink outline-none focus:border-brand">
+            </div>
+
+            <div class="space-y-1">
+              <label class="text-[11px] font-bold text-muted uppercase">Category</label>
+              <select id="prayer-input-cat" class="w-full p-2 text-xs rounded-xl bg-raised border border-line text-ink font-semibold">
+                <option value="personal">Personal (ផ្ទាល់ខ្លួន)</option>
+                <option value="church">Church &amp; Ministry (ក្រុមជំនុំ)</option>
+                <option value="family">Family &amp; Health (គ្រួសារ)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="space-y-1">
+            <label class="text-[11px] font-bold text-muted uppercase">Scripture Promise (Optional)</label>
+            <input type="text" id="prayer-input-scripture" placeholder="e.g. Philippians 4:6-7, Psalm 23:1..." class="w-full px-3 py-2 text-xs rounded-xl bg-raised border border-line text-ink outline-none focus:border-brand">
+          </div>
+
+          <div class="space-y-1">
+            <label class="text-[11px] font-bold text-muted uppercase">Details &amp; Petitions</label>
+            <textarea id="prayer-input-note" rows="3" placeholder="Write specific requests or details..." class="w-full p-2.5 text-xs rounded-xl bg-raised border border-line text-ink outline-none focus:border-brand leading-relaxed"></textarea>
+          </div>
+
+          <div class="flex justify-end pt-1">
+            <button class="btn btn-primary text-xs !py-2 !px-4 shadow-sm" onclick="window.saveNewPrayer()">
+              <i class="fa-solid fa-floppy-disk mr-1.5"></i> Save to Prayer Wall
+            </button>
+          </div>
+        </div>
+
+        <!-- Prayers List Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          ${filteredPrayers.length === 0 ? `
+            <div class="md:col-span-2 card p-8 text-center text-muted space-y-2">
+              <i class="fa-solid fa-hands-praying text-3xl text-muted/50 mb-1"></i>
+              <p class="font-bold text-sm text-ink">No prayer requests in this category yet</p>
+              <p class="text-xs text-muted">Click "+ New Prayer" above to record your first petition.</p>
+            </div>
+          ` : filteredPrayers.map(p => `
+            <div class="card p-4 sm:p-5 bg-surface border ${p.answered ? 'border-emerald-500/40 bg-emerald-500/5' : 'border-line'} space-y-3 hover:shadow-xs transition">
+              <div class="flex items-center justify-between gap-2 border-b border-line pb-2">
+                <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${p.answered ? 'bg-emerald-500 text-white' : 'bg-raised text-muted'}">
+                  ${p.answered ? '🎉 Answered Prayer' : p.category}
+                </span>
+                <span class="text-[10.5px] text-muted">${p.date}</span>
+              </div>
+
+              <div class="space-y-1">
+                <h3 class="text-sm sm:text-base font-bold text-ink">${esc(p.title)}</h3>
+                ${p.titleKhmer ? `<p class="text-xs font-khmer text-muted leading-relaxed">${esc(p.titleKhmer)}</p>` : ''}
+              </div>
+
+              ${p.scripture ? `
+                <div class="p-2 rounded-lg bg-raised/70 border border-line text-[11.5px] font-semibold text-brand flex items-center gap-1.5">
+                  <i class="fa-solid fa-quote-left text-xs opacity-70"></i>
+                  <span>${esc(p.scripture)}</span>
+                </div>
+              ` : ''}
+
+              ${p.note ? `
+                <p class="text-xs text-ink/80 leading-relaxed">${esc(p.note)}</p>
+              ` : ''}
+
+              ${p.answered && p.answeredNote ? `
+                <div class="p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-xs text-emerald-800 dark:text-emerald-300 space-y-0.5">
+                  <strong class="font-bold flex items-center gap-1"><i class="fa-solid fa-star text-amber-400"></i> Answered Praise Testimony:</strong>
+                  <p class="italic">${esc(p.answeredNote)}</p>
+                </div>
+              ` : ''}
+
+              <div class="pt-2 border-t border-line flex items-center justify-between text-xs">
+                ${!p.answered ? `
+                  <button class="text-emerald-600 hover:text-emerald-700 font-bold flex items-center gap-1 text-[11.5px]" onclick="window.markPrayerAnswered('${p.id}')">
+                    <i class="fa-solid fa-circle-check"></i> Mark as Answered
+                  </button>
+                ` : `
+                  <span class="text-emerald-600 font-semibold text-[11.5px] flex items-center gap-1"><i class="fa-solid fa-check-double"></i> Praise God</span>
+                `}
+                <button class="text-muted hover:text-rose-500 text-[11.5px]" onclick="window.deletePrayer('${p.id}')" title="Delete prayer">
+                  <i class="fa-regular fa-trash-can"></i>
+                </button>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+
+      </div>
+    `;
+  }
+
   // ---------------------------------------------------------------------------
   // Master Render & Event Binding
   // ---------------------------------------------------------------------------
@@ -3200,6 +3901,9 @@
       case 'reader': root.innerHTML = renderReader(); break;
       case 'parallel': root.innerHTML = renderParallel(); break;
       case 'designer': root.innerHTML = renderDesigner(); drawDesignerCanvas(); break;
+      case 'plans': root.innerHTML = renderReadingPlans(); break;
+      case 'atlas': root.innerHTML = renderAtlas(); break;
+      case 'prayer': root.innerHTML = renderPrayerJournal(); break;
       case 'daily': root.innerHTML = renderDaily(); break;
       case 'concordance': root.innerHTML = renderConcordance(); break;
       case 'memory':
@@ -3889,6 +4593,105 @@
     const content = `${text}\n\n— ${ref} (CPTI ខគម្ពីរចងចាំ)`;
     localStorage.setItem('faithin_draft_post', content);
     window.location.href = '/home';
+  };
+
+  // ─── Reading Plans Helpers ───
+  window.selectReadingPlan = (planId) => {
+    state.readingPlans.activePlan = planId;
+    render();
+  };
+
+  window.togglePlanDayCompleted = (planId, day) => {
+    const key = `${planId}-${day}`;
+    if (state.readingPlans.completedDays[key]) {
+      delete state.readingPlans.completedDays[key];
+    } else {
+      state.readingPlans.completedDays[key] = true;
+      if (window.toast) window.toast(`Day ${day} marked complete! Praise God! 🎉`);
+    }
+    localStorage.setItem('faithin_plan_progress', JSON.stringify(state.readingPlans.completedDays));
+    render();
+  };
+
+  window.jumpToPlanReading = (bookName, chapterNum) => {
+    state.book = bookName || 'Matthew';
+    state.chapter = chapterNum || 1;
+    state.activeTool = 'reader';
+    window.switchTool('reader');
+    loadChapterVerses();
+  };
+
+  // ─── Atlas Helpers ───
+  window.selectAtlasEra = (eraId) => {
+    state.atlas.selectedEra = eraId;
+    render();
+  };
+
+  // ─── Prayer Journal Helpers ───
+  window.setPrayerFilter = (cat) => {
+    state.prayer.filter = cat;
+    render();
+  };
+
+  window.openNewPrayerModal = (show = true) => {
+    const form = $('#new-prayer-form');
+    if (form) {
+      if (show) form.classList.remove('hidden');
+      else form.classList.add('hidden');
+    }
+  };
+
+  window.saveNewPrayer = () => {
+    const title = $('#prayer-input-title')?.value.trim();
+    if (!title) {
+      alert('Please enter a prayer title');
+      return;
+    }
+    const cat = $('#prayer-input-cat')?.value || 'personal';
+    const scripture = $('#prayer-input-scripture')?.value.trim() || '';
+    const note = $('#prayer-input-note')?.value.trim() || '';
+    
+    const newP = {
+      id: 'pr-' + Date.now(),
+      category: cat,
+      title: title,
+      titleKhmer: '',
+      scripture: scripture,
+      note: note,
+      date: new Date().toISOString().split('T')[0],
+      answered: false,
+      answeredNote: ''
+    };
+
+    if (!state.prayer.items) state.prayer.items = [...DEFAULT_PRAYERS];
+    state.prayer.items.unshift(newP);
+    localStorage.setItem('faithin_prayers_v1', JSON.stringify(state.prayer.items));
+    if (window.toast) window.toast('Prayer request recorded! 🙏');
+    render();
+  };
+
+  window.markPrayerAnswered = (id) => {
+    const note = prompt('Praise God! What is your praise testimony for how God answered this prayer?');
+    const p = state.prayer.items.find(item => item.id === id);
+    if (p) {
+      p.answered = true;
+      p.answeredNote = note || 'Answered by God’s grace!';
+      localStorage.setItem('faithin_prayers_v1', JSON.stringify(state.prayer.items));
+      if (window.toast) window.toast('Prayer marked as Answered! Hallelujah! 🎉');
+      render();
+    }
+  };
+
+  window.deletePrayer = (id) => {
+    if (confirm('Delete this prayer request?')) {
+      state.prayer.items = state.prayer.items.filter(item => item.id !== id);
+      localStorage.setItem('faithin_prayers_v1', JSON.stringify(state.prayer.items));
+      render();
+    }
+  };
+
+  window.startGuidedPrayerTimer = () => {
+    alert("5-Minute Guided Prayer started:\n\n1. Adoration (1 min) — Worship God's holy name\n2. Confession (1 min) — Repent and receive forgiveness\n3. Thanksgiving (1 min) — Thank God for specific blessings\n4. Supplication (2 min) — Intercede for yourself and others");
   };
 
   document.addEventListener('DOMContentLoaded', () => {
