@@ -45,6 +45,17 @@
     border-color: #1877f2;
     box-shadow: 0 1px 2px rgba(24, 119, 242, 0.2);
   }
+  .side-link {
+    white-space: nowrap !important;
+  }
+  .side-link * {
+    white-space: nowrap !important;
+  }
+  .side-link.is-active {
+    background-color: rgba(24, 119, 242, 0.09) !important;
+    color: #1877f2 !important;
+    font-weight: 700 !important;
+  }
   .verse-row {
     padding: 0.65rem 0.85rem;
     border-radius: 0.5rem;
@@ -298,51 +309,51 @@
       
       <!-- Group 1: Scripture & Study -->
       <div class="space-y-0.5">
-        <h3 class="text-[11px] font-bold uppercase tracking-wider text-muted px-2 py-0.5">Scripture &amp; Study</h3>
-        <button class="side-link w-full text-left flex items-center justify-between px-2.5 py-1.5 rounded-lg text-[13px] font-semibold text-ink hover:bg-raised" data-side-tool="reader" onclick="window.switchTool('reader')">
-          <span class="flex items-center gap-2.5"><i class="fa-solid fa-book-open text-blue-500 w-4 text-center"></i> Bible Reader</span>
+        <h3 class="text-[10.5px] font-bold uppercase tracking-wider text-muted px-2 py-0.5 whitespace-nowrap">Scripture &amp; Study</h3>
+        <button class="side-link w-full text-left flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-ink hover:bg-raised whitespace-nowrap" data-side-tool="reader" onclick="window.switchTool('reader')">
+          <span class="flex items-center gap-2 min-w-0 truncate"><i class="fa-solid fa-book-open text-blue-500 w-4 text-center shrink-0"></i> <span class="truncate">Bible Reader</span></span>
         </button>
-        <button class="side-link w-full text-left flex items-center justify-between px-2.5 py-1.5 rounded-lg text-[13px] font-semibold text-ink hover:bg-raised" data-side-tool="parallel" onclick="window.switchTool('parallel')">
-          <span class="flex items-center gap-2.5"><i class="fa-solid fa-columns-3 text-indigo-500 w-4 text-center"></i> Parallel Study</span>
+        <button class="side-link w-full text-left flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-ink hover:bg-raised whitespace-nowrap" data-side-tool="parallel" onclick="window.switchTool('parallel')">
+          <span class="flex items-center gap-2 min-w-0 truncate"><i class="fa-solid fa-columns-3 text-indigo-500 w-4 text-center shrink-0"></i> <span class="truncate">Parallel Study</span></span>
         </button>
-        <button class="side-link w-full text-left flex items-center justify-between px-2.5 py-1.5 rounded-lg text-[13px] font-semibold text-ink hover:bg-raised" data-side-tool="concordance" onclick="window.switchTool('concordance')">
-          <span class="flex items-center gap-2.5"><i class="fa-solid fa-magnifying-glass text-emerald-500 w-4 text-center"></i> Word Study (Greek)</span>
+        <button class="side-link w-full text-left flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-ink hover:bg-raised whitespace-nowrap" data-side-tool="concordance" onclick="window.switchTool('concordance')">
+          <span class="flex items-center gap-2 min-w-0 truncate"><i class="fa-solid fa-magnifying-glass text-emerald-500 w-4 text-center shrink-0"></i> <span class="truncate">Word Study</span></span>
         </button>
       </div>
 
       <!-- Group 2: Creative & Growth -->
       <div class="space-y-0.5 pt-1 border-t border-line">
-        <h3 class="text-[11px] font-bold uppercase tracking-wider text-muted px-2 py-0.5">Creative &amp; Growth</h3>
-        <button class="side-link w-full text-left flex items-center justify-between px-2.5 py-1.5 rounded-lg text-[13px] font-semibold text-ink hover:bg-raised" data-side-tool="designer" onclick="window.switchTool('designer')">
-          <span class="flex items-center gap-2.5"><i class="fa-solid fa-palette text-purple-500 w-4 text-center"></i> Card Studio Pro</span>
-          <span class="text-[9.5px] font-bold text-amber-600 bg-amber-500/10 px-1.5 py-0.5 rounded-full">PRO</span>
+        <h3 class="text-[10.5px] font-bold uppercase tracking-wider text-muted px-2 py-0.5 whitespace-nowrap">Creative &amp; Growth</h3>
+        <button class="side-link w-full text-left flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-ink hover:bg-raised whitespace-nowrap" data-side-tool="designer" onclick="window.switchTool('designer')">
+          <span class="flex items-center gap-2 min-w-0 truncate"><i class="fa-solid fa-palette text-purple-500 w-4 text-center shrink-0"></i> <span class="truncate">Card Studio</span></span>
+          <span class="text-[9px] font-bold text-amber-600 bg-amber-500/10 px-1.5 py-0.5 rounded-full shrink-0">PRO</span>
         </button>
-        <button class="side-link w-full text-left flex items-center justify-between px-2.5 py-1.5 rounded-lg text-[13px] font-semibold text-ink hover:bg-raised" data-side-tool="typing" onclick="window.switchTool('typing')">
-          <span class="flex items-center gap-2.5"><i class="fa-solid fa-brain text-rose-500 w-4 text-center"></i> Memory • ចងចាំ</span>
-          <span class="text-[9.5px] font-bold text-rose-600 bg-rose-500/10 px-1.5 py-0.5 rounded-full">CPTI</span>
+        <button class="side-link w-full text-left flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-ink hover:bg-raised whitespace-nowrap" data-side-tool="typing" onclick="window.switchTool('typing')">
+          <span class="flex items-center gap-2 min-w-0 truncate"><i class="fa-solid fa-brain text-rose-500 w-4 text-center shrink-0"></i> <span class="truncate">Memory Suite</span></span>
+          <span class="text-[9px] font-bold text-rose-600 bg-rose-500/10 px-1.5 py-0.5 rounded-full shrink-0">CPTI</span>
         </button>
-        <button class="side-link w-full text-left flex items-center justify-between px-2.5 py-1.5 rounded-lg text-[13px] font-semibold text-ink hover:bg-raised" data-side-tool="plans" onclick="window.switchTool('plans')">
-          <span class="flex items-center gap-2.5"><i class="fa-solid fa-calendar-check text-blue-600 w-4 text-center"></i> Reading Plans</span>
-          <span class="text-[9.5px] font-bold text-blue-600 bg-blue-500/10 px-1.5 py-0.5 rounded-full">NEW</span>
+        <button class="side-link w-full text-left flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-ink hover:bg-raised whitespace-nowrap" data-side-tool="plans" onclick="window.switchTool('plans')">
+          <span class="flex items-center gap-2 min-w-0 truncate"><i class="fa-solid fa-calendar-check text-blue-600 w-4 text-center shrink-0"></i> <span class="truncate">Reading Plans</span></span>
+          <span class="text-[9px] font-bold text-blue-600 bg-blue-500/10 px-1.5 py-0.5 rounded-full shrink-0">NEW</span>
         </button>
       </div>
 
       <!-- Group 3: Devotional & Life -->
       <div class="space-y-0.5 pt-1 border-t border-line">
-        <h3 class="text-[11px] font-bold uppercase tracking-wider text-muted px-2 py-0.5">Devotional &amp; Life</h3>
-        <button class="side-link w-full text-left flex items-center justify-between px-2.5 py-1.5 rounded-lg text-[13px] font-semibold text-ink hover:bg-raised" data-side-tool="atlas" onclick="window.switchTool('atlas')">
-          <span class="flex items-center gap-2.5"><i class="fa-solid fa-map-location-dot text-amber-600 w-4 text-center"></i> Atlas &amp; Maps</span>
-          <span class="text-[9.5px] font-bold text-amber-600 bg-amber-500/10 px-1.5 py-0.5 rounded-full">NEW</span>
+        <h3 class="text-[10.5px] font-bold uppercase tracking-wider text-muted px-2 py-0.5 whitespace-nowrap">Devotional &amp; Life</h3>
+        <button class="side-link w-full text-left flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-ink hover:bg-raised whitespace-nowrap" data-side-tool="atlas" onclick="window.switchTool('atlas')">
+          <span class="flex items-center gap-2 min-w-0 truncate"><i class="fa-solid fa-map-location-dot text-amber-600 w-4 text-center shrink-0"></i> <span class="truncate">Atlas &amp; Maps</span></span>
+          <span class="text-[9px] font-bold text-amber-600 bg-amber-500/10 px-1.5 py-0.5 rounded-full shrink-0">NEW</span>
         </button>
-        <button class="side-link w-full text-left flex items-center justify-between px-2.5 py-1.5 rounded-lg text-[13px] font-semibold text-ink hover:bg-raised" data-side-tool="prayer" onclick="window.switchTool('prayer')">
-          <span class="flex items-center gap-2.5"><i class="fa-solid fa-hands-praying text-teal-600 w-4 text-center"></i> Prayer Journal</span>
-          <span class="text-[9.5px] font-bold text-teal-600 bg-teal-500/10 px-1.5 py-0.5 rounded-full">NEW</span>
+        <button class="side-link w-full text-left flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-ink hover:bg-raised whitespace-nowrap" data-side-tool="prayer" onclick="window.switchTool('prayer')">
+          <span class="flex items-center gap-2 min-w-0 truncate"><i class="fa-solid fa-hands-praying text-teal-600 w-4 text-center shrink-0"></i> <span class="truncate">Prayer Journal</span></span>
+          <span class="text-[9px] font-bold text-teal-600 bg-teal-500/10 px-1.5 py-0.5 rounded-full shrink-0">NEW</span>
         </button>
-        <button class="side-link w-full text-left flex items-center justify-between px-2.5 py-1.5 rounded-lg text-[13px] font-semibold text-ink hover:bg-raised" data-side-tool="daily" onclick="window.switchTool('daily')">
-          <span class="flex items-center gap-2.5"><i class="fa-solid fa-sun text-amber-500 w-4 text-center"></i> Verse of the Day</span>
+        <button class="side-link w-full text-left flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-ink hover:bg-raised whitespace-nowrap" data-side-tool="daily" onclick="window.switchTool('daily')">
+          <span class="flex items-center gap-2 min-w-0 truncate"><i class="fa-solid fa-sun text-amber-500 w-4 text-center shrink-0"></i> <span class="truncate">Verse of the Day</span></span>
         </button>
-        <button class="side-link w-full text-left flex items-center justify-between px-2.5 py-1.5 rounded-lg text-[13px] font-semibold text-ink hover:bg-raised" data-side-tool="notes" onclick="window.switchTool('notes')">
-          <span class="flex items-center gap-2.5"><i class="fa-solid fa-pen-to-square text-cyan-600 w-4 text-center"></i> Sermon Notes</span>
+        <button class="side-link w-full text-left flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-ink hover:bg-raised whitespace-nowrap" data-side-tool="notes" onclick="window.switchTool('notes')">
+          <span class="flex items-center gap-2 min-w-0 truncate"><i class="fa-solid fa-pen-to-square text-cyan-600 w-4 text-center shrink-0"></i> <span class="truncate">Sermon Notes</span></span>
         </button>
       </div>
 
