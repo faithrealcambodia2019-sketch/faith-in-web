@@ -3150,6 +3150,29 @@
     };
 
     /**
+     * Current member's Firebase ID token, or '' when signed out.
+     *
+     * The Bible Studio store (faithin-bible-store.js) sends this as a bearer
+     * token so the Next.js routes can verify who is calling before writing to
+     * Supabase. Resolving to '' rather than rejecting lets a signed-out
+     * visitor keep using the Bible tools with local storage.
+     */
+    window.cvIdToken = function (forceRefresh) {
+        return getBundle()
+            .then(function (b) { return currentUser(b); })
+            .then(function (user) { return user ? user.getIdToken(forceRefresh === true) : ''; })
+            .catch(function () { return ''; });
+    };
+
+    /** Resolves with the signed-in member's uid, or '' when signed out. */
+    window.cvCurrentUid = function () {
+        return getBundle()
+            .then(function (b) { return currentUser(b); })
+            .then(function (user) { return (user && user.uid) || ''; })
+            .catch(function () { return ''; });
+    };
+
+    /**
      * Promise interface for UI modules that were previously wired to removed
      * WordPress REST endpoints (Messenger and Notifications). Authentication
      * and authorization still flow through Firebase Auth and Firestore rules.

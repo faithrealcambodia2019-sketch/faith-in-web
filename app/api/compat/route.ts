@@ -124,6 +124,212 @@ function serverBackendUnavailable() {
   );
 }
 
+/**
+ * Bible Studio member data (sermon notes, saved Scripture cards, Scripture
+ * Memory progress, typing scores, bookmarks, preferences, reading streak).
+ *
+ * Three of these actions — cv_bible_save_notes, cv_bible_get_notes and
+ * cv_bible_save_typing_score — used to answer `{ saved: true }` and throw the
+ * data away, so a member's notes and scores were silently lost. They now write
+ * to Supabase. The rest are new and back the Studio features that previously
+ * had no persistence at all.
+ *
+ * Every action here needs a verified Firebase ID token. A caller without one
+ * gets `{ persisted: false }` rather than an error, so the browser can keep
+ * its existing local behaviour instead of showing a failure to a guest.
+ */
+async function bibleStudioAction(req: NextRequest, action: string, payload: Payload) {
+  const store = await import("@/lib/bible-store");
+  const { readCaller } = await import("@/lib/bible-api");
+
+  const KNOWN = new Set([
+    "cv_bible_save_notes",
+    "cv_bible_get_notes",
+    "cv_bible_save_typing_score",
+    "cv_bible_get_typing_scores",
+    "cv_bible_save_card",
+    "cv_bible_get_cards",
+    "cv_bible_delete_card",
+    "cv_bible_save_memory_progress",
+    "cv_bible_get_memory_progress",
+    "cv_bible_save_bookmark",
+    "cv_bible_get_bookmarks",
+    "cv_bible_delete_bookmark",
+    "cv_bible_save_preferences",
+    "cv_bible_get_preferences",
+    "cv_bible_record_reading",
+    "cv_bible_get_studio",
+  ]);
+
+  if (!KNOWN.has(action)) {
+    return jsonError("This action is handled by the Firebase data backend.", 501);
+  }
+
+  const caller = await readCaller(req);
+  if (!caller.signedIn) {
+    return NextResponse.json({
+      success: true,
+      persisted: false,
+      data: { saved: false, reason: "Sign in to save your Bible Studio work." },
+    });
+  }
+  const uid = caller.uid;
+
+  /** Form posts arrive as strings, so a JSON field may need parsing first. */
+  const object = (value: unknown): Record<string, unknown> => {
+    if (value && typeof value === "object" && !Array.isArray(value)) {
+      return value as Record<string, unknown>;
+    }
+    if (typeof value === "string" && value.trim().startsWith("{")) {
+      try {
+        const parsed: unknown = JSON.parse(value);
+        if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
+          return parsed as Record<string, unknown>;
+        }
+      } catch {
+        /* fall through to the empty object */
+      }
+    }
+    return {};
+  };
+
+  try {
+    switch (action) {
+      case "cv_bible_save_notes": {
+        const notes = Object.keys(object(payload.notes)).length
+          ? object(payload.notes)
+          : {
+              Doctrine: payloadText(payload, "Doctrine", 20_000),
+              Encouragement: payloadText(payload, "Encouragement", 20_000),
+              Application: payloadText(payload, "Application", 20_000),
+            };
+        const saved = await store.saveCurrentNote(uid, {
+          notes,
+          title: payload.title,
+          reference: payload.reference,
+        });
+        return NextResponse.json({
+          success: true,
+          persisted: true,
+          data: { saved: true, notes: saved.notes, note: saved },
+        });
+      }
+
+      case "cv_bible_get_notes": {
+        const note = await store.getCurrentNote(uid);
+        return NextResponse.json({
+          success: true,
+          persisted: true,
+          data: { notes: note?.notes || { ...store.EMPTY_NOTES }, note },
+        });
+      }
+
+      case "cv_bible_save_typing_score": {
+        const result = await store.saveTypingScore(uid, {
+          ...payload,
+          wpm: payload.wpm ?? payload.score,
+        });
+        return NextResponse.json({
+          success: true,
+          persisted: true,
+          data: { saved: true, ...result },
+        });
+      }
+
+      case "cv_bible_get_typing_scores": {
+        const scores = await store.listTypingScores(uid, 50);
+        return NextResponse.json({
+          success: true,
+          persisted: true,
+          data: { scores, bestWpm: scores.reduce((best, s) => Math.max(best, s.wpm), 0) },
+        });
+      }
+
+      case "cv_bible_save_card": {
+        const card = await store.saveCard(uid, {
+          ...payload,
+          design: object(payload.design ?? payload.designer),
+        });
+        return NextResponse.json({ success: true, persisted: true, data: { saved: true, card } });
+      }
+
+      case "cv_bible_get_cards": {
+        const cards = await store.listCards(uid, 100);
+        return NextResponse.json({ success: true, persisted: true, data: { cards } });
+      }
+
+      case "cv_bible_delete_card": {
+        await store.deleteCard(uid, payloadText(payload, "id", 128));
+        return NextResponse.json({ success: true, persisted: true, data: { deleted: true } });
+      }
+
+      case "cv_bible_save_memory_progress": {
+        const progress = await store.saveMemoryProgress(uid, payload);
+        return NextResponse.json({ success: true, persisted: true, data: { saved: true, progress } });
+      }
+
+      case "cv_bible_get_memory_progress": {
+        const progress = await store.listMemoryProgress(uid);
+        return NextResponse.json({ success: true, persisted: true, data: { progress } });
+      }
+
+      case "cv_bible_save_bookmark": {
+        const bookmark = await store.saveBookmark(uid, payload);
+        return NextResponse.json({ success: true, persisted: true, data: { saved: true, bookmark } });
+      }
+
+      case "cv_bible_get_bookmarks": {
+        const bookmarks = await store.listBookmarks(uid, 200);
+        return NextResponse.json({ success: true, persisted: true, data: { bookmarks } });
+      }
+
+      case "cv_bible_delete_bookmark": {
+        await store.deleteBookmark(uid, payload);
+        return NextResponse.json({ success: true, persisted: true, data: { deleted: true } });
+      }
+
+      case "cv_bible_save_preferences": {
+        const preferences = await store.savePreferences(uid, {
+          ...payload,
+          designerDefaults: object(payload.designerDefaults),
+        });
+        return NextResponse.json({ success: true, persisted: true, data: { saved: true, preferences } });
+      }
+
+      case "cv_bible_get_preferences": {
+        const preferences = await store.getPreferences(uid);
+        return NextResponse.json({ success: true, persisted: true, data: { preferences } });
+      }
+
+      case "cv_bible_record_reading": {
+        const result = await store.recordReading(uid, payload);
+        return NextResponse.json({ success: true, persisted: true, data: { saved: true, ...result } });
+      }
+
+      case "cv_bible_get_studio": {
+        const dashboard = await store.getStudioDashboard(uid);
+        return NextResponse.json({ success: true, persisted: true, data: dashboard });
+      }
+
+      default:
+        return jsonError("This action is handled by the Firebase data backend.", 501);
+    }
+  } catch (error) {
+    if (error instanceof store.BibleStoreUnavailable) {
+      // Setup is incomplete rather than broken. Report success with
+      // persisted:false so the Studio falls back to local storage silently.
+      return NextResponse.json({
+        success: true,
+        persisted: false,
+        data: { saved: false, reason: error.message },
+      });
+    }
+    const message = error instanceof Error ? error.message : "That could not be saved.";
+    console.error(`[Faith In] Bible Studio action failed: ${action}`, error);
+    return jsonError(message, 400);
+  }
+}
+
 export async function POST(req: NextRequest) {
   let parsed: Awaited<ReturnType<typeof parseRequest>>;
   try {
@@ -183,31 +389,10 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ success: true, data: result });
       }
 
-      case "cv_bible_save_notes": {
-        const notes = payload.notes || {
-          Doctrine: payloadText(payload, "Doctrine", 5000),
-          Encouragement: payloadText(payload, "Encouragement", 5000),
-          Application: payloadText(payload, "Application", 5000),
-        };
-        return NextResponse.json({ success: true, data: { saved: true, notes } });
-      }
-
-      case "cv_bible_get_notes": {
-        return NextResponse.json({
-          success: true,
-          data: {
-            notes: {
-              Doctrine: "",
-              Encouragement: "",
-              Application: "",
-            },
-          },
-        });
-      }
-
-      case "cv_bible_save_typing_score": {
-        return NextResponse.json({ success: true, data: { saved: true } });
-      }
+      // The remaining cv_bible_* actions are member data rather than
+      // Scripture text, so they are served by the Bible Studio store.
+      default:
+        return bibleStudioAction(req, action, payload);
     }
   }
 

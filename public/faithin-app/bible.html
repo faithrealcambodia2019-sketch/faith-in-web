@@ -363,6 +363,10 @@
 
 <script src="/faithin-app/assets/faithin-runtime.js?v=20260902-cpti-v3"></script>
 <script src="/assets/js/faith-in-backend.js?v=20260902-cpti-v3"></script>
+<!-- Persists Bible Studio work (notes, cards, memory, scores, bookmarks,
+     preferences) to Supabase for signed-in members, with a local mirror so
+     the tools still work offline and while signed out. -->
+<script src="/faithin-app/assets/faithin-bible-store.js?v=20260902-store-v1"></script>
 <script src="/faithin-app/assets/faithin.js?v=20260902-cpti-v3"></script>
 <script>
 (() => {
@@ -421,7 +425,21 @@
       Doctrine: '',
       Encouragement: '',
       Application: ''
-    }
+    },
+
+    // ── Backed by Supabase through window.BibleStore ──
+    // Hydrated once on load and kept in step as the member works. Each list
+    // also has a local mirror, so a signed-out member keeps everything in
+    // their browser exactly as the Studio behaved before.
+    savedCards: [],
+    memoryProgress: [],
+    typingScores: [],
+    bookmarks: [],
+    bestWpm: 0,
+    readingStreak: 0,
+    showCardGallery: false,
+    persisted: false,      // true once the server confirms it is storing work
+    saveState: ''          // '', 'saving', 'saved', or an error to show
   };
 
   const BOOKS = [
@@ -2273,6 +2291,124 @@
   const $$ = (s, r = document) => [...r.querySelectorAll(s)];
   const esc = (s) => String(s || '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
+  // ───────────────────────────────────────────────────────────────────────────
+  // Persistence helpers
+  //
+  // window.BibleStore (faithin-bible-store.js) writes to the member's account
+  // through /api/bible/*. Every call below is optional: if the store is absent,
+  // the member is signed out, or the network is down, the Studio carries on
+  // with local storage and nothing shows an error.
+  // ───────────────────────────────────────────────────────────────────────────
+
+  function debounceStudio(fn, wait) {
+    let timer = null;
+    return (...args) => {
+      clearTimeout(timer);
+      timer = setTimeout(() => fn(...args), wait);
+    };
+  }
+
+  function progressFor(passageId) {
+    return state.memoryProgress.find((item) => item.passageId === passageId) || null;
+  }
+
+  function isBookmarked(book, chapter, verse) {
+    return state.bookmarks.some(
+      (item) => item.book === book && Number(item.chapter) === Number(chapter) && Number(item.verse) === Number(verse)
+    );
+  }
+
+  /** Persists the reader position and look so the Bible reopens where it was. */
+  const persistPreferences = debounceStudio(() => {
+    if (!window.BibleStore) return;
+    window.BibleStore.savePreferences({
+      primaryVersion: state.version,
+      secondaryVersion: state.version2,
+      book: state.book,
+      chapter: state.chapter,
+      fontSize: state.fontSize,
+      activeTool: state.activeTool,
+      designerDefaults: {
+        fontFamily: state.designer.fontFamily,
+        fontEnglish: state.designer.fontEnglish,
+        aspectRatio: state.designer.aspectRatio,
+        textColor: state.designer.textColor,
+        accentColor: state.designer.accentColor,
+        overlayOpacity: state.designer.overlayOpacity,
+        showBranding: state.designer.showBranding,
+        brandingText: state.designer.brandingText
+      }
+    });
+  }, 600);
+
+  /** Records a chapter as read once per day, which drives the reading streak. */
+  const recordReading = debounceStudio(() => {
+    if (!window.BibleStore) return;
+    window.BibleStore.recordReading({
+      book: state.book,
+      chapter: state.chapter,
+      version: state.version,
+      reference: `${state.book} ${state.chapter}`,
+      source: state.activeTool === 'parallel' ? 'parallel' : 'reader'
+    }).then((result) => {
+      if (result && result.persisted && result.data && typeof result.data.streak === 'number') {
+        state.readingStreak = result.data.streak;
+      }
+    }).catch(() => {});
+  }, 2500);
+
+  /**
+   * One round trip on load that restores everything the member has saved.
+   * Falls back silently to whatever is in local storage.
+   */
+  function hydrateStudio() {
+    if (!window.BibleStore) return Promise.resolve();
+
+    // Show the local copy of the notes immediately — the member should never
+    // watch an empty Notes tab while the network answers.
+    const localNotes = window.BibleStore.localNotes();
+    if (localNotes) state.notes = { ...state.notes, ...localNotes };
+
+    return window.BibleStore.loadStudio()
+      .then(({ studio, persisted }) => {
+        state.persisted = Boolean(persisted);
+        if (!studio) return;
+
+        if (studio.currentNote && studio.currentNote.notes) {
+          const remote = studio.currentNote.notes;
+          const remoteEmpty = !remote.Doctrine && !remote.Encouragement && !remote.Application;
+          const localHasContent = localNotes && (localNotes.Doctrine || localNotes.Encouragement || localNotes.Application);
+          // A first sign-in after this upgrade keeps the draft already on screen.
+          if (remoteEmpty && localHasContent) window.BibleStore.saveNotes(localNotes);
+          else state.notes = { ...state.notes, ...remote };
+        }
+
+        state.savedCards = studio.cards || [];
+        state.memoryProgress = studio.memory || [];
+        state.typingScores = studio.scores || [];
+        state.bookmarks = studio.bookmarks || [];
+        state.bestWpm = (studio.stats && studio.stats.bestWpm) || 0;
+        state.readingStreak = (studio.stats && studio.stats.streak) || 0;
+
+        const prefs = studio.preferences;
+        if (persisted && prefs) {
+          // The URL wins over stored preferences, so a shared link still
+          // opens the passage it points at.
+          const params = new URLSearchParams(window.location.search);
+          if (!params.get('book')) state.book = prefs.book || state.book;
+          if (!params.get('chapter')) state.chapter = prefs.chapter || state.chapter;
+          if (!params.get('tool')) state.activeTool = prefs.activeTool || state.activeTool;
+          state.version = prefs.primaryVersion || state.version;
+          state.version2 = prefs.secondaryVersion || state.version2;
+          state.fontSize = prefs.fontSize || state.fontSize;
+          if (prefs.designerDefaults && Object.keys(prefs.designerDefaults).length) {
+            state.designer = { ...state.designer, ...prefs.designerDefaults };
+          }
+        }
+      })
+      .catch(() => {});
+  }
+
   window.switchTool = (toolName) => {
     if (toolName === 'typing') toolName = 'memory';
     state.activeTool = toolName;
@@ -2294,7 +2430,8 @@
     if (memoryWidget) {
       memoryWidget.style.display = (toolName === 'memory') ? 'block' : 'none';
     }
-    
+
+    persistPreferences();
     render();
   };
 
@@ -2316,6 +2453,10 @@
           state.verses = json.data.items || [];
         }
       }
+      // Remember where the member is reading, and count the chapter towards
+      // their streak. Both are debounced and never block the render.
+      persistPreferences();
+      recordReading();
     } catch (err) {
       console.warn('Verses load error:', err);
     } finally {
@@ -2452,11 +2593,16 @@
           ` : `
             <div class="space-y-1" style="font-size: ${state.fontSize}px;">
               ${state.verses.length === 0 ? '<p class="text-muted p-4">No verses found.</p>' : state.verses.map(v => `
-                <div class="verse-row group flex items-start gap-2">
+                <div class="verse-row group flex items-start gap-2${isBookmarked(state.book, state.chapter, v.v) ? ' is-bookmarked' : ''}">
                   <span class="verse-num shrink-0 select-none">${v.v}</span>
                   <p class="flex-1 text-ink font-khmer leading-relaxed font-normal">${esc(v.text)}</p>
-                  
-                  <div class="opacity-0 group-hover:opacity-100 flex items-center gap-1 shrink-0 transition-opacity">
+
+                  <div class="flex items-center gap-1 shrink-0 transition-opacity ${isBookmarked(state.book, state.chapter, v.v) ? '' : 'opacity-0 group-hover:opacity-100 focus-within:opacity-100'}">
+                    <button class="w-6 h-6 rounded hover:bg-raised flex items-center justify-center ${isBookmarked(state.book, state.chapter, v.v) ? 'text-amber-500' : 'text-muted'}"
+                            title="${isBookmarked(state.book, state.chapter, v.v) ? 'Remove bookmark' : 'Bookmark this verse'}"
+                            onclick="window.toggleVerseBookmark(${v.v}, '${esc(v.text)}', '${curBook.km} ${state.chapter}:${v.v}')">
+                      <i class="fa-${isBookmarked(state.book, state.chapter, v.v) ? 'solid' : 'regular'} fa-bookmark text-xs"></i>
+                    </button>
                     <button class="w-6 h-6 rounded hover:bg-raised flex items-center justify-center text-muted" title="Copy Verse" onclick="window.copyVerseText('${esc(v.text)}', '${curBook.km} ${state.chapter}:${v.v}')">
                       <i class="fa-regular fa-copy text-xs"></i>
                     </button>
@@ -2523,6 +2669,51 @@
   }
 
   // 3. Scripture Card Designer Tool (Pro Studio)
+  /**
+   * The member's saved Scripture card designs. Each entry stores the whole
+   * designer state, so reopening one restores the verse, wallpaper, fonts,
+   * colours and format exactly as it was left.
+   */
+  function renderCardGallery() {
+    if (!state.savedCards.length) {
+      return `
+        <div class="card p-5 bg-surface border border-line text-center space-y-2">
+          <i class="fa-regular fa-images text-2xl text-muted"></i>
+          <p class="text-sm font-semibold text-ink">No saved cards yet</p>
+          <p class="text-xs text-muted">${state.persisted
+            ? 'Design a card and press <strong>Save Design</strong> to keep it here.'
+            : 'Sign in to keep your card designs on every device.'}</p>
+        </div>`;
+    }
+
+    return `
+      <div class="card p-4 bg-surface border border-line space-y-3">
+        <div class="flex items-center justify-between gap-3">
+          <h2 class="text-sm font-bold text-ink flex items-center gap-2">
+            <i class="fa-solid fa-images text-brand"></i> My Saved Cards
+            <span class="text-[10px] font-semibold text-muted">${state.savedCards.length}</span>
+          </h2>
+          <button class="text-xs text-muted hover:text-ink" onclick="window.toggleCardGallery()">
+            <i class="fa-solid fa-xmark mr-1"></i>Close
+          </button>
+        </div>
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+          ${state.savedCards.map((card) => `
+            <div class="group relative rounded-xl border border-line bg-raised overflow-hidden">
+              <button class="w-full text-left p-3 space-y-1" onclick="window.openSavedCard('${esc(card.id)}')" title="Open this design">
+                <p class="text-xs font-bold text-ink line-clamp-2">${esc(card.title)}</p>
+                <p class="text-[10px] text-muted">${esc(card.reference || '')}</p>
+                <p class="text-[10px] text-muted">${esc(card.aspectRatio || '1:1')}${card.local ? ' • on this device' : ''}</p>
+              </button>
+              <button class="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-surface/90 border border-line text-rose-600 opacity-0 group-hover:opacity-100 focus:opacity-100 transition"
+                      onclick="window.deleteSavedCard('${esc(card.id)}')" title="Delete this card" aria-label="Delete ${esc(card.title)}">
+                <i class="fa-solid fa-trash text-[10px]"></i>
+              </button>
+            </div>`).join('')}
+        </div>
+      </div>`;
+  }
+
   function renderDesigner() {
     const d = state.designer;
     
@@ -2572,7 +2763,13 @@
               </div>
             </div>
             
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-2 flex-wrap">
+              <button class="btn btn-neutral text-xs shrink-0 whitespace-nowrap shadow-xs" onclick="window.toggleCardGallery()" title="Your saved Scripture cards">
+                <i class="fa-solid fa-images mr-1 text-brand"></i> My Cards${state.savedCards.length ? ` (${state.savedCards.length})` : ''}
+              </button>
+              <button class="btn btn-neutral text-xs shrink-0 whitespace-nowrap shadow-xs" onclick="window.saveCurrentCard()" title="Keep this design so you can reopen and edit it later">
+                <i class="fa-solid fa-bookmark mr-1 text-brand"></i> Save Design
+              </button>
               <button class="btn btn-neutral text-xs shrink-0 whitespace-nowrap shadow-xs" onclick="window.downloadCardImage(1)">
                 <i class="fa-solid fa-download mr-1 text-brand"></i> Export HD PNG
               </button>
@@ -2582,6 +2779,8 @@
             </div>
           </div>
         </div>
+
+        ${state.showCardGallery ? renderCardGallery() : ''}
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
           
@@ -3057,12 +3256,34 @@
                 <p class="text-[11px] sm:text-xs text-muted">សាលាទេវវិទ្យាប្រេសប៊ីទែរានកម្ពុជា — Cambodia Presbyterian Theological Institute</p>
               </div>
             </div>
-            <div class="flex items-center gap-2 text-[10px] sm:text-xs font-bold text-ink">
+            <div class="flex items-center gap-2 flex-wrap text-[10px] sm:text-xs font-bold text-ink">
               <span class="px-2 py-1 sm:px-2.5 rounded-full bg-surface border border-line shadow-xs">Total: <strong class="text-brand">${CPTI_PASSAGES.length}</strong></span>
-              <span class="px-2 py-1 sm:px-2.5 rounded-full bg-surface border border-line shadow-xs">Speed: <strong class="text-brand">${state.typingWpm}</strong> WPM</span>
-              <span class="px-2 py-1 sm:px-2.5 rounded-full bg-surface border border-line shadow-xs">Accuracy: <strong class="text-emerald-500">${state.typingAccuracy}%</strong></span>
+              <span class="px-2 py-1 sm:px-2.5 rounded-full bg-surface border border-line shadow-xs">Memorised: <strong class="text-emerald-600">${state.memoryProgress.filter(p => p.status === 'memorised').length}</strong></span>
+              <span id="typing-live-stats" class="px-2 py-1 sm:px-2.5 rounded-full bg-surface border border-line shadow-xs">${state.typingWpm} WPM • ${state.typingAccuracy}% accurate</span>
+              ${state.bestWpm ? `<span class="px-2 py-1 sm:px-2.5 rounded-full bg-surface border border-line shadow-xs">Best: <strong class="text-brand">${state.bestWpm}</strong> WPM</span>` : ''}
             </div>
           </div>
+
+          <!-- Progress for the passage currently selected -->
+          ${(() => {
+            const current = progressFor(state.selectedMemoryId);
+            const status = (current && current.status) || 'learning';
+            const labels = { learning: 'Learning', reviewing: 'Reviewing', memorised: 'Memorised' };
+            const tones = {
+              learning: 'text-amber-600 bg-amber-500/10',
+              reviewing: 'text-blue-600 bg-blue-500/10',
+              memorised: 'text-emerald-600 bg-emerald-500/10'
+            };
+            return `
+              <div class="flex flex-wrap items-center gap-2 pt-1 text-[11px]">
+                <span class="px-2 py-0.5 rounded-full font-bold ${tones[status]}">${labels[status]}</span>
+                ${current ? `<span class="text-muted">Mastery ${current.mastery}% • reviewed ${current.reviewCount || 0}×</span>` : '<span class="text-muted">Not started yet</span>'}
+                <span class="flex-1"></span>
+                ${status === 'memorised'
+                  ? `<button class="btn btn-neutral !py-0.5 !px-2 text-[11px]" onclick="window.markPassageMemorised('reviewing')"><i class="fa-solid fa-rotate-left mr-1"></i>Review again</button>`
+                  : `<button class="btn btn-primary !py-0.5 !px-2 text-[11px]" onclick="window.markPassageMemorised('memorised')"><i class="fa-solid fa-check mr-1"></i>I know this by heart</button>`}
+              </div>`;
+          })()}
         </div>
 
         <!-- 5-Section Part Filter Tabs -->
@@ -3149,10 +3370,16 @@
           <div class="space-y-0.5">
             <h1 class="text-xl font-bold text-ink">Sermon Notes Planner • កំណត់ត្រាទេសនា</h1>
             <p class="text-xs text-muted">Structured 3-part framework for capturing sermons, teachings, and personal insights.</p>
+            <p id="notes-save-state" class="text-[11px] text-muted h-4"></p>
           </div>
-          <button class="btn btn-primary text-xs shrink-0 whitespace-nowrap shadow-sm" onclick="window.saveSermonNotesAction()">
-            <i class="fa-solid fa-save mr-1"></i> Save Notes
-          </button>
+          <div class="flex items-center gap-2 shrink-0">
+            <button class="btn btn-neutral text-xs whitespace-nowrap shadow-xs" onclick="window.archiveSermonNotesAction()" title="File these notes away and start a fresh sheet">
+              <i class="fa-solid fa-box-archive mr-1"></i> Save &amp; Start New
+            </button>
+            <button class="btn btn-primary text-xs whitespace-nowrap shadow-sm" onclick="window.saveSermonNotesAction()">
+              <i class="fa-solid fa-save mr-1"></i> Save Notes
+            </button>
+          </div>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
@@ -3161,7 +3388,7 @@
               <i class="fa-solid fa-landmark"></i>
               <span>1. Doctrine (គោលលទ្ធិ)</span>
             </div>
-            <textarea id="notes-doctrine" rows="10" class="w-full p-2.5 text-xs rounded-lg bg-raised border border-line text-ink outline-none focus:border-brand leading-relaxed" placeholder="Write doctrine notes here...">${esc(state.notes.Doctrine)}</textarea>
+            <textarea id="notes-doctrine" rows="10" oninput="window.onSermonNoteInput()" class="w-full p-2.5 text-xs rounded-lg bg-raised border border-line text-ink outline-none focus:border-brand leading-relaxed" placeholder="Write doctrine notes here...">${esc(state.notes.Doctrine)}</textarea>
           </div>
 
           <div class="card p-4 bg-surface border border-line space-y-2">
@@ -3169,7 +3396,7 @@
               <i class="fa-solid fa-heart"></i>
               <span>2. Encouragement</span>
             </div>
-            <textarea id="notes-encouragement" rows="10" class="w-full p-2.5 text-xs rounded-lg bg-raised border border-line text-ink outline-none focus:border-brand leading-relaxed" placeholder="Write encouragement notes here...">${esc(state.notes.Encouragement)}</textarea>
+            <textarea id="notes-encouragement" rows="10" oninput="window.onSermonNoteInput()" class="w-full p-2.5 text-xs rounded-lg bg-raised border border-line text-ink outline-none focus:border-brand leading-relaxed" placeholder="Write encouragement notes here...">${esc(state.notes.Encouragement)}</textarea>
           </div>
 
           <div class="card p-4 bg-surface border border-line space-y-2">
@@ -3177,7 +3404,7 @@
               <i class="fa-solid fa-bolt"></i>
               <span>3. Application</span>
             </div>
-            <textarea id="notes-application" rows="10" class="w-full p-2.5 text-xs rounded-lg bg-raised border border-line text-ink outline-none focus:border-brand leading-relaxed" placeholder="Write application steps here...">${esc(state.notes.Application)}</textarea>
+            <textarea id="notes-application" rows="10" oninput="window.onSermonNoteInput()" class="w-full p-2.5 text-xs rounded-lg bg-raised border border-line text-ink outline-none focus:border-brand leading-relaxed" placeholder="Write application steps here...">${esc(state.notes.Application)}</textarea>
           </div>
         </div>
       </div>
@@ -3313,8 +3540,56 @@
       const words = val.trim().split(/\s+/).length;
       const elapsedMin = (Date.now() - state.typingStartTime) / 60000;
       state.typingWpm = elapsedMin > 0 ? Math.round(words / elapsedMin) : 0;
+
+      // Accuracy against the passage the member is typing, so the score that
+      // gets saved means something rather than always reading 100%.
+      const passage = CPTI_PASSAGES.find((p) => p.id === state.selectedMemoryId);
+      const target = (passage && passage.textKhmer) || '';
+      if (target && val.length) {
+        let correct = 0;
+        for (let i = 0; i < val.length; i += 1) if (val[i] === target[i]) correct += 1;
+        state.typingAccuracy = Math.round((correct / val.length) * 100);
+      }
+
+      const live = $('#typing-live-stats');
+      if (live) live.textContent = `${state.typingWpm} WPM • ${state.typingAccuracy}% accurate`;
+
+      persistTypingScore();
     });
   }
+
+  /**
+   * Saves a typing run once the member pauses, rather than on every keystroke.
+   * Runs shorter than a few words are ignored so the history stays meaningful.
+   */
+  const persistTypingScore = debounceStudio(() => {
+    if (!window.BibleStore || !state.typingStartTime) return;
+    if (state.typingInput.trim().length < 12) return;
+    const passage = CPTI_PASSAGES.find((p) => p.id === state.selectedMemoryId);
+    window.BibleStore.saveTypingScore({
+      passageId: state.selectedMemoryId,
+      passage: (passage && passage.refEnglish) || `${state.book} ${state.chapter}`,
+      wpm: state.typingWpm,
+      accuracy: state.typingAccuracy,
+      durationMs: Date.now() - state.typingStartTime,
+      characters: state.typingInput.length
+    }).then((result) => {
+      if (result && result.data && result.data.score) {
+        state.bestWpm = Math.max(state.bestWpm, result.data.score.wpm || 0);
+        if (result.data.personalBest && window.toast) window.toast('New personal best!');
+      }
+    }).catch(() => {});
+
+    // A typing run counts as a review of that memory passage.
+    window.BibleStore.saveMemoryProgress({
+      passageId: state.selectedMemoryId,
+      part: (passage && passage.part) || 0,
+      mode: 'typing',
+      wpm: state.typingWpm,
+      accuracy: state.typingAccuracy,
+      hideLevel: state.memoryHideLevel
+    }).catch(() => {});
+  }, 2000);
 
   function drawDesignerCanvas() {
     const canvas = $('#designer-canvas');
@@ -3741,6 +4016,62 @@
     } catch (_) {}
   };
 
+  // ── Saved Scripture cards ────────────────────────────────────────────────
+
+  window.toggleCardGallery = () => {
+    state.showCardGallery = !state.showCardGallery;
+    if (state.showCardGallery && window.BibleStore) {
+      window.BibleStore.listCards().then(({ cards, persisted }) => {
+        state.savedCards = cards || [];
+        state.persisted = persisted || state.persisted;
+        if (state.activeTool === 'designer') render();
+      }).catch(() => {});
+    }
+    render();
+  };
+
+  window.saveCurrentCard = () => {
+    if (!window.BibleStore) return;
+    const d = state.designer;
+    window.BibleStore.saveCard({
+      title: d.ref || 'Scripture card',
+      reference: d.ref || '',
+      aspectRatio: d.aspectRatio,
+      design: d
+    }).then((result) => {
+      state.persisted = result.persisted || state.persisted;
+      if (window.toast) {
+        window.toast(result.persisted ? 'Card saved to your account' : 'Card saved on this device');
+      }
+      return window.BibleStore.listCards();
+    }).then(({ cards }) => {
+      state.savedCards = cards || [];
+      if (state.activeTool === 'designer') render();
+    }).catch(() => {
+      if (window.toast) window.toast('That card could not be saved. Please try again.');
+    });
+  };
+
+  window.openSavedCard = (id) => {
+    const card = state.savedCards.find((item) => item.id === id);
+    if (!card || !card.design) return;
+    // Merge rather than replace, so a card saved before a new designer control
+    // existed still opens with a sensible value for it.
+    state.designer = { ...state.designer, ...card.design };
+    state.showCardGallery = false;
+    window.switchTool('designer');
+    if (window.toast) window.toast('Card opened for editing');
+  };
+
+  window.deleteSavedCard = (id) => {
+    if (!window.BibleStore) return;
+    window.BibleStore.deleteCard(id).then(() => {
+      state.savedCards = state.savedCards.filter((card) => card.id !== id);
+      if (window.toast) window.toast('Card deleted');
+      render();
+    }).catch(() => {});
+  };
+
   window.shareCardToFaithInFeed = () => {
     const d = state.designer;
     const content = `${d.textKhmer}\n\n${d.textEnglish}\n\n— ${d.ref}`;
@@ -3751,6 +4082,35 @@
   window.copyVerseText = (text, ref) => {
     navigator.clipboard.writeText(`${text} (${ref})`);
     if (window.toast) window.toast('Verse copied!');
+  };
+
+  /**
+   * Bookmarks are keyed by book/chapter/verse/version, so tapping the same
+   * verse twice removes it rather than stacking duplicates.
+   */
+  window.toggleVerseBookmark = (verse, verseText, reference) => {
+    if (!window.BibleStore) return;
+    const key = { book: state.book, chapter: state.chapter, verse: Number(verse), version: state.version };
+
+    if (isBookmarked(state.book, state.chapter, verse)) {
+      state.bookmarks = state.bookmarks.filter(
+        (item) => !(item.book === key.book && Number(item.chapter) === key.chapter && Number(item.verse) === key.verse)
+      );
+      render();
+      window.BibleStore.deleteBookmark(key)
+        .then(() => { if (window.toast) window.toast('Bookmark removed'); })
+        .catch(() => {});
+      return;
+    }
+
+    const bookmark = { ...key, reference: reference || '', snippet: verseText || '', colour: 'gold' };
+    state.bookmarks = [{ ...bookmark, createdAt: new Date().toISOString() }, ...state.bookmarks];
+    render();
+    window.BibleStore.saveBookmark(bookmark).then((result) => {
+      if (window.toast) {
+        window.toast(result.persisted ? 'Verse bookmarked' : 'Bookmarked on this device');
+      }
+    }).catch(() => {});
   };
 
   window.designSingleVerse = (text, ref) => {
@@ -3797,12 +4157,86 @@
     loadConcordance().then(render);
   };
 
-  window.saveSermonNotesAction = () => {
+  // ── Sermon notes ─────────────────────────────────────────────────────────
+  // Notes used to be written to localStorage and never read back, so they were
+  // effectively lost. They now save to the member's account as well, and are
+  // restored on load by hydrateStudio().
+
+  function collectNotes() {
     state.notes.Doctrine = $('#notes-doctrine')?.value || '';
     state.notes.Encouragement = $('#notes-encouragement')?.value || '';
     state.notes.Application = $('#notes-application')?.value || '';
-    localStorage.setItem('faithin_sermon_notes', JSON.stringify(state.notes));
-    if (window.toast) window.toast('Sermon notes saved!');
+    return state.notes;
+  }
+
+  function setSaveState(value) {
+    state.saveState = value;
+    const badge = $('#notes-save-state');
+    if (!badge) return;
+    const labels = {
+      saving: '<i class="fa-solid fa-circle-notch fa-spin mr-1"></i>Saving…',
+      saved: '<i class="fa-solid fa-cloud-arrow-up mr-1 text-emerald-600"></i>Saved to your account',
+      local: '<i class="fa-solid fa-laptop mr-1"></i>Saved on this device',
+      '': ''
+    };
+    badge.innerHTML = labels[value] !== undefined ? labels[value] : `<span class="text-rose-600">${esc(value)}</span>`;
+  }
+
+  window.saveSermonNotesAction = () => {
+    const notes = collectNotes();
+    // The original localStorage write is kept so nothing regresses if the
+    // member is signed out or offline.
+    localStorage.setItem('faithin_sermon_notes', JSON.stringify(notes));
+    if (!window.BibleStore) {
+      if (window.toast) window.toast('Sermon notes saved!');
+      return;
+    }
+    setSaveState('saving');
+    window.BibleStore.saveNotes(notes, { reference: `${state.book} ${state.chapter}` })
+      .then((result) => {
+        state.persisted = result.persisted;
+        setSaveState(result.persisted ? 'saved' : 'local');
+        if (window.toast) {
+          window.toast(result.persisted ? 'Sermon notes saved to your account' : 'Sermon notes saved on this device');
+        }
+      })
+      .catch(() => {
+        setSaveState('local');
+        if (window.toast) window.toast('Sermon notes saved on this device');
+      });
+  };
+
+  // Autosave so a closed tab or a flat battery never costs a member their notes.
+  const autosaveNotes = debounceStudio(() => {
+    if (state.activeTool !== 'notes' || !window.BibleStore) return;
+    const notes = collectNotes();
+    if (!notes.Doctrine && !notes.Encouragement && !notes.Application) return;
+    localStorage.setItem('faithin_sermon_notes', JSON.stringify(notes));
+    setSaveState('saving');
+    window.BibleStore.saveNotes(notes, { reference: `${state.book} ${state.chapter}` })
+      .then((result) => {
+        state.persisted = result.persisted;
+        setSaveState(result.persisted ? 'saved' : 'local');
+      })
+      .catch(() => setSaveState('local'));
+  }, 1500);
+
+  window.onSermonNoteInput = () => autosaveNotes();
+
+  /** Files the current sheet away and clears the tab for the next sermon. */
+  window.archiveSermonNotesAction = () => {
+    if (!window.BibleStore) return;
+    const title = `${state.book} ${state.chapter} • ${new Date().toLocaleDateString()}`;
+    window.BibleStore.archiveNotes(title).then((result) => {
+      if (!result.persisted) {
+        if (window.toast) window.toast('Sign in to keep a note history.');
+        return;
+      }
+      state.notes = { Doctrine: '', Encouragement: '', Application: '' };
+      localStorage.removeItem('faithin_sermon_notes');
+      if (window.toast) window.toast('Saved to your notes history.');
+      render();
+    });
   };
 
   // ─── Scripture Memory Helpers ───
@@ -3822,14 +4256,51 @@
   window.setMemoryMode = (mode) => {
     state.memoryMode = mode;
     if (mode === 'hide' && state.memoryHideLevel === 0) state.memoryHideLevel = 50;
+    saveMemoryReview({ mode });
     render();
   };
 
   window.setMemoryHideLevel = (level) => {
     state.memoryHideLevel = level;
     state.revealedWords.clear();
+    // Reciting with more words hidden is the clearest signal of mastery, so
+    // the hide level doubles as the mastery percentage for that passage.
+    saveMemoryReview({ hideLevel: level, mastery: level });
     render();
   };
+
+  /** Lets a member say outright that a passage is learnt. */
+  window.markPassageMemorised = (status) => {
+    const next = status === 'reviewing' ? 'reviewing' : 'memorised';
+    saveMemoryReview({ status: next, mastery: next === 'memorised' ? 100 : 60 });
+    if (window.toast) {
+      window.toast(next === 'memorised' ? 'Marked as memorised' : 'Moved back to reviewing');
+    }
+    render();
+  };
+
+  /**
+   * Writes progress for the passage on screen and keeps the local copy in
+   * step so the badge updates without waiting for the round trip.
+   */
+  const saveMemoryReview = debounceStudio((changes) => {
+    if (!window.BibleStore || !state.selectedMemoryId) return;
+    const passage = CPTI_PASSAGES.find((p) => p.id === state.selectedMemoryId);
+    const existing = progressFor(state.selectedMemoryId) || {};
+    const entry = {
+      passageId: state.selectedMemoryId,
+      part: (passage && passage.part) || existing.part || 0,
+      mode: changes.mode || state.memoryMode,
+      hideLevel: changes.hideLevel != null ? changes.hideLevel : state.memoryHideLevel,
+      mastery: changes.mastery != null ? changes.mastery : (existing.mastery || 0),
+      status: changes.status || existing.status || 'learning'
+    };
+
+    const rest = state.memoryProgress.filter((item) => item.passageId !== entry.passageId);
+    state.memoryProgress = [{ ...existing, ...entry, lastReviewAt: new Date().toISOString() }, ...rest];
+
+    window.BibleStore.saveMemoryProgress(entry).catch(() => {});
+  }, 700);
 
   window.revealSingleWord = (idx) => {
     state.revealedWords.add(idx);
@@ -3900,10 +4371,19 @@
     if (params.get('book')) state.book = params.get('book');
     if (params.get('chapter')) state.chapter = Number(params.get('chapter'));
 
+    // Paint immediately so the Studio never waits on the network, then fold in
+    // the member's saved work — notes, cards, memory progress, bookmarks,
+    // scores and reading position — as soon as it arrives.
     window.switchTool(state.activeTool);
     loadChapterVerses();
     loadDailyVerse();
     loadConcordance();
+
+    hydrateStudio().then(() => {
+      window.switchTool(state.activeTool);
+      // Preferences may have moved the member to a different passage.
+      loadChapterVerses();
+    });
   });
 
 })();
