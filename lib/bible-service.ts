@@ -30,6 +30,21 @@ export interface BibleChapterResult {
   items: BibleVerse[];
   source: string;
   totalVerses: number;
+  /**
+   * "ready"          — `items` holds this chapter in the requested version.
+   * "setup_required" — the licensed text is not available; `items` is empty.
+   *
+   * A chapter must never be returned as "ready" with text from a different
+   * translation or language than `version` names. Faith In previously served
+   * English World English Bible text stamped as KHMER_OLD_1954, which told
+   * Khmer readers they were reading the 1954 Khmer Bible when they were not.
+   */
+  status?: "ready" | "setup_required";
+  message?: string;
+  readUrl?: string;
+  setupUrl?: string;
+  attribution?: string;
+  attributionUrl?: string;
 }
 
 export interface ParallelChapterResult {
@@ -47,6 +62,11 @@ export interface ParallelChapterResult {
     reference: string;
   }>;
   totalVerses: number;
+  version1Status?: "ready" | "setup_required";
+  version2Status?: "ready" | "setup_required";
+  version1Message?: string;
+  version2Message?: string;
+  readUrl?: string;
 }
 
 export interface DailyVerseResult {
@@ -679,6 +699,15 @@ export const BIBLE_MEDIA: BibleMediaItem[] = [
 // -----------------------------------------------------------------------------
 
 /**
+ * Credit line for the Khmer 1954. The text is published by the Bible Society
+ * in Cambodia and is not public domain, so this must accompany it wherever
+ * it is displayed.
+ */
+export const KHMER_1954_ATTRIBUTION =
+  "ព្រះគម្ពីរបរិសុទ្ធ ១៩៥៤ © Bible Society in Cambodia";
+export const KHMER_1954_READ_URL = "https://www.bible.com/versions/1270";
+
+/**
  * Fetch verses for a specific chapter in a given translation.
  */
 export async function getBibleChapter(
@@ -691,8 +720,39 @@ export async function getBibleChapter(
   const ver = (version || "KHMER_OLD_1954").trim().toUpperCase();
 
   // 1. Khmer Version Resolution
+  //
+  // Order: Faith In's own database, then the embedded seed verses, then the
+  // licensed YouVersion API (which also warms the database). If none of those
+  // has the chapter, say so plainly — never substitute another translation.
   if (ver === "KHMER_OLD_1954" || ver === "KHMER1954" || ver === "1270") {
-    // Check embedded store first
+    // a) Supabase — the full text, once imported under your licence.
+    try {
+      const { getStoredChapter } = await import("./scripture-store");
+      const storedChapter = await getStoredChapter("KHMER_OLD_1954", book.name, chapter);
+      if (storedChapter && storedChapter.items.length) {
+        return {
+          book: book.name,
+          khmerBook: book.khmerName,
+          chapter,
+          version: "KHMER_OLD_1954",
+          versionName: storedChapter.nativeName || "ព្រះគម្ពីរបរិសុទ្ធ ១៩៥៤ (ពគប)",
+          items: storedChapter.items.map((item) => ({
+            v: item.v,
+            text: item.text,
+            reference: `${book.khmerName} ${chapter}:${item.v}`
+          })),
+          source: "supabase-khmer-1954",
+          totalVerses: storedChapter.items.length,
+          status: "ready",
+          attribution: storedChapter.attribution,
+          attributionUrl: storedChapter.attributionUrl
+        };
+      }
+    } catch {
+      // Storage is optional. Fall through to the remaining sources.
+    }
+
+    // b) The small set of verses embedded in this file.
     const stored = KHMER_SCRIPTURE_STORE[book.name]?.[chapter];
     if (stored) {
       const items: BibleVerse[] = Object.entries(stored).map(([v, text]) => ({
@@ -708,15 +768,26 @@ export async function getBibleChapter(
         versionName: "ព្រះគម្ពីរបរិសុទ្ធ ១៩៥៤ (ពគប)",
         items,
         source: "embedded-khmer-1954",
-        totalVerses: items.length
+        totalVerses: items.length,
+        status: "ready",
+        attribution: KHMER_1954_ATTRIBUTION,
+        attributionUrl: KHMER_1954_READ_URL
       };
     }
 
-    // Try YouVersion API if configured
-    const youversionKey = process.env.CV_YOUVERSION_APP_KEY || process.env.YOUVERSION_APP_KEY;
+    // c) YouVersion Platform, Bible 1270, under the publisher licence.
+    //    Reads YVP_APP_KEY — the name .env.example, /api/bible/versions and the
+    //    tests all use. The two older names stay accepted so an existing
+    //    deployment that set them keeps working.
+    const youversionKey =
+      process.env.YVP_APP_KEY ||
+      process.env.CV_YOUVERSION_APP_KEY ||
+      process.env.YOUVERSION_APP_KEY;
+    const khmerBibleId = process.env.YVP_KHMER_BIBLE_ID || "1270";
+
     if (youversionKey) {
       try {
-        const url = `https://api.youversion.com/v1/bibles/1270/books/${book.usfm}/chapters/${chapter}/verses?format=text`;
+        const url = `https://api.youversion.com/v1/bibles/${khmerBibleId}/books/${book.usfm}/chapters/${chapter}/verses?format=text`;
         const resp = await fetch(url, {
           headers: { "X-YVP-App-Key": youversionKey, Accept: "application/json" },
           signal: AbortSignal.timeout(4000)
@@ -725,60 +796,103 @@ export async function getBibleChapter(
           const data = await resp.json();
           const verses = Array.isArray(data.data) ? data.data : Array.isArray(data) ? data : [];
           if (verses.length > 0) {
-            const items: BibleVerse[] = verses.map((item: { title?: string; text?: string; content?: string }, idx: number) => ({
-              v: idx + 1,
-              text: (item.content || item.text || "").replace(/<[^>]*>/g, "").trim(),
-              reference: `${book.khmerName} ${chapter}:${idx + 1}`
-            })).filter((i: BibleVerse) => Boolean(i.text));
+            const items: BibleVerse[] = verses
+              .map((item: { title?: string; text?: string; content?: string; verse?: number }, idx: number) => ({
+                v: Number(item.verse) || idx + 1,
+                text: (item.content || item.text || "").replace(/<[^>]*>/g, "").trim(),
+                reference: `${book.khmerName} ${chapter}:${Number(item.verse) || idx + 1}`
+              }))
+              .filter((i: BibleVerse) => Boolean(i.text));
+
             if (items.length > 0) {
+              // Warm the database so the next reader is served locally and the
+              // licensed API is not called again for this chapter.
+              void (async () => {
+                try {
+                  const { writeVerses } = await import("./scripture-store");
+                  await writeVerses(
+                    "KHMER_OLD_1954",
+                    items.map((item) => ({
+                      book: book.name,
+                      chapter,
+                      verse: item.v,
+                      text: item.text
+                    }))
+                  );
+                } catch {
+                  // Caching is best effort; the reader already has its text.
+                }
+              })();
+
               return {
                 book: book.name,
                 khmerBook: book.khmerName,
                 chapter,
                 version: "KHMER_OLD_1954",
-                versionName: "ព្រះគម្ពីរបរិសុទ្ធ ១៩៥៤ (YouVersion)",
+                versionName: "ព្រះគម្ពីរបរិសុទ្ធ ១៩៥៤ (ពគប)",
                 items,
                 source: "youversion",
-                totalVerses: items.length
+                totalVerses: items.length,
+                status: "ready",
+                attribution: KHMER_1954_ATTRIBUTION,
+                attributionUrl: KHMER_1954_READ_URL
               };
             }
           }
         }
       } catch {
-        // Fallback gracefully below
+        // Fall through to the honest notice below.
       }
     }
 
-    // Dynamic English translation lookup with Khmer header for un-cached Khmer chapters
-    const englishChapter = await fetchEnglishChapter(book.name, chapter, "WEB");
-    const items = englishChapter.items.map((item) => ({
-      ...item,
-      reference: `${book.khmerName} ${chapter}:${item.v}`
-    }));
+    // d) Nothing has this chapter in Khmer.
+    //
+    // This branch used to return English World English Bible verses stamped
+    // with version "KHMER_OLD_1954", so a member reading Genesis 12 in Khmer
+    // was shown English and told it was the 1954 Khmer Bible. Faith In now
+    // says plainly that the chapter is not available and links to the
+    // publisher's own reader, which the Bible page already knows how to show.
     return {
       book: book.name,
       khmerBook: book.khmerName,
       chapter,
       version: "KHMER_OLD_1954",
-      versionName: "ព្រះគម្ពីរបរិសុទ្ធ ១៩៥៤",
-      items,
-      source: "bilingual-sync",
-      totalVerses: items.length
+      versionName: "ព្រះគម្ពីរបរិសុទ្ធ ១៩៥៤ (ពគប)",
+      items: [],
+      source: "unavailable",
+      totalVerses: 0,
+      status: "setup_required",
+      message: youversionKey
+        ? `${book.khmerName} ${chapter} has not been loaded into Faith In yet. Run the Khmer import to add it.`
+        : "The Khmer 1954 Bible is licensed by the Bible Society in Cambodia and has not been connected yet. Connect publisher access to read it inside Faith In.",
+      readUrl: KHMER_1954_READ_URL,
+      setupUrl: "https://platform.youversion.com/",
+      attribution: KHMER_1954_ATTRIBUTION,
+      attributionUrl: KHMER_1954_READ_URL
     };
   }
 
   // 2. English / Public Domain Translations (KJV, WEB, ASV)
   const translationCode = ver === "WEB" ? "web" : ver === "ASV" ? "asv" : "kjv";
   const result = await fetchEnglishChapter(book.name, chapter, translationCode);
+  const englishName =
+    ver === "WEB"
+      ? "World English Bible (WEB)"
+      : ver === "ASV"
+        ? "American Standard Version 1901"
+        : "King James Version (KJV)";
   return {
     book: book.name,
     khmerBook: book.khmerName,
     chapter,
     version: ver,
-    versionName: ver === "WEB" ? "World English Bible (WEB)" : ver === "ASV" ? "American Standard Version 1901" : "King James Version (KJV)",
+    versionName: englishName,
     items: result.items,
     source: result.source,
-    totalVerses: result.items.length
+    totalVerses: result.items.length,
+    status: result.items.length ? "ready" : "setup_required",
+    message: result.items.length ? undefined : `${book.name} ${chapter} could not be loaded just now. Please try again.`,
+    attribution: `${englishName} (public domain)`
   };
 }
 
@@ -858,7 +972,14 @@ export async function getParallelChapter(
     version2: chap2.version,
     version2Name: chap2.versionName,
     items: parallelItems,
-    totalVerses: parallelItems.length
+    totalVerses: parallelItems.length,
+    // Each side reports itself, so the reader can show one column of text and
+    // an honest notice in the other rather than pretending both loaded.
+    version1Status: chap1.status || "ready",
+    version2Status: chap2.status || "ready",
+    version1Message: chap1.message,
+    version2Message: chap2.message,
+    readUrl: chap1.readUrl || chap2.readUrl
   };
 }
 
@@ -904,6 +1025,52 @@ export function searchBible(query: string, limit = 20) {
   }
 
   return { items: results, query: q, total: results.length };
+}
+
+/**
+ * Searches the full Khmer text held in Supabase, falling back to the verses
+ * embedded in this file when the store is empty or unconfigured.
+ *
+ * `searchBible` stays exactly as it was — synchronous, embedded-only — because
+ * other callers depend on that signature. This is the async counterpart that
+ * can see the whole imported Bible.
+ */
+export async function searchScripture(
+  query: string,
+  limit = 20,
+  version = "KHMER_OLD_1954"
+): Promise<{ items: Array<{ reference: string; text: string }>; query: string; total: number; source: string }> {
+  const q = (query || "").trim();
+  if (!q) return { items: [], query: "", total: 0, source: "none" };
+
+  try {
+    const { searchStored } = await import("./scripture-store");
+    const rows = await searchStored(version, q, limit);
+    if (rows.length) {
+      return {
+        items: rows.map((row) => {
+          const bookInfo = findBibleBook(row.book);
+          return {
+            reference: `${bookInfo.khmerName} ${row.chapter}:${row.verse}`,
+            text: row.text
+          };
+        }),
+        query: q,
+        total: rows.length,
+        source: "supabase"
+      };
+    }
+  } catch {
+    // Fall through to the embedded search below.
+  }
+
+  const embedded = searchBible(q, limit);
+  return {
+    items: embedded.items.map((item) => ({ reference: item.reference, text: item.text })),
+    query: q,
+    total: embedded.items.length,
+    source: "embedded"
+  };
 }
 
 /**
@@ -955,4 +1122,7 @@ export function getTypingPassages() {
   return { items: TYPING_PASSAGES };
 }
 
-export { CPTI_ALL_PASSAGES, CPTI_MEMORY_PASSAGES, getMemoryPassages } from "./bible-memory-data";
+// The explicit .ts extension lets Node resolve this when it runs the test
+// suite and the import script directly from source. Without it both fail
+// with ERR_MODULE_NOT_FOUND; webpack and tsc resolve it either way.
+export { CPTI_ALL_PASSAGES, CPTI_MEMORY_PASSAGES, getMemoryPassages } from "./bible-memory-data.ts";

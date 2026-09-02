@@ -406,6 +406,13 @@
     },
 
     daily: null,
+    // Whether the selected translation actually has this chapter. A chapter
+    // that is not available is never filled in with another translation.
+    chapterStatus: 'ready',
+    chapterStatus2: 'ready',
+    chapterMessage: '',
+    chapterReadUrl: '',
+    chapterAttribution: '',
     concordanceQuery: '',
     concordanceResult: null,
 
@@ -2445,12 +2452,22 @@
         if (json.success && json.data) {
           state.verses = json.data.items.map(i => ({ v: i.v, text: i.text1, reference: i.reference }));
           state.verses2 = json.data.items.map(i => ({ v: i.v, text: i.text2, reference: i.reference }));
+          // Each translation reports itself, so one column can show text while
+          // the other shows an honest notice.
+          state.chapterStatus = json.data.version1Status || 'ready';
+          state.chapterStatus2 = json.data.version2Status || 'ready';
+          state.chapterMessage = json.data.version1Message || '';
+          state.chapterReadUrl = json.data.readUrl || '';
         }
       } else {
         const res = await fetch(`/api/bible/chapter?book=${encodeURIComponent(state.book)}&chapter=${state.chapter}&version=${state.version}`);
         const json = await res.json();
         if (json.success && json.data) {
           state.verses = json.data.items || [];
+          state.chapterStatus = json.data.status || (state.verses.length ? 'ready' : 'setup_required');
+          state.chapterMessage = json.data.message || '';
+          state.chapterReadUrl = json.data.readUrl || '';
+          state.chapterAttribution = json.data.attribution || '';
         }
       }
       // Remember where the member is reading, and count the chapter towards
@@ -2592,7 +2609,7 @@
             </div>
           ` : `
             <div class="space-y-1" style="font-size: ${state.fontSize}px;">
-              ${state.verses.length === 0 ? '<p class="text-muted p-4">No verses found.</p>' : state.verses.map(v => `
+              ${state.verses.length === 0 ? renderChapterUnavailable() : state.verses.map(v => `
                 <div class="verse-row group flex items-start gap-2${isBookmarked(state.book, state.chapter, v.v) ? ' is-bookmarked' : ''}">
                   <span class="verse-num shrink-0 select-none">${v.v}</span>
                   <p class="flex-1 text-ink font-khmer leading-relaxed font-normal">${esc(v.text)}</p>
@@ -2669,6 +2686,49 @@
   }
 
   // 3. Scripture Card Designer Tool (Pro Studio)
+  /**
+   * Shown when the selected translation genuinely has no text for this
+   * chapter.
+   *
+   * Faith In used to fill this gap with English World English Bible verses
+   * labelled as the Khmer 1954, so a member reading in Khmer was shown English
+   * and told it was Khmer Scripture. Saying "not available yet" and linking to
+   * the publisher's own reader is the honest answer.
+   */
+  function renderChapterUnavailable() {
+    const isKhmer = state.version === 'KHMER_OLD_1954';
+    const message = state.chapterMessage
+      || (isKhmer
+        ? 'This chapter of the Khmer 1954 Bible has not been connected yet.'
+        : 'This chapter could not be loaded just now.');
+
+    return `
+      <div class="p-6 sm:p-8 text-center space-y-3">
+        <span class="w-12 h-12 mx-auto rounded-2xl bg-amber-500/10 text-amber-600 flex items-center justify-center text-xl">
+          <i class="fa-solid fa-book-bible"></i>
+        </span>
+        <h3 class="text-base font-bold text-ink">
+          ${isKhmer ? 'ជំពូកនេះមិនទាន់មានទេ • Not available yet' : 'Chapter unavailable'}
+        </h3>
+        <p class="text-xs text-muted max-w-md mx-auto leading-relaxed">${esc(message)}</p>
+        <div class="flex flex-wrap items-center justify-center gap-2 pt-1">
+          ${state.chapterReadUrl ? `
+            <a class="btn btn-primary text-xs" href="${esc(state.chapterReadUrl)}" target="_blank" rel="noopener noreferrer">
+              <i class="fa-solid fa-arrow-up-right-from-square mr-1"></i>
+              Read it on Bible.com
+            </a>` : ''}
+          <button class="btn btn-neutral text-xs" onclick="window.setBibleVersion('KJV')">
+            <i class="fa-solid fa-language mr-1"></i>
+            Read this chapter in English
+          </button>
+        </div>
+        ${isKhmer ? `
+          <p class="text-[10px] text-muted pt-1">
+            ព្រះគម្ពីរបរិសុទ្ធ ១៩៥៤ is published by the Bible Society in Cambodia.
+          </p>` : ''}
+      </div>`;
+  }
+
   /**
    * The member's saved Scripture card designs. Each entry stores the whole
    * designer state, so reopening one restores the verse, wallpaper, fonts,
@@ -4014,6 +4074,23 @@
         }
       });
     } catch (_) {}
+  };
+
+  /**
+   * Switches the reading translation. Offered on the "not available yet"
+   * panel so a member who cannot read a chapter in Khmer can move to a
+   * translation that does have it, by their own choice rather than by a
+   * silent substitution.
+   */
+  window.setBibleVersion = (code) => {
+    if (!code || code === state.version) return;
+    state.version = code;
+    state.chapterStatus = 'ready';
+    state.chapterMessage = '';
+    const selector = $('#bible-version-select');
+    if (selector) selector.value = code;
+    persistPreferences();
+    loadChapterVerses();
   };
 
   // ── Saved Scripture cards ────────────────────────────────────────────────

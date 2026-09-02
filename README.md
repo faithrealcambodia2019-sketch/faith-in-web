@@ -25,6 +25,7 @@ Never commit service-account credentials, private keys, passwords, or user data.
 
 - [Architecture](docs/ARCHITECTURE.md)
 - [Bible Studio backend](docs/BIBLE_STUDIO_BACKEND.md)
+- [Khmer Bible 1954 — data and backend](docs/KHMER_BIBLE.md)
 - [UX/UI replacement and migration plan](docs/UX_UI_MIGRATION.md)
 - [Security](docs/SECURITY.md)
 - [Deployment](docs/DEPLOYMENT.md)
