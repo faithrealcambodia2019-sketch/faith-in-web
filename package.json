@@ -9,7 +9,7 @@
     "start": "next start",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "test": "node tests/backend.test.mjs && node --test tests/messaging-transport.test.mjs tests/layout.test.mjs && tsx --test tests/compat-route.test.ts tests/optional-backend.test.ts",
+    "test": "node tests/backend.test.mjs && node --test tests/messaging-transport.test.mjs tests/layout.test.mjs && tsx --test tests/compat-route.test.ts tests/optional-backend.test.ts tests/bible.test.ts",
     "test:rules": "npx --yes firebase-tools emulators:exec --project faith-in-rules-test --only firestore \"node --test tests/firestore.rules.test.mjs\""
   },
   "dependencies": {

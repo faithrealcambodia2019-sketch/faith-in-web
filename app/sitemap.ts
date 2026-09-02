@@ -6,6 +6,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${site.origin}/`, changeFrequency: "daily" as const, priority: 1.0 },
     { url: `${site.origin}/features`, changeFrequency: "weekly" as const, priority: 0.8 },
     { url: `${site.origin}/bible-study`, changeFrequency: "weekly" as const, priority: 0.9 },
+    { url: `${site.origin}/bible`, changeFrequency: "weekly" as const, priority: 0.9 },
     { url: `${site.origin}/for-churches`, changeFrequency: "weekly" as const, priority: 0.8 },
     { url: `${site.origin}/about`, changeFrequency: "monthly" as const, priority: 0.7 },
     { url: `${site.origin}/contact`, changeFrequency: "monthly" as const, priority: 0.6 },

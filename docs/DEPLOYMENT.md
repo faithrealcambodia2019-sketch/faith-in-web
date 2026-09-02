@@ -83,13 +83,23 @@ Verify afterwards in the Firebase console under Firestore → Rules that the
 | Profile | `cv_update_profile`, `cv_update_user_settings` | Live — name, photo, theme, language |
 | Verification | `cv_get_verification_status`, `cv_request_verification` | Live — requests are stored; granting a badge is a manual admin step |
 | Bible | `cv_bible_save_notes`, `cv_bible_get_notes`, `cv_bible_save_typing_score` | Live |
-| Bible text | `cv_bible_get_verses`, `cv_bible_dictionary`, `cv_bible_get_quotes`, `cv_bible_get_media` | Not implemented — needs a licensed Bible text source |
+| Bible text | `cv_bible_get_versions`, `cv_bible_get_verses`, `cv_bible_dictionary`, `cv_bible_get_quotes`, `cv_bible_get_media` | Live — public translations work immediately; Khmer Old Version 1954 uses the official YouVersion Platform connection |
 | Messaging | REST endpoints under `rest_root` | Not implemented — needs a real-time backend |
 | AI images | `cv_bible_ai_image` | Not implemented — needs an image generation provider |
 
 Anything not implemented returns a plain-language "still being built" message
 rather than an error. Each remaining action is a small addition to the
 `actions` map in `faith-in-backend.js`.
+
+### Khmer Old Version 1954
+
+The Khmer Old Version 1954 text is copyrighted by the Bible Society in
+Cambodia/United Bible Societies. It must not be committed to this repository.
+Create an app in the YouVersion Platform portal, accept the publisher license
+for Bible version `1270`, and configure the server-only `YVP_APP_KEY` variable
+in Vercel. `YVP_KHMER_BIBLE_ID` defaults to `1270` and normally does not need to
+be changed. The `/api/bible/chapter` route keeps the key private and returns the
+copyright attribution required by the version license.
 
 ### Tests
 

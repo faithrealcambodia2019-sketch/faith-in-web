@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html class="scroll-smooth" lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
+  <meta content="#ffffff" media="(prefers-color-scheme: light)" name="theme-color"/>
+  <meta content="#0b1120" media="(prefers-color-scheme: dark)" name="theme-color"/>
+  <meta content="Read the Khmer Old Version 1954 Bible beside English and other languages." name="description"/>
+  <title>Faith In — Khmer &amp; English Bible</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg"/>
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/images/favicon-32x32.png"/>
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/favicon-180x180.png"/>
+  <link href="/faithin-app/assets/faithin-fonts.css" rel="stylesheet"/>
+  <link href="/faithin-app/assets/faithin-icons.css" rel="stylesheet"/>
+  <link href="/faithin-app/assets/faithin-tw.css" rel="stylesheet"/>
+  <link href="/faithin-app/assets/faithin.css?v=20260902-bible-v1" rel="stylesheet"/>
+</head>
+<body class="font-sans min-h-screen pb-16 lg:pb-0" data-page="bible" data-search="Search this Bible chapter">
+  <main class="fi-bible-shell" id="main">
+    <section class="fi-bible-hero" aria-labelledby="bible-title">
+      <div>
+        <span class="fi-bible-eyebrow">ព្រះគម្ពីរ • Bilingual Scripture</span>
+        <h1 id="bible-title">Khmer &amp; English Bible</h1>
+        <p>Read the Khmer Old Version 1954 beside English, Chinese, Portuguese, Romanian, Czech, or Latin without losing your place.</p>
+      </div>
+      <div class="fi-bible-hero-actions" aria-label="Reader text size">
+        <button class="icon-btn" id="bible-font-decrease" type="button" aria-label="Decrease Bible text size" title="Smaller text">
+          <i class="fa-solid fa-minus" aria-hidden="true"></i>
+        </button>
+        <span class="fi-bible-text-size" id="bible-font-label" aria-live="polite">18px</span>
+        <button class="icon-btn" id="bible-font-increase" type="button" aria-label="Increase Bible text size" title="Larger text">
+          <i class="fa-solid fa-plus" aria-hidden="true"></i>
+        </button>
+      </div>
+    </section>
+
+    <section class="card fi-bible-controls" aria-label="Bible reader controls">
+      <div class="fi-bible-control-grid">
+        <label class="fi-bible-field">
+          <span>Book</span>
+          <select id="bible-book" aria-label="Bible book"></select>
+        </label>
+        <label class="fi-bible-field">
+          <span>Chapter</span>
+          <select id="bible-chapter" aria-label="Bible chapter"></select>
+        </label>
+        <label class="fi-bible-field">
+          <span>Primary language</span>
+          <select id="bible-primary-version" aria-label="Primary Bible version"></select>
+        </label>
+        <label class="fi-bible-field">
+          <span>Compare with</span>
+          <select id="bible-secondary-version" aria-label="Comparison Bible version"></select>
+        </label>
+      </div>
+
+      <div class="fi-bible-control-row">
+        <div class="fi-bible-chapter-nav">
+          <button class="btn btn-neutral" id="bible-previous" type="button">
+            <i class="fa-solid fa-chevron-left" aria-hidden="true"></i><span>Previous</span>
+          </button>
+          <button class="btn btn-neutral" id="bible-next" type="button">
+            <span>Next</span><i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
+          </button>
+        </div>
+        <label class="fi-bible-search">
+          <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+          <span class="sr-only">Find words in this chapter</span>
+          <input id="bible-search" type="search" placeholder="Find words in this chapter" autocomplete="off"/>
+        </label>
+        <button class="btn btn-outline" id="bible-swap" type="button">
+          <i class="fa-solid fa-arrow-right-arrow-left" aria-hidden="true"></i><span>Swap languages</span>
+        </button>
+      </div>
+    </section>
+
+    <p class="fi-bible-status" id="bible-reader-status" role="status" aria-live="polite">Connecting to the Bible reader…</p>
+
+    <section class="fi-bible-reader-grid" aria-label="Parallel Bible reader">
+      <article class="card fi-bible-panel" data-bible-panel="primary">
+        <header class="fi-bible-panel-header">
+          <div>
+            <span class="fi-bible-language" data-bible-language>ភាសាខ្មែរ (Khmer)</span>
+            <h2 data-bible-version>ព្រះគម្ពីរបរិសុទ្ធ ១៩៥៤</h2>
+          </div>
+          <button class="icon-btn" type="button" data-copy-chapter="primary" aria-label="Copy primary chapter" title="Copy chapter">
+            <i class="fa-regular fa-copy" aria-hidden="true"></i>
+          </button>
+        </header>
+        <div class="fi-bible-verses is-loading" data-bible-verses aria-busy="true">
+          <div class="fi-bible-loading"><span></span><span></span><span></span><span></span></div>
+        </div>
+        <footer class="fi-bible-attribution" data-bible-attribution></footer>
+      </article>
+
+      <article class="card fi-bible-panel" data-bible-panel="secondary">
+        <header class="fi-bible-panel-header">
+          <div>
+            <span class="fi-bible-language" data-bible-language>English</span>
+            <h2 data-bible-version>King James Version</h2>
+          </div>
+          <button class="icon-btn" type="button" data-copy-chapter="secondary" aria-label="Copy comparison chapter" title="Copy chapter">
+            <i class="fa-regular fa-copy" aria-hidden="true"></i>
+          </button>
+        </header>
+        <div class="fi-bible-verses is-loading" data-bible-verses aria-busy="true">
+          <div class="fi-bible-loading"><span></span><span></span><span></span><span></span></div>
+        </div>
+        <footer class="fi-bible-attribution" data-bible-attribution></footer>
+      </article>
+    </section>
+
+    <section class="fi-bible-help card">
+      <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
+      <p><strong>Authentic translation policy.</strong> Faith In never copies restricted Bible text into its code. Khmer Old Version 1954 is displayed only through an official publisher-authorized connection, with the required copyright credit.</p>
+    </section>
+  </main>
+
+  <script src="/faithin-app/assets/faithin-runtime.js?v=20260902-bible-v1"></script>
+  <script src="/assets/js/faith-in-backend.js?v=20260902-bible-v1"></script>
+  <script src="/faithin-app/assets/faithin.js?v=20260902-bible-v1"></script>
+  <script src="/faithin-app/assets/faithin-live.js?v=20260901-v85"></script>
+  <script src="/faithin-app/assets/faithin-bible.js?v=20260902-bible-v1"></script>
+</body>
+</html>

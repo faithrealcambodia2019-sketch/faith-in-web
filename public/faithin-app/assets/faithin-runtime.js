@@ -50,6 +50,7 @@ window.cv_ajax = window.cv_ajax || {
     cv_get_user: 60 * 1000,
     cv_get_profile: 60 * 1000,
     cv_get_member: 60 * 1000,
+    cv_bible_get_versions: 60 * 60 * 1000,
     cv_bible_get_verses: 24 * 60 * 60 * 1000
   };
 
@@ -64,6 +65,10 @@ window.cv_ajax = window.cv_ajax || {
   })();
 
   function keyFor(action, params) { return `${CACHE_PREFIX}${action}:${JSON.stringify(params || {})}`; }
+
+  function cacheableValue(action, value) {
+    return !(action === 'cv_bible_get_verses' && value && value.status && value.status !== 'ready');
+  }
 
   function readRecord(key) {
     if (memory.has(key)) return memory.get(key);
@@ -153,7 +158,7 @@ window.cv_ajax = window.cv_ajax || {
         if (action !== 'cv_get_session') return Promise.resolve(cached.value);
         const epoch = cacheEpoch;
         requestNetwork(action, values, files, onProgress, key)
-          .then(value => { if (epoch === cacheEpoch) writeRecord(key, value); })
+          .then(value => { if (epoch === cacheEpoch && cacheableValue(action, value)) writeRecord(key, value); })
           .catch(() => {});
         return Promise.resolve(cached.value);
       }
@@ -164,7 +169,7 @@ window.cv_ajax = window.cv_ajax || {
       if (ttl && action !== 'cv_get_session' && cached && Date.now() - cached.savedAt < 24 * 60 * 60 * 1000) {
         const epoch = cacheEpoch;
         requestNetwork(action, values, files, onProgress, key)
-          .then(value => { if (epoch === cacheEpoch) writeRecord(key, value); })
+          .then(value => { if (epoch === cacheEpoch && cacheableValue(action, value)) writeRecord(key, value); })
           .catch(() => {});
         return Promise.resolve(cached.value);
       }
@@ -174,7 +179,7 @@ window.cv_ajax = window.cv_ajax || {
       const epoch = cacheEpoch;
       return requestNetwork(action, values, files, onProgress, key)
         .then(value => {
-          if (ttl && epoch === cacheEpoch) writeRecord(key, value);
+          if (ttl && epoch === cacheEpoch && cacheableValue(action, value)) writeRecord(key, value);
           if (/^cv_(google|email)_sign_/.test(action)) {
             if (value && value.logged_in) writeRecord(keyFor('cv_get_session', {}), value);
           }
