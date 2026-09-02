@@ -125,9 +125,9 @@
         <span class="truncate">Parallel • ទន្ទឹមគ្នា</span>
       </button>
 
-      <button class="side-link w-full text-left flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-[13.5px] font-semibold text-ink hover:bg-raised" data-side-tool="typing" onclick="window.switchTool('typing')">
+      <button class="side-link w-full text-left flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-[13.5px] font-semibold text-ink hover:bg-raised" data-side-tool="memory" onclick="window.switchTool('memory')">
         <span class="w-7 h-7 rounded-lg bg-rose-500/10 text-rose-600 flex items-center justify-center shrink-0"><i class="fa-solid fa-brain"></i></span>
-        <span class="truncate">Memory • ខគម្ពីរចងចាំ</span>
+        <span class="truncate font-khmer">Memory • ខគម្ពីរចងចាំ</span>
       </button>
 
       <button class="side-link w-full text-left flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-[13.5px] font-semibold text-ink hover:bg-raised" data-side-tool="designer" onclick="window.switchTool('designer')">
@@ -176,8 +176,8 @@
       <button class="bible-tab-btn shrink-0" data-tab="parallel" onclick="window.switchTool('parallel')">
         <i class="fa-solid fa-columns"></i><span>Parallel</span>
       </button>
-      <button class="bible-tab-btn shrink-0" data-tab="typing" onclick="window.switchTool('typing')">
-        <i class="fa-solid fa-brain"></i><span>Memory • ចងចាំ</span>
+      <button class="bible-tab-btn shrink-0" data-tab="memory" onclick="window.switchTool('memory')">
+        <i class="fa-solid fa-brain text-rose-500"></i><span>Memory • ខគម្ពីរចងចាំ</span>
       </button>
       <button class="bible-tab-btn shrink-0" data-tab="designer" onclick="window.switchTool('designer')">
         <i class="fa-solid fa-palette"></i><span>Designer</span>
@@ -737,12 +737,15 @@
   const esc = (s) => String(s || '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
   window.switchTool = (toolName) => {
+    if (toolName === 'typing') toolName = 'memory';
     state.activeTool = toolName;
     $$('.bible-tab-btn').forEach(btn => {
-      btn.classList.toggle('is-active', btn.dataset.tab === toolName);
+      const t = btn.dataset.tab;
+      btn.classList.toggle('is-active', t === toolName || (toolName === 'memory' && (t === 'memory' || t === 'typing')));
     });
     $$('[data-side-tool]').forEach(btn => {
-      btn.classList.toggle('is-active', btn.dataset.sideTool === toolName);
+      const t = btn.dataset.sideTool;
+      btn.classList.toggle('is-active', t === toolName || (toolName === 'memory' && (t === 'memory' || t === 'typing')));
     });
     render();
   };
@@ -860,6 +863,23 @@
     const curBook = BOOKS.find(b => b.name === state.book) || BOOKS[0];
     return `
       <div class="space-y-4">
+        <!-- CPTI Scripture Memory Quick Banner -->
+        <div class="card p-3.5 bg-gradient-to-r from-rose-500/10 via-brand/10 to-indigo-500/10 border border-rose-500/20 flex flex-wrap items-center justify-between gap-3 shadow-xs">
+          <div class="flex items-center gap-2.5">
+            <div class="w-8 h-8 rounded-lg bg-rose-500 text-white flex items-center justify-center font-bold text-sm shrink-0 shadow-xs"><i class="fa-solid fa-brain"></i></div>
+            <div>
+              <h4 class="font-bold text-xs text-ink font-khmer flex items-center gap-2">
+                <span>ខគម្ពីរចងចាំ CPTI • Scripture Memory Suite</span>
+                <span class="text-[10px] font-bold px-2 py-0.2 rounded-full bg-rose-500/15 text-rose-600 font-sans">34 Verses</span>
+              </h4>
+              <p class="text-[11.5px] text-muted font-khmer mt-0.5">៥ ផ្នែកទេវវិទ្យា (ទំនុកដំកើង ដំណឹងល្អ ព្រះវិញ្ញាណ ជំនឿ និងជីវិតសិស្ស)</p>
+            </div>
+          </div>
+          <button class="btn btn-primary !py-1.5 !px-3 text-xs shrink-0 font-khmer shadow-xs" onclick="window.switchTool('memory')">
+            <i class="fa-solid fa-brain mr-1.5"></i> ចូលរៀនចងចាំ →
+          </button>
+        </div>
+
         ${renderControlsBar(false)}
 
         <div class="card p-5 sm:p-6 bg-surface border border-line space-y-4">
@@ -1423,6 +1443,7 @@
       case 'designer': root.innerHTML = renderDesigner(); drawDesignerCanvas(); break;
       case 'daily': root.innerHTML = renderDaily(); break;
       case 'concordance': root.innerHTML = renderConcordance(); break;
+      case 'memory':
       case 'typing': root.innerHTML = renderTyping(); break;
       case 'notes': root.innerHTML = renderNotes(); break;
       default: root.innerHTML = renderReader(); break;
@@ -1756,7 +1777,10 @@
 
   document.addEventListener('DOMContentLoaded', () => {
     const params = new URLSearchParams(window.location.search);
-    if (params.get('tool')) state.activeTool = params.get('tool');
+    if (params.get('tool')) {
+      const t = params.get('tool');
+      state.activeTool = (t === 'typing' ? 'memory' : t);
+    }
     if (params.get('book')) state.book = params.get('book');
     if (params.get('chapter')) state.chapter = Number(params.get('chapter'));
 
