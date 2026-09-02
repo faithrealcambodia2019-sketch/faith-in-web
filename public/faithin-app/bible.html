@@ -178,6 +178,9 @@
   <!-- ───── RIGHT RAIL: STANDARD HIGHLIGHTS & WIDGETS ───── -->
   <aside class="hidden xl:block sticky top-[72px] space-y-4">
     
+    <!-- Right Memory Detail View Widget -->
+    <div id="right-memory-widget" class="hidden"></div>
+    
     <!-- Verse of the Day Widget -->
     <section id="right-votd-widget" class="card p-4 bg-surface border border-line space-y-3">
       <div class="flex items-center justify-between border-b border-line pb-2.5">
@@ -2078,8 +2081,12 @@
     
     // Auto-hide Verse of the Day widget when Memory tool is active
     const votdWidget = $('#right-votd-widget');
+    const memoryWidget = $('#right-memory-widget');
     if (votdWidget) {
       votdWidget.style.display = (toolName === 'memory') ? 'none' : 'block';
+    }
+    if (memoryWidget) {
+      memoryWidget.style.display = (toolName === 'memory') ? 'block' : 'none';
     }
     
     render();
@@ -2504,6 +2511,122 @@
   }
 
   // 6. CPTI Scripture Memory Suite (ខគម្ពីរចងចាំ)
+  function getMemoryDetailHtml(currentPassage) {
+  if (!currentPassage) return '';
+  return `
+    <div class="card p-5 bg-surface border border-line space-y-4">
+      
+      <!-- Passage Header & Mode Selector -->
+      <div class="flex flex-wrap items-center justify-between gap-2 border-b border-line pb-3">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="text-[11px] font-bold uppercase tracking-wider text-rose-500 bg-rose-500/10 px-2.5 py-0.5 rounded-full font-khmer">${currentPassage.partTitleKhmer}</span>
+            ${currentPassage.pageNumber ? `<span class="text-[10.5px] font-bold text-muted bg-raised px-2 py-0.5 rounded-full">ទំព័រ ${currentPassage.pageNumber}</span>` : ''}
+          </div>
+          <h2 class="text-lg font-bold text-ink font-khmer mt-1.5 flex items-center gap-2">
+            ${currentPassage.refKhmer} <span class="text-xs text-muted font-sans font-normal">(${currentPassage.refEnglish})</span>
+          </h2>
+        </div>
+
+        <!-- Practice Modes Switcher -->
+        <div class="flex items-center gap-1 bg-raised p-1 rounded-lg text-xs font-semibold w-full sm:w-auto overflow-x-auto no-scrollbar">
+          <button class="px-2.5 py-1 rounded-md transition shrink-0 ${state.memoryMode === 'recite' ? 'bg-brand text-white shadow-xs' : 'text-muted hover:text-ink'}" onclick="window.setMemoryMode('recite')">
+            <i class="fa-solid fa-book-open mr-1"></i> អាន
+          </button>
+          <button class="px-2.5 py-1 rounded-md transition shrink-0 ${state.memoryMode === 'hide' ? 'bg-brand text-white shadow-xs' : 'text-muted hover:text-ink'}" onclick="window.setMemoryMode('hide')">
+            <i class="fa-solid fa-puzzle-piece mr-1"></i> លាក់ពាក្យ
+          </button>
+          <button class="px-2.5 py-1 rounded-md transition shrink-0 ${state.memoryMode === 'typing' ? 'bg-brand text-white shadow-xs' : 'text-muted hover:text-ink'}" onclick="window.setMemoryMode('typing')">
+            <i class="fa-solid fa-keyboard mr-1"></i> វាយអក្សរ
+          </button>
+          <button class="px-2.5 py-1 rounded-md transition shrink-0 ${state.memoryMode === 'flashcard' ? 'bg-brand text-white shadow-xs' : 'text-muted hover:text-ink'}" onclick="window.setMemoryMode('flashcard')">
+            <i class="fa-solid fa-repeat mr-1"></i> កាត
+          </button>
+        </div>
+      </div>
+
+      <!-- Mode 1: Recite & Read -->
+      ${state.memoryMode === 'recite' ? `
+        <div class="space-y-4">
+          <div class="p-4 rounded-xl bg-raised/50 border border-line font-khmer text-base leading-relaxed text-ink shadow-xs">
+            ${esc(currentPassage.textKhmer)}
+          </div>
+          
+          <div class="p-3 rounded-lg bg-surface border border-line text-xs font-serif italic text-muted leading-relaxed">
+            ${esc(currentPassage.textEnglish)}
+          </div>
+        </div>
+      ` : ''}
+
+      <!-- Mode 2: Fill in the Blanks / Word Hide -->
+      ${state.memoryMode === 'hide' ? `
+        <div class="space-y-3">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs text-muted">
+            <span>Click any hidden box to reveal:</span>
+            <div class="flex flex-wrap items-center gap-1.5 font-semibold">
+              <button class="px-2 py-0.5 rounded border ${state.memoryHideLevel === 25 ? 'bg-brand text-white border-brand' : 'bg-raised border-line'}" onclick="window.setMemoryHideLevel(25)">25%</button>
+              <button class="px-2 py-0.5 rounded border ${state.memoryHideLevel === 50 ? 'bg-brand text-white border-brand' : 'bg-raised border-line'}" onclick="window.setMemoryHideLevel(50)">50%</button>
+              <button class="px-2 py-0.5 rounded border ${state.memoryHideLevel === 100 ? 'bg-brand text-white border-brand' : 'bg-raised border-line'}" onclick="window.setMemoryHideLevel(100)">100%</button>
+              <button class="px-2 py-0.5 rounded border bg-raised border-line text-brand" onclick="window.revealAllWords()">Reveal All</button>
+            </div>
+          </div>
+
+          <div class="p-4 rounded-xl bg-raised/50 border border-line font-khmer text-base leading-relaxed text-ink shadow-xs select-none" id="hide-words-container">
+            ${renderHiddenWords(currentPassage.textKhmer, state.memoryHideLevel)}
+          </div>
+        </div>
+      ` : ''}
+
+      <!-- Mode 3: Interactive Typing Trainer -->
+      ${state.memoryMode === 'typing' ? `
+        <div class="space-y-3">
+          <div class="p-3.5 rounded-xl bg-raised/50 border border-line font-khmer text-sm leading-relaxed text-ink select-none">
+            ${esc(currentPassage.textKhmer)}
+          </div>
+
+          <textarea id="typing-memory-box" rows="3" placeholder="Type the Scripture passage above in Khmer (or English) to test your recall and speed..." class="w-full p-3 text-sm font-khmer rounded-xl bg-raised border border-line text-ink outline-none focus:border-brand leading-relaxed">${esc(state.typingInput)}</textarea>
+        </div>
+      ` : ''}
+
+      <!-- Mode 4: Flashcard Flip -->
+      ${state.memoryMode === 'flashcard' ? `
+        <div class="p-8 rounded-2xl bg-gradient-to-br from-brand/10 to-indigo-600/10 border-2 border-brand/30 text-center cursor-pointer space-y-4 hover:shadow-md transition" onclick="window.toggleFlashcard()" id="memory-flashcard">
+          <div class="text-xs font-bold text-brand uppercase tracking-wider">Tap to Flip Card 🔄</div>
+          <h3 class="text-2xl font-bold font-khmer text-ink py-4" id="flashcard-front">
+            ${currentPassage.refKhmer}
+            <div class="text-sm font-sans text-muted font-normal mt-1">(${currentPassage.refEnglish})</div>
+          </h3>
+          <div class="text-base font-khmer text-ink leading-relaxed hidden py-2" id="flashcard-back">
+            «${esc(currentPassage.textKhmer)}»
+          </div>
+          <div class="text-xs text-muted">${currentPassage.themeKhmer}</div>
+        </div>
+      ` : ''}
+
+      <!-- Bottom Action Controls -->
+      <div class="pt-3 border-t border-line flex flex-col sm:flex-row items-center justify-between gap-3">
+        <div class="flex items-center gap-1.5 w-full sm:w-auto overflow-x-auto no-scrollbar">
+          <button class="btn btn-neutral text-xs shrink-0" onclick="window.copyMemoryText('${esc(currentPassage.textKhmer)}', '${currentPassage.refKhmer}')">
+            <i class="fa-regular fa-copy mr-1"></i> Copy
+          </button>
+          <button class="btn btn-primary text-xs shrink-0" onclick="window.designMemoryCard('${esc(currentPassage.textKhmer)}', '${esc(currentPassage.textEnglish)}', '${currentPassage.refKhmer} • ${currentPassage.refEnglish}')">
+            <i class="fa-solid fa-palette mr-1"></i> Design
+          </button>
+        </div>
+
+        <div class="flex items-center gap-1 shrink-0">
+          <button class="btn btn-neutral !py-1 !px-2.5 text-xs" onclick="window.prevMemoryPassage()">
+            <i class="fa-solid fa-chevron-left"></i>
+          </button>
+          <button class="btn btn-neutral !py-1 !px-2.5 text-xs" onclick="window.nextMemoryPassage()">
+            <i class="fa-solid fa-chevron-right"></i>
+          </button>
+        </div>
+      </div>
+
+    </div>
+  `;
+}
   function renderTyping() {
     let list = CPTI_PASSAGES;
     if (state.memoryPartFilter > 0) {
@@ -2519,7 +2642,7 @@
       );
     }
 
-    const currentPassage = CPTI_PASSAGES.find(p => p.id === state.selectedMemoryId) || list[0] || CPTI_PASSAGES[0];
+    const currentPassage = state.selectedMemoryId ? CPTI_PASSAGES.find(p => p.id === state.selectedMemoryId) : (list[0] || CPTI_PASSAGES[0]);
 
     return `
       <div class="space-y-4">
@@ -2533,178 +2656,62 @@
                 <h1 class="text-lg sm:text-xl font-bold text-ink flex items-center gap-2 font-khmer">
                   <span>ខគម្ពីរចងចាំ • Scripture Memory Suite</span>
                 </h1>
-                <p class="text-xs text-muted">សាលាទេវវិទ្យាប្រេសប៊ីទែរានកម្ពុជា — Cambodia Presbyterian Theological Institute (CPTI)</p>
+                <p class="text-[11px] sm:text-xs text-muted">សាលាទេវវិទ្យាប្រេសប៊ីទែរានកម្ពុជា — Cambodia Presbyterian Theological Institute</p>
               </div>
             </div>
-            <div class="flex items-center gap-2 text-xs font-bold text-ink">
-              <span class="px-2.5 py-1 rounded-full bg-surface border border-line shadow-xs">Total: <strong class="text-brand">${CPTI_PASSAGES.length}</strong> Passages</span>
-              <span class="px-2.5 py-1 rounded-full bg-surface border border-line shadow-xs">Speed: <strong class="text-brand">${state.typingWpm}</strong> WPM</span>
-              <span class="px-2.5 py-1 rounded-full bg-surface border border-line shadow-xs">Accuracy: <strong class="text-emerald-500">${state.typingAccuracy}%</strong></span>
+            <div class="flex items-center gap-2 text-[10px] sm:text-xs font-bold text-ink">
+              <span class="px-2 py-1 sm:px-2.5 rounded-full bg-surface border border-line shadow-xs">Total: <strong class="text-brand">${CPTI_PASSAGES.length}</strong></span>
+              <span class="px-2 py-1 sm:px-2.5 rounded-full bg-surface border border-line shadow-xs">Speed: <strong class="text-brand">${state.typingWpm}</strong> WPM</span>
+              <span class="px-2 py-1 sm:px-2.5 rounded-full bg-surface border border-line shadow-xs">Accuracy: <strong class="text-emerald-500">${state.typingAccuracy}%</strong></span>
             </div>
           </div>
         </div>
 
         <!-- 5-Section Part Filter Tabs -->
         <div class="card p-1.5 bg-surface border border-line flex items-center gap-1.5 overflow-x-auto no-scrollbar text-xs font-semibold">
-          <button class="px-3 py-1.5 rounded-lg whitespace-nowrap transition ${state.memoryPartFilter === 0 ? 'bg-brand text-white shadow-xs font-bold' : 'text-muted hover:text-ink hover:bg-raised'}" onclick="window.filterMemoryPart(0)">
-            ទាំងអស់ (All ${CPTI_PASSAGES.length})
+          <button class="px-3 py-1.5 rounded-lg whitespace-nowrap transition shrink-0 ${state.memoryPartFilter === 0 ? 'bg-brand text-white shadow-xs font-bold' : 'text-muted hover:text-ink hover:bg-raised'}" onclick="window.filterMemoryPart(0)">
+            ទាំងអស់ (All)
           </button>
-          <button class="px-3 py-1.5 rounded-lg whitespace-nowrap transition ${state.memoryPartFilter === 1 ? 'bg-brand text-white shadow-xs font-bold' : 'text-muted hover:text-ink hover:bg-raised'}" onclick="window.filterMemoryPart(1)">
-            ផ្នែកទី ១: ទំនុកដំកើង &amp; ប្រាជ្ញា
+          <button class="px-3 py-1.5 rounded-lg whitespace-nowrap transition shrink-0 ${state.memoryPartFilter === 1 ? 'bg-brand text-white shadow-xs font-bold' : 'text-muted hover:text-ink hover:bg-raised'}" onclick="window.filterMemoryPart(1)">
+            ១: ទំនុកដំកើង &amp; ប្រាជ្ញា
           </button>
-          <button class="px-3 py-1.5 rounded-lg whitespace-nowrap transition ${state.memoryPartFilter === 2 ? 'bg-brand text-white shadow-xs font-bold' : 'text-muted hover:text-ink hover:bg-raised'}" onclick="window.filterMemoryPart(2)">
-            ផ្នែកទី ២: ព្រះគ្រីស្ទ &amp; ការសង្គ្រោះ
+          <button class="px-3 py-1.5 rounded-lg whitespace-nowrap transition shrink-0 ${state.memoryPartFilter === 2 ? 'bg-brand text-white shadow-xs font-bold' : 'text-muted hover:text-ink hover:bg-raised'}" onclick="window.filterMemoryPart(2)">
+            ២: ព្រះគ្រីស្ទ &amp; ការសង្គ្រោះ
           </button>
-          <button class="px-3 py-1.5 rounded-lg whitespace-nowrap transition ${state.memoryPartFilter === 3 ? 'bg-brand text-white shadow-xs font-bold' : 'text-muted hover:text-ink hover:bg-raised'}" onclick="window.filterMemoryPart(3)">
-            ផ្នែកទី ៣: ព្រះវិញ្ញាណ &amp; ការអធិស្ឋាន
+          <button class="px-3 py-1.5 rounded-lg whitespace-nowrap transition shrink-0 ${state.memoryPartFilter === 3 ? 'bg-brand text-white shadow-xs font-bold' : 'text-muted hover:text-ink hover:bg-raised'}" onclick="window.filterMemoryPart(3)">
+            ៣: ព្រះវិញ្ញាណ &amp; ការអធិស្ឋាន
           </button>
-          <button class="px-3 py-1.5 rounded-lg whitespace-nowrap transition ${state.memoryPartFilter === 4 ? 'bg-brand text-white shadow-xs font-bold' : 'text-muted hover:text-ink hover:bg-raised'}" onclick="window.filterMemoryPart(4)">
-            ផ្នែកទី ៤: ព្រះបន្ទូល &amp; ជំនឿ
+          <button class="px-3 py-1.5 rounded-lg whitespace-nowrap transition shrink-0 ${state.memoryPartFilter === 4 ? 'bg-brand text-white shadow-xs font-bold' : 'text-muted hover:text-ink hover:bg-raised'}" onclick="window.filterMemoryPart(4)">
+            ៤: ព្រះបន្ទូល &amp; ជំនឿ
           </button>
-          <button class="px-3 py-1.5 rounded-lg whitespace-nowrap transition ${state.memoryPartFilter === 5 ? 'bg-brand text-white shadow-xs font-bold' : 'text-muted hover:text-ink hover:bg-raised'}" onclick="window.filterMemoryPart(5)">
-            ផ្នែកទី ៥: ជីវិតសិស្ស &amp; ជ័យជម្នះ
+          <button class="px-3 py-1.5 rounded-lg whitespace-nowrap transition shrink-0 ${state.memoryPartFilter === 5 ? 'bg-brand text-white shadow-xs font-bold' : 'text-muted hover:text-ink hover:bg-raised'}" onclick="window.filterMemoryPart(5)">
+            ៥: ជីវិតសិស្ស &amp; ជ័យជម្នះ
           </button>
         </div>
 
-        <!-- Search and Passage Selector -->
-        <div class="grid grid-cols-1 md:grid-cols-12 gap-3">
-          
-          <!-- Left: Passage Selection List (4 cols) -->
-          <div class="md:col-span-4 card p-3 bg-surface border border-line space-y-2">
-            <div class="relative">
-              <i class="fa-solid fa-magnifying-glass text-muted text-xs absolute left-2.5 top-2.5"></i>
-              <input type="text" id="memory-search-input" value="${esc(state.memorySearchQuery)}" placeholder="Search verse or topic..." class="w-full pl-7 pr-2.5 py-1 text-xs rounded-lg bg-raised border border-line text-ink outline-none focus:border-brand">
-            </div>
-
-            <div class="max-h-[420px] overflow-y-auto space-y-1 pr-1">
-              ${list.map(p => `
-                <button class="w-full text-left p-2 rounded-lg text-xs transition border ${p.id === currentPassage.id ? 'bg-brand/10 border-brand text-brand font-bold' : 'border-transparent text-ink hover:bg-raised'}" onclick="window.selectMemoryPassage('${p.id}')">
-                  <div class="flex items-center justify-between">
-                    <span class="font-khmer truncate">${p.refKhmer}</span>
-                    <span class="text-[10px] text-muted font-normal">${p.pageNumber ? 'ទំព័រ ' + p.pageNumber : p.refEnglish}</span>
-                  </div>
-                  <div class="text-[11px] text-muted font-khmer truncate font-normal mt-0.5">${p.textKhmer.slice(0, 45)}...</div>
-                </button>
-              `).join('')}
-            </div>
+        <!-- Passage Selection List -->
+        <div class="card p-3 bg-surface border border-line space-y-2">
+          <div class="relative">
+            <i class="fa-solid fa-magnifying-glass text-muted text-xs absolute left-2.5 top-2.5"></i>
+            <input type="text" id="memory-search-input" value="${esc(state.memorySearchQuery)}" placeholder="Search verse or topic..." class="w-full pl-7 pr-2.5 py-1 text-xs rounded-lg bg-raised border border-line text-ink outline-none focus:border-brand">
           </div>
 
-          <!-- Right: Interactive Memorization Workbench (8 cols) -->
-          <div class="md:col-span-8 card p-5 bg-surface border border-line space-y-4">
-            
-            <!-- Passage Header & Mode Selector -->
-            <div class="flex flex-wrap items-center justify-between gap-2 border-b border-line pb-3">
-              <div>
-                <div class="flex items-center gap-2">
-                  <span class="text-[11px] font-bold uppercase tracking-wider text-rose-500 bg-rose-500/10 px-2.5 py-0.5 rounded-full font-khmer">${currentPassage.partTitleKhmer}</span>
-                  ${currentPassage.pageNumber ? `<span class="text-[10.5px] font-bold text-muted bg-raised px-2 py-0.5 rounded-full">ទំព័រ ${currentPassage.pageNumber}</span>` : ''}
+          <div class="max-h-[500px] overflow-y-auto space-y-1 pr-1">
+            ${list.map(p => `
+              <button class="w-full text-left p-2.5 rounded-lg text-sm transition border ${p.id === currentPassage.id ? 'bg-brand/10 border-brand text-brand font-bold' : 'border-transparent text-ink hover:bg-raised'}" onclick="window.selectMemoryPassage('${p.id}')">
+                <div class="flex items-center justify-between">
+                  <span class="font-khmer truncate">${p.refKhmer}</span>
+                  <span class="text-[10px] sm:text-xs text-muted font-normal">${p.pageNumber ? 'ទំព័រ ' + p.pageNumber : p.refEnglish}</span>
                 </div>
-                <h2 class="text-lg font-bold text-ink font-khmer mt-1.5 flex items-center gap-2">
-                  ${currentPassage.refKhmer} <span class="text-xs text-muted font-sans font-normal">(${currentPassage.refEnglish})</span>
-                </h2>
-              </div>
-
-              <!-- Practice Modes Switcher -->
-              <div class="flex items-center gap-1 bg-raised p-1 rounded-lg text-xs font-semibold">
-                <button class="px-2.5 py-1 rounded-md transition ${state.memoryMode === 'recite' ? 'bg-brand text-white shadow-xs' : 'text-muted hover:text-ink'}" onclick="window.setMemoryMode('recite')">
-                  <i class="fa-solid fa-book-open mr-1"></i> អាន
-                </button>
-                <button class="px-2.5 py-1 rounded-md transition ${state.memoryMode === 'hide' ? 'bg-brand text-white shadow-xs' : 'text-muted hover:text-ink'}" onclick="window.setMemoryMode('hide')">
-                  <i class="fa-solid fa-puzzle-piece mr-1"></i> លាក់ពាក្យ
-                </button>
-                <button class="px-2.5 py-1 rounded-md transition ${state.memoryMode === 'typing' ? 'bg-brand text-white shadow-xs' : 'text-muted hover:text-ink'}" onclick="window.setMemoryMode('typing')">
-                  <i class="fa-solid fa-keyboard mr-1"></i> វាយអក្សរ
-                </button>
-                <button class="px-2.5 py-1 rounded-md transition ${state.memoryMode === 'flashcard' ? 'bg-brand text-white shadow-xs' : 'text-muted hover:text-ink'}" onclick="window.setMemoryMode('flashcard')">
-                  <i class="fa-solid fa-repeat mr-1"></i> កាត
-                </button>
-              </div>
-            </div>
-
-            <!-- Mode 1: Recite & Read -->
-            ${state.memoryMode === 'recite' ? `
-              <div class="space-y-4">
-                <div class="p-4 rounded-xl bg-raised/50 border border-line font-khmer text-base leading-relaxed text-ink shadow-xs">
-                  ${esc(currentPassage.textKhmer)}
-                </div>
-                
-                <div class="p-3 rounded-lg bg-surface border border-line text-xs font-serif italic text-muted leading-relaxed">
-                  ${esc(currentPassage.textEnglish)}
-                </div>
-              </div>
-            ` : ''}
-
-            <!-- Mode 2: Fill in the Blanks / Word Hide -->
-            ${state.memoryMode === 'hide' ? `
-              <div class="space-y-3">
-                <div class="flex items-center justify-between text-xs text-muted">
-                  <span>Click any hidden box to reveal the word:</span>
-                  <div class="flex items-center gap-1.5 font-semibold">
-                    <span>Hide:</span>
-                    <button class="px-2 py-0.5 rounded border ${state.memoryHideLevel === 25 ? 'bg-brand text-white border-brand' : 'bg-raised border-line'}" onclick="window.setMemoryHideLevel(25)">25%</button>
-                    <button class="px-2 py-0.5 rounded border ${state.memoryHideLevel === 50 ? 'bg-brand text-white border-brand' : 'bg-raised border-line'}" onclick="window.setMemoryHideLevel(50)">50%</button>
-                    <button class="px-2 py-0.5 rounded border ${state.memoryHideLevel === 100 ? 'bg-brand text-white border-brand' : 'bg-raised border-line'}" onclick="window.setMemoryHideLevel(100)">100%</button>
-                    <button class="px-2 py-0.5 rounded border bg-raised border-line text-brand" onclick="window.revealAllWords()">Reveal All</button>
-                  </div>
-                </div>
-
-                <div class="p-4 rounded-xl bg-raised/50 border border-line font-khmer text-base leading-relaxed text-ink shadow-xs select-none" id="hide-words-container">
-                  ${renderHiddenWords(currentPassage.textKhmer, state.memoryHideLevel)}
-                </div>
-              </div>
-            ` : ''}
-
-            <!-- Mode 3: Interactive Typing Trainer -->
-            ${state.memoryMode === 'typing' ? `
-              <div class="space-y-3">
-                <div class="p-3.5 rounded-xl bg-raised/50 border border-line font-khmer text-sm leading-relaxed text-ink select-none">
-                  ${esc(currentPassage.textKhmer)}
-                </div>
-
-                <textarea id="typing-memory-box" rows="3" placeholder="Type the Scripture passage above in Khmer (or English) to test your recall and speed..." class="w-full p-3 text-sm font-khmer rounded-xl bg-raised border border-line text-ink outline-none focus:border-brand leading-relaxed">${esc(state.typingInput)}</textarea>
-              </div>
-            ` : ''}
-
-            <!-- Mode 4: Flashcard Flip -->
-            ${state.memoryMode === 'flashcard' ? `
-              <div class="p-8 rounded-2xl bg-gradient-to-br from-brand/10 to-indigo-600/10 border-2 border-brand/30 text-center cursor-pointer space-y-4 hover:shadow-md transition" onclick="window.toggleFlashcard()" id="memory-flashcard">
-                <div class="text-xs font-bold text-brand uppercase tracking-wider">Tap to Flip Card 🔄</div>
-                <h3 class="text-2xl font-bold font-khmer text-ink py-4" id="flashcard-front">
-                  ${currentPassage.refKhmer}
-                  <div class="text-sm font-sans text-muted font-normal mt-1">(${currentPassage.refEnglish})</div>
-                </h3>
-                <div class="text-base font-khmer text-ink leading-relaxed hidden py-2" id="flashcard-back">
-                  «${esc(currentPassage.textKhmer)}»
-                </div>
-                <div class="text-xs text-muted">${currentPassage.themeKhmer}</div>
-              </div>
-            ` : ''}
-
-            <!-- Bottom Action Controls -->
-            <div class="pt-3 border-t border-line flex flex-wrap items-center justify-between gap-2">
-              <div class="flex items-center gap-1.5">
-                <button class="btn btn-neutral text-xs" onclick="window.copyMemoryText('${esc(currentPassage.textKhmer)}', '${currentPassage.refKhmer}')">
-                  <i class="fa-regular fa-copy mr-1"></i> Copy
-                </button>
-                <button class="btn btn-primary text-xs" onclick="window.designMemoryCard('${esc(currentPassage.textKhmer)}', '${esc(currentPassage.textEnglish)}', '${currentPassage.refKhmer} • ${currentPassage.refEnglish}')">
-                  <i class="fa-solid fa-palette mr-1"></i> Design Card
-                </button>
-                <button class="btn btn-neutral text-xs" onclick="window.postMemoryToFeed('${esc(currentPassage.textKhmer)}', '${currentPassage.refKhmer}')">
-                  <i class="fa-solid fa-share-nodes mr-1"></i> Share to Feed
-                </button>
-              </div>
-
-              <div class="flex items-center gap-1">
-                <button class="btn btn-neutral !py-1 !px-2.5 text-xs" onclick="window.prevMemoryPassage()">
-                  <i class="fa-solid fa-chevron-left"></i> Previous
-                </button>
-                <button class="btn btn-neutral !py-1 !px-2.5 text-xs" onclick="window.nextMemoryPassage()">
-                  Next <i class="fa-solid fa-chevron-right"></i>
-                </button>
-              </div>
-            </div>
-
+                <div class="text-[11px] sm:text-xs text-muted font-khmer truncate font-normal mt-1">${p.textKhmer.slice(0, 80)}...</div>
+              </button>
+            `).join('')}
           </div>
+        </div>
+
+        <!-- Inline Detail View for Mobile Only (Hidden on Desktop) -->
+        <div class="xl:hidden mt-4">
+          ${getMemoryDetailHtml(currentPassage)}
         </div>
 
       </div>
@@ -2781,7 +2788,14 @@
       case 'daily': root.innerHTML = renderDaily(); break;
       case 'concordance': root.innerHTML = renderConcordance(); break;
       case 'memory':
-      case 'typing': root.innerHTML = renderTyping(); break;
+      case 'typing': 
+        root.innerHTML = renderTyping(); 
+        const rightMemoryWidget = $('#right-memory-widget');
+        if (rightMemoryWidget) {
+          const passage = state.selectedMemoryId ? CPTI_PASSAGES.find(p => p.id === state.selectedMemoryId) : CPTI_PASSAGES[0];
+          rightMemoryWidget.innerHTML = getMemoryDetailHtml(passage);
+        }
+        break;
       case 'notes': root.innerHTML = renderNotes(); break;
       default: root.innerHTML = renderReader(); break;
     }
