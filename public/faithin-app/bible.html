@@ -75,7 +75,7 @@
 <main class="max-w-[1200px] mx-auto px-3 sm:px-4 py-5 grid gap-5 lg:grid-cols-[232px_minmax(0,1fr)] xl:grid-cols-[232px_minmax(0,1fr)_312px] items-start" id="main">
 
   <!-- ───── LEFT RAIL: STANDARD USER PROFILE & NAV ───── -->
-  <aside class="hidden lg:block sticky top-[72px] space-y-4">
+  <aside class="hidden lg:block sticky top-[72px] space-y-4 max-h-[calc(100vh-80px)] overflow-y-auto no-scrollbar pb-6">
     
     <!-- User Profile Card -->
     <section class="card overflow-hidden">
@@ -176,7 +176,7 @@
   </section>
 
   <!-- ───── RIGHT RAIL: STANDARD HIGHLIGHTS & WIDGETS ───── -->
-  <aside class="hidden xl:block sticky top-[72px] space-y-4">
+  <aside class="hidden xl:block sticky top-[72px] space-y-4 max-h-[calc(100vh-80px)] overflow-y-auto no-scrollbar pb-6">
     
     <!-- Right Memory Detail View Widget -->
     <div id="right-memory-widget" class="hidden"></div>
@@ -2548,11 +2548,11 @@
       <!-- Mode 1: Recite & Read -->
       ${state.memoryMode === 'recite' ? `
         <div class="space-y-4">
-          <div class="p-4 rounded-xl bg-raised/50 border border-line font-khmer text-base leading-relaxed text-ink shadow-xs">
+          <div class="p-4 rounded-xl bg-raised/50 border border-line font-khmer text-base leading-relaxed text-ink shadow-xs max-h-[350px] overflow-y-auto">
             ${esc(currentPassage.textKhmer)}
           </div>
           
-          <div class="p-3 rounded-lg bg-surface border border-line text-xs font-serif italic text-muted leading-relaxed">
+          <div class="p-3 rounded-lg bg-surface border border-line text-xs font-serif italic text-muted leading-relaxed max-h-[150px] overflow-y-auto">
             ${esc(currentPassage.textEnglish)}
           </div>
         </div>
@@ -2571,7 +2571,7 @@
             </div>
           </div>
 
-          <div class="p-4 rounded-xl bg-raised/50 border border-line font-khmer text-base leading-relaxed text-ink shadow-xs select-none" id="hide-words-container">
+          <div class="p-4 rounded-xl bg-raised/50 border border-line font-khmer text-base leading-relaxed text-ink shadow-xs max-h-[350px] overflow-y-auto select-none" id="hide-words-container">
             ${renderHiddenWords(currentPassage.textKhmer, state.memoryHideLevel)}
           </div>
         </div>
@@ -2580,7 +2580,7 @@
       <!-- Mode 3: Interactive Typing Trainer -->
       ${state.memoryMode === 'typing' ? `
         <div class="space-y-3">
-          <div class="p-3.5 rounded-xl bg-raised/50 border border-line font-khmer text-sm leading-relaxed text-ink select-none">
+          <div class="p-3.5 rounded-xl bg-raised/50 border border-line font-khmer text-sm leading-relaxed text-ink select-none max-h-[250px] overflow-y-auto">
             ${esc(currentPassage.textKhmer)}
           </div>
 
@@ -2596,7 +2596,7 @@
             ${currentPassage.refKhmer}
             <div class="text-sm font-sans text-muted font-normal mt-1">(${currentPassage.refEnglish})</div>
           </h3>
-          <div class="text-base font-khmer text-ink leading-relaxed hidden py-2" id="flashcard-back">
+          <div class="text-base font-khmer text-ink leading-relaxed hidden py-2 max-h-[300px] overflow-y-auto" id="flashcard-back">
             «${esc(currentPassage.textKhmer)}»
           </div>
           <div class="text-xs text-muted">${currentPassage.themeKhmer}</div>
