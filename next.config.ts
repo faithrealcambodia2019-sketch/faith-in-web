@@ -37,6 +37,7 @@ const nextConfig: NextConfig = {
       },
       { source: "/faithin-app/index.html", destination: "/home", permanent: true },
       { source: "/faithin-app/jobs.html", destination: "/jobs", permanent: true },
+      { source: "/faithin-app/bible.html", destination: "/bible", permanent: true },
       { source: "/faithin-app/library.html", destination: "/library", permanent: true },
       { source: "/faithin-app/messaging.html", destination: "/messages", permanent: true },
       { source: "/faithin-app/network.html", destination: "/network", permanent: true },
@@ -59,6 +60,7 @@ const nextConfig: NextConfig = {
         { source: "/article", destination: "/faithin-app/article.html" },
         { source: "/write", destination: "/faithin-app/article.html" },
         { source: "/jobs", destination: "/faithin-app/jobs.html" },
+        { source: "/bible", destination: "/faithin-app/bible.html" },
         { source: "/library", destination: "/faithin-app/library.html" },
         { source: "/messages", destination: "/faithin-app/messaging.html" },
         { source: "/network", destination: "/faithin-app/network.html" },
@@ -97,7 +99,7 @@ const nextConfig: NextConfig = {
         ],
       },
       {
-        source: "/:path(home|network|messages|profile|jobs|library|notifications|settings|settings-security|studio|dashboard)?",
+        source: "/:path(home|network|messages|profile|jobs|library|bible|notifications|settings|settings-security|studio|dashboard)?",
         headers: [{ key: "Cache-Control", value: "public, max-age=0, must-revalidate" }],
       },
       {

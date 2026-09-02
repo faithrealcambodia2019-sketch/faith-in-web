@@ -5,7 +5,7 @@
    interactions every page shares: theme, dropdowns, modals, shortcuts.
 
    Each page declares itself on <body>:
-     data-page   = home | library | network | jobs | notifications
+     data-page   = home | library | bible | network | jobs | notifications
      data-search = placeholder text for the header search field
    Exposes window.FI for page-specific scripts.
    ========================================================================== */
@@ -131,6 +131,7 @@
               <a href="/profile" class="side-link${page === 'profile' ? ' is-active' : ''}" role="menuitem"><i class="fa-regular fa-user"></i>View profile</a>
               <a href="/studio" class="side-link${page === 'studio' ? ' is-active' : ''}" role="menuitem"><i class="fa-solid fa-chart-line text-blue-500"></i>Creator Studio</a>
               <a href="/library?view=saved" class="side-link" role="menuitem"><i class="fa-solid fa-bookmark"></i>Saved items</a>
+              <a href="/bible" class="side-link${page === 'bible' ? ' is-active' : ''}" role="menuitem"><i class="fa-solid fa-book-bible"></i>Bible reader</a>
               <a href="/settings" class="side-link${page === 'settings' ? ' is-active' : ''}" role="menuitem"><i class="fa-solid fa-gear"></i>Settings</a>
               <div class="my-1.5 border-t border-line"></div>
               <a href="/home" class="side-link" role="menuitem"><i class="fa-solid fa-arrow-right-from-bracket"></i>Sign out</a>
@@ -179,7 +180,7 @@
   const warmedPages = new Set();
   function warmPage(link) {
     if (!link || link.origin !== location.origin || warmedPages.has(link.pathname)) return;
-    if (!['/home','/jobs','/library','/network','/messages','/notifications','/profile','/settings','/studio','/dashboard','/settings-security'].includes(link.pathname)) return;
+    if (!['/home','/jobs','/library','/bible','/network','/messages','/notifications','/profile','/settings','/studio','/dashboard','/settings-security'].includes(link.pathname)) return;
     warmedPages.add(link.pathname);
     const hint = document.createElement('link'); hint.rel = 'prefetch'; hint.href = link.pathname; hint.as = 'document'; document.head.appendChild(hint);
   }

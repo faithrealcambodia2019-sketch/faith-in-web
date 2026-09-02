@@ -2955,7 +2955,6 @@
         });
     };
 
-    var BIBLE_TRANSLATIONS = { KJV: 'kjv', WEB: 'web', ASV: 'asv' };
     var BIBLE_WORD_STUDIES = {
         grace: { original: 'χάρις', transliteration: 'charis', meaning: 'God’s freely given favor and kindness, received rather than earned.' },
         faith: { original: 'πίστις', transliteration: 'pistis', meaning: 'Trust, confidence, and faithful reliance on God.' },
@@ -2965,33 +2964,34 @@
         prayer: { original: 'προσευχή', transliteration: 'proseuchē', meaning: 'Prayer addressed to God through worship, confession, thanksgiving, and request.' }
     };
 
+    function bibleJson(url) {
+        return fetch(url, {
+            method: 'GET',
+            credentials: 'same-origin',
+            headers: { Accept: 'application/json' }
+        }).then(function (response) {
+            return response.json().catch(function () { return {}; }).then(function (payload) {
+                if (!response.ok) throw new Error(text(payload.error || payload.message || 'Bible reader request failed.', 300));
+                return payload;
+            });
+        });
+    }
+
+    actions.cv_bible_get_versions = function () {
+        return bibleJson('/api/bible/versions');
+    };
+
     actions.cv_bible_get_verses = function (b, params) {
         var book = text(params.book || 'John', 80);
         var chapter = Math.max(1, parseInt(params.chapter || 1, 10) || 1);
-        var requested = text(params.version || 'KJV').toUpperCase();
-        var translation = BIBLE_TRANSLATIONS[requested] || BIBLE_TRANSLATIONS.KJV;
-        var reference = encodeURIComponent(book + ' ' + chapter);
-        return fetch('https://bible-api.com/' + reference + '?translation=' + translation, {
-            method: 'GET',
-            headers: { Accept: 'application/json' }
-        }).then(function (response) {
-            if (!response.ok) throw new Error('Bible reader request failed.');
-            return response.json();
-        }).then(function (payload) {
-            var verses = Array.isArray(payload.verses) ? payload.verses : [];
-            return {
-                items: verses.map(function (verse) {
-                    return {
-                        v: parseInt(verse.verse || 0, 10) || 0,
-                        text: text(verse.text),
-                        reference: text(verse.book_name || book) + ' ' + chapter + ':' + (parseInt(verse.verse || 0, 10) || 0)
-                    };
-                }),
-                translation: requested,
-                reference: text(payload.reference || (book + ' ' + chapter))
-            };
-        }).catch(function () {
-            throw new Error('The Bible reader is temporarily unavailable. Please try again.');
+        var requested = text(params.version || 'KJV', 50).toUpperCase();
+        var query = new URLSearchParams({
+            book: book,
+            chapter: String(chapter),
+            version: requested
+        });
+        return bibleJson('/api/bible/chapter?' + query.toString()).catch(function (error) {
+            throw new Error(text(error && error.message, 300) || 'The Bible reader is temporarily unavailable. Please try again.');
         });
     };
 

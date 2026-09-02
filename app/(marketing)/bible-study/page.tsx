@@ -11,7 +11,7 @@ import {
 export const metadata: Metadata = {
   title: `Bilingual Bible Studio — ${site.name}`,
   description:
-    "Read, compare, and design Scripture in Khmer and English. Side-by-side Khmer Standard Version and English translations with optimized typography and verse card creation.",
+    "Read and compare the Khmer Old Version 1954 beside English and other supported Bible languages with optimized Khmer typography.",
 };
 
 export default function BibleStudyPage() {
@@ -29,7 +29,7 @@ export default function BibleStudyPage() {
           </p>
 
           <div className="pt-4 flex flex-wrap items-center justify-center gap-3">
-            <Link href={site.appPath} className="fi-btn fi-btn--primary">
+            <Link href="/bible" className="fi-btn fi-btn--primary">
               <span>Open Bible Reader</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
@@ -47,7 +47,7 @@ export default function BibleStudyPage() {
             <span className="fi-eyebrow">Parallel Reading • អានព្រះគម្ពីរទន្ទឹមគ្នា</span>
             <h2>Parallel translations side by side</h2>
             <p>
-              Compare nuances between the Khmer Standard Version and English translations verse by verse without losing your place.
+              Compare the Khmer Old Version 1954 and English translations verse by verse without losing your place.
             </p>
           </div>
 
@@ -57,7 +57,7 @@ export default function BibleStudyPage() {
                 <span className="px-3 py-1 rounded-full bg-[#FEF7E6] text-[#B87814] text-xs font-bold border border-[#FCE8BF]">
                   John 1:1-5 • យ៉ូហាន ១:១-៥
                 </span>
-                <span className="text-xs text-charcoal-500 font-semibold">Khmer Standard &amp; ESV</span>
+                <span className="text-xs text-charcoal-500 font-semibold">Khmer Old Version 1954 &amp; KJV</span>
               </div>
 
               <div className="flex items-center gap-2 text-xs font-bold text-charcoal-600">
@@ -71,7 +71,7 @@ export default function BibleStudyPage() {
               <div className="space-y-1">
                 <div className="text-xs font-bold text-[#B87814]">យ៉ូហាន ១:១ (Khmer)</div>
                 <p className="text-base font-khmer text-charcoal-900 leading-relaxed font-medium">
-                  «នៅ​ដើម​ដំបូង មាន​ព្រះបន្ទូល ព្រះបន្ទូល​នៅ​ជា​មួយ​នឹង​ព្រះ ហើយ​ព្រះបន្ទូល​ជា​ព្រះ។»
+                  អត្ថបទព្រះគម្ពីរផ្លូវការនឹងបង្ហាញនៅទីនេះ បន្ទាប់ពីភ្ជាប់សិទ្ធិពីអ្នកបោះពុម្ពផ្សាយ។
                 </p>
               </div>
 
@@ -88,14 +88,14 @@ export default function BibleStudyPage() {
               <div className="space-y-1">
                 <div className="text-xs font-bold text-[#B87814]">យ៉ូហាន ១:៤-៥ (Khmer)</div>
                 <p className="text-base font-khmer text-charcoal-900 leading-relaxed font-medium">
-                  «ជីវិត​នៅ​ក្នុង​ព្រះបន្ទូល ហើយ​ជីវិត​នោះ​ជា​ពន្លឺ​របស់​មនុស្ស​លោក។ ពន្លឺ​នោះ​ភ្លឺ​នៅ​ក្នុង​សេចក្ដី​ងងឹត ប៉ុន្តែ​សេចក្ដី​ងងឹត​មិន​បាន​យល់​ពន្លឺ​នោះ​ទេ។»
+                  ព្រះគម្ពីរខ្មែរបកប្រែចាស់ ១៩៥៤ ត្រូវបានបង្ហាញតាមប្រភពផ្លូវការ និងមានការទទួលស្គាល់សិទ្ធិត្រឹមត្រូវ។
                 </p>
               </div>
 
               <div className="space-y-1 md:border-l md:border-[#EAE7DC] md:pl-6">
                 <div className="text-xs font-bold text-[#2563EB]">John 1:4-5 (English)</div>
                 <p className="text-base font-serif italic text-charcoal-700 leading-relaxed">
-                  &ldquo;In him was life, and the life was the light of men. The light shines in the darkness, and the darkness has not overcome it.&rdquo;
+                  &ldquo;In him was life; and the life was the light of men. And the light shineth in darkness; and the darkness comprehended it not.&rdquo;
                 </p>
               </div>
             </div>
@@ -105,7 +105,7 @@ export default function BibleStudyPage() {
                 Instant cross-references, verse highlighting, and notes sync
               </span>
 
-              <Link href={site.appPath} className="fi-btn fi-btn--primary fi-btn--sm">
+              <Link href="/bible" className="fi-btn fi-btn--primary fi-btn--sm">
                 <span>Start Reading in App</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </Link>
@@ -151,7 +151,7 @@ export default function BibleStudyPage() {
               </div>
 
               <div className="pt-4">
-                <Link href={site.appPath} className="fi-btn fi-btn--primary">
+                <Link href="/bible" className="fi-btn fi-btn--primary">
                   <span>Open Scripture Studio</span>
                   <ArrowRight className="w-4 h-4" />
                 </Link>
@@ -168,7 +168,7 @@ export default function BibleStudyPage() {
 
                 <div className="p-6 sm:p-8 rounded-2xl bg-white/10 backdrop-blur-md border border-white/15 text-center space-y-4 shadow-inner">
                   <div className="text-xl sm:text-2xl font-khmer font-bold text-white leading-relaxed">
-                    «ព្រះ​យេហូវ៉ា​ជា​អ្នក​គង្វាល​ខ្ញុំ ខ្ញុំ​នឹង​មិន​ខ្វះ​អ្វី​ឡើយ»
+                    ជ្រើសរើសខគម្ពីរ ដើម្បីបង្កើតរូបភាពសម្រាប់ចែករំលែក
                   </div>
                   <div className="text-sm font-serif italic text-charcoal-200">
                     &ldquo;The LORD is my shepherd; I shall not want.&rdquo;
@@ -200,7 +200,7 @@ export default function BibleStudyPage() {
                 Experience Scripture in your heart language with intuitive bilingual tools.
               </p>
               <div className="flex justify-center gap-4">
-                <Link href={site.appPath} className="fi-btn fi-btn--primary fi-btn--lg">
+                <Link href="/bible" className="fi-btn fi-btn--primary fi-btn--lg">
                   <span>Launch Bible Studio</span>
                   <ArrowRight className="w-4 h-4" />
                 </Link>
