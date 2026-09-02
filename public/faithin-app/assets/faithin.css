@@ -34,6 +34,7 @@ html.dark{
 }
 
 body{
+  font-family: 'Inter', 'Koh Santepheap', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   background: rgb(var(--canvas));
   color: rgb(var(--ink));
   -webkit-font-smoothing: antialiased;
@@ -1528,13 +1529,19 @@ html.dark .format-btn.active {
 }
 
 /* Khmer font support and Article formatting */
+.font-khmer,
+:lang(km),
+[lang="km"],
+.khmer-text {
+  font-family: 'Koh Santepheap', sans-serif !important;
+}
 .font-serif,
 .article-serif,
 .article-editable,
 #article-headline,
 #article-body,
 .article-preview-body {
-  font-family: 'Koh Santepheap', 'Merriweather', 'Lora', Georgia, 'Noto Serif Khmer', serif !important;
+  font-family: 'Lora', 'Koh Santepheap', Georgia, serif;
 }
 .article-preview-body h1 {
   font-size: 2rem;
@@ -1725,7 +1732,7 @@ html.dark .article-preview-body blockquote {
 .fi-bible-panel-header h2 {
   margin: 0;
   color: rgb(var(--ink));
-  font-family: 'Koh Santepheap', 'Merriweather', 'Noto Serif Khmer', Georgia, serif;
+  font-family: 'Inter', 'Koh Santepheap', sans-serif;
   font-size: 17px;
   font-weight: 700;
   line-height: 1.45;
@@ -1748,14 +1755,17 @@ html.dark .article-preview-body blockquote {
   border-radius: 8px;
   background: transparent;
   color: rgb(var(--ink));
-  font-family: 'Merriweather', 'Koh Santepheap', 'Noto Serif Khmer', Georgia, serif;
+  font-family: 'Lora', 'Koh Santepheap', Georgia, serif;
   font-size: var(--bible-reader-size);
   line-height: 1.78;
   text-align: left;
   transition: background .15s ease;
 }
-.fi-bible-verses.is-khmer .fi-bible-verse {
-  font-family: 'Koh Santepheap', 'Noto Serif Khmer', 'Khmer OS Siemreap', serif;
+.fi-bible-verses.is-khmer .fi-bible-verse,
+.fi-bible-panel[data-bible-panel="primary"] .fi-bible-verse,
+.fi-bible-panel[data-bible-panel="primary"] h2,
+.fi-bible-panel[data-bible-panel="primary"] .fi-bible-language {
+  font-family: 'Koh Santepheap', sans-serif !important;
   line-height: 2;
 }
 .fi-bible-verse:hover { background: rgb(var(--raised)); }
