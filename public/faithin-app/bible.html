@@ -241,14 +241,14 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-width: 24px;
-    height: 24px;
-    padding: 0 4px;
-    font-size: 11px;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 3px;
+    font-size: 10.5px;
     font-weight: 700;
     color: #1877f2;
-    background-color: rgba(24, 119, 242, 0.1);
-    border-radius: 6px;
+    background-color: rgba(24, 119, 242, 0.08);
+    border-radius: 4px;
     margin-right: 6px;
     vertical-align: middle;
   }
@@ -469,7 +469,7 @@
     verses: [],
     verses2: [],
     loading: false,
-    fontSize: 16,
+    fontSize: 15,
     
     // Designer Pro
     designer: {
@@ -2722,20 +2722,19 @@
   function renderControlsBar(isParallel = false) {
     const curBook = BOOKS.find(b => b.name === state.book) || BOOKS[0];
     const chaptersList = Array.from({ length: curBook.ch }, (_, i) => i + 1);
-    const bookIdx = BOOKS.findIndex(b => b.name === state.book);
 
     return `
-      <div class="card p-3.5 sm:p-4 bg-surface border border-line space-y-3 shadow-xs">
+      <div class="card p-3 bg-surface border border-line space-y-2.5 shadow-2xs">
         
         <!-- Row 1: Book, Chapter, Translation selectors + Quick Nav -->
-        <div class="grid grid-cols-2 sm:grid-cols-12 gap-2.5 items-end">
+        <div class="grid grid-cols-2 sm:grid-cols-12 gap-2 items-end">
           
-          <div class="col-span-1 sm:col-span-4 space-y-1">
-            <label class="text-[11px] font-bold uppercase tracking-wider text-muted flex items-center justify-between">
+          <div class="col-span-1 sm:col-span-4 space-y-0.5">
+            <label class="text-[10.5px] font-bold uppercase tracking-wider text-muted flex items-center justify-between">
               <span>Book • គម្ពីរ</span>
-              <span class="text-[10px] text-brand font-semibold">${curBook.test === 'OT' ? 'Old Testament' : 'New Testament'}</span>
+              <span class="text-[9.5px] text-brand font-semibold">${curBook.test === 'OT' ? 'Old Testament' : 'New Testament'}</span>
             </label>
-            <select id="sel-book" class="w-full bg-raised border border-line rounded-xl px-3 py-2 text-[13.5px] font-semibold text-ink outline-none focus:border-brand">
+            <select id="sel-book" class="w-full bg-raised border border-line rounded-lg px-2.5 py-1.5 text-xs font-semibold text-ink outline-none focus:border-brand">
               <optgroup label="Old Testament • គម្ពីរសញ្ញាចាស់">
                 ${BOOKS.filter(b => b.test === 'OT').map(b => `<option value="${b.name}" ${b.name === state.book ? 'selected' : ''}>${b.km} (${b.name})</option>`).join('')}
               </optgroup>
@@ -2745,16 +2744,16 @@
             </select>
           </div>
 
-          <div class="col-span-1 sm:col-span-2 space-y-1">
-            <label class="text-[11px] font-bold uppercase tracking-wider text-muted">Chapter • ជំពូក</label>
-            <select id="sel-chapter" class="w-full bg-raised border border-line rounded-xl px-2.5 py-2 text-[13.5px] font-semibold text-ink outline-none focus:border-brand">
+          <div class="col-span-1 sm:col-span-2 space-y-0.5">
+            <label class="text-[10.5px] font-bold uppercase tracking-wider text-muted">Chapter • ជំពូក</label>
+            <select id="sel-chapter" class="w-full bg-raised border border-line rounded-lg px-2 py-1.5 text-xs font-semibold text-ink outline-none focus:border-brand">
               ${chaptersList.map(c => `<option value="${c}" ${c === Number(state.chapter) ? 'selected' : ''}>Chapter ${c}</option>`).join('')}
             </select>
           </div>
 
-          <div class="col-span-1 sm:col-span-3 space-y-1">
-            <label class="text-[11px] font-bold uppercase tracking-wider text-muted">Translation</label>
-            <select id="sel-version" class="w-full bg-raised border border-line rounded-xl px-2.5 py-2 text-[13px] font-medium text-ink outline-none focus:border-brand">
+          <div class="col-span-1 sm:col-span-3 space-y-0.5">
+            <label class="text-[10.5px] font-bold uppercase tracking-wider text-muted">Translation</label>
+            <select id="sel-version" class="w-full bg-raised border border-line rounded-lg px-2 py-1.5 text-xs font-medium text-ink outline-none focus:border-brand">
               <option value="KHMER_OLD_1954" ${state.version === 'KHMER_OLD_1954' ? 'selected' : ''}>🇰🇭 ខ្មែរ ១៩៥៤ (ពគប)</option>
               <option value="KJV" ${state.version === 'KJV' ? 'selected' : ''}>🇺🇸 King James (KJV)</option>
               <option value="WEB" ${state.version === 'WEB' ? 'selected' : ''}>🌐 World English (WEB)</option>
@@ -2763,9 +2762,9 @@
           </div>
 
           ${isParallel ? `
-          <div class="col-span-1 sm:col-span-3 space-y-1">
-            <label class="text-[11px] font-bold uppercase tracking-wider text-muted">Compare With</label>
-            <select id="sel-version2" class="w-full bg-raised border border-line rounded-xl px-2.5 py-2 text-[13px] font-medium text-ink outline-none focus:border-brand">
+          <div class="col-span-1 sm:col-span-3 space-y-0.5">
+            <label class="text-[10.5px] font-bold uppercase tracking-wider text-muted">Compare With</label>
+            <select id="sel-version2" class="w-full bg-raised border border-line rounded-lg px-2 py-1.5 text-xs font-medium text-ink outline-none focus:border-brand">
               <option value="KJV" ${state.version2 === 'KJV' ? 'selected' : ''}>🇺🇸 King James (KJV)</option>
               <option value="WEB" ${state.version2 === 'WEB' ? 'selected' : ''}>🌐 World English (WEB)</option>
               <option value="KHMER_OLD_1954" ${state.version2 === 'KHMER_OLD_1954' ? 'selected' : ''}>🇰🇭 ខ្មែរ ១៩៥៤</option>
@@ -2774,15 +2773,15 @@
           </div>
           ` : `
           <!-- Chapter Nav & Audio Action -->
-          <div class="col-span-2 sm:col-span-3 flex items-center justify-end gap-1.5 pt-1">
-            <button class="btn btn-neutral !py-2 !px-2.5 text-xs" onclick="window.prevChapter()" title="Previous Chapter (Left Arrow)">
-              <i class="fa-solid fa-chevron-left"></i>
+          <div class="col-span-2 sm:col-span-3 flex items-center justify-end gap-1 pt-0.5">
+            <button class="btn btn-neutral !py-1.5 !px-2 text-xs" onclick="window.prevChapter()" title="Previous Chapter (Left Arrow)">
+              <i class="fa-solid fa-chevron-left text-[11px]"></i>
             </button>
-            <button class="btn btn-neutral !py-2 !px-2.5 text-xs" onclick="window.nextChapter()" title="Next Chapter (Right Arrow)">
-              <i class="fa-solid fa-chevron-right"></i>
+            <button class="btn btn-neutral !py-1.5 !px-2 text-xs" onclick="window.nextChapter()" title="Next Chapter (Right Arrow)">
+              <i class="fa-solid fa-chevron-right text-[11px]"></i>
             </button>
-            <button class="btn ${state.audioSpeechActive ? 'btn-neutral !bg-rose-500 text-white' : 'btn-primary'} !py-2 !px-3 text-xs ml-1 shadow-xs" onclick="window.toggleChapterAudioSpeech()">
-              <i class="fa-solid ${state.audioSpeechActive ? 'fa-stop' : 'fa-volume-high'} mr-1"></i>
+            <button class="btn ${state.audioSpeechActive ? 'btn-neutral !bg-rose-500 text-white' : 'btn-primary'} !py-1.5 !px-2.5 text-xs ml-0.5 shadow-2xs" onclick="window.toggleChapterAudioSpeech()">
+              <i class="fa-solid ${state.audioSpeechActive ? 'fa-stop' : 'fa-volume-high'} mr-1 text-[11px]"></i>
               <span>${state.audioSpeechActive ? 'Stop' : 'Listen'}</span>
             </button>
           </div>
@@ -2791,29 +2790,29 @@
         </div>
 
         <!-- Row 2: Reading Accessibility Bar & In-Chapter Filter -->
-        <div class="flex flex-wrap items-center justify-between gap-3 pt-2.5 border-t border-line text-xs">
+        <div class="flex flex-wrap items-center justify-between gap-2.5 pt-2 border-t border-line text-xs">
           
           <!-- Search Filter Inside Chapter -->
-          <div class="flex items-center gap-2 bg-raised px-3 py-1.5 rounded-xl border border-line flex-1 max-w-sm">
-            <i class="fa-solid fa-magnifying-glass text-muted text-xs"></i>
+          <div class="flex items-center gap-2 bg-raised px-2.5 py-1 rounded-lg border border-line flex-1 max-w-xs">
+            <i class="fa-solid fa-magnifying-glass text-muted text-[11px]"></i>
             <input type="text" id="reader-search-input" value="${esc(state.readerSearchQuery)}" placeholder="Filter verses in ${curBook.km} ${state.chapter}..." class="bg-transparent text-xs text-ink outline-none flex-1">
-            ${state.readerSearchQuery ? `<button onclick="window.clearReaderSearch()" class="text-muted hover:text-ink text-xs">✕</button>` : ''}
+            ${state.readerSearchQuery ? `<button onclick="window.clearReaderSearch()" class="text-muted hover:text-ink text-[10px]">✕</button>` : ''}
           </div>
 
           <!-- Display & Font Controls -->
-          <div class="flex items-center gap-2">
+          <div class="flex items-center gap-1.5">
             <!-- Theme Switcher -->
-            <div class="flex items-center gap-1 bg-raised p-1 rounded-lg border border-line">
-              <button class="px-2 py-0.5 rounded text-[11px] font-semibold transition ${state.readerTheme === 'default' ? 'bg-surface text-brand shadow-2xs' : 'text-muted'}" onclick="window.setReaderTheme('default')" title="Default Light/Dark">Standard</button>
-              <button class="px-2 py-0.5 rounded text-[11px] font-semibold transition ${state.readerTheme === 'sepia' ? 'bg-[#f4ebd4] text-[#433422] font-bold shadow-2xs' : 'text-muted'}" onclick="window.setReaderTheme('sepia')" title="Warm Sepia">Sepia</button>
-              <button class="px-2 py-0.5 rounded text-[11px] font-semibold transition ${state.readerTheme === 'dark' ? 'bg-[#0f172a] text-sky-400 font-bold shadow-2xs' : 'text-muted'}" onclick="window.setReaderTheme('dark')" title="Deep Midnight">Night</button>
+            <div class="flex items-center gap-0.5 bg-raised p-0.5 rounded-lg border border-line">
+              <button class="px-2 py-0.5 rounded text-[10.5px] font-semibold transition ${state.readerTheme === 'default' ? 'bg-surface text-brand shadow-2xs' : 'text-muted'}" onclick="window.setReaderTheme('default')" title="Default Light/Dark">Standard</button>
+              <button class="px-2 py-0.5 rounded text-[10.5px] font-semibold transition ${state.readerTheme === 'sepia' ? 'bg-[#f4ebd4] text-[#433422] font-bold shadow-2xs' : 'text-muted'}" onclick="window.setReaderTheme('sepia')" title="Warm Sepia">Sepia</button>
+              <button class="px-2 py-0.5 rounded text-[10.5px] font-semibold transition ${state.readerTheme === 'dark' ? 'bg-[#0f172a] text-sky-400 font-bold shadow-2xs' : 'text-muted'}" onclick="window.setReaderTheme('dark')" title="Deep Midnight">Night</button>
             </div>
 
             <!-- Font Size -->
-            <div class="flex items-center gap-1 bg-raised px-2 py-1 rounded-lg border border-line text-xs font-semibold">
-              <button id="btn-font-dec" class="text-muted hover:text-ink px-1" title="Smaller font">A-</button>
-              <span class="text-[11px] text-ink font-bold px-1">${state.fontSize}px</span>
-              <button id="btn-font-inc" class="text-muted hover:text-ink px-1" title="Larger font">A+</button>
+            <div class="flex items-center gap-1 bg-raised px-2 py-0.5 rounded-lg border border-line text-xs font-semibold">
+              <button id="btn-font-dec" class="text-muted hover:text-ink px-1 text-[11px]" title="Smaller font">A-</button>
+              <span class="text-[11px] text-ink font-bold px-0.5">${state.fontSize}px</span>
+              <button id="btn-font-inc" class="text-muted hover:text-ink px-1 text-[11px]" title="Larger font">A+</button>
             </div>
           </div>
 
@@ -2833,50 +2832,50 @@
     const themeClass = state.readerTheme === 'sepia' ? 'reader-theme-sepia' : (state.readerTheme === 'dark' ? 'reader-theme-dark' : '');
 
     return `
-      <div class="space-y-4">
+      <div class="space-y-3.5">
         
         <!-- Controls Bar -->
         ${renderControlsBar(false)}
 
         <!-- Main Reading Canvas -->
-        <div class="card p-5 sm:p-7 bg-surface border border-line space-y-4 ${themeClass} shadow-xs">
+        <div class="card p-4 sm:p-6 bg-surface border border-line space-y-3.5 ${themeClass} shadow-xs">
           
           <!-- Chapter Header & Action Bar -->
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-line pb-3.5">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 border-b border-line pb-3">
             <div>
               <div class="flex items-center gap-2">
-                <span class="text-[11px] font-bold uppercase tracking-wider text-brand bg-brand/10 px-2.5 py-0.5 rounded-full font-khmer">${curBook.test === 'OT' ? 'គម្ពីរសញ្ញាចាស់' : 'គម្ពីរសញ្ញាថ្មី'}</span>
-                <span class="text-xs text-muted font-mono">${curBook.name} ${state.chapter}</span>
+                <span class="text-[10px] font-bold uppercase tracking-wider text-brand bg-brand/10 px-2 py-0.5 rounded-full font-khmer">${curBook.test === 'OT' ? 'គម្ពីរសញ្ញាចាស់' : 'គម្ពីរសញ្ញាថ្មី'}</span>
+                <span class="text-[11.5px] text-muted font-mono">${curBook.name} ${state.chapter}</span>
               </div>
-              <h1 class="text-2xl sm:text-3xl font-bold font-khmer text-ink mt-1 flex items-center gap-2">
-                ${curBook.km} <span class="text-lg font-sans font-normal text-muted">ជំពូក ${state.chapter}</span>
+              <h1 class="text-lg sm:text-xl font-bold font-khmer text-ink mt-0.5 flex items-center gap-2">
+                ${curBook.km} <span class="text-base font-sans font-normal text-muted">ជំពូក ${state.chapter}</span>
               </h1>
-              <p class="text-[12px] text-muted mt-0.5">${state.version === 'KHMER_OLD_1954' ? 'ព្រះគម្ពីរបរិសុទ្ធ ១៩៥៤ (ពគប - Khmer Old Version)' : state.version}</p>
+              <p class="text-[11.5px] text-muted mt-0.5">${state.version === 'KHMER_OLD_1954' ? 'ព្រះគម្ពីរបរិសុទ្ធ ១៩៥៤ (ពគប - Khmer Old Version)' : state.version}</p>
             </div>
             
-            <div class="flex items-center gap-2">
-              <button class="btn btn-neutral text-xs shrink-0 !py-1.5 !px-3" onclick="window.copyChapterPassage()" title="Copy entire chapter">
-                <i class="fa-regular fa-copy mr-1"></i> Copy Chapter
+            <div class="flex items-center gap-1.5">
+              <button class="btn btn-neutral text-xs shrink-0 !py-1 !px-2.5" onclick="window.copyChapterPassage()" title="Copy entire chapter">
+                <i class="fa-regular fa-copy mr-1 text-[11px]"></i> Copy
               </button>
-              <button class="btn btn-primary text-xs shrink-0 whitespace-nowrap shadow-sm !py-1.5 !px-3.5" onclick="window.sendChapterToDesigner()">
-                <i class="fa-solid fa-palette mr-1.5"></i> Make Scripture Card
+              <button class="btn btn-primary text-xs shrink-0 whitespace-nowrap shadow-2xs !py-1 !px-3" onclick="window.sendChapterToDesigner()">
+                <i class="fa-solid fa-palette mr-1 text-[11px]"></i> Make Card
               </button>
             </div>
           </div>
 
           <!-- Verses Content Area -->
           ${state.loading ? `
-            <div class="py-20 text-center text-muted space-y-2">
-              <i class="fa-solid fa-circle-notch fa-spin text-3xl text-brand mb-2"></i>
-              <p class="text-sm font-semibold text-ink">Loading Scripture verses...</p>
-              <p class="text-xs text-muted">Fetching ${curBook.km} Chapter ${state.chapter}</p>
+            <div class="py-16 text-center text-muted space-y-1.5">
+              <i class="fa-solid fa-circle-notch fa-spin text-2xl text-brand mb-1"></i>
+              <p class="text-xs font-semibold text-ink">Loading Scripture verses...</p>
+              <p class="text-[11px] text-muted">Fetching ${curBook.km} Chapter ${state.chapter}</p>
             </div>
           ` : `
-            <div class="space-y-1.5" style="font-size: ${state.fontSize}px;">
+            <div class="space-y-1" style="font-size: ${state.fontSize}px;">
               ${filteredVerses.length === 0 ? `
-                <div class="p-8 text-center text-muted space-y-1">
-                  <p class="text-sm font-bold text-ink">No verses matching "${esc(state.readerSearchQuery)}"</p>
-                  <button class="text-xs text-brand hover:underline" onclick="window.clearReaderSearch()">Clear search filter</button>
+                <div class="p-6 text-center text-muted space-y-1">
+                  <p class="text-xs font-bold text-ink">No verses matching "${esc(state.readerSearchQuery)}"</p>
+                  <button class="text-xs text-brand hover:underline" onclick="window.clearReaderSearch()">Clear filter</button>
                 </div>
               ` : filteredVerses.map(v => {
                 const isSpeaking = state.audioSpeakingVerse === v.v;
@@ -2885,26 +2884,26 @@
                 const speakingClass = isSpeaking ? 'verse-speaking' : '';
 
                 return `
-                  <div class="verse-row group flex items-start gap-2.5 rounded-xl ${highlightClass} ${speakingClass} transition duration-150" id="verse-row-${v.v}">
+                  <div class="verse-row group flex items-start gap-2 rounded-lg py-1 px-1.5 ${highlightClass} ${speakingClass} transition duration-150" id="verse-row-${v.v}">
                     <span class="verse-num shrink-0 select-none">${v.v}</span>
                     <p class="flex-1 text-ink font-khmer leading-relaxed font-normal">${esc(v.text)}</p>
                     
                     <!-- Interactive Verse Action Hub -->
-                    <div class="opacity-0 group-hover:opacity-100 flex items-center gap-1 shrink-0 transition-opacity bg-surface/90 backdrop-blur-xs p-1 rounded-lg border border-line shadow-2xs">
-                      <button class="w-6 h-6 rounded hover:bg-raised flex items-center justify-center text-muted hover:text-ink" title="Listen to verse" onclick="window.speakSingleVerse('${esc(v.text)}', ${v.v})">
-                        <i class="fa-solid fa-volume-high text-[11px]"></i>
+                    <div class="opacity-0 group-hover:opacity-100 flex items-center gap-0.5 shrink-0 transition-opacity bg-surface/95 backdrop-blur-xs p-0.5 rounded-lg border border-line shadow-2xs">
+                      <button class="w-5 h-5 rounded hover:bg-raised flex items-center justify-center text-muted hover:text-ink" title="Listen to verse" onclick="window.speakSingleVerse('${esc(v.text)}', ${v.v})">
+                        <i class="fa-solid fa-volume-high text-[10px]"></i>
                       </button>
-                      <button class="w-6 h-6 rounded hover:bg-raised flex items-center justify-center text-muted hover:text-ink" title="Copy verse" onclick="window.copyVerseText('${esc(v.text)}', '${curBook.km} ${state.chapter}:${v.v}')">
-                        <i class="fa-regular fa-copy text-[11px]"></i>
+                      <button class="w-5 h-5 rounded hover:bg-raised flex items-center justify-center text-muted hover:text-ink" title="Copy verse" onclick="window.copyVerseText('${esc(v.text)}', '${curBook.km} ${state.chapter}:${v.v}')">
+                        <i class="fa-regular fa-copy text-[10px]"></i>
                       </button>
-                      <button class="w-6 h-6 rounded hover:bg-raised flex items-center justify-center text-purple-600 hover:text-purple-700" title="Create Card in Studio" onclick="window.designSingleVerse('${esc(v.text)}', '${curBook.km} ${state.chapter}:${v.v}')">
-                        <i class="fa-solid fa-palette text-[11px]"></i>
+                      <button class="w-5 h-5 rounded hover:bg-raised flex items-center justify-center text-purple-600 hover:text-purple-700" title="Create Card in Studio" onclick="window.designSingleVerse('${esc(v.text)}', '${curBook.km} ${state.chapter}:${v.v}')">
+                        <i class="fa-solid fa-palette text-[10px]"></i>
                       </button>
-                      <button class="w-6 h-6 rounded hover:bg-raised flex items-center justify-center text-amber-500 hover:text-amber-600" title="Highlight (Gold)" onclick="window.toggleVerseHighlight('${state.book}', ${state.chapter}, ${v.v}, 'gold')">
-                        <i class="fa-solid fa-highlighter text-[11px]"></i>
+                      <button class="w-5 h-5 rounded hover:bg-raised flex items-center justify-center text-amber-500 hover:text-amber-600" title="Highlight (Gold)" onclick="window.toggleVerseHighlight('${state.book}', ${state.chapter}, ${v.v}, 'gold')">
+                        <i class="fa-solid fa-highlighter text-[10px]"></i>
                       </button>
-                      <button class="w-6 h-6 rounded hover:bg-raised flex items-center justify-center text-cyan-600 hover:text-cyan-700" title="Add to Sermon Notes" onclick="window.appendVerseToNotes('${curBook.km} ${state.chapter}:${v.v}', '${esc(v.text)}')">
-                        <i class="fa-solid fa-note-sticky text-[11px]"></i>
+                      <button class="w-5 h-5 rounded hover:bg-raised flex items-center justify-center text-cyan-600 hover:text-cyan-700" title="Add to Sermon Notes" onclick="window.appendVerseToNotes('${curBook.km} ${state.chapter}:${v.v}', '${esc(v.text)}')">
+                        <i class="fa-solid fa-note-sticky text-[10px]"></i>
                       </button>
                     </div>
                   </div>
@@ -2914,13 +2913,13 @@
           `}
 
           <!-- Bottom Chapter Navigation -->
-          <div class="flex items-center justify-between pt-6 border-t border-line">
-            <button class="btn btn-neutral text-xs !py-2 !px-3.5 flex items-center gap-1.5" onclick="window.prevChapter()">
-              <i class="fa-solid fa-arrow-left"></i> Previous Chapter
+          <div class="flex items-center justify-between pt-4 border-t border-line">
+            <button class="btn btn-neutral text-xs !py-1.5 !px-3 flex items-center gap-1.5" onclick="window.prevChapter()">
+              <i class="fa-solid fa-arrow-left text-[11px]"></i> Previous
             </button>
-            <span class="text-xs text-muted font-semibold">${curBook.km} ${state.chapter} of ${curBook.ch}</span>
-            <button class="btn btn-neutral text-xs !py-2 !px-3.5 flex items-center gap-1.5" onclick="window.nextChapter()">
-              Next Chapter <i class="fa-solid fa-arrow-right"></i>
+            <span class="text-[11.5px] text-muted font-semibold">${curBook.km} ${state.chapter} of ${curBook.ch}</span>
+            <button class="btn btn-neutral text-xs !py-1.5 !px-3 flex items-center gap-1.5" onclick="window.nextChapter()">
+              Next <i class="fa-solid fa-arrow-right text-[11px]"></i>
             </button>
           </div>
 
@@ -3277,57 +3276,57 @@
   // 4. Verse of the Day Tool
   function renderDaily() {
     const d = state.daily;
-    if (!d) return `<div class="card p-12 text-center text-muted"><i class="fa-solid fa-circle-notch fa-spin text-2xl text-brand mb-2"></i><p>Loading Verse of the Day...</p></div>`;
+    if (!d) return `<div class="card p-8 text-center text-muted"><i class="fa-solid fa-circle-notch fa-spin text-2xl text-brand mb-2"></i><p class="text-xs">Loading Verse of the Day...</p></div>`;
     return `
-      <div class="space-y-4">
-        <div class="bg-[linear-gradient(135deg,#1877f2,#0052cc)] rounded-2xl p-6 sm:p-8 text-white shadow-md relative overflow-hidden space-y-4">
-          <div class="flex items-center justify-between text-xs text-amber-300 font-bold uppercase tracking-wider">
+      <div class="space-y-3.5">
+        <div class="bg-[linear-gradient(135deg,#1877f2,#0052cc)] rounded-xl p-4 sm:p-5 text-white shadow-xs relative overflow-hidden space-y-3">
+          <div class="flex items-center justify-between text-[11px] text-amber-300 font-bold uppercase tracking-wider">
             <span>✨ VERSE OF THE DAY • ខគម្ពីរប្រចាំថ្ងៃ</span>
-            <span class="text-white/80 font-medium">${d.date}</span>
+            <span class="text-white/80 font-normal text-[11px]">${d.date}</span>
           </div>
 
-          <blockquote class="space-y-3 max-w-2xl">
-            <h2 class="text-xl sm:text-2xl font-bold font-khmer leading-relaxed">
+          <blockquote class="space-y-2 max-w-2xl">
+            <h2 class="text-base sm:text-lg font-bold font-khmer leading-relaxed">
               «${esc(d.khmer)}»
             </h2>
-            <p class="text-sm sm:text-base font-serif italic leading-relaxed text-white/90">
+            <p class="text-xs sm:text-sm font-serif italic leading-relaxed text-white/90">
               &ldquo;${esc(d.text)}&rdquo;
             </p>
-            <div class="text-amber-300 font-bold text-xs tracking-wide">
+            <div class="text-amber-300 font-semibold text-xs tracking-wide">
               ${esc(d.khmerRef)} • ${esc(d.ref)}
             </div>
           </blockquote>
 
-          <div class="p-3 rounded-xl bg-black/20 backdrop-blur-md flex flex-wrap items-center justify-between gap-3">
-            <div class="flex items-center gap-3">
-              <button class="w-9 h-9 rounded-full bg-white text-[#1877F2] flex items-center justify-center font-bold shadow hover:scale-105 transition" onclick="window.playAudioTrack('${d.audioUrl}')">
-                <i class="fa-solid fa-play ml-0.5"></i>
+          <div class="p-2.5 rounded-lg bg-black/20 backdrop-blur-md flex flex-wrap items-center justify-between gap-2.5">
+            <div class="flex items-center gap-2.5">
+              <button class="w-8 h-8 rounded-full bg-white text-[#1877F2] flex items-center justify-center font-bold text-xs shadow hover:scale-105 transition" onclick="window.playAudioTrack('${d.audioUrl}')">
+                <i class="fa-solid fa-play ml-0.5 text-[11px]"></i>
               </button>
               <div>
                 <h4 class="font-bold text-xs">${esc(d.audioTitle)}</h4>
-                <p class="text-[11px] text-white/80">Spoken Audio Blessing</p>
+                <p class="text-[10.5px] text-white/80">Spoken Audio Blessing</p>
               </div>
             </div>
 
             <div class="flex items-center gap-1.5">
               <button class="btn btn-neutral !bg-white/20 hover:!bg-white/30 text-white text-xs !py-1 !px-2.5" onclick="window.designDailyVerse()">
-                <i class="fa-solid fa-palette mr-1"></i> Create Card
+                <i class="fa-solid fa-palette mr-1 text-[11px]"></i> Create Card
               </button>
               <button class="btn btn-neutral !bg-white/20 hover:!bg-white/30 text-white text-xs !py-1 !px-2.5" onclick="window.copyDailyVerse()">
-                <i class="fa-regular fa-copy mr-1"></i> Copy
+                <i class="fa-regular fa-copy mr-1 text-[11px]"></i> Copy
               </button>
             </div>
           </div>
         </div>
 
-        <div class="card p-5 bg-surface border border-line space-y-2.5">
-          <div class="flex items-center gap-2 text-brand text-xs font-bold uppercase tracking-wider">
+        <div class="card p-4 sm:p-5 bg-surface border border-line space-y-2">
+          <div class="flex items-center gap-2 text-brand text-[11px] font-bold uppercase tracking-wider">
             <i class="fa-solid fa-book-bible"></i>
             <span>Daily Devotional Reflection</span>
           </div>
-          <h3 class="text-base font-bold text-ink">${esc(d.devotionalTitle)}</h3>
-          <p class="text-[14px] font-khmer text-ink/90 leading-relaxed">${esc(d.reflectionKhmer)}</p>
-          <p class="text-[13.5px] font-serif italic text-muted leading-relaxed">${esc(d.reflection)}</p>
+          <h3 class="text-sm font-bold text-ink">${esc(d.devotionalTitle)}</h3>
+          <p class="text-[13.5px] font-khmer text-ink/90 leading-relaxed">${esc(d.reflectionKhmer)}</p>
+          <p class="text-[12.5px] font-serif italic text-muted leading-relaxed">${esc(d.reflection)}</p>
         </div>
       </div>
     `;
@@ -3337,9 +3336,9 @@
   function renderConcordance() {
     const items = (state.concordanceResult && state.concordanceResult.items) || [];
     return `
-      <div class="space-y-4">
+      <div class="space-y-3.5">
         <div class="card p-4 bg-surface border border-line">
-          <h1 class="text-xl font-bold text-ink">Concordance &amp; Word Study • វចនានុក្រម</h1>
+          <h1 class="text-base sm:text-lg font-bold text-ink">Concordance &amp; Word Study • វចនានុក្រម</h1>
           <p class="text-xs text-muted">Explore original Greek and Hebrew root terms, Strong’s definitions, and key references.</p>
         </div>
 
@@ -3410,12 +3409,12 @@
 
       <!-- Mode 1: Recite & Read -->
       ${state.memoryMode === 'recite' ? `
-        <div class="space-y-4">
-          <div class="memory-text-scroll p-4 rounded-xl bg-raised/50 border border-line font-khmer text-base leading-relaxed text-ink shadow-xs">
+        <div class="space-y-3">
+          <div class="memory-text-scroll p-3.5 rounded-xl bg-raised/50 border border-line font-khmer text-[14.5px] leading-relaxed text-ink shadow-2xs">
             ${esc(currentPassage.textKhmer)}
           </div>
           
-          <div class="memory-text-scroll-en p-3 rounded-lg bg-surface border border-line text-xs font-serif italic text-muted leading-relaxed">
+          <div class="memory-text-scroll-en p-2.5 rounded-lg bg-surface border border-line text-[11.5px] font-serif italic text-muted leading-relaxed">
             ${esc(currentPassage.textEnglish)}
           </div>
         </div>
@@ -3423,18 +3422,18 @@
 
       <!-- Mode 2: Fill in the Blanks / Word Hide -->
       ${state.memoryMode === 'hide' ? `
-        <div class="space-y-3">
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs text-muted">
+        <div class="space-y-2.5">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-[11px] text-muted">
             <span>Click any hidden box to reveal:</span>
-            <div class="flex flex-wrap items-center gap-1.5 font-semibold">
-              <button class="px-2 py-0.5 rounded border ${state.memoryHideLevel === 25 ? 'bg-brand text-white border-brand' : 'bg-raised border-line'}" onclick="window.setMemoryHideLevel(25)">25%</button>
-              <button class="px-2 py-0.5 rounded border ${state.memoryHideLevel === 50 ? 'bg-brand text-white border-brand' : 'bg-raised border-line'}" onclick="window.setMemoryHideLevel(50)">50%</button>
-              <button class="px-2 py-0.5 rounded border ${state.memoryHideLevel === 100 ? 'bg-brand text-white border-brand' : 'bg-raised border-line'}" onclick="window.setMemoryHideLevel(100)">100%</button>
-              <button class="px-2 py-0.5 rounded border bg-raised border-line text-brand" onclick="window.revealAllWords()">Reveal All</button>
+            <div class="flex flex-wrap items-center gap-1 font-semibold">
+              <button class="px-2 py-0.5 rounded border text-[10.5px] ${state.memoryHideLevel === 25 ? 'bg-brand text-white border-brand' : 'bg-raised border-line'}" onclick="window.setMemoryHideLevel(25)">25%</button>
+              <button class="px-2 py-0.5 rounded border text-[10.5px] ${state.memoryHideLevel === 50 ? 'bg-brand text-white border-brand' : 'bg-raised border-line'}" onclick="window.setMemoryHideLevel(50)">50%</button>
+              <button class="px-2 py-0.5 rounded border text-[10.5px] ${state.memoryHideLevel === 100 ? 'bg-brand text-white border-brand' : 'bg-raised border-line'}" onclick="window.setMemoryHideLevel(100)">100%</button>
+              <button class="px-2 py-0.5 rounded border text-[10.5px] bg-raised border-line text-brand" onclick="window.revealAllWords()">Reveal All</button>
             </div>
           </div>
 
-          <div class="memory-text-scroll p-4 rounded-xl bg-raised/50 border border-line font-khmer text-base leading-relaxed text-ink shadow-xs select-none" id="hide-words-container">
+          <div class="memory-text-scroll p-3.5 rounded-xl bg-raised/50 border border-line font-khmer text-[14.5px] leading-relaxed text-ink shadow-2xs select-none" id="hide-words-container">
             ${renderHiddenWords(currentPassage.textKhmer, state.memoryHideLevel)}
           </div>
         </div>
@@ -3442,27 +3441,27 @@
 
       <!-- Mode 3: Interactive Typing Trainer -->
       ${state.memoryMode === 'typing' ? `
-        <div class="space-y-3">
-          <div class="memory-text-scroll-sm p-3.5 rounded-xl bg-raised/50 border border-line font-khmer text-sm leading-relaxed text-ink select-none">
+        <div class="space-y-2.5">
+          <div class="memory-text-scroll-sm p-3 rounded-xl bg-raised/50 border border-line font-khmer text-[13.5px] leading-relaxed text-ink select-none">
             ${esc(currentPassage.textKhmer)}
           </div>
 
-          <textarea id="typing-memory-box" rows="3" placeholder="Type the Scripture passage above in Khmer (or English) to test your recall and speed..." class="w-full p-3 text-sm font-khmer rounded-xl bg-raised border border-line text-ink outline-none focus:border-brand leading-relaxed">${esc(state.typingInput)}</textarea>
+          <textarea id="typing-memory-box" rows="3" placeholder="Type the Scripture passage above in Khmer (or English) to test your recall and speed..." class="w-full p-2.5 text-xs font-khmer rounded-xl bg-raised border border-line text-ink outline-none focus:border-brand leading-relaxed">${esc(state.typingInput)}</textarea>
         </div>
       ` : ''}
 
       <!-- Mode 4: Flashcard Flip -->
       ${state.memoryMode === 'flashcard' ? `
-        <div class="p-8 rounded-2xl bg-gradient-to-br from-brand/10 to-indigo-600/10 border-2 border-brand/30 text-center cursor-pointer space-y-4 hover:shadow-md transition" onclick="window.toggleFlashcard()" id="memory-flashcard">
-          <div class="text-xs font-bold text-brand uppercase tracking-wider">Tap to Flip Card 🔄</div>
-          <h3 class="text-2xl font-bold font-khmer text-ink py-4" id="flashcard-front">
+        <div class="p-5 sm:p-6 rounded-xl bg-gradient-to-br from-brand/10 to-indigo-600/10 border border-brand/30 text-center cursor-pointer space-y-2.5 hover:shadow-sm transition" onclick="window.toggleFlashcard()" id="memory-flashcard">
+          <div class="text-[10.5px] font-bold text-brand uppercase tracking-wider">Tap to Flip Card 🔄</div>
+          <h3 class="text-base sm:text-lg font-bold font-khmer text-ink py-2" id="flashcard-front">
             ${currentPassage.refKhmer}
-            <div class="text-sm font-sans text-muted font-normal mt-1">(${currentPassage.refEnglish})</div>
+            <div class="text-xs font-sans text-muted font-normal mt-0.5">(${currentPassage.refEnglish})</div>
           </h3>
-          <div class="memory-text-scroll text-base font-khmer text-ink leading-relaxed hidden py-2" id="flashcard-back">
+          <div class="memory-text-scroll text-[14px] font-khmer text-ink leading-relaxed hidden py-1" id="flashcard-back">
             «${esc(currentPassage.textKhmer)}»
           </div>
-          <div class="text-xs text-muted">${currentPassage.themeKhmer}</div>
+          <div class="text-[11px] text-muted">${currentPassage.themeKhmer}</div>
         </div>
       ` : ''}
 
@@ -3609,40 +3608,40 @@
   // 7. Sermon Notes Planner
   function renderNotes() {
     return `
-      <div class="space-y-4">
-        <div class="card p-4 bg-surface border border-line flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div class="space-y-3.5">
+        <div class="card p-4 bg-surface border border-line flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
           <div class="space-y-0.5">
-            <h1 class="text-xl font-bold text-ink">Sermon Notes Planner • កំណត់ត្រាទេសនា</h1>
+            <h1 class="text-base sm:text-lg font-bold text-ink">Sermon Notes Planner • កំណត់ត្រាទេសនា</h1>
             <p class="text-xs text-muted">Structured 3-part framework for capturing sermons, teachings, and personal insights.</p>
           </div>
-          <button class="btn btn-primary text-xs shrink-0 whitespace-nowrap shadow-sm" onclick="window.saveSermonNotesAction()">
-            <i class="fa-solid fa-save mr-1"></i> Save Notes
+          <button class="btn btn-primary text-xs shrink-0 whitespace-nowrap shadow-2xs !py-1.5 !px-3" onclick="window.saveSermonNotesAction()">
+            <i class="fa-solid fa-save mr-1 text-[11px]"></i> Save Notes
           </button>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-          <div class="card p-4 bg-surface border border-line space-y-2">
-            <div class="flex items-center gap-2 text-blue-600 font-bold text-sm">
-              <i class="fa-solid fa-landmark"></i>
+          <div class="card p-3.5 bg-surface border border-line space-y-1.5">
+            <div class="flex items-center gap-1.5 text-blue-600 font-bold text-xs">
+              <i class="fa-solid fa-landmark text-xs"></i>
               <span>1. Doctrine (គោលលទ្ធិ)</span>
             </div>
-            <textarea id="notes-doctrine" rows="10" class="w-full p-2.5 text-xs rounded-lg bg-raised border border-line text-ink outline-none focus:border-brand leading-relaxed" placeholder="Write doctrine notes here...">${esc(state.notes.Doctrine)}</textarea>
+            <textarea id="notes-doctrine" rows="9" class="w-full p-2.5 text-xs rounded-lg bg-raised border border-line text-ink outline-none focus:border-brand leading-relaxed" placeholder="Write doctrine notes here...">${esc(state.notes.Doctrine)}</textarea>
           </div>
 
-          <div class="card p-4 bg-surface border border-line space-y-2">
-            <div class="flex items-center gap-2 text-emerald-600 font-bold text-sm">
-              <i class="fa-solid fa-heart"></i>
+          <div class="card p-3.5 bg-surface border border-line space-y-1.5">
+            <div class="flex items-center gap-1.5 text-emerald-600 font-bold text-xs">
+              <i class="fa-solid fa-heart text-xs"></i>
               <span>2. Encouragement</span>
             </div>
-            <textarea id="notes-encouragement" rows="10" class="w-full p-2.5 text-xs rounded-lg bg-raised border border-line text-ink outline-none focus:border-brand leading-relaxed" placeholder="Write encouragement notes here...">${esc(state.notes.Encouragement)}</textarea>
+            <textarea id="notes-encouragement" rows="9" class="w-full p-2.5 text-xs rounded-lg bg-raised border border-line text-ink outline-none focus:border-brand leading-relaxed" placeholder="Write encouragement notes here...">${esc(state.notes.Encouragement)}</textarea>
           </div>
 
-          <div class="card p-4 bg-surface border border-line space-y-2">
-            <div class="flex items-center gap-2 text-purple-600 font-bold text-sm">
-              <i class="fa-solid fa-bolt"></i>
+          <div class="card p-3.5 bg-surface border border-line space-y-1.5">
+            <div class="flex items-center gap-1.5 text-purple-600 font-bold text-xs">
+              <i class="fa-solid fa-bolt text-xs"></i>
               <span>3. Application</span>
             </div>
-            <textarea id="notes-application" rows="10" class="w-full p-2.5 text-xs rounded-lg bg-raised border border-line text-ink outline-none focus:border-brand leading-relaxed" placeholder="Write application steps here...">${esc(state.notes.Application)}</textarea>
+            <textarea id="notes-application" rows="9" class="w-full p-2.5 text-xs rounded-lg bg-raised border border-line text-ink outline-none focus:border-brand leading-relaxed" placeholder="Write application steps here...">${esc(state.notes.Application)}</textarea>
           </div>
         </div>
       </div>
@@ -3661,70 +3660,70 @@
     const nextItem = activePlan.schedule.find(s => !completedMap[`${activePlan.id}-${s.day}`]) || activePlan.schedule[0];
 
     return `
-      <div class="space-y-4">
+      <div class="space-y-3.5">
         
         <!-- Header Banner -->
-        <div class="card p-4 sm:p-5 bg-gradient-to-r from-blue-600/10 via-indigo-600/10 to-purple-600/10 border border-blue-500/20 space-y-3">
-          <div class="flex flex-wrap items-center justify-between gap-3">
-            <div class="flex items-center gap-2.5">
-              <span class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center font-bold text-lg shadow-sm">
+        <div class="card p-3.5 sm:p-4 bg-gradient-to-r from-blue-600/10 via-indigo-600/10 to-purple-600/10 border border-blue-500/20 space-y-2.5">
+          <div class="flex flex-wrap items-center justify-between gap-2.5">
+            <div class="flex items-center gap-2">
+              <span class="w-8 h-8 rounded-lg bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center font-bold text-sm shadow-2xs">
                 <i class="fa-solid fa-calendar-check"></i>
               </span>
               <div>
-                <h1 class="text-lg sm:text-xl font-bold text-ink flex items-center gap-2">
+                <h1 class="text-base sm:text-lg font-bold text-ink flex items-center gap-1.5">
                   <span>Bible Reading Plans • ផែនការអានគម្ពីរ</span>
-                  <span class="text-[10px] font-bold uppercase tracking-wider text-blue-600 bg-blue-500/10 px-2 py-0.5 rounded-full">Interactive</span>
+                  <span class="text-[9.5px] font-bold uppercase tracking-wider text-blue-600 bg-blue-500/10 px-2 py-0.5 rounded-full">Interactive</span>
                 </h1>
-                <p class="text-xs text-muted">Daily structured Scripture reading to build a consistent habit with progress tracking.</p>
+                <p class="text-[11.5px] text-muted">Daily structured Scripture reading to build a consistent habit with progress tracking.</p>
               </div>
             </div>
 
             <!-- Streak & Progress Indicator -->
-            <div class="flex items-center gap-3 bg-surface border border-line px-3.5 py-1.5 rounded-xl shadow-2xs">
-              <div class="flex items-center gap-1.5 text-amber-500 font-bold text-xs">
-                <i class="fa-solid fa-fire text-base"></i>
-                <span>${state.readingPlans.streak} Days Streak</span>
+            <div class="flex items-center gap-2.5 bg-surface border border-line px-3 py-1 rounded-lg shadow-2xs">
+              <div class="flex items-center gap-1 text-amber-500 font-bold text-xs">
+                <i class="fa-solid fa-fire text-sm"></i>
+                <span>${state.readingPlans.streak} Days</span>
               </div>
-              <div class="h-4 w-px bg-line"></div>
+              <div class="h-3.5 w-px bg-line"></div>
               <div class="text-xs font-semibold text-ink">
-                <span class="text-brand font-bold">${progressPercent}%</span> Complete
+                <span class="text-brand font-bold">${progressPercent}%</span> Done
               </div>
             </div>
           </div>
 
           <!-- Plan Switcher Pills -->
-          <div class="flex items-center gap-2 overflow-x-auto no-scrollbar pt-1">
+          <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar pt-0.5">
             ${plans.map(p => `
-              <button class="px-3 py-1.5 rounded-xl text-xs font-semibold transition shrink-0 flex items-center gap-2 border ${state.readingPlans.activePlan === p.id ? 'bg-brand text-white border-brand shadow-xs' : 'bg-surface text-ink border-line hover:bg-raised'}" onclick="window.selectReadingPlan('${p.id}')">
-                <i class="fa-solid ${p.icon}"></i>
+              <button class="px-2.5 py-1 rounded-lg text-xs font-semibold transition shrink-0 flex items-center gap-1.5 border ${state.readingPlans.activePlan === p.id ? 'bg-brand text-white border-brand shadow-2xs' : 'bg-surface text-ink border-line hover:bg-raised'}" onclick="window.selectReadingPlan('${p.id}')">
+                <i class="fa-solid ${p.icon} text-[11px]"></i>
                 <span>${p.titleKhmer}</span>
-                <span class="text-[10.5px] opacity-80">(${p.durationDays}d)</span>
+                <span class="text-[10px] opacity-80 font-normal">(${p.durationDays}d)</span>
               </button>
             `).join('')}
           </div>
         </div>
 
         <!-- Today's Focus Card (Hero Action) -->
-        <div class="card p-5 bg-surface border-2 border-brand/40 shadow-sm relative overflow-hidden space-y-3">
-          <div class="flex flex-wrap items-center justify-between gap-2 border-b border-line pb-3">
+        <div class="card p-4 sm:p-5 bg-surface border-2 border-brand/30 shadow-2xs relative overflow-hidden space-y-2.5">
+          <div class="flex flex-wrap items-center justify-between gap-2 border-b border-line pb-2.5">
             <div class="flex items-center gap-2">
-              <span class="px-2.5 py-0.5 rounded-full bg-brand text-white text-[11px] font-bold">DAY ${nextItem.day} of ${activePlan.durationDays}</span>
-              <h2 class="text-base sm:text-lg font-bold text-ink font-khmer">${nextItem.title}</h2>
+              <span class="px-2 py-0.5 rounded-full bg-brand text-white text-[10px] font-bold">DAY ${nextItem.day} / ${activePlan.durationDays}</span>
+              <h2 class="text-sm sm:text-base font-bold text-ink font-khmer">${nextItem.title}</h2>
             </div>
-            <span class="text-xs font-bold text-brand bg-brand/10 px-2.5 py-1 rounded-lg">${nextItem.ref}</span>
+            <span class="text-xs font-bold text-brand bg-brand/10 px-2.5 py-0.5 rounded-md">${nextItem.ref}</span>
           </div>
 
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
-            <div class="text-xs text-muted">
-              Click below to jump directly into the Bible Reader to study this chapter in Khmer &amp; English.
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-0.5">
+            <div class="text-[11.5px] text-muted">
+              Click below to jump directly into the Bible Reader to study this chapter.
             </div>
             
             <div class="flex items-center gap-2">
-              <button class="btn btn-primary text-xs shrink-0 !py-2 !px-4 shadow-sm" onclick="window.jumpToPlanReading('${nextItem.book}', ${nextItem.ch})">
-                <i class="fa-solid fa-book-open mr-1.5"></i> Read ${nextItem.book} ${nextItem.ch} in Reader ➔
+              <button class="btn btn-primary text-xs shrink-0 !py-1.5 !px-3 shadow-2xs" onclick="window.jumpToPlanReading('${nextItem.book}', ${nextItem.ch})">
+                <i class="fa-solid fa-book-open mr-1 text-[11px]"></i> Read in Reader ➔
               </button>
-              <button class="btn btn-neutral text-xs shrink-0 !py-2 !px-3" onclick="window.togglePlanDayCompleted('${activePlan.id}', ${nextItem.day})">
-                <i class="fa-solid ${completedMap[`${activePlan.id}-${nextItem.day}`] ? 'fa-check text-emerald-500' : 'fa-circle-check'} mr-1"></i>
+              <button class="btn btn-neutral text-xs shrink-0 !py-1.5 !px-2.5" onclick="window.togglePlanDayCompleted('${activePlan.id}', ${nextItem.day})">
+                <i class="fa-solid ${completedMap[`${activePlan.id}-${nextItem.day}`] ? 'fa-check text-emerald-500' : 'fa-circle-check'} mr-1 text-[11px]"></i>
                 ${completedMap[`${activePlan.id}-${nextItem.day}`] ? 'Completed' : 'Mark Done'}
               </button>
             </div>
@@ -3732,30 +3731,30 @@
         </div>
 
         <!-- Plan Schedule Checklist -->
-        <div class="card p-4 sm:p-5 bg-surface border border-line space-y-3">
-          <div class="flex items-center justify-between border-b border-line pb-2.5">
-            <h3 class="text-xs font-bold uppercase tracking-wider text-ink flex items-center gap-2">
+        <div class="card p-4 bg-surface border border-line space-y-2.5">
+          <div class="flex items-center justify-between border-b border-line pb-2">
+            <h3 class="text-[11px] font-bold uppercase tracking-wider text-ink flex items-center gap-1.5">
               <i class="fa-solid fa-list-check text-blue-500"></i>
-              <span>Full Schedule &amp; Checklist (${activePlan.titleEnglish})</span>
+              <span>Schedule (${activePlan.titleEnglish})</span>
             </h3>
-            <span class="text-xs text-muted font-medium">${completedCount} of ${activePlan.durationDays} Days Finished</span>
+            <span class="text-[11px] text-muted font-medium">${completedCount} of ${activePlan.durationDays} Days</span>
           </div>
 
           <!-- Progress Bar -->
-          <div class="w-full bg-raised rounded-full h-2 overflow-hidden border border-line">
+          <div class="w-full bg-raised rounded-full h-1.5 overflow-hidden border border-line">
             <div class="bg-brand h-full transition-all duration-300 rounded-full" style="width: ${progressPercent}%"></div>
           </div>
 
           <!-- Grid of Days -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 pt-2 max-h-[440px] overflow-y-auto pr-1">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 pt-1 max-h-[380px] overflow-y-auto pr-1">
             ${activePlan.schedule.map(s => {
               const isDone = !!completedMap[`${activePlan.id}-${s.day}`];
               return `
-                <div class="p-3 rounded-xl border transition ${isDone ? 'bg-emerald-500/5 border-emerald-500/30' : 'bg-surface border-line hover:border-brand/40'} flex items-start justify-between gap-2">
-                  <div class="space-y-1 min-w-0">
-                    <div class="flex items-center gap-1.5">
-                      <span class="text-[10.5px] font-bold uppercase ${isDone ? 'text-emerald-600 font-bold' : 'text-muted'}">Day ${s.day}</span>
-                      ${isDone ? '<i class="fa-solid fa-circle-check text-emerald-500 text-[11px]"></i>' : ''}
+                <div class="p-2.5 rounded-lg border transition ${isDone ? 'bg-emerald-500/5 border-emerald-500/30' : 'bg-surface border-line hover:border-brand/40'} flex items-start justify-between gap-2">
+                  <div class="space-y-0.5 min-w-0">
+                    <div class="flex items-center gap-1">
+                      <span class="text-[10px] font-bold uppercase ${isDone ? 'text-emerald-600 font-bold' : 'text-muted'}">Day ${s.day}</span>
+                      ${isDone ? '<i class="fa-solid fa-circle-check text-emerald-500 text-[10px]"></i>' : ''}
                     </div>
                     <div class="text-xs font-bold text-ink truncate">${s.title}</div>
                     <div class="text-[11px] text-brand font-semibold truncate cursor-pointer hover:underline" onclick="window.jumpToPlanReading('${s.book}', ${s.ch})">
@@ -3763,8 +3762,8 @@
                     </div>
                   </div>
 
-                  <button class="w-7 h-7 rounded-lg shrink-0 flex items-center justify-center transition ${isDone ? 'bg-emerald-500 text-white shadow-xs' : 'bg-raised text-muted hover:text-ink'}" onclick="window.togglePlanDayCompleted('${activePlan.id}', ${s.day})" title="Toggle completion">
-                    <i class="fa-solid fa-check text-xs"></i>
+                  <button class="w-6 h-6 rounded-md shrink-0 flex items-center justify-center transition ${isDone ? 'bg-emerald-500 text-white shadow-2xs' : 'bg-raised text-muted hover:text-ink'}" onclick="window.togglePlanDayCompleted('${activePlan.id}', ${s.day})" title="Toggle completion">
+                    <i class="fa-solid fa-check text-[11px]"></i>
                   </button>
                 </div>
               `;
@@ -3781,66 +3780,66 @@
     const selectedEra = ATLAS_ERAS.find(e => e.id === state.atlas.selectedEra) || ATLAS_ERAS[3];
 
     return `
-      <div class="space-y-4">
+      <div class="space-y-3.5">
         
         <!-- Header Banner -->
-        <div class="card p-4 sm:p-5 bg-gradient-to-r from-amber-500/10 via-rose-500/10 to-indigo-500/10 border border-amber-500/20 space-y-2">
-          <div class="flex flex-wrap items-center justify-between gap-3">
-            <div class="flex items-center gap-2.5">
-              <span class="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-600 to-rose-600 text-white flex items-center justify-center font-bold text-lg shadow-sm">
+        <div class="card p-3.5 sm:p-4 bg-gradient-to-r from-amber-500/10 via-rose-500/10 to-indigo-500/10 border border-amber-500/20 space-y-2">
+          <div class="flex flex-wrap items-center justify-between gap-2.5">
+            <div class="flex items-center gap-2">
+              <span class="w-8 h-8 rounded-lg bg-gradient-to-tr from-amber-600 to-rose-600 text-white flex items-center justify-center font-bold text-sm shadow-2xs">
                 <i class="fa-solid fa-map-location-dot"></i>
               </span>
               <div>
-                <h1 class="text-lg sm:text-xl font-bold text-ink flex items-center gap-2">
+                <h1 class="text-base sm:text-lg font-bold text-ink flex items-center gap-1.5">
                   <span>Biblical Atlas &amp; Timelines • ផែនទី &amp; ប្រវត្តិសាស្ត្រគម្ពីរ</span>
-                  <span class="text-[10px] font-bold uppercase tracking-wider text-amber-600 bg-amber-500/10 px-2 py-0.5 rounded-full">Interactive</span>
+                  <span class="text-[9.5px] font-bold uppercase tracking-wider text-amber-600 bg-amber-500/10 px-2 py-0.5 rounded-full">Interactive</span>
                 </h1>
-                <p class="text-xs text-muted">Explore the geographical journeys, historical eras, and biblical cities from Genesis to Revelation.</p>
+                <p class="text-[11.5px] text-muted">Explore the geographical journeys, historical eras, and biblical cities from Genesis to Revelation.</p>
               </div>
             </div>
           </div>
         </div>
 
         <!-- Timeline Epoch Selector Bar -->
-        <div class="card p-2 bg-surface border border-line flex items-center gap-2 overflow-x-auto no-scrollbar">
+        <div class="card p-1.5 bg-surface border border-line flex items-center gap-1.5 overflow-x-auto no-scrollbar">
           ${ATLAS_ERAS.map(era => `
-            <button class="px-3 py-2 rounded-xl text-xs font-semibold transition shrink-0 text-left border ${state.atlas.selectedEra === era.id ? 'bg-brand text-white border-brand shadow-xs font-bold' : 'bg-surface text-ink border-line hover:bg-raised'}" onclick="window.selectAtlasEra('${era.id}')">
-              <div class="text-[10px] uppercase opacity-80 tracking-wider">${era.era}</div>
-              <div class="font-khmer text-xs whitespace-nowrap">${era.titleKhmer}</div>
+            <button class="px-2.5 py-1.5 rounded-lg text-xs font-semibold transition shrink-0 text-left border ${state.atlas.selectedEra === era.id ? 'bg-brand text-white border-brand shadow-2xs font-bold' : 'bg-surface text-ink border-line hover:bg-raised'}" onclick="window.selectAtlasEra('${era.id}')">
+              <div class="text-[9.5px] uppercase opacity-80 tracking-wider">${era.era}</div>
+              <div class="font-khmer text-[11.5px] whitespace-nowrap">${era.titleKhmer}</div>
             </button>
           `).join('')}
         </div>
 
         <!-- Active Era Display -->
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-3.5 items-start">
           
           <!-- Left 7 cols: Historical Overview & Map Hero -->
-          <div class="lg:col-span-7 card p-5 bg-surface border border-line space-y-4">
-            <div class="relative h-48 sm:h-64 rounded-xl overflow-hidden border border-line shadow-sm group">
+          <div class="lg:col-span-7 card p-4 sm:p-5 bg-surface border border-line space-y-3.5">
+            <div class="relative h-44 sm:h-56 rounded-xl overflow-hidden border border-line shadow-2xs group">
               <img src="${selectedEra.bgImg}" alt="${selectedEra.titleEnglish}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
-              <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent p-4 sm:p-5 flex flex-col justify-end text-white space-y-1">
-                <span class="text-xs font-bold uppercase tracking-wider text-amber-300">${selectedEra.era}</span>
-                <h2 class="text-xl sm:text-2xl font-bold font-khmer">${selectedEra.titleKhmer}</h2>
-                <p class="text-xs text-white/90 font-serif italic">${selectedEra.titleEnglish}</p>
+              <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent p-3.5 sm:p-4 flex flex-col justify-end text-white space-y-0.5">
+                <span class="text-[10.5px] font-bold uppercase tracking-wider text-amber-300">${selectedEra.era}</span>
+                <h2 class="text-base sm:text-lg font-bold font-khmer">${selectedEra.titleKhmer}</h2>
+                <p class="text-[11.5px] text-white/90 font-serif italic">${selectedEra.titleEnglish}</p>
               </div>
             </div>
 
-            <div class="space-y-2">
-              <h3 class="text-xs font-bold uppercase tracking-wider text-muted">Historical &amp; Theological Context</h3>
-              <p class="text-sm font-khmer text-ink leading-relaxed">${selectedEra.summaryKhmer}</p>
-              <p class="text-xs font-serif italic text-muted leading-relaxed">${selectedEra.summaryEnglish}</p>
+            <div class="space-y-1.5">
+              <h3 class="text-[11px] font-bold uppercase tracking-wider text-muted">Historical Context</h3>
+              <p class="text-xs font-khmer text-ink leading-relaxed">${selectedEra.summaryKhmer}</p>
+              <p class="text-[11.5px] font-serif italic text-muted leading-relaxed">${selectedEra.summaryEnglish}</p>
             </div>
 
             <!-- Key Passage Quick Buttons -->
-            <div class="space-y-2 pt-2 border-t border-line">
-              <h4 class="text-xs font-bold uppercase tracking-wider text-ink flex items-center gap-1.5">
-                <i class="fa-solid fa-book-bookmark text-brand"></i>
+            <div class="space-y-1.5 pt-2 border-t border-line">
+              <h4 class="text-[11px] font-bold uppercase tracking-wider text-ink flex items-center gap-1.5">
+                <i class="fa-solid fa-book-bookmark text-brand text-xs"></i>
                 <span>Key Scripture Passages</span>
               </h4>
-              <div class="flex flex-wrap gap-2">
+              <div class="flex flex-wrap gap-1.5">
                 ${selectedEra.keyPassages.map(kp => `
-                  <button class="px-3 py-1.5 rounded-lg bg-raised hover:bg-brand/10 hover:text-brand border border-line text-xs font-semibold text-ink flex items-center gap-1.5 transition" onclick="window.jumpToPlanReading('${kp.book}', ${kp.ch})">
-                    <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                  <button class="px-2.5 py-1 rounded-lg bg-raised hover:bg-brand/10 hover:text-brand border border-line text-xs font-semibold text-ink flex items-center gap-1 transition" onclick="window.jumpToPlanReading('${kp.book}', ${kp.ch})">
+                    <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
                     <span>${kp.label} (${kp.ref})</span>
                   </button>
                 `).join('')}
@@ -3849,23 +3848,23 @@
           </div>
 
           <!-- Right 5 cols: Key Cities & Geographic Landmarks -->
-          <div class="lg:col-span-5 card p-5 bg-surface border border-line space-y-3.5">
-            <div class="flex items-center justify-between border-b border-line pb-2.5">
-              <h3 class="text-xs font-bold uppercase tracking-wider text-ink flex items-center gap-2">
-                <i class="fa-solid fa-location-dot text-rose-500"></i>
-                <span>Geographic Locations &amp; Cities</span>
+          <div class="lg:col-span-5 card p-4 bg-surface border border-line space-y-3">
+            <div class="flex items-center justify-between border-b border-line pb-2">
+              <h3 class="text-[11px] font-bold uppercase tracking-wider text-ink flex items-center gap-1.5">
+                <i class="fa-solid fa-location-dot text-rose-500 text-xs"></i>
+                <span>Locations &amp; Cities</span>
               </h3>
-              <span class="text-[11px] text-muted">${selectedEra.locations.length} Sites</span>
+              <span class="text-[10.5px] text-muted">${selectedEra.locations.length} Sites</span>
             </div>
 
-            <div class="space-y-2.5">
+            <div class="space-y-2">
               ${selectedEra.locations.map(loc => `
-                <div class="p-3 rounded-xl bg-raised/50 border border-line space-y-1">
+                <div class="p-2.5 rounded-lg bg-raised/50 border border-line space-y-0.5">
                   <div class="text-xs font-bold text-ink flex items-center gap-1.5">
-                    <i class="fa-solid fa-map-pin text-brand text-[11px]"></i>
+                    <i class="fa-solid fa-map-pin text-brand text-[10px]"></i>
                     <span>${loc.name}</span>
                   </div>
-                  <p class="text-[11.5px] text-muted leading-relaxed">${loc.note}</p>
+                  <p class="text-[11px] text-muted leading-relaxed">${loc.note}</p>
                 </div>
               `).join('')}
             </div>
@@ -3893,59 +3892,59 @@
     const answeredCount = prayers.filter(p => p.answered).length;
 
     return `
-      <div class="space-y-4">
+      <div class="space-y-3.5">
         
         <!-- Header Banner -->
-        <div class="card p-4 sm:p-5 bg-gradient-to-r from-teal-600/10 via-emerald-600/10 to-cyan-600/10 border border-teal-500/20 space-y-3">
-          <div class="flex flex-wrap items-center justify-between gap-3">
-            <div class="flex items-center gap-2.5">
-              <span class="w-10 h-10 rounded-xl bg-gradient-to-tr from-teal-600 to-emerald-600 text-white flex items-center justify-center font-bold text-lg shadow-sm">
+        <div class="card p-3.5 sm:p-4 bg-gradient-to-r from-teal-600/10 via-emerald-600/10 to-cyan-600/10 border border-teal-500/20 space-y-2.5">
+          <div class="flex flex-wrap items-center justify-between gap-2.5">
+            <div class="flex items-center gap-2">
+              <span class="w-8 h-8 rounded-lg bg-gradient-to-tr from-teal-600 to-emerald-600 text-white flex items-center justify-center font-bold text-sm shadow-2xs">
                 <i class="fa-solid fa-hands-praying"></i>
               </span>
               <div>
-                <h1 class="text-lg sm:text-xl font-bold text-ink flex items-center gap-2">
+                <h1 class="text-base sm:text-lg font-bold text-ink flex items-center gap-1.5">
                   <span>Prayer Journal &amp; Praise Wall • កំណត់ត្រាអធិស្ឋាន</span>
-                  <span class="text-[10px] font-bold uppercase tracking-wider text-teal-600 bg-teal-500/10 px-2 py-0.5 rounded-full">Journal</span>
+                  <span class="text-[9.5px] font-bold uppercase tracking-wider text-teal-600 bg-teal-500/10 px-2 py-0.5 rounded-full">Journal</span>
                 </h1>
-                <p class="text-xs text-muted">Keep track of personal petitions, church intercessions, and God’s answered faithfulness.</p>
+                <p class="text-[11.5px] text-muted">Keep track of personal petitions, church intercessions, and God’s answered faithfulness.</p>
               </div>
             </div>
 
-            <div class="flex items-center gap-2">
-              <button class="btn btn-neutral text-xs shrink-0 !py-1.5 !px-3" onclick="window.startGuidedPrayerTimer()">
-                <i class="fa-solid fa-stopwatch text-teal-600 mr-1.5"></i> 5-Min Guided Prayer
+            <div class="flex items-center gap-1.5">
+              <button class="btn btn-neutral text-xs shrink-0 !py-1 !px-2.5" onclick="window.startGuidedPrayerTimer()">
+                <i class="fa-solid fa-stopwatch text-teal-600 mr-1 text-[11px]"></i> 5-Min Guided
               </button>
-              <button class="btn btn-primary text-xs shrink-0 !py-1.5 !px-3.5 shadow-sm" onclick="window.openNewPrayerModal(true)">
-                <i class="fa-solid fa-plus mr-1"></i> New Prayer
+              <button class="btn btn-primary text-xs shrink-0 !py-1 !px-3 shadow-2xs" onclick="window.openNewPrayerModal(true)">
+                <i class="fa-solid fa-plus mr-1 text-[11px]"></i> New Prayer
               </button>
             </div>
           </div>
 
           <!-- Category Filter Bar -->
-          <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar pt-1 text-xs">
-            <button class="px-3 py-1.5 rounded-lg transition font-semibold shrink-0 ${filter === 'all' ? 'bg-brand text-white shadow-xs' : 'bg-surface text-ink border border-line hover:bg-raised'}" onclick="window.setPrayerFilter('all')">
+          <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar pt-0.5 text-xs">
+            <button class="px-2.5 py-1 rounded-lg transition font-semibold shrink-0 ${filter === 'all' ? 'bg-brand text-white shadow-2xs' : 'bg-surface text-ink border border-line hover:bg-raised'}" onclick="window.setPrayerFilter('all')">
               All (${prayers.length})
             </button>
-            <button class="px-3 py-1.5 rounded-lg transition font-semibold shrink-0 ${filter === 'personal' ? 'bg-brand text-white shadow-xs' : 'bg-surface text-ink border border-line hover:bg-raised'}" onclick="window.setPrayerFilter('personal')">
+            <button class="px-2.5 py-1 rounded-lg transition font-semibold shrink-0 ${filter === 'personal' ? 'bg-brand text-white shadow-2xs' : 'bg-surface text-ink border border-line hover:bg-raised'}" onclick="window.setPrayerFilter('personal')">
               Personal (ផ្ទាល់ខ្លួន)
             </button>
-            <button class="px-3 py-1.5 rounded-lg transition font-semibold shrink-0 ${filter === 'church' ? 'bg-brand text-white shadow-xs' : 'bg-surface text-ink border border-line hover:bg-raised'}" onclick="window.setPrayerFilter('church')">
+            <button class="px-2.5 py-1 rounded-lg transition font-semibold shrink-0 ${filter === 'church' ? 'bg-brand text-white shadow-2xs' : 'bg-surface text-ink border border-line hover:bg-raised'}" onclick="window.setPrayerFilter('church')">
               Church &amp; Ministry
             </button>
-            <button class="px-3 py-1.5 rounded-lg transition font-semibold shrink-0 ${filter === 'family' ? 'bg-brand text-white shadow-xs' : 'bg-surface text-ink border border-line hover:bg-raised'}" onclick="window.setPrayerFilter('family')">
+            <button class="px-2.5 py-1 rounded-lg transition font-semibold shrink-0 ${filter === 'family' ? 'bg-brand text-white shadow-2xs' : 'bg-surface text-ink border border-line hover:bg-raised'}" onclick="window.setPrayerFilter('family')">
               Family &amp; Health
             </button>
-            <button class="px-3 py-1.5 rounded-lg transition font-semibold shrink-0 ${filter === 'answered' ? 'bg-emerald-600 text-white shadow-xs font-bold' : 'bg-emerald-500/10 text-emerald-700 border border-emerald-500/30 hover:bg-emerald-500/20'}" onclick="window.setPrayerFilter('answered')">
-              🎉 Answered Prayers (${answeredCount})
+            <button class="px-2.5 py-1 rounded-lg transition font-semibold shrink-0 ${filter === 'answered' ? 'bg-emerald-600 text-white shadow-2xs font-bold' : 'bg-emerald-500/10 text-emerald-700 border border-emerald-500/30 hover:bg-emerald-500/20'}" onclick="window.setPrayerFilter('answered')">
+              🎉 Answered (${answeredCount})
             </button>
           </div>
         </div>
 
         <!-- Add New Prayer Card Form -->
-        <div id="new-prayer-form" class="card p-4 sm:p-5 bg-surface border border-line space-y-3 hidden">
+        <div id="new-prayer-form" class="card p-4 bg-surface border border-line space-y-2.5 hidden">
           <div class="flex items-center justify-between border-b border-line pb-2">
-            <h3 class="text-xs font-bold uppercase tracking-wider text-ink flex items-center gap-2">
-              <i class="fa-solid fa-pen text-brand"></i>
+            <h3 class="text-xs font-bold uppercase tracking-wider text-ink flex items-center gap-1.5">
+              <i class="fa-solid fa-pen text-brand text-xs"></i>
               <span>Add Prayer Request • សរសេរសេចក្តីអធិស្ឋាន</span>
             </h3>
             <button class="text-muted hover:text-ink text-xs font-bold" onclick="window.openNewPrayerModal(false)">✕ Cancel</button>
@@ -4127,12 +4126,12 @@
     });
 
     $('#btn-font-dec')?.addEventListener('click', () => {
-      state.fontSize = Math.max(14, state.fontSize - 2);
+      state.fontSize = Math.max(13, state.fontSize - 1);
       render();
     });
 
     $('#btn-font-inc')?.addEventListener('click', () => {
-      state.fontSize = Math.min(26, state.fontSize + 2);
+      state.fontSize = Math.min(20, state.fontSize + 1);
       render();
     });
 
@@ -4271,10 +4270,10 @@
       // 5. Header Branding Watermark
       if (d.showBranding) {
         ctx.fillStyle = d.accentColor;
-        ctx.font = 'bold 22px Inter, sans-serif';
+        ctx.font = 'bold 15px Inter, sans-serif';
         ctx.textAlign = 'center';
         ctx.shadowColor = 'rgba(0,0,0,0.9)';
-        ctx.shadowBlur = 8;
+        ctx.shadowBlur = 6;
         ctx.fillText(d.brandingText || 'FAITH IN • ព្រះគម្ពីរ', W / 2, H * 0.08);
       }
 
@@ -4284,9 +4283,9 @@
       ctx.textAlign = d.textAlign;
 
       // Base Khmer Font Size
-      let kmFontSize = Math.round(38 * (d.fontSizeScale || 1.0));
-      if (d.textKhmer.length > 200) kmFontSize = Math.round(30 * (d.fontSizeScale || 1.0));
-      else if (d.textKhmer.length > 120) kmFontSize = Math.round(34 * (d.fontSizeScale || 1.0));
+      let kmFontSize = Math.round(28 * (d.fontSizeScale || 1.0));
+      if (d.textKhmer.length > 180) kmFontSize = Math.round(22 * (d.fontSizeScale || 1.0));
+      else if (d.textKhmer.length > 90) kmFontSize = Math.round(25 * (d.fontSizeScale || 1.0));
 
       const kmLineHeight = Math.round(kmFontSize * 1.6);
       
@@ -4295,7 +4294,7 @@
       const kmLines = getWrappedLines(ctx, d.textKhmer, maxTextW);
 
       let enLines = [];
-      let enFontSize = Math.round(22 * (d.fontSizeScale || 1.0));
+      let enFontSize = Math.round(16 * (d.fontSizeScale || 1.0));
       let enLineHeight = Math.round(enFontSize * 1.5);
       if (d.textEnglish) {
         ctx.font = `italic ${enFontSize}px "${d.fontEnglish || 'Lora'}", serif`;
@@ -4303,65 +4302,65 @@
       }
 
       const totalContentHeight = (kmLines.length * kmLineHeight) + 
-        (d.textEnglish ? (enLines.length * enLineHeight + 40) : 0) + 
-        80;
+        (d.textEnglish ? (enLines.length * enLineHeight + 30) : 0) + 
+        60;
 
-      let startY = (H / 2) - (totalContentHeight / 2) + 20;
-      if (d.aspectRatio === '9:16') startY = Math.max(H * 0.28, startY);
+      let startY = (H / 2) - (totalContentHeight / 2) + 15;
+      if (d.aspectRatio === '9:16') startY = Math.max(H * 0.32, startY);
 
       // 7. Draw Khmer Text
       ctx.fillStyle = d.textColor || '#ffffff';
       ctx.font = `bold ${kmFontSize}px "${d.fontFamily}", sans-serif`;
       ctx.shadowColor = 'rgba(0, 0, 0, 0.95)';
-      ctx.shadowBlur = 14;
+      ctx.shadowBlur = 12;
 
       for (let i = 0; i < kmLines.length; i++) {
         ctx.fillText(kmLines[i], alignX, startY + (i * kmLineHeight));
       }
 
-      let curY = startY + (kmLines.length * kmLineHeight) + 15;
+      let curY = startY + (kmLines.length * kmLineHeight) + 12;
 
       // 8. Draw English Verse (if provided)
       if (d.textEnglish && enLines.length > 0) {
         ctx.fillStyle = 'rgba(255, 255, 255, 0.88)';
         ctx.font = `italic ${enFontSize}px "${d.fontEnglish || 'Lora'}", serif`;
-        ctx.shadowBlur = 10;
+        ctx.shadowBlur = 8;
         for (let i = 0; i < enLines.length; i++) {
           ctx.fillText(enLines[i], alignX, curY + (i * enLineHeight));
         }
-        curY += (enLines.length * enLineHeight) + 15;
+        curY += (enLines.length * enLineHeight) + 12;
       }
 
       // 9. Draw Reference Label & Elegant Divider
-      curY += 20;
+      curY += 16;
       
       // Divider
       ctx.strokeStyle = d.accentColor;
-      ctx.lineWidth = 1.5;
-      ctx.shadowBlur = 6;
+      ctx.lineWidth = 1.2;
+      ctx.shadowBlur = 5;
       ctx.shadowColor = 'rgba(0,0,0,0.8)';
       
       if (d.textAlign === 'center') {
-        const divW = 80;
+        const divW = 60;
         ctx.beginPath();
         ctx.moveTo((W / 2) - divW, curY);
         ctx.lineTo((W / 2) + divW, curY);
         ctx.stroke();
 
         ctx.fillStyle = d.accentColor;
-        ctx.font = '14px sans-serif';
+        ctx.font = '12px sans-serif';
         ctx.textAlign = 'center';
-        ctx.fillText('❖', W / 2, curY + 5);
+        ctx.fillText('❖', W / 2, curY + 4);
       }
 
-      curY += 35;
+      curY += 28;
 
       // Reference Label
       ctx.fillStyle = d.accentColor;
-      ctx.font = `bold ${Math.round(24 * (d.fontSizeScale || 1.0))}px Inter, sans-serif`;
+      ctx.font = `bold ${Math.round(18 * (d.fontSizeScale || 1.0))}px Inter, sans-serif`;
       ctx.textAlign = d.textAlign;
       ctx.shadowColor = 'rgba(0, 0, 0, 0.9)';
-      ctx.shadowBlur = 12;
+      ctx.shadowBlur = 10;
       ctx.fillText(d.ref, alignX, curY);
     };
 
