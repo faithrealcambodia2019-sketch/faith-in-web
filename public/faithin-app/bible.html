@@ -319,9 +319,26 @@
         <button class="side-link w-full text-left flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-ink hover:bg-raised whitespace-nowrap" data-side-tool="concordance" onclick="window.switchTool('concordance')">
           <span class="flex items-center gap-2 min-w-0 truncate"><i class="fa-solid fa-magnifying-glass text-emerald-500 w-4 text-center shrink-0"></i> <span class="truncate">Word Study</span></span>
         </button>
+        <button class="side-link w-full text-left flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-ink hover:bg-raised whitespace-nowrap" data-side-tool="resources" onclick="window.switchTool('resources')">
+          <span class="flex items-center gap-2 min-w-0 truncate"><i class="fa-solid fa-graduation-cap text-cyan-600 w-4 text-center shrink-0"></i> <span class="truncate">Study Resources</span></span>
+          <span class="text-[9px] font-bold text-cyan-600 bg-cyan-500/10 px-1.5 py-0.5 rounded-full shrink-0">NEW</span>
+        </button>
       </div>
 
-      <!-- Group 2: Creative & Growth -->
+      <!-- Group 2: History & Theology -->
+      <div class="space-y-0.5 pt-1 border-t border-line">
+        <h3 class="text-[10.5px] font-bold uppercase tracking-wider text-muted px-2 py-0.5 whitespace-nowrap">History &amp; Theology</h3>
+        <button class="side-link w-full text-left flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-ink hover:bg-raised whitespace-nowrap" data-side-tool="history" onclick="window.switchTool('history')">
+          <span class="flex items-center gap-2 min-w-0 truncate"><i class="fa-solid fa-church text-amber-600 w-4 text-center shrink-0"></i> <span class="truncate">Church History</span></span>
+          <span class="text-[9px] font-bold text-amber-600 bg-amber-500/10 px-1.5 py-0.5 rounded-full shrink-0">NEW</span>
+        </button>
+        <button class="side-link w-full text-left flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-ink hover:bg-raised whitespace-nowrap" data-side-tool="atlas" onclick="window.switchTool('atlas')">
+          <span class="flex items-center gap-2 min-w-0 truncate"><i class="fa-solid fa-map-location-dot text-rose-500 w-4 text-center shrink-0"></i> <span class="truncate">Atlas &amp; Maps</span></span>
+          <span class="text-[9px] font-bold text-rose-600 bg-rose-500/10 px-1.5 py-0.5 rounded-full shrink-0">NEW</span>
+        </button>
+      </div>
+
+      <!-- Group 3: Creative & Growth -->
       <div class="space-y-0.5 pt-1 border-t border-line">
         <h3 class="text-[10.5px] font-bold uppercase tracking-wider text-muted px-2 py-0.5 whitespace-nowrap">Creative &amp; Growth</h3>
         <button class="side-link w-full text-left flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-ink hover:bg-raised whitespace-nowrap" data-side-tool="designer" onclick="window.switchTool('designer')">
@@ -338,13 +355,9 @@
         </button>
       </div>
 
-      <!-- Group 3: Devotional & Life -->
+      <!-- Group 4: Devotional & Life -->
       <div class="space-y-0.5 pt-1 border-t border-line">
         <h3 class="text-[10.5px] font-bold uppercase tracking-wider text-muted px-2 py-0.5 whitespace-nowrap">Devotional &amp; Life</h3>
-        <button class="side-link w-full text-left flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-ink hover:bg-raised whitespace-nowrap" data-side-tool="atlas" onclick="window.switchTool('atlas')">
-          <span class="flex items-center gap-2 min-w-0 truncate"><i class="fa-solid fa-map-location-dot text-amber-600 w-4 text-center shrink-0"></i> <span class="truncate">Atlas &amp; Maps</span></span>
-          <span class="text-[9px] font-bold text-amber-600 bg-amber-500/10 px-1.5 py-0.5 rounded-full shrink-0">NEW</span>
-        </button>
         <button class="side-link w-full text-left flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-ink hover:bg-raised whitespace-nowrap" data-side-tool="prayer" onclick="window.switchTool('prayer')">
           <span class="flex items-center gap-2 min-w-0 truncate"><i class="fa-solid fa-hands-praying text-teal-600 w-4 text-center shrink-0"></i> <span class="truncate">Prayer Journal</span></span>
           <span class="text-[9px] font-bold text-teal-600 bg-teal-500/10 px-1.5 py-0.5 rounded-full shrink-0">NEW</span>
@@ -372,6 +385,15 @@
       <button class="bible-tab-btn shrink-0" data-tab="parallel" data-side-tool="parallel" onclick="window.switchTool('parallel')">
         <i class="fa-solid fa-columns-3 text-indigo-500"></i><span>Parallel</span>
       </button>
+      <button class="bible-tab-btn shrink-0" data-tab="concordance" data-side-tool="concordance" onclick="window.switchTool('concordance')">
+        <i class="fa-solid fa-magnifying-glass text-emerald-500"></i><span>Word Study</span>
+      </button>
+      <button class="bible-tab-btn shrink-0" data-tab="resources" data-side-tool="resources" onclick="window.switchTool('resources')">
+        <i class="fa-solid fa-graduation-cap text-cyan-600"></i><span>Resources</span>
+      </button>
+      <button class="bible-tab-btn shrink-0" data-tab="history" data-side-tool="history" onclick="window.switchTool('history')">
+        <i class="fa-solid fa-church text-amber-600"></i><span>Church History</span>
+      </button>
       <button class="bible-tab-btn shrink-0" data-tab="designer" data-side-tool="designer" onclick="window.switchTool('designer')">
         <i class="fa-solid fa-palette text-purple-500"></i><span>Card Studio</span>
       </button>
@@ -381,11 +403,8 @@
       <button class="bible-tab-btn shrink-0" data-tab="typing" data-side-tool="typing" onclick="window.switchTool('typing')">
         <i class="fa-solid fa-brain text-rose-500"></i><span>Memory (CPTI)</span>
       </button>
-      <button class="bible-tab-btn shrink-0" data-tab="concordance" data-side-tool="concordance" onclick="window.switchTool('concordance')">
-        <i class="fa-solid fa-magnifying-glass text-emerald-500"></i><span>Word Study</span>
-      </button>
       <button class="bible-tab-btn shrink-0" data-tab="atlas" data-side-tool="atlas" onclick="window.switchTool('atlas')">
-        <i class="fa-solid fa-map-location-dot text-amber-600"></i><span>Atlas &amp; Maps</span>
+        <i class="fa-solid fa-map-location-dot text-rose-500"></i><span>Atlas &amp; Maps</span>
       </button>
       <button class="bible-tab-btn shrink-0" data-tab="prayer" data-side-tool="prayer" onclick="window.switchTool('prayer')">
         <i class="fa-solid fa-hands-praying text-teal-600"></i><span>Prayer Journal</span>
@@ -536,6 +555,19 @@
     // Biblical Atlas
     atlas: {
       selectedEra: 'jesus'
+    },
+
+    // Church History
+    history: {
+      selectedEra: 'early-church',
+      filter: 'all'
+    },
+
+    // Study Resources & Library Hub
+    resources: {
+      category: 'all',
+      searchQuery: '',
+      selectedId: 'ibs-method'
     },
 
     // Reader Customization & Audio Engine
@@ -919,6 +951,279 @@
       date: '2026-08-25',
       answered: false,
       answeredNote: ''
+    }
+  ];
+
+  // ─── Church History Timeline Dataset (ប្រវត្តិសាស្ត្រក្រុមជំនុំ) ───
+  const CHURCH_HISTORY_DATA = [
+    {
+      id: 'early-church',
+      era: '33 – 312 AD',
+      titleKhmer: 'ក្រុមជំនុំដំបូង & ពួកសាវក',
+      titleEnglish: 'Early Church & Apostolic Fathers',
+      badge: 'Apostolic Age',
+      bgImg: 'https://images.unsplash.com/photo-1548625361-16eb142b4d4b?auto=format&fit=crop&w=1200&q=80',
+      summaryKhmer: 'ចាប់ផ្តើមពីថ្ងៃបុណ្យទី៥០ (Pentecost) ដំណឹងល្អបានរីករាលដាលយ៉ាងឆាប់រហ័សទូទាំងចក្រភពរ៉ូម ទោះបីជាត្រូវឆ្លងកាត់ការបៀតបៀនយ៉ាងធ្ងន់ធ្ងរពីស្តេចនេរ៉ូ និងឌីអូគ្លីធានក៏ដោយ។ ពួកអ្នកដឹកនាំជំនាន់ដំបូង (ដូចជា ប៉ូលីកាប, យូស្ទីន ម៉ាទីរ, អ៊ីរេណេស) បានឈរយ៉ាងរឹងមាំក្នុងការការពារសេចក្តីពិតនៃដំណឹងល្អ។',
+      summaryEnglish: 'From the Day of Pentecost, the Gospel spread rapidly throughout the Roman Empire despite severe persecutions. Apostolic Fathers faithfully preserved biblical doctrine and gave their lives as martyrs.',
+      keyQuote: {
+        km: '«ឈាមនៃពួកទុក្ករបុគ្គល គឺជាគ្រាប់ពូជនៃក្រុមជំនុំ»',
+        en: '“The blood of the martyrs is the seed of the Church.”',
+        author: 'Tertullian (១៦០–២២៥ គ.ស.)'
+      },
+      figures: [
+        { name: 'Polycarp of Smyrna (ប៉ូលីកាប)', role: 'Disciple of Apostle John & Bishop', detail: 'Martyred at age 86: "Eighty-six years have I served Christ, and He never did me wrong. How can I blaspheme my King and Savior?"' },
+        { name: 'Justin Martyr (យូស្ទីន ម៉ាទីរ)', role: 'Early Christian Apologist', detail: 'Defended the truth and rationality of Christian faith before the Roman Emperor; martyred for Christ in 165 AD.' },
+        { name: 'Irenaeus of Lyons (អ៊ីរេណេស)', role: 'Bishop & Defender of Orthodoxy', detail: 'Authored "Against Heresies", affirming the four canonical Gospels and the unity of God’s covenant.' }
+      ],
+      events: [
+        { year: '33 AD', title: 'Day of Pentecost', desc: 'Outpouring of the Holy Spirit and birth of the New Testament Church in Jerusalem (Acts 2).' },
+        { year: '64–67 AD', title: 'Martyrdom of Peter & Paul', desc: 'Apostles Peter and Paul martyred in Rome under Emperor Nero.' },
+        { year: '303–311 AD', title: 'The Great Persecution', desc: 'Diocletian’s empire-wide persecution failing to stop the explosive growth of Christians.' }
+      ],
+      keyScripture: { ref: 'Acts 2:42-47', label: 'Birth of the Early Church (កិច្ចការ ២:៤២-៤៧)', book: 'Acts', ch: 2 }
+    },
+    {
+      id: 'councils-creeds',
+      era: '313 – 590 AD',
+      titleKhmer: 'ក្រុមប្រឹក្សាអេគូមេនិក & គោលលទ្ធិគ្រីស្ទ',
+      titleEnglish: 'Imperial Church & Ecumenical Councils',
+      badge: 'Great Councils',
+      bgImg: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=1200&q=80',
+      summaryKhmer: 'បន្ទាប់ពីក្រឹត្យក្រមក្រុងមីឡាន (Edict of Milan 313 AD) គ្រីស្ទសាសនាទទួលបានសេរីភាព។ ក្រុមជំនុំបានប្រជុំក្រុមប្រឹក្សាធំៗ (នីសៀ ៣២៥ គ.ស. និងខាល់សេដូន ៤៥១ គ.ស.) ដើម្បីកំណត់យ៉ាងច្បាស់លាស់នូវគោលលទ្ធិព្រះត្រីឯក និងព្រះលក្ខណៈទាំងពីររបស់ព្រះគ្រីស្ទ (ព្រះពិត & មនុស្សពិត)។',
+      summaryEnglish: 'Christianity was legalized, leading to monumental Ecumenical Councils (Nicaea 325 AD, Chalcedon 451 AD) that formulated historic creeds articulating the Trinity and Christ’s dual natures (Fully God, Fully Man).',
+      keyQuote: {
+        km: '«ព្រះបុត្រាទ្រង់បានត្រឡប់ជាមនុស្ស ដើម្បីឲ្យយើងបានស្គាល់ព្រះ»',
+        en: '“The Son of God became man that we might become partakers of the divine nature.”',
+        author: 'Athanasius of Alexandria (២៩៦–៣៧៣ គ.ស.)'
+      },
+      figures: [
+        { name: 'Athanasius of Alexandria (អាថាណាស៊ីយូស)', role: 'Champion of Nicaea & Bishop', detail: 'Stood "Athanasius contra mundum" against Arianism to affirm that Jesus is of the exact same divine essence (Homoousios) as the Father.' },
+        { name: 'Augustine of Hippo (អូស្ទីន)', role: 'Theologian & Bishop', detail: 'Authored "Confessions" and "The City of God", articulating the biblical doctrines of sovereign grace and original sin.' },
+        { name: 'John Chrysostom (យ៉ូហាន គ្រីសូស្តូម)', role: 'Archbishop of Constantinople', detail: 'Known as the "Golden-Mouthed" preacher for his expository sermons and fearless call for biblical righteousness.' }
+      ],
+      events: [
+        { year: '313 AD', title: 'Edict of Milan', desc: 'Emperor Constantine grants complete religious liberty to Christians across the Roman Empire.' },
+        { year: '325 AD', title: 'Council of Nicaea', desc: 'Formulation of the Nicene Creed affirming that Jesus Christ is True God of True God.' },
+        { year: '451 AD', title: 'Council of Chalcedon', desc: 'Defined Jesus Christ as one Person in two natures (fully God, fully Man) without confusion or division.' }
+      ],
+      keyScripture: { ref: 'Colossians 1:15-20', label: 'The Supremacy of Christ (កូឡូស ១:១៥-២០)', book: 'Colossians', ch: 1 }
+    },
+    {
+      id: 'medieval-monastic',
+      era: '590 – 1517 AD',
+      titleKhmer: 'យុគកណ្តាល & ការថែរក្សាព្រះបន្ទូល',
+      titleEnglish: 'Medieval Church & Scriptural Preservation',
+      badge: 'Preservation',
+      bgImg: 'https://images.unsplash.com/photo-1519817650390-64a93db51149?auto=format&fit=crop&w=1200&q=80',
+      summaryKhmer: 'នៅក្នុងយុគកណ្តាល វត្តអារាម និងអ្នកចម្លងគម្ពីរបានថែរក្សាព្រះគម្ពីរយ៉ាងស្មោះត្រង់។ ទន្ទឹមនឹងនេះ ពួកអ្នកត្រួសត្រាយផ្លូវនៃការកែទម្រង់ដូចជា ចន វិគ្លីហ្វ និង យ៉ាន ហ៊ូស បានចាប់ផ្តើមបកប្រែព្រះគម្ពីរជាភាសាប្រជាជន និងអំពាវនាវឲ្យវិលត្រឡប់មករកព្រះបន្ទូលបរិសុទ្ធវិញ។',
+      summaryEnglish: 'Monastic scribes faithfully copied and preserved Biblical manuscripts. "Morning Stars of the Reformation" like John Wycliffe and Jan Hus championed vernacular Scripture and supreme biblical authority.',
+      keyQuote: {
+        km: '«សេចក្តីពិតនឹងឈ្នះលើគ្រប់ឧបសគ្គ និងការកុហក»',
+        en: '“Truth prevails over all things.”',
+        author: 'Jan Hus (១៣៦៩–១៤១៥ គ.ស.)'
+      },
+      figures: [
+        { name: 'John Wycliffe (ចន វិគ្លីហ្វ)', role: 'Morning Star of the Reformation', detail: 'Oxford scholar who produced the first complete English Bible from Latin in 1382, declaring the Bible as the supreme authority.' },
+        { name: 'Jan Hus (យ៉ាន ហ៊ូស)', role: 'Czech Preacher & Reformer', detail: 'Preached in Prague against corruption; burned at the stake at Council of Constance in 1415 for holding Scripture above papal authority.' },
+        { name: 'Anselm of Canterbury (អានសែល)', role: 'Archbishop & Theologian', detail: 'Developed the Satisfaction Theory of Atonement in "Cur Deus Homo" (Why God Became Man).' }
+      ],
+      events: [
+        { year: '1054 AD', title: 'The Great East-West Schism', desc: 'Mutual split between Western Roman Catholicism and Eastern Orthodoxy.' },
+        { year: '1382 AD', title: 'Wycliffe’s Bible', desc: 'First complete translation of the Bible into English from the Vulgate.' },
+        { year: '1453 AD', title: 'Gutenberg Printing Press', desc: 'Invention of movable type printing press, allowing mass distribution of the Holy Bible.' }
+      ],
+      keyScripture: { ref: 'Psalm 119:105', label: 'God’s Eternal Word (ទំនុកដំកើង ១១៩:១០៥)', book: 'Psalms', ch: 119 }
+    },
+    {
+      id: 'reformation',
+      era: '1517 – 1648 AD',
+      titleKhmer: 'ការកែទម្រង់ជំនឿប្រូតេស្តង់',
+      titleEnglish: 'The Protestant Reformation',
+      badge: '5 Solas',
+      bgImg: 'https://images.unsplash.com/photo-1461360370896-922624d12aa1?auto=format&fit=crop&w=1200&q=80',
+      summaryKhmer: 'នៅឆ្នាំ ១៥១៧ ម៉ាទីន លូសឺរ បានបិទប្រកាស ៩៥ ប្រការនៅក្រុង Wittenberg ដែលជាការចាប់ផ្តើមនៃការកែទម្រង់ប្រូតេស្តង់។ ដំណឹងល្អនៃសេចក្តីសង្គ្រោះដោយព្រះគុណតាមរយៈជំនឿតែមួយគត់ (Sola Fide, Sola Gratia) និងសិទ្ធិអំណាចនៃព្រះបន្ទូល (Sola Scriptura) ត្រូវបានស្តារឡើងវិញ។',
+      summaryEnglish: 'Sparked by Martin Luther’s 95 Theses in 1517, the Reformation recovered the biblical Gospel of justification by grace alone through faith alone in Christ alone, anchored on Scripture alone.',
+      keyQuote: {
+        km: '«ខ្ញុំឈរនៅទីនេះ ខ្ញុំមិនអាចធ្វើផ្សេងពីនេះបានឡើយ សូមព្រះទ្រង់ជួយទូលបង្គំផង»',
+        en: '“Here I stand, I can do no other, so help me God.”',
+        author: 'Martin Luther (១៤៨៣–១៥៤៦ គ.ស.)'
+      },
+      figures: [
+        { name: 'Martin Luther (ម៉ាទីន លូសឺរ)', role: 'German Reformer & Scholar', detail: 'Recovered the truth of Justification by Faith Alone (Romans 1:17); translated the Bible into German.' },
+        { name: 'John Calvin (ចន កាល់វីន)', role: 'Geneva Pastor & Reformer', detail: 'Authored the "Institutes of the Christian Religion", providing a comprehensive biblical exposition of the sovereignty and grace of God.' },
+        { name: 'William Tyndale (វីលៀម ធីនដេល)', role: 'English Bible Translator & Martyr', detail: 'Translated the NT directly from original Greek into English (1526); martyred in 1536 praying: "Lord, open the King of England’s eyes!"' }
+      ],
+      events: [
+        { year: '1517 AD', title: '95 Theses at Wittenberg', desc: 'Martin Luther posts 95 theses calling the Church back to biblical repentance and faith.' },
+        { year: '1521 AD', title: 'Diet of Worms', desc: 'Luther defends his writings before Emperor Charles V, declaring his conscience captive to God’s Word.' },
+        { year: '1611 AD', title: 'King James Bible Published', desc: 'Publication of the landmark Authorized King James Version of the Holy Bible.' },
+        { year: '1646 AD', title: 'Westminster Confession of Faith', desc: 'Historic confessional standard outlining Reformed biblical doctrines.' }
+      ],
+      keyScripture: { ref: 'Romans 1:16-17', label: 'Justification by Faith (រ៉ូម ១:១៦-១៧)', book: 'Romans', ch: 1 }
+    },
+    {
+      id: 'missions-awakenings',
+      era: '1648 – 1900 AD',
+      titleKhmer: 'ការភ្ញាក់រឭកធំ & បេសកកម្មពិភពលោក',
+      titleEnglish: 'Great Awakenings & Global Missions',
+      badge: 'Global Missions',
+      bgImg: 'https://images.unsplash.com/photo-1509021436665-8f07dbf5bf1d?auto=format&fit=crop&w=1200&q=80',
+      summaryKhmer: 'យុគសម័យនៃការភ្ញាក់រឭកខាងវិញ្ញាណធំៗនៅអឺរ៉ុប និងអាមេរិក (George Whitefield, John Wesley, Jonathan Edwards) បាននាំទៅរកការបញ្ជូនបេសកជនទៅកាន់គ្រប់ទ្វីប ដូចជា វីលៀម ខារី (ឥណ្ឌា), ហ៊ាត់សុន ថេឡ័រ (ចិន) និង ឆាលស៍ ស្ពើជិន។',
+      summaryEnglish: 'Spiritual awakenings ignited the Modern Missionary Movement. Pioneers like William Carey, Hudson Taylor, and Adoniram Judson carried the Gospel across Asia and the world.',
+      keyQuote: {
+        km: '«ចូររំពឹងគិតការដ៏ធំពីព្រះ ហើយខិតខំធ្វើការដ៏ធំសម្រាប់ព្រះ»',
+        en: '“Expect great things from God; attempt great things for God.”',
+        author: 'William Carey (១៧៦១–១៨៣៤ គ.ស.)'
+      },
+      figures: [
+        { name: 'William Carey (វីលៀម ខារី)', role: 'Father of Modern Missions', detail: 'Missionary to India for 41 years; translated the Bible into Bengali, Sanskrit, and numerous Indian languages.' },
+        { name: 'Hudson Taylor (ហ៊ាត់សុន ថេឡ័រ)', role: 'Founder of China Inland Mission', detail: 'Brought the Gospel to the interior provinces of China, relying entirely on faith and prayer.' },
+        { name: 'Charles H. Spurgeon (ឆាលស៍ ស្ពើជិន)', role: 'Prince of Preachers', detail: 'Preached to millions in London Metropolitan Tabernacle with Christ-centered expository power.' }
+      ],
+      events: [
+        { year: '1730s–1740s', title: 'First Great Awakening', desc: 'Powerful revival across Britain and American colonies led by Edwards and Whitefield.' },
+        { year: '1792 AD', title: 'Modern Missions Movement', desc: 'Founding of Baptist Missionary Society by William Carey, launching global missions.' },
+        { year: '1865 AD', title: 'China Inland Mission Founded', desc: 'Hudson Taylor launches faith-based pioneer missionary work across China.' }
+      ],
+      keyScripture: { ref: 'Matthew 28:18-20', label: 'The Great Commission (ម៉ាថាយ ២៨:១៨-២០)', book: 'Matthew', ch: 28 }
+    },
+    {
+      id: 'cambodia-heritage',
+      era: '1900 AD – បច្ចុប្បន្ន',
+      titleKhmer: 'ដំណឹងល្អ & ក្រុមជំនុំនៅកម្ពុជា',
+      titleEnglish: 'The Gospel & Church in Cambodia',
+      badge: 'Cambodia Heritage',
+      bgImg: 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=1200&q=80',
+      summaryKhmer: 'នៅឆ្នាំ ១៩២៣ បេសកជនដំបូងនៃអង្គការ C&MA បានមកដល់ប្រទេសកម្ពុជា។ លោក អាធើរ ហាមម៉ុន (Arthur Hammond) បានចំណាយពេលជាច្រើនទសវត្សរ៍ដើម្បីបកប្រែព្រះគម្ពីរជាភាសាខ្មែរពេញលេញដំបូង (ចេញផ្សាយនៅឆ្នាំ ១៩៥៤)។ ទោះបីជាត្រូវឆ្លងកាត់របបខ្មែរក្រហម (១៩៧៥–១៩៧៩) ព្រះជាម្ចាស់បានការពារក្រុមជំនុំ ហើយនៅឆ្នាំ ២០២៣ កម្ពុជាបានប្រារព្ធខួប ១០០ ឆ្នាំនៃដំណឹងល្អ។',
+      summaryEnglish: 'In 1923, C&MA missionaries brought the Gospel to Cambodia. Rev. Arthur Hammond translated the landmark 1954 Khmer Holy Bible. Surviving the Khmer Rouge trials, the Cambodian Church stands vibrant, celebrating 100 years of the Gospel (1923–2023).',
+      keyQuote: {
+        km: '«ព្រះបន្ទូលនៃព្រះគម្ពីរ បានចាក់ឫសយ៉ាងរឹងមាំក្នុងទឹកដីកម្ពុជា ហើយនឹងនៅស្ថិតស្ថេរជានិច្ច»',
+        en: '“The Word of God is firmly rooted in Cambodian soil and shall endure forever.”',
+        author: 'Rev. Arthur Hammond (បេសកជន C&MA និងអ្នកបកប្រែព្រះគម្ពីរខ្មែរ ១៩៥៤)'
+      },
+      figures: [
+        { name: 'Rev. Arthur & Esther Hammond (លោក អាធើរ ហាមម៉ុន)', role: 'C&MA Pioneer & Khmer Bible Translator', detail: 'Arrived in Cambodia in 1923. Dedicated over 30 years to translating both Old and New Testaments into the classic 1954 Khmer Bible.' },
+        { name: 'Pastor Taing Chhork & Early Leaders', role: 'First Generation Cambodian Pastors', detail: 'Faithful leaders who established indigenous Khmer congregations and pastoral training in Phnom Penh and Battambang.' },
+        { name: 'Cambodian Faithful Martyrs & Survivors', role: 'Witnesses of the Khmer Rouge Era', detail: 'Endured extreme persecution (1975–1979); kept their faith underground, praying in secret and rebuilding the church post-1990.' }
+      ],
+      events: [
+        { year: '1923', title: 'Arrival of C&MA Missionaries', desc: 'First Protestant missionaries arrive in Battambang and Phnom Penh.' },
+        { year: '1954', title: 'First Complete Khmer Bible (១៩៥៤)', desc: 'Arthur Hammond completes the first full translation of the Khmer Holy Bible.' },
+        { year: '1975–1979', title: 'Khmer Rouge Persecution', desc: 'Church buildings destroyed, yet the Church of Christ survives underground through prayer.' },
+        { year: '1990–1995', title: 'Church Reopening & Billy Graham Crusade', desc: 'Churches officially reopen in Cambodia; Billy Graham Crusade held in Phnom Penh in 1995.' },
+        { year: '2023', title: 'Centennial Celebration (១០០ ឆ្នាំនៃដំណឹងល្អ)', desc: 'Over 15,000 Christians gather at Koh Pich, Phnom Penh to celebrate 100 years of the Gospel in Cambodia.' }
+      ],
+      keyScripture: { ref: 'Isaiah 52:7', label: 'Feet that Bring Good Tidings (អេសាយ ៥២:៧)', book: 'Isaiah', ch: 52 }
+    }
+  ];
+
+  // ─── Study Resources & Library Hub Dataset (ធនធានសិក្សាព្រះគម្ពីរ) ───
+  const STUDY_RESOURCES_DATA = [
+    {
+      id: 'ibs-method',
+      category: 'methods',
+      titleKhmer: 'វិធីសាស្ត្រសិក្សាគម្ពីរដោយខ្លួនឯង (Inductive Bible Study)',
+      titleEnglish: 'Inductive Bible Study Method (O.I.A.)',
+      badge: 'Hermeneutics Guide',
+      icon: 'fa-magnifying-glass-chart',
+      color: 'from-blue-600 to-cyan-600',
+      descKhmer: 'វិធីសាស្ត្រ ៣ ជំហានដ៏មានប្រសិទ្ធភាពក្នុងការជីកកកាយព្រះបន្ទូល៖ ការសង្កេត ការបកស្រាយ និងការអនុវត្តជាក់ស្តែង។',
+      descEnglish: 'The classic 3-step framework for personal Bible study: Observation, Interpretation, and Application.',
+      sections: [
+        {
+          title: '១. ការសង្កេត (Observation) — តើអត្ថបទនេះចែងអ្វីខ្លះ?',
+          content: '• សួរសំណួរ៖ អ្នកណា (Who)? អ្វីខ្លះ (What)? ទីណា (Where)? ពេលណា (When)? ហេតុអ្វី (Why)? យ៉ាងដូចម្តេច (How)?\n• ស្វែងរកពាក្យគន្លឹះដដែលៗ ពាក្យប្រៀបធៀប និងពាក្យតភ្ជាប់ («ដ្បិត», «ប៉ុន្តែ», «ហេតុនោះបានជា»)\n• កត់សម្គាល់បរិបទប្រវត្តិសាស្ត្រ និងអ្នកទទួលសំបុត្រដំបូង។'
+        },
+        {
+          title: '២. ការបកស្រាយ (Interpretation) — តើអត្ថបទនេះមានន័យដូចម្តេច?',
+          content: '• អនុញ្ញាតឲ្យព្រះគម្ពីរបកស្រាយព្រះគម្ពីរ (Scripture interprets Scripture)\n• ពិចារណាប្រភេទអត្ថបទ (កាព្យ, ប្រវត្តិសាស្ត្រ, សំបុត្រ, ទំនាយ)\n• ស្វែងយល់ពីបំណងចិត្តរបស់អ្នកនិពន្ធដើម និងអត្ថន័យចម្បងដែលមិនប្រែប្រួលតាមកាលវេលា។'
+        },
+        {
+          title: '៣. ការអនុវត្ត (Application) — តើខ្ញុំត្រូវរស់នៅតាមយ៉ាងដូចម្តេច?',
+          content: 'ប្រើរូបមន្ត S.P.E.C.K. ក្នុងការអនុវត្ត៖\n• S (Sin to confess): តើមានបាបអ្វីដែលខ្ញុំត្រូវលន់តួ?\n• P (Promise to claim): តើមានការសន្យាអ្វីរបស់ព្រះដែលខ្ញុំត្រូវជឿទុកចិត្ត?\n• E (Example to follow): តើមានគំរូល្អអ្វីដែលខ្ញុំត្រូវធ្វើតាម?\n• C (Command to obey): តើមានបទបញ្ជាអ្វីដែលខ្ញុំត្រូវគោរពប្រតិបត្តិ?\n• K (Knowledge of God): តើខ្ញុំបានស្គាល់ព្រះលក្ខណៈរបស់ព្រះកាន់តែច្បាស់យ៉ាងដូចម្តេច?'
+        }
+      ]
+    },
+    {
+      id: 'apostles-creed',
+      category: 'creeds',
+      titleKhmer: 'សេចក្តីប្រកាសជំនឿពួកសាវក (The Apostles’ Creed)',
+      titleEnglish: 'The Apostles’ Creed (Khmer & English)',
+      badge: 'Historic Creed',
+      icon: 'fa-scroll',
+      color: 'from-amber-600 to-rose-600',
+      descKhmer: 'សេចក្តីប្រកាសជំនឿដ៏ចំណាស់ និងជាមូលដ្ឋានគ្រឹះនៃសេចក្តីជំនឿគ្រីស្ទបរិស័ទតាំងពីសតវត្សរ៍ដំបូង។',
+      descEnglish: 'The historic and universal summary of the Christian faith confessed by the Church across generations.',
+      textKhmer: '«ខ្ញុំជឿដល់ព្រះដ៏ជាព្រះវរបិតា មានព្រះចេស្តាបំផុត ដែលបានបង្កើតផ្ទៃមេឃ និងផែនដី។\n\nខ្ញុំជឿដល់ព្រះយេស៊ូវគ្រីស្ទ ជាព្រះរាជបុត្រាតែ១ នៃព្រះអង្គទ្រង់ ជាព្រះអម្ចាស់នៃយើងរាល់គ្នា ដែលទ្រង់បានចាប់កំណើត ដោយសារព្រះវិញ្ញាណបរិសុទ្ធ បានប្រសូតពីនាងម៉ារា ជាស្រីព្រហ្មចារី បានរងទុក្ខក្នុងរាជ្យប៉ុនទាសពីឡាត់ ត្រូវបានគេឆ្កាង សុគត ហើយបញ្ចុះក្នុងផ្នូរ...\n\nនៅថ្ងៃទីបី ទ្រង់បានរស់ពីសុគតឡើងវិញ ទ្រង់បានយាងឡើងទៅស្ថានសួគ៌ គង់នៅខាងស្តាំព្រះដ៏ជាព្រះវរបិតា មានព្រះចេស្តាបំផុត ហើយទ្រង់នឹងយាងមកពីទីនោះវិញ ដើម្បីនឹងជំនុំជម្រះទាំងមនុស្សរស់ និងមនុស្សស្លាប់។\n\nខ្ញុំជឿដល់ព្រះវិញ្ញាណបរិសុទ្ធ ដល់ក្រុមជំនុំបរិសុទ្ធទូទៅ ដល់ការប្រកបគ្នានៃពួកបរិសុទ្ធ ដល់ការលើកលែងទោសបាប ដល់ដំណើរដែលរូបកាយនឹងរស់ឡើងវិញ និងដល់ជីវិតអស់កល្បជានិច្ច។ អាមែន»។',
+      textEnglish: '“I believe in God, the Father Almighty, Maker of heaven and earth.\n\nAnd in Jesus Christ, His only Son, our Lord; Who was conceived by the Holy Spirit, born of the Virgin Mary, suffered under Pontius Pilate, was crucified, dead, and buried...\n\nOn the third day He rose again from the dead; He ascended into heaven, and sitteth on the right hand of God the Father Almighty; from thence He shall come to judge the quick and the dead.\n\nI believe in the Holy Spirit, the holy universal Church, the communion of saints, the forgiveness of sins, the resurrection of the body, and the life everlasting. Amen.”'
+    },
+    {
+      id: 'five-solas',
+      category: 'creeds',
+      titleKhmer: 'គោលការណ៍គ្រឹះទាំង ៥ នៃកែទម្រង់ជំនឿ (5 Solas)',
+      titleEnglish: 'The Five Solas of the Protestant Reformation',
+      badge: 'Reformation Truths',
+      icon: 'fa-shield-halved',
+      color: 'from-purple-600 to-indigo-600',
+      descKhmer: 'សរសរទ្រូងទាំង ៥ នៃដំណឹងល្អដែលត្រូវបានស្តារឡើងវិញក្នុងការកែទម្រង់ជំនឿនៅសតវត្សរ៍ទី ១៦។',
+      descEnglish: 'The core theological pillars defining salvation and Scripture in historic Protestant orthodoxy.',
+      solas: [
+        { latin: 'Sola Scriptura', km: 'ព្រះបន្ទូលតែមួយគត់', ref: '2 Timothy 3:16-17', desc: 'ព្រះគម្ពីរគឺជាសិទ្ធិអំណាចខ្ពស់បំផុត និងឥតកំហុសសម្រាប់ជំនឿ និងការអនុវត្តរបស់គ្រីស្ទបរិស័ទ។' },
+        { latin: 'Sola Fide', km: 'ជំនឿតែមួយគត់', ref: 'Romans 3:28, Galatians 2:16', desc: 'មនុស្សមានបាបត្រូវបានរាប់ជាសុចរិតនៅចំពោះព្រះដោយសារជំនឿតែមួយគត់ មិនមែនដោយសារកិច្ចការល្អឡើយ។' },
+        { latin: 'Sola Gratia', km: 'ព្រះគុណតែមួយគត់', ref: 'Ephesians 2:8-9', desc: 'សេចក្តីសង្គ្រោះគឺជាអំណោយទាននៃព្រះគុណសុទ្ធសាធរបស់ព្រះ ដែលមនុស្សមិនអាចទិញ ឬរកដោយខ្លួនឯងបាន។' },
+        { latin: 'Solus Christus', km: 'ព្រះគ្រីស្ទតែមួយគត់', ref: '1 Timothy 2:5, Acts 4:12', desc: 'ព្រះយេស៊ូវគ្រីស្ទទ្រង់ជាអ្នកសម្រុះសម្រួលតែមួយគត់រវាងព្រះ និងមនុស្ស ហើយការសុគតរបស់ទ្រង់លើឈើឆ្កាងសង្គ្រោះយើង។' },
+        { latin: 'Soli Deo Gloria', km: 'សិរីល្អថ្វាយព្រះតែមួយគត់', ref: '1 Corinthians 10:31, Romans 11:36', desc: 'គ្រប់ទាំងការបង្កើត និងសេចក្តីសង្គ្រោះ គឺសម្រាប់លើកតម្កើងសិរីល្អរបស់ព្រះតែមួយព្រះអង្គគត់។' }
+      ]
+    },
+    {
+      id: 'doctrine-trinity',
+      category: 'theology',
+      titleKhmer: 'គោលលទ្ធិព្រះត្រីឯក (The Holy Trinity)',
+      titleEnglish: 'The Biblical Doctrine of the Holy Trinity',
+      badge: 'Systematic Theology',
+      icon: 'fa-circle-nodes',
+      color: 'from-emerald-600 to-teal-700',
+      descKhmer: 'ព្រះជាម្ចាស់មានតែមួយអង្គគត់ (One Essence) គង់នៅអស់កល្បជានិច្ចក្នុងបីអង្គភាពខុសគ្នា (Three Persons)។',
+      descEnglish: 'God is one in divine essence, eternally existing as three co-equal, co-eternal Persons: Father, Son, and Holy Spirit.',
+      points: [
+        { title: '១. ព្រះមានតែមួយអង្គគត់ (One God)', desc: '«ឱពួកអ៊ីស្រាអែលអើយ ចូរស្ដាប់ចុះ គឺព្រះយេហូវ៉ាជាព្រះនៃយើង ទ្រង់ជាព្រះតែ១ព្រះអង្គ» (ចោទិយកថា ៦:៤)' },
+        { title: '២. បីអង្គភាពខុសគ្នា (Three Distinct Persons)', desc: 'ព្រះវរបិតាមិនមែនជាព្រះរាជបុត្រា ព្រះរាជបុត្រាមិនមែនជាព្រះវិញ្ញាណបរិសុទ្ធ តែអង្គភាពទាំងបីជាព្រះតែមួយ (ម៉ាថាយ ២៨:១៩)' },
+        { title: '៣. សិរីល្អ និងភាពជាព្រះស្មើគ្នា (Co-Equal & Co-Eternal)', desc: 'ព្រះវរបិតាជាព្រះ (អេភេសូរ ៤:៦), ព្រះរាជបុត្រាជាព្រះ (យ៉ូហាន ១:១, រ៉ូម ៩:៥), ព្រះវិញ្ញាណបរិសុទ្ធជាព្រះ (កិច្ចការ ៥:៣-៤)' }
+      ]
+    },
+    {
+      id: 'ordo-salutis',
+      category: 'theology',
+      titleKhmer: 'លំដាប់នៃសេចក្តីសង្គ្រោះ (Ordo Salutis)',
+      titleEnglish: 'The Order of Salvation (Romans 8:29-30)',
+      badge: 'Theology Chart',
+      icon: 'fa-stairs',
+      color: 'from-indigo-600 to-purple-700',
+      descKhmer: 'លំដាប់លំដោយខាងទេវវិទ្យានៃរបៀបដែលព្រះអនុវត្តសេចក្តីសង្គ្រោះដល់ជីវិតរបស់អ្នកជឿ។',
+      descEnglish: 'The theological order of the application of redemption to the believer by the Holy Spirit.',
+      steps: [
+        { no: '1', name: 'Election (ការជ្រើសរើស)', km: 'ព្រះទ្រង់បានជ្រើសរើសយើងមុនកំណើតពិភពលោក (អេភេសូរ ១:៤-៥)' },
+        { no: '2', name: 'Effectual Calling (ការត្រាស់ហៅ)', km: 'ការត្រាស់ហៅដោយព្រះវិញ្ញាណបរិសុទ្ធតាមរយៈដំណឹងល្អ (រ៉ូម ៨:៣០)' },
+        { no: '3', name: 'Regeneration (ការកើតជាថ្មី)', km: 'ការផ្លាស់ប្តូរបេះដូង និងផ្តល់ជីវិតថ្មីដោយព្រះវិញ្ញាណ (យ៉ូហាន ៣:៣, ទីតុស ៣:៥)' },
+        { no: '4', name: 'Conversion (ជំនឿ & ការប្រែចិត្ត)', km: 'ការបែរចេញពីបាបមករកព្រះគ្រីស្ទដោយជំនឿ (កិច្ចការ ២០:២១)' },
+        { no: '5', name: 'Justification (ការរាប់ជាសុចរិត)', km: 'ព្រះប្រកាសថាយើងជាមនុស្សសុចរិតដោយសារព្រះគ្រីស្ទ (រ៉ូម ៥:១)' },
+        { no: '6', name: 'Adoption (ការទទួលធ្វើជាកូន)', km: 'ការទទួលសិទ្ធិជាកូននៃព្រះ និងជាអ្នកទទួលមរតក (យ៉ូហាន ១:១២, រ៉ូម ៨:១៥)' },
+        { no: '7', name: 'Sanctification (ការញែកជាបរិសុទ្ធ)', km: 'ការលូតលាស់ជាលំដាប់ក្នុងភាពដូចព្រះគ្រីស្ទ (១ ថែស្សាឡូនិច ៥:២៣)' },
+        { no: '8', name: 'Perseverance (ការស៊ូទ្រាំរហូតដល់ចប់)', km: 'ព្រះទ្រង់រក្សាអ្នកជឿពិតដោយសុវត្ថិភាពក្នុងព្រះហស្តទ្រង់ (យ៉ូហាន ១០:២៨)' },
+        { no: '9', name: 'Glorification (ការទទួលសិរីល្អ)', km: 'ការប្រែរូបកាយថ្មីឥតពុករលួយនៅថ្ងៃព្រះគ្រីស្ទយាងមក (១ កូរិនថូស ១៥:៥២-៥៣)' }
+      ]
+    },
+    {
+      id: 'khmer-bible-story',
+      category: 'cambodia',
+      titleKhmer: 'ប្រវត្តិការបកប្រែព្រះគម្ពីរខ្មែរ ១៩៥៤ (Arthur Hammond)',
+      titleEnglish: 'Story of the 1954 Khmer Holy Bible Translation',
+      badge: 'Cambodia Heritage',
+      icon: 'fa-book-atlas',
+      color: 'from-amber-600 to-teal-700',
+      descKhmer: 'ដំណើរជីវិត និងការលះបង់របស់លោក អាធើរ ហាមម៉ុន ក្នុងការបកប្រែព្រះគម្ពីរខ្មែរពេញលេញដំបូង។',
+      descEnglish: 'The inspiring 30-year journey of Arthur and Esther Hammond translating the 1954 Khmer Bible.',
+      content: 'លោក អាធើរ ហាមម៉ុន (Arthur Hammond) និងភរិយា លោកស្រី អេសធើរ (Esther) បានមកដល់កម្ពុជានៅឆ្នាំ ១៩២៣ ក្នុងនាមជាបេសកជននៃអង្គការ C&MA។ ដោយមានជំនួយពីអ្នកប្រាជ្ញខ្មែរ ពួកគាត់បានចំណាយពេលជាង ៣០ ឆ្នាំ បកប្រែព្រះគម្ពីរសញ្ញាចាស់ និងសញ្ញាថ្មីទាំងមូលពីភាសាដើម (ហេព្រើរ & ក្រិក) ទៅជាភាសាខ្មែរយ៉ាងផ្ចិតផ្ចង់។ ព្រះគម្ពីរបរិសុទ្ធខ្មែរពេញលេញដំបូងត្រូវបានបោះពុម្ពផ្សាយនៅឆ្នាំ ១៩៥៤ ហើយបន្តជាមូលដ្ឋានគ្រឹះខាងព្រះបន្ទូលដ៏រឹងមាំសម្រាប់ក្រុមជំនុំខ្មែររហូតដល់សព្វថ្ងៃ។'
     }
   ];
 
@@ -4054,6 +4359,321 @@
     `;
   }
 
+  // 11. Church History & Heritage Tool (ប្រវត្តិសាស្ត្រក្រុមជំនុំ)
+  function renderChurchHistory() {
+    const selectedEra = CHURCH_HISTORY_DATA.find(e => e.id === state.history.selectedEra) || CHURCH_HISTORY_DATA[0];
+
+    return `
+      <div class="space-y-3.5">
+        
+        <!-- Header Banner -->
+        <div class="card p-3.5 sm:p-4 bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-indigo-500/10 border border-amber-500/20 space-y-2">
+          <div class="flex flex-wrap items-center justify-between gap-2.5">
+            <div class="flex items-center gap-2">
+              <span class="w-8 h-8 rounded-lg bg-gradient-to-tr from-amber-600 to-orange-600 text-white flex items-center justify-center font-bold text-sm shadow-2xs">
+                <i class="fa-solid fa-church"></i>
+              </span>
+              <div>
+                <h1 class="text-base sm:text-lg font-bold text-ink flex items-center gap-1.5">
+                  <span>Church History &amp; Heritage • ប្រវត្តិសាស្ត្រក្រុមជំនុំ</span>
+                  <span class="text-[9.5px] font-bold uppercase tracking-wider text-amber-600 bg-amber-500/10 px-2 py-0.5 rounded-full">Interactive</span>
+                </h1>
+                <p class="text-[11.5px] text-muted">Trace 2,000 years of God’s faithfulness from the Apostolic Church to the Gospel in Cambodia.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Timeline Epoch Selector Bar -->
+        <div class="card p-1.5 bg-surface border border-line flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+          ${CHURCH_HISTORY_DATA.map(era => `
+            <button class="px-2.5 py-1.5 rounded-lg text-xs font-semibold transition shrink-0 text-left border ${state.history.selectedEra === era.id ? 'bg-brand text-white border-brand shadow-2xs font-bold' : 'bg-surface text-ink border-line hover:bg-raised'}" onclick="window.selectHistoryEra('${era.id}')">
+              <div class="text-[9.5px] uppercase opacity-80 tracking-wider">${era.era}</div>
+              <div class="font-khmer text-[11.5px] whitespace-nowrap">${era.titleKhmer}</div>
+            </button>
+          `).join('')}
+        </div>
+
+        <!-- Active Era Details -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-3.5 items-start">
+          
+          <!-- Left 7 cols: Historical Overview, Famous Quote & Key Events Timeline -->
+          <div class="lg:col-span-7 card p-4 sm:p-5 bg-surface border border-line space-y-3.5">
+            <div class="relative h-44 sm:h-56 rounded-xl overflow-hidden border border-line shadow-2xs group">
+              <img src="${selectedEra.bgImg}" alt="${selectedEra.titleEnglish}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+              <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/45 to-transparent p-3.5 sm:p-4 flex flex-col justify-end text-white space-y-0.5">
+                <span class="text-[10.5px] font-bold uppercase tracking-wider text-amber-300">${selectedEra.era} • ${selectedEra.badge}</span>
+                <h2 class="text-base sm:text-lg font-bold font-khmer">${selectedEra.titleKhmer}</h2>
+                <p class="text-[11.5px] text-white/90 font-serif italic">${selectedEra.titleEnglish}</p>
+              </div>
+            </div>
+
+            <!-- Historical Overview Text -->
+            <div class="space-y-1.5">
+              <h3 class="text-[11px] font-bold uppercase tracking-wider text-muted">Historical &amp; Theological Overview</h3>
+              <p class="text-xs font-khmer text-ink leading-relaxed">${selectedEra.summaryKhmer}</p>
+              <p class="text-[11.5px] font-serif italic text-muted leading-relaxed">${selectedEra.summaryEnglish}</p>
+            </div>
+
+            <!-- Landmark Historical Quote -->
+            <div class="p-3 rounded-xl bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-amber-500/30 space-y-1">
+              <div class="text-[10px] font-bold uppercase tracking-wider text-amber-700 dark:text-amber-400 flex items-center gap-1.5">
+                <i class="fa-solid fa-quote-left text-xs"></i>
+                <span>Historical Milestone Quote</span>
+              </div>
+              <p class="text-xs font-khmer font-bold text-ink leading-relaxed">${selectedEra.keyQuote.km}</p>
+              <p class="text-[11.5px] font-serif italic text-muted">${selectedEra.keyQuote.en}</p>
+              <div class="text-[10.5px] text-brand font-semibold text-right">— ${selectedEra.keyQuote.author}</div>
+            </div>
+
+            <!-- Major Historical Events Timeline -->
+            <div class="space-y-2 pt-2 border-t border-line">
+              <h4 class="text-[11px] font-bold uppercase tracking-wider text-ink flex items-center gap-1.5">
+                <i class="fa-solid fa-timeline text-brand text-xs"></i>
+                <span>Key Historical Events &amp; Milestones</span>
+              </h4>
+              <div class="space-y-1.5">
+                ${selectedEra.events.map(ev => `
+                  <div class="p-2.5 rounded-lg bg-raised/50 border border-line flex items-start gap-2.5">
+                    <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-brand/10 text-brand shrink-0 whitespace-nowrap">${ev.year}</span>
+                    <div class="space-y-0.5">
+                      <div class="text-xs font-bold text-ink">${ev.title}</div>
+                      <p class="text-[11px] text-muted leading-relaxed">${ev.desc}</p>
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+
+            <!-- Scripture Bridge -->
+            <div class="pt-2 border-t border-line flex items-center justify-between gap-2">
+              <div class="text-[11px] text-muted">Study the biblical foundation for this era:</div>
+              <button class="btn btn-primary text-xs shrink-0 !py-1 !px-2.5 shadow-2xs" onclick="window.jumpToPlanReading('${selectedEra.keyScripture.book}', ${selectedEra.keyScripture.ch})">
+                <i class="fa-solid fa-book-open mr-1 text-[10px]"></i> Read ${selectedEra.keyScripture.label} ➔
+              </button>
+            </div>
+          </div>
+
+          <!-- Right 5 cols: Influential Figures, Theologians & Reformers -->
+          <div class="lg:col-span-5 card p-4 bg-surface border border-line space-y-3">
+            <div class="flex items-center justify-between border-b border-line pb-2">
+              <h3 class="text-[11px] font-bold uppercase tracking-wider text-ink flex items-center gap-1.5">
+                <i class="fa-solid fa-user-tie text-blue-600 text-xs"></i>
+                <span>Key Theologians &amp; Reformers</span>
+              </h3>
+              <span class="text-[10.5px] text-muted">${selectedEra.figures.length} Figures</span>
+            </div>
+
+            <div class="space-y-2.5">
+              ${selectedEra.figures.map(fig => `
+                <div class="p-3 rounded-xl bg-raised/50 border border-line space-y-1">
+                  <div class="flex items-center justify-between gap-2">
+                    <div class="text-xs font-bold text-ink flex items-center gap-1.5">
+                      <i class="fa-solid fa-shield-halved text-brand text-[10px]"></i>
+                      <span>${fig.name}</span>
+                    </div>
+                  </div>
+                  <div class="text-[10.5px] font-semibold text-brand">${fig.role}</div>
+                  <p class="text-[11px] text-muted leading-relaxed font-khmer">${fig.detail}</p>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    `;
+  }
+
+  // 12. Study Resources & Library Hub Tool (ធនធានសិក្សាព្រះគម្ពីរ)
+  function renderStudyResources() {
+    const cat = state.resources.category || 'all';
+    const query = (state.resources.searchQuery || '').toLowerCase();
+    
+    let items = STUDY_RESOURCES_DATA;
+    if (cat !== 'all') {
+      items = items.filter(r => r.category === cat);
+    }
+    if (query) {
+      items = items.filter(r => 
+        r.titleKhmer.toLowerCase().includes(query) || 
+        r.titleEnglish.toLowerCase().includes(query) ||
+        r.descKhmer.toLowerCase().includes(query) ||
+        r.descEnglish.toLowerCase().includes(query)
+      );
+    }
+
+    return `
+      <div class="space-y-3.5">
+        
+        <!-- Header Banner -->
+        <div class="card p-3.5 sm:p-4 bg-gradient-to-r from-cyan-600/10 via-blue-600/10 to-indigo-600/10 border border-cyan-500/20 space-y-2.5">
+          <div class="flex flex-wrap items-center justify-between gap-2.5">
+            <div class="flex items-center gap-2">
+              <span class="w-8 h-8 rounded-lg bg-gradient-to-tr from-cyan-600 to-blue-600 text-white flex items-center justify-center font-bold text-sm shadow-2xs">
+                <i class="fa-solid fa-graduation-cap"></i>
+              </span>
+              <div>
+                <h1 class="text-base sm:text-lg font-bold text-ink flex items-center gap-1.5">
+                  <span>Study Resources &amp; Library Hub • ធនធានសិក្សាព្រះគម្ពីរ</span>
+                  <span class="text-[9.5px] font-bold uppercase tracking-wider text-cyan-600 bg-cyan-500/10 px-2 py-0.5 rounded-full">Theology Hub</span>
+                </h1>
+                <p class="text-[11.5px] text-muted">Hermeneutics study guides, historic creeds, systematic theology charts, and Cambodian heritage.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Category Filter Bar -->
+          <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar pt-0.5 text-xs">
+            <button class="px-2.5 py-1 rounded-lg transition font-semibold shrink-0 ${cat === 'all' ? 'bg-brand text-white shadow-2xs' : 'bg-surface text-ink border border-line hover:bg-raised'}" onclick="window.setResourceCategory('all')">
+              All Resources (${STUDY_RESOURCES_DATA.length})
+            </button>
+            <button class="px-2.5 py-1 rounded-lg transition font-semibold shrink-0 ${cat === 'methods' ? 'bg-brand text-white shadow-2xs' : 'bg-surface text-ink border border-line hover:bg-raised'}" onclick="window.setResourceCategory('methods')">
+              📖 Hermeneutics &amp; Methods
+            </button>
+            <button class="px-2.5 py-1 rounded-lg transition font-semibold shrink-0 ${cat === 'creeds' ? 'bg-brand text-white shadow-2xs' : 'bg-surface text-ink border border-line hover:bg-raised'}" onclick="window.setResourceCategory('creeds')">
+              📜 Creeds &amp; Confessions
+            </button>
+            <button class="px-2.5 py-1 rounded-lg transition font-semibold shrink-0 ${cat === 'theology' ? 'bg-brand text-white shadow-2xs' : 'bg-surface text-ink border border-line hover:bg-raised'}" onclick="window.setResourceCategory('theology')">
+              🏛️ Systematic Theology
+            </button>
+            <button class="px-2.5 py-1 rounded-lg transition font-semibold shrink-0 ${cat === 'cambodia' ? 'bg-brand text-white shadow-2xs' : 'bg-surface text-ink border border-line hover:bg-raised'}" onclick="window.setResourceCategory('cambodia')">
+              🇰🇭 Cambodia Heritage
+            </button>
+          </div>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="card p-2.5 bg-surface border border-line">
+          <div class="flex items-center gap-2">
+            <i class="fa-solid fa-magnifying-glass text-muted text-xs ml-2"></i>
+            <input type="text" id="resource-search-input" value="${esc(state.resources.searchQuery)}" placeholder="Search study guides, creeds, 5 solas, trinity, salvation..." class="flex-1 bg-transparent px-2 py-1 text-xs text-ink outline-none" oninput="window.searchResources()">
+            ${state.resources.searchQuery ? `
+              <button class="text-muted hover:text-ink text-xs px-2" onclick="document.getElementById('resource-search-input').value=''; window.searchResources();">✕ Clear</button>
+            ` : ''}
+          </div>
+        </div>
+
+        <!-- Resources Cards Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-3.5">
+          ${items.map(res => `
+            <div class="card p-4 sm:p-5 bg-surface border border-line space-y-3 hover:shadow-xs transition">
+              <div class="flex items-center justify-between gap-2 border-b border-line pb-2">
+                <div class="flex items-center gap-2">
+                  <span class="w-7 h-7 rounded-lg bg-raised flex items-center justify-center text-brand text-xs font-bold">
+                    <i class="fa-solid ${res.icon}"></i>
+                  </span>
+                  <span class="text-[10px] font-bold uppercase tracking-wider text-brand bg-brand/10 px-2 py-0.5 rounded-full">${res.badge}</span>
+                </div>
+                <button class="text-xs text-muted hover:text-brand font-semibold" onclick="window.copyResourceText('${esc((res.textKhmer || res.descKhmer || '').replace(/'/g, ''))}', '${esc(res.titleKhmer)}')">
+                  <i class="fa-regular fa-copy mr-1"></i> Copy
+                </button>
+              </div>
+
+              <div class="space-y-1">
+                <h3 class="text-sm sm:text-base font-bold text-ink">${esc(res.titleKhmer)}</h3>
+                <p class="text-[11.5px] font-serif italic text-muted">${esc(res.titleEnglish)}</p>
+                <p class="text-xs text-ink/85 leading-relaxed font-khmer pt-1">${esc(res.descKhmer)}</p>
+              </div>
+
+              <!-- Specific Payload Content -->
+              ${res.sections ? `
+                <div class="space-y-2 pt-1">
+                  ${res.sections.map(s => `
+                    <div class="p-2.5 rounded-lg bg-raised/50 border border-line space-y-1 text-xs font-khmer">
+                      <strong class="text-brand font-bold block">${s.title}</strong>
+                      <p class="text-ink/80 text-[11.5px] whitespace-pre-line leading-relaxed">${s.content}</p>
+                    </div>
+                  `).join('')}
+                </div>
+              ` : ''}
+
+              ${res.textKhmer ? `
+                <div class="p-3 rounded-lg bg-raised/50 border border-line space-y-2 text-xs">
+                  <p class="font-khmer text-ink leading-relaxed whitespace-pre-line text-[12px]">${res.textKhmer}</p>
+                  <p class="font-serif italic text-muted text-[11px] whitespace-pre-line border-t border-line pt-2">${res.textEnglish}</p>
+                </div>
+              ` : ''}
+
+              ${res.solas ? `
+                <div class="space-y-1.5 pt-1">
+                  ${res.solas.map(s => `
+                    <div class="p-2.5 rounded-lg bg-raised/50 border border-line space-y-0.5">
+                      <div class="flex items-center justify-between">
+                        <strong class="text-xs font-bold text-ink">${s.latin} (${s.km})</strong>
+                        <span class="text-[10px] text-brand font-semibold">${s.ref}</span>
+                      </div>
+                      <p class="text-[11.5px] text-muted font-khmer leading-relaxed">${s.desc}</p>
+                    </div>
+                  `).join('')}
+                </div>
+              ` : ''}
+
+              ${res.points ? `
+                <div class="space-y-1.5 pt-1">
+                  ${res.points.map(pt => `
+                    <div class="p-2.5 rounded-lg bg-raised/50 border border-line space-y-0.5">
+                      <strong class="text-xs font-bold text-ink font-khmer block">${pt.title}</strong>
+                      <p class="text-[11.5px] text-muted font-khmer leading-relaxed">${pt.desc}</p>
+                    </div>
+                  `).join('')}
+                </div>
+              ` : ''}
+
+              ${res.steps ? `
+                <div class="space-y-1 pt-1 max-h-56 overflow-y-auto pr-1">
+                  ${res.steps.map(st => `
+                    <div class="p-2 rounded-lg bg-raised/50 border border-line flex items-start gap-2">
+                      <span class="w-5 h-5 rounded-full bg-brand text-white text-[10px] font-bold flex items-center justify-center shrink-0">${st.no}</span>
+                      <div class="space-y-0.5">
+                        <div class="text-xs font-bold text-ink">${st.name}</div>
+                        <p class="text-[11px] text-muted font-khmer leading-relaxed">${st.km}</p>
+                      </div>
+                    </div>
+                  `).join('')}
+                </div>
+              ` : ''}
+
+              ${res.content ? `
+                <div class="p-3 rounded-lg bg-raised/50 border border-line text-xs font-khmer text-ink leading-relaxed">
+                  ${res.content}
+                </div>
+              ` : ''}
+
+            </div>
+          `).join('')}
+        </div>
+
+      </div>
+    `;
+  }
+
+  window.selectHistoryEra = (eraId) => {
+    state.history.selectedEra = eraId;
+    render();
+  };
+
+  window.setResourceCategory = (cat) => {
+    state.resources.category = cat;
+    render();
+  };
+
+  window.searchResources = () => {
+    const el = $('#resource-search-input');
+    if (el) state.resources.searchQuery = el.value.trim();
+    render();
+  };
+
+  window.copyResourceText = (text, title) => {
+    if (!text) return;
+    navigator.clipboard.writeText(text).then(() => {
+      alert(`Copied "${title || 'Resource'}" to clipboard!`);
+    }).catch(() => {
+      alert('Text copied to clipboard!');
+    });
+  };
+
   // ---------------------------------------------------------------------------
   // Master Render & Event Binding
   // ---------------------------------------------------------------------------
@@ -4077,6 +4697,8 @@
       case 'designer': root.innerHTML = renderDesigner(); drawDesignerCanvas(); break;
       case 'plans': root.innerHTML = renderReadingPlans(); break;
       case 'atlas': root.innerHTML = renderAtlas(); break;
+      case 'history': root.innerHTML = renderChurchHistory(); break;
+      case 'resources': root.innerHTML = renderStudyResources(); break;
       case 'prayer': root.innerHTML = renderPrayerJournal(); break;
       case 'daily': root.innerHTML = renderDaily(); break;
       case 'concordance': root.innerHTML = renderConcordance(); break;
