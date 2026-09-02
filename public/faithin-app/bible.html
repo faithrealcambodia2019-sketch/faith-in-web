@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
-<meta content="#f0f2f5" media="(prefers-color-scheme: light)" name="theme-color"/>
-<meta content="#18191a" media="(prefers-color-scheme: dark)" name="theme-color"/>
+<meta content="#ffffff" media="(prefers-color-scheme: light)" name="theme-color"/>
+<meta content="#0b1120" media="(prefers-color-scheme: dark)" name="theme-color"/>
 <meta content="Faith In Bible Studio — Read, compare, and design Scripture in Khmer and English." name="description"/>
 <title>Faith In — Bible Studio • ព្រះគម្ពីរ</title>
 <link rel="icon" type="image/svg+xml" href="/favicon.svg"/>
@@ -18,300 +18,219 @@
 <link href="/faithin-app/assets/faithin-fonts.css" rel="stylesheet"/>
 <link href="/faithin-app/assets/faithin-icons.css" rel="stylesheet"/>
 <link href="/faithin-app/assets/faithin-tw.css" rel="stylesheet"/>
-<link href="/faithin-app/assets/faithin.css?v=20260902-fb-v2" rel="stylesheet"/>
+<link href="/faithin-app/assets/faithin.css?v=20260902-standard-v1" rel="stylesheet"/>
 <style>
-  :root {
-    --fb-blue: #1877f2;
-    --fb-blue-hover: #166fe5;
-    --fb-blue-subtle: #e7f3ff;
-    --fb-bg: #f0f2f5;
-    --fb-card-bg: #ffffff;
-    --fb-border: #e4e6eb;
-    --fb-text: #050505;
-    --fb-text-secondary: #65676b;
-  }
-  .dark {
-    --fb-blue: #2d88ff;
-    --fb-blue-hover: #1877f2;
-    --fb-blue-subtle: rgba(45, 136, 255, 0.15);
-    --fb-bg: #18191a;
-    --fb-card-bg: #242526;
-    --fb-border: #393a3b;
-    --fb-text: #e4e6eb;
-    --fb-text-secondary: #b0b3b8;
-  }
-  body {
-    background-color: var(--fb-bg) !important;
-  }
-  .fb-card {
-    background-color: var(--fb-card-bg);
-    border: 1px solid var(--fb-border);
-    border-radius: 0.75rem;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-  }
-  .fb-nav-btn {
-    display: flex;
+  .bible-tab-btn {
+    display: inline-flex;
     align-items: center;
-    gap: 0.75rem;
-    width: 100%;
-    padding: 0.55rem 0.75rem;
-    border-radius: 0.625rem;
-    font-size: 0.875rem;
-    font-weight: 600;
-    color: var(--fb-text);
-    transition: background-color 0.15s ease;
-    text-align: left;
-    cursor: pointer;
-    border: none;
-    background: transparent;
-  }
-  .fb-nav-btn:hover {
-    background-color: rgba(0, 0, 0, 0.05);
-  }
-  .dark .fb-nav-btn:hover {
-    background-color: rgba(255, 255, 255, 0.08);
-  }
-  .fb-nav-btn.is-active {
-    background-color: var(--fb-blue-subtle);
-    color: var(--fb-blue);
-  }
-  .fb-icon-badge {
-    width: 2.25rem;
-    height: 2.25rem;
+    gap: 0.5rem;
+    padding: 0.5rem 0.85rem;
     border-radius: 9999px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1rem;
-    background-color: #e4e6eb;
-    color: #050505;
-    flex-shrink: 0;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: rgb(var(--muted));
+    background-color: transparent;
+    transition: all 0.15s ease;
+    cursor: pointer;
+    white-space: nowrap;
+    border: 1px solid transparent;
   }
-  .dark .fb-icon-badge {
-    background-color: #3a3b3c;
-    color: #e4e6eb;
+  .bible-tab-btn:hover {
+    background-color: rgb(var(--raised));
+    color: rgb(var(--ink));
   }
-  .fb-nav-btn.is-active .fb-icon-badge {
-    background-color: var(--fb-blue);
+  .bible-tab-btn.is-active {
+    background-color: #1877f2;
     color: #ffffff;
+    border-color: #1877f2;
+    box-shadow: 0 1px 2px rgba(24, 119, 242, 0.2);
   }
-  .fb-verse-row {
-    padding: 0.75rem 0.875rem;
+  .verse-row {
+    padding: 0.65rem 0.85rem;
     border-radius: 0.5rem;
-    transition: background-color 0.12s ease;
+    transition: background-color 0.15s ease;
     line-height: 1.85;
   }
-  .fb-verse-row:hover {
-    background-color: rgba(0, 0, 0, 0.03);
+  .verse-row:hover {
+    background-color: rgb(var(--raised));
   }
-  .dark .fb-verse-row:hover {
-    background-color: rgba(255, 255, 255, 0.04);
-  }
-  .fb-badge {
+  .verse-badge {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     min-width: 1.5rem;
     height: 1.5rem;
-    padding: 0 0.4rem;
     font-size: 0.75rem;
     font-weight: 700;
+    color: #1877f2;
+    background-color: rgba(24, 119, 242, 0.1);
     border-radius: 9999px;
-    background-color: var(--fb-blue-subtle);
-    color: var(--fb-blue);
-  }
-  .fb-tab-pill {
-    padding: 0.45rem 0.85rem;
-    border-radius: 9999px;
-    font-size: 0.8125rem;
-    font-weight: 600;
-    color: var(--fb-text-secondary);
-    background-color: transparent;
-    transition: all 0.15s ease;
-    cursor: pointer;
-    white-space: nowrap;
-    border: none;
-  }
-  .fb-tab-pill:hover {
-    background-color: rgba(0, 0, 0, 0.05);
-    color: var(--fb-text);
-  }
-  .dark .fb-tab-pill:hover {
-    background-color: rgba(255, 255, 255, 0.08);
-  }
-  .fb-tab-pill.is-active {
-    background-color: var(--fb-blue);
-    color: #ffffff;
-  }
-  .fb-input {
-    background-color: #f0f2f5;
-    border: 1px solid var(--fb-border);
-    color: var(--fb-text);
-    border-radius: 0.5rem;
-    padding: 0.5rem 0.75rem;
-    font-size: 0.875rem;
-    outline: none;
-    transition: border-color 0.15s ease;
-  }
-  .dark .fb-input {
-    background-color: #3a3b3c;
-  }
-  .fb-input:focus {
-    border-color: var(--fb-blue);
-  }
-  .fb-btn-blue {
-    background-color: var(--fb-blue);
-    color: #ffffff;
-    font-weight: 600;
-    border-radius: 0.5rem;
-    padding: 0.5rem 1rem;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 0.875rem;
-    cursor: pointer;
-    transition: background-color 0.15s ease;
-    border: none;
-  }
-  .fb-btn-blue:hover {
-    background-color: var(--fb-blue-hover);
-  }
-  .fb-btn-gray {
-    background-color: #e4e6eb;
-    color: #050505;
-    font-weight: 600;
-    border-radius: 0.5rem;
-    padding: 0.5rem 0.875rem;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 0.875rem;
-    cursor: pointer;
-    transition: background-color 0.15s ease;
-    border: none;
-  }
-  .dark .fb-btn-gray {
-    background-color: #3a3b3c;
-    color: #e4e6eb;
-  }
-  .fb-btn-gray:hover {
-    background-color: #d8dadf;
-  }
-  .dark .fb-btn-gray:hover {
-    background-color: #4e4f50;
+    margin-right: 0.5rem;
+    vertical-align: middle;
   }
 </style>
 </head>
 <body class="font-sans min-h-screen pb-16 lg:pb-6" data-page="bible" data-search="Search Bible chapters, books & verses">
 
-<main class="max-w-[1240px] mx-auto px-3 sm:px-4 py-4 grid gap-4 lg:grid-cols-[250px_minmax(0,1fr)] items-start" id="main">
+<main class="max-w-[1200px] mx-auto px-3 sm:px-4 py-5 grid gap-5 lg:grid-cols-[232px_minmax(0,1fr)] xl:grid-cols-[232px_minmax(0,1fr)_312px] items-start" id="main">
 
-  <!-- ───── LEFT SIDEBAR: FACEBOOK STYLE NAVIGATION ───── -->
-  <aside class="hidden lg:block space-y-3 sticky top-[68px]">
+  <!-- ───── LEFT RAIL: STANDARD USER PROFILE & NAV ───── -->
+  <aside class="hidden lg:block sticky top-[72px] space-y-4">
     
-    <!-- User Profile Quick Bar -->
-    <div class="fb-card p-3 flex items-center gap-3">
-      <div class="w-10 h-10 rounded-full bg-[#1877F2] text-white flex items-center justify-center text-lg font-bold shadow-sm">
-        <i class="fa-solid fa-book-bible text-base"></i>
+    <!-- User Profile Card -->
+    <section class="card overflow-hidden">
+      <div class="h-[62px] bg-[linear-gradient(120deg,#1877f2,#3b82f6_50%,#1e40af)]"></div>
+      <div class="px-4 pb-4 -mt-8 flex flex-col items-center text-center">
+        <span class="avatar w-16 h-16 text-[20px] ring-4 ring-surface" data-current-user-avatar style="background:linear-gradient(135deg,#1877f2,#1e40af)">FI</span>
+        <a class="mt-2.5 font-bold text-[15px] hover:underline inline-flex items-center text-ink" href="/profile" data-current-user-name>
+          Faith In
+          <span class="fi-verified-tick ml-1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"></polyline></svg></span>
+        </a>
+        <p class="text-[12.5px] text-muted mt-0.5">Bible Studio • ព្រះគម្ពីរ</p>
       </div>
-      <div class="min-w-0">
-        <h2 class="font-bold text-[14.5px] leading-tight text-ink truncate">Bible Studio</h2>
-        <p class="text-[12px] text-muted truncate">Khmer &amp; English Scripture</p>
+      <div class="border-t border-line grid grid-cols-2 divide-x divide-line text-center text-xs">
+        <div class="py-2.5 px-1">
+          <span class="block text-muted text-[11px]">Old Testament</span>
+          <span class="font-bold text-[#1877F2]">39 Books</span>
+        </div>
+        <div class="py-2.5 px-1">
+          <span class="block text-muted text-[11px]">New Testament</span>
+          <span class="font-bold text-[#1877F2]">27 Books</span>
+        </div>
       </div>
+    </section>
+
+    <!-- Main Navigation Links -->
+    <nav aria-label="Sections" class="space-y-1">
+      <a class="nav-item" href="/home"><i class="fa-solid fa-house"></i>Home Feed</a>
+      <a aria-current="page" class="nav-item is-active" href="/bible"><i class="fa-solid fa-book-bible text-[#1877F2]"></i>Bible Studio</a>
+      <a class="nav-item" href="/library"><i class="fa-solid fa-book-open text-amber-500"></i>Resource Library</a>
+      <a class="nav-item" href="/network"><i class="fa-solid fa-globe text-indigo-500"></i>Find Users</a>
+      <a class="nav-item" href="/jobs"><i class="fa-solid fa-briefcase text-emerald-600"></i>Find Jobs</a>
+    </nav>
+
+    <!-- Studio Tools Menu Card -->
+    <div class="card p-3 rounded-xl bg-surface border border-line space-y-1">
+      <h3 class="text-xs font-bold uppercase tracking-wider text-muted px-2 py-1">Studio Tools</h3>
+      <button class="side-link w-full text-left flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-[13.5px] font-semibold text-ink hover:bg-raised" onclick="window.switchTool('reader')">
+        <i class="fa-solid fa-book-open text-blue-500 w-4 text-center"></i> Bible Reader
+      </button>
+      <button class="side-link w-full text-left flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-[13.5px] font-semibold text-ink hover:bg-raised" onclick="window.switchTool('parallel')">
+        <i class="fa-solid fa-columns-3 text-indigo-500 w-4 text-center"></i> Parallel Study
+      </button>
+      <button class="side-link w-full text-left flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-[13.5px] font-semibold text-ink hover:bg-raised" onclick="window.switchTool('designer')">
+        <i class="fa-solid fa-palette text-purple-500 w-4 text-center"></i> Card Designer
+      </button>
+      <button class="side-link w-full text-left flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-[13.5px] font-semibold text-ink hover:bg-raised" onclick="window.switchTool('daily')">
+        <i class="fa-solid fa-sun text-amber-500 w-4 text-center"></i> Verse of the Day
+      </button>
+      <button class="side-link w-full text-left flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-[13.5px] font-semibold text-ink hover:bg-raised" onclick="window.switchTool('concordance')">
+        <i class="fa-solid fa-magnifying-glass text-emerald-500 w-4 text-center"></i> Word Study (Greek)
+      </button>
+      <button class="side-link w-full text-left flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-[13.5px] font-semibold text-ink hover:bg-raised" onclick="window.switchTool('typing')">
+        <i class="fa-solid fa-keyboard text-rose w-4 text-center"></i> Scripture Typing
+      </button>
+      <button class="side-link w-full text-left flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-[13.5px] font-semibold text-ink hover:bg-raised" onclick="window.switchTool('notes')">
+        <i class="fa-solid fa-pen-to-square text-cyan-600 w-4 text-center"></i> Sermon Notes
+      </button>
     </div>
-
-    <!-- Navigation Menu Items -->
-    <section class="fb-card p-1.5 space-y-0.5">
-      <button class="fb-nav-btn is-active" data-tool="reader">
-        <div class="fb-icon-badge"><i class="fa-solid fa-book-open text-blue-500"></i></div>
-        <span class="truncate">Bible Reader • អានគម្ពីរ</span>
-      </button>
-
-      <button class="fb-nav-btn" data-tool="parallel">
-        <div class="fb-icon-badge"><i class="fa-solid fa-columns-3 text-indigo-500"></i></div>
-        <span class="truncate">Parallel Study • ទន្ទឹមគ្នា</span>
-      </button>
-
-      <button class="fb-nav-btn" data-tool="designer">
-        <div class="fb-icon-badge"><i class="fa-solid fa-palette text-purple-500"></i></div>
-        <span class="truncate">Verse Card Designer</span>
-      </button>
-
-      <button class="fb-nav-btn" data-tool="daily">
-        <div class="fb-icon-badge"><i class="fa-solid fa-sun text-amber-500"></i></div>
-        <span class="truncate">Verse of the Day</span>
-      </button>
-
-      <button class="fb-nav-btn" data-tool="concordance">
-        <div class="fb-icon-badge"><i class="fa-solid fa-magnifying-glass text-emerald-500"></i></div>
-        <span class="truncate">Word Study &amp; Greek</span>
-      </button>
-
-      <button class="fb-nav-btn" data-tool="typing">
-        <div class="fb-icon-badge"><i class="fa-solid fa-keyboard text-rose"></i></div>
-        <span class="truncate">Typing &amp; Memory</span>
-      </button>
-
-      <button class="fb-nav-btn" data-tool="notes">
-        <div class="fb-icon-badge"><i class="fa-solid fa-pen-to-square text-cyan-600"></i></div>
-        <span class="truncate">Sermon Notes Planner</span>
-      </button>
-
-      <button class="fb-nav-btn" data-tool="media">
-        <div class="fb-icon-badge"><i class="fa-solid fa-headphones text-orange-500"></i></div>
-        <span class="truncate">Audio &amp; Devotionals</span>
-      </button>
-
-      <button class="fb-nav-btn" data-tool="quotes">
-        <div class="fb-icon-badge"><i class="fa-solid fa-quote-left text-teal-600"></i></div>
-        <span class="truncate">Inspirational Quotes</span>
-      </button>
-    </section>
-
-    <!-- Social Shortcuts -->
-    <section class="fb-card p-2 space-y-1 text-[13px]">
-      <a href="/home" class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-muted hover:bg-black/5 dark:hover:bg-white/5 font-semibold transition">
-        <i class="fa-solid fa-house text-[13px] text-blue-500"></i> Community Feed
-      </a>
-      <a href="/library" class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-muted hover:bg-black/5 dark:hover:bg-white/5 font-semibold transition">
-        <i class="fa-solid fa-book-open text-[13px] text-amber-500"></i> Resource Library
-      </a>
-    </section>
 
   </aside>
 
-  <!-- ───── CENTER CONTENT PANE ───── -->
-  <section class="space-y-3.5 min-w-0 flex-1 w-full" id="bible-content-pane">
+  <!-- ───── CENTER: MAIN BIBLE STUDIO PANE ───── -->
+  <section class="space-y-4 min-w-0" id="center-pane">
 
-    <!-- Mobile Scrollable Tool Bar -->
-    <div class="lg:hidden flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1">
-      <button class="fb-tab-pill is-active shrink-0" data-tool-mob="reader"><i class="fa-solid fa-book-open mr-1"></i> Reader</button>
-      <button class="fb-tab-pill shrink-0" data-tool-mob="parallel"><i class="fa-solid fa-columns-3 mr-1"></i> Parallel</button>
-      <button class="fb-tab-pill shrink-0" data-tool-mob="designer"><i class="fa-solid fa-palette mr-1"></i> Designer</button>
-      <button class="fb-tab-pill shrink-0" data-tool-mob="daily"><i class="fa-solid fa-sun mr-1"></i> Daily</button>
-      <button class="fb-tab-pill shrink-0" data-tool-mob="concordance"><i class="fa-solid fa-magnifying-glass mr-1"></i> Concordance</button>
-      <button class="fb-tab-pill shrink-0" data-tool-mob="typing"><i class="fa-solid fa-keyboard mr-1"></i> Typing</button>
-      <button class="fb-tab-pill shrink-0" data-tool-mob="notes"><i class="fa-solid fa-pen mr-1"></i> Notes</button>
-      <button class="fb-tab-pill shrink-0" data-tool-mob="media"><i class="fa-solid fa-headphones mr-1"></i> Audio</button>
+    <!-- Top Tools Segment Tabs (Facebook Style Pills) -->
+    <div class="card p-2 bg-surface border border-line flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+      <button class="bible-tab-btn is-active shrink-0" data-tab="reader" onclick="window.switchTool('reader')">
+        <i class="fa-solid fa-book-open"></i> Reader
+      </button>
+      <button class="bible-tab-btn shrink-0" data-tab="parallel" onclick="window.switchTool('parallel')">
+        <i class="fa-solid fa-columns-3"></i> Parallel
+      </button>
+      <button class="bible-tab-btn shrink-0" data-tab="designer" onclick="window.switchTool('designer')">
+        <i class="fa-solid fa-palette"></i> Card Designer
+      </button>
+      <button class="bible-tab-btn shrink-0" data-tab="daily" onclick="window.switchTool('daily')">
+        <i class="fa-solid fa-sun"></i> Verse of the Day
+      </button>
+      <button class="bible-tab-btn shrink-0" data-tab="concordance" onclick="window.switchTool('concordance')">
+        <i class="fa-solid fa-magnifying-glass"></i> Word Study
+      </button>
+      <button class="bible-tab-btn shrink-0" data-tab="typing" onclick="window.switchTool('typing')">
+        <i class="fa-solid fa-keyboard"></i> Memory
+      </button>
+      <button class="bible-tab-btn shrink-0" data-tab="notes" onclick="window.switchTool('notes')">
+        <i class="fa-solid fa-pen-to-square"></i> Notes
+      </button>
     </div>
 
-    <!-- Active Tool View Container -->
-    <div id="bible-view-root" class="space-y-3.5">
-      <div class="fb-card p-12 text-center text-muted">
-        <i class="fa-solid fa-circle-notch fa-spin text-3xl text-[#1877F2] mb-3"></i>
-        <p class="font-medium text-[14px]">Loading Bible Studio...</p>
+    <!-- Active View Host -->
+    <div id="bible-view-root" class="space-y-4">
+      <div class="card p-12 text-center text-muted">
+        <i class="fa-solid fa-circle-notch fa-spin text-3xl text-brand mb-2"></i>
+        <p class="font-medium text-sm">Loading Bible Studio...</p>
       </div>
     </div>
 
   </section>
 
+  <!-- ───── RIGHT RAIL: STANDARD HIGHLIGHTS & WIDGETS ───── -->
+  <aside class="hidden xl:block sticky top-[72px] space-y-4">
+    
+    <!-- Verse of the Day Widget -->
+    <section class="card p-4 bg-surface border border-line space-y-3">
+      <div class="flex items-center justify-between border-b border-line pb-2.5">
+        <div class="flex items-center gap-2 text-xs font-bold text-[#1877F2] uppercase tracking-wider">
+          <i class="fa-solid fa-sun text-amber-500"></i> Verse of the Day
+        </div>
+        <button class="w-7 h-7 rounded-full hover:bg-raised flex items-center justify-center text-muted" title="Share" onclick="window.copyDailyVerse()">
+          <i class="fa-regular fa-copy text-xs"></i>
+        </button>
+      </div>
+      <blockquote class="space-y-1.5" id="right-votd">
+        <p class="font-khmer text-sm text-ink leading-relaxed font-medium" id="right-votd-km">«ដ្បិតព្រះទ្រង់ស្រឡាញ់មនុស្សលោក...»</p>
+        <p class="font-serif italic text-xs text-muted leading-relaxed" id="right-votd-en">“For God so loved the world...”</p>
+        <div class="text-xs font-bold text-[#1877F2] pt-1" id="right-votd-ref">John 3:16 • យ៉ូហាន ៣:១៦</div>
+      </blockquote>
+      <div class="pt-2 border-t border-line flex items-center justify-between">
+        <button class="btn btn-neutral !py-1 !px-2.5 !text-xs" onclick="window.switchTool('daily')">Open Devotional</button>
+        <button class="btn btn-primary !py-1 !px-2.5 !text-xs" onclick="window.designDailyVerse()">Design Card</button>
+      </div>
+    </section>
+
+    <!-- Word Study Quick Spotlight -->
+    <section class="card p-4 bg-surface border border-line space-y-2.5">
+      <div class="flex items-center gap-2 text-xs font-bold text-emerald-600 uppercase tracking-wider">
+        <i class="fa-solid fa-seedling"></i> Greek Word of the Day
+      </div>
+      <div>
+        <h4 class="font-bold text-sm text-ink">Grace • <span class="text-xs text-brand font-serif">χάρις (charis)</span></h4>
+        <p class="text-xs text-muted mt-1 leading-relaxed">God's unmerited favor and divine enablement freely bestowed through Jesus Christ.</p>
+      </div>
+      <button class="text-xs text-brand font-semibold hover:underline block pt-1" onclick="window.switchTool('concordance')">
+        Explore 9 biblical word studies →
+      </button>
+    </section>
+
+    <!-- Preacher Quote Spotlight -->
+    <section class="card p-4 bg-surface border border-line space-y-2">
+      <div class="flex items-center gap-2 text-xs font-bold text-purple-600 uppercase tracking-wider">
+        <i class="fa-solid fa-quote-left"></i> Inspiration
+      </div>
+      <p class="font-serif italic text-xs text-ink/90 leading-relaxed">“Visit many good books, but live in the Bible.”</p>
+      <div class="text-[11px] font-bold text-muted text-right">— Charles Spurgeon</div>
+    </section>
+
+  </aside>
+
 </main>
 
 <audio id="bible-audio-player" preload="none" class="hidden"></audio>
 
-<script src="/faithin-app/assets/faithin-runtime.js?v=20260902-fb-v2"></script>
-<script src="/assets/js/faith-in-backend.js?v=20260902-fb-v2"></script>
-<script src="/faithin-app/assets/faithin.js?v=20260902-fb-v2"></script>
+<script src="/faithin-app/assets/faithin-runtime.js?v=20260902-std-v1"></script>
+<script src="/assets/js/faith-in-backend.js?v=20260902-std-v1"></script>
+<script src="/faithin-app/assets/faithin.js?v=20260902-std-v1"></script>
 <script>
 (() => {
   'use strict';
@@ -334,17 +253,14 @@
       ref: 'យ៉ូហាន ៣:១៦ • John 3:16',
       bgIndex: 0,
       customBg: null,
-      aspectRatio: '1:1',
       fontFamily: 'Koh Santepheap',
-      overlayOpacity: 45,
-      textColor: '#ffffff'
+      overlayOpacity: 45
     },
 
     daily: null,
     concordanceQuery: '',
     concordanceResult: null,
 
-    typingPassageId: 'psalm-23',
     typingInput: '',
     typingStartTime: 0,
     typingWpm: 0,
@@ -413,16 +329,13 @@
   const $$ = (s, r = document) => [...r.querySelectorAll(s)];
   const esc = (s) => String(s || '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
-  function setTool(toolName) {
+  window.switchTool = (toolName) => {
     state.activeTool = toolName;
-    $$('.fb-nav-btn').forEach(btn => {
-      btn.classList.toggle('is-active', btn.dataset.tool === toolName);
-    });
-    $$('[data-tool-mob]').forEach(btn => {
-      btn.classList.toggle('is-active', btn.dataset.toolMob === toolName);
+    $$('.bible-tab-btn').forEach(btn => {
+      btn.classList.toggle('is-active', btn.dataset.tab === toolName);
     });
     render();
-  }
+  };
 
   async function loadChapterVerses() {
     state.loading = true;
@@ -443,7 +356,7 @@
         }
       }
     } catch (err) {
-      console.warn('Verses fetch error:', err);
+      console.warn('Verses load error:', err);
     } finally {
       state.loading = false;
       render();
@@ -455,7 +368,12 @@
     try {
       const res = await fetch('/api/bible/daily');
       const json = await res.json();
-      if (json.success) state.daily = json.data;
+      if (json.success) {
+        state.daily = json.data;
+        if ($('#right-votd-km')) $('#right-votd-km').textContent = `«${json.data.khmer}»`;
+        if ($('#right-votd-en')) $('#right-votd-en').textContent = `“${json.data.text}”`;
+        if ($('#right-votd-ref')) $('#right-votd-ref').textContent = `${json.data.ref} • ${json.data.khmerRef}`;
+      }
     } catch (_) {}
   }
 
@@ -468,36 +386,33 @@
   }
 
   // ---------------------------------------------------------------------------
-  // Top Controls Bar (Facebook Style Selectors)
+  // Selectors Controls Header
   // ---------------------------------------------------------------------------
   function renderControlsBar(isParallel = false) {
     const curBook = BOOKS.find(b => b.name === state.book) || BOOKS[0];
     const chaptersList = Array.from({ length: curBook.ch }, (_, i) => i + 1);
 
     return `
-      <div class="fb-card p-3.5 space-y-3">
+      <div class="card p-3.5 bg-surface border border-line space-y-3">
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 items-end">
           
-          <!-- Book Selector -->
           <div class="space-y-1">
             <label class="text-[11px] font-bold uppercase tracking-wider text-muted">Book • គម្ពីរ</label>
-            <select id="sel-book" class="fb-input w-full font-semibold">
+            <select id="sel-book" class="w-full bg-raised border border-line rounded-lg px-2.5 py-1.5 text-[13.5px] font-semibold text-ink outline-none focus:border-brand">
               ${BOOKS.map(b => `<option value="${b.name}" ${b.name === state.book ? 'selected' : ''}>${b.km} (${b.name})</option>`).join('')}
             </select>
           </div>
 
-          <!-- Chapter Selector -->
           <div class="space-y-1">
             <label class="text-[11px] font-bold uppercase tracking-wider text-muted">Chapter • ជំពូក</label>
-            <select id="sel-chapter" class="fb-input w-full font-semibold">
+            <select id="sel-chapter" class="w-full bg-raised border border-line rounded-lg px-2.5 py-1.5 text-[13.5px] font-semibold text-ink outline-none focus:border-brand">
               ${chaptersList.map(c => `<option value="${c}" ${c === Number(state.chapter) ? 'selected' : ''}>Chapter ${c}</option>`).join('')}
             </select>
           </div>
 
-          <!-- Version 1 Selector -->
           <div class="space-y-1">
-            <label class="text-[11px] font-bold uppercase tracking-wider text-muted">Translation • កំណែ</label>
-            <select id="sel-version" class="fb-input w-full font-medium">
+            <label class="text-[11px] font-bold uppercase tracking-wider text-muted">Translation</label>
+            <select id="sel-version" class="w-full bg-raised border border-line rounded-lg px-2.5 py-1.5 text-[13px] font-medium text-ink outline-none focus:border-brand">
               <option value="KHMER_OLD_1954" ${state.version === 'KHMER_OLD_1954' ? 'selected' : ''}>🇰🇭 ខ្មែរ ១៩៥៤ (ពគប)</option>
               <option value="KJV" ${state.version === 'KJV' ? 'selected' : ''}>🇺🇸 King James (KJV)</option>
               <option value="WEB" ${state.version === 'WEB' ? 'selected' : ''}>🌐 World English (WEB)</option>
@@ -506,10 +421,9 @@
           </div>
 
           ${isParallel ? `
-          <!-- Version 2 Selector (Parallel) -->
           <div class="space-y-1">
             <label class="text-[11px] font-bold uppercase tracking-wider text-muted">Compare With</label>
-            <select id="sel-version2" class="fb-input w-full font-medium">
+            <select id="sel-version2" class="w-full bg-raised border border-line rounded-lg px-2.5 py-1.5 text-[13px] font-medium text-ink outline-none focus:border-brand">
               <option value="KJV" ${state.version2 === 'KJV' ? 'selected' : ''}>🇺🇸 King James (KJV)</option>
               <option value="WEB" ${state.version2 === 'WEB' ? 'selected' : ''}>🌐 World English (WEB)</option>
               <option value="KHMER_OLD_1954" ${state.version2 === 'KHMER_OLD_1954' ? 'selected' : ''}>🇰🇭 ខ្មែរ ១៩៥៤</option>
@@ -517,13 +431,11 @@
             </select>
           </div>
           ` : `
-          <!-- Font Size & Audio Action -->
           <div class="flex items-center justify-end gap-1.5 pt-4 sm:pt-0">
-            <button id="btn-font-dec" class="fb-btn-gray !py-1.5 !px-2.5 text-xs" title="Smaller font">A-</button>
-            <button id="btn-font-inc" class="fb-btn-gray !py-1.5 !px-2.5 text-sm font-bold" title="Larger font">A+</button>
-            <button id="btn-play-audio" class="fb-btn-blue !py-1.5 !px-3 text-xs ml-auto" title="Listen to Devotional">
-              <i class="fa-solid fa-headphones"></i>
-              <span>Audio</span>
+            <button id="btn-font-dec" class="btn btn-neutral !py-1.5 !px-2.5 text-xs" title="Smaller font">A-</button>
+            <button id="btn-font-inc" class="btn btn-neutral !py-1.5 !px-2.5 text-xs font-bold" title="Larger font">A+</button>
+            <button id="btn-play-audio" class="btn btn-primary !py-1.5 !px-3 text-xs ml-auto" title="Listen to Devotional">
+              <i class="fa-solid fa-headphones mr-1"></i> Audio
             </button>
           </div>
           `}
@@ -537,12 +449,11 @@
   function renderReader() {
     const curBook = BOOKS.find(b => b.name === state.book) || BOOKS[0];
     return `
-      <div class="space-y-3.5">
+      <div class="space-y-4">
         ${renderControlsBar(false)}
 
-        <div class="fb-card p-5 sm:p-6 space-y-5">
-          <!-- Chapter Header -->
-          <div class="flex items-center justify-between border-b border-[#e4e6eb] dark:border-[#393a3b] pb-3.5">
+        <div class="card p-5 sm:p-6 bg-surface border border-line space-y-5">
+          <div class="flex items-center justify-between border-b border-line pb-3.5">
             <div>
               <h1 class="text-xl sm:text-2xl font-bold font-khmer text-ink flex items-center gap-2">
                 ${curBook.km} <span class="text-base text-muted font-sans font-normal">(${curBook.name}) ${state.chapter}</span>
@@ -550,30 +461,28 @@
               <p class="text-[12px] text-muted mt-0.5">${state.version === 'KHMER_OLD_1954' ? 'ព្រះគម្ពីរបរិសុទ្ធ ១៩៥៤ (ពគប - Khmer Old Version)' : state.version}</p>
             </div>
             
-            <button class="fb-btn-blue text-xs !py-1.5 !px-3 shadow-sm" onclick="window.sendChapterToDesigner()">
+            <button class="btn btn-primary !py-1.5 !px-3 text-xs" onclick="window.sendChapterToDesigner()">
               <i class="fa-solid fa-wand-magic-sparkles mr-1"></i> Make Card
             </button>
           </div>
 
-          <!-- Verses Content -->
           ${state.loading ? `
             <div class="py-16 text-center text-muted">
-              <i class="fa-solid fa-circle-notch fa-spin text-3xl text-[#1877F2] mb-2"></i>
+              <i class="fa-solid fa-circle-notch fa-spin text-3xl text-brand mb-2"></i>
               <p class="text-sm">Loading Scripture verses...</p>
             </div>
           ` : `
             <div class="space-y-1" style="font-size: ${state.fontSize}px;">
               ${state.verses.length === 0 ? '<p class="text-muted p-4">No verses found.</p>' : state.verses.map(v => `
-                <div class="fb-verse-row group flex items-start gap-2.5">
-                  <span class="fb-badge shrink-0 select-none mt-1">${v.v}</span>
+                <div class="verse-row group flex items-start gap-2.5">
+                  <span class="verse-badge shrink-0 select-none mt-1">${v.v}</span>
                   <p class="flex-1 text-ink font-khmer leading-relaxed font-normal">${esc(v.text)}</p>
                   
-                  <!-- Actions -->
                   <div class="opacity-0 group-hover:opacity-100 flex items-center gap-1 shrink-0 transition-opacity">
-                    <button class="w-7 h-7 rounded-full hover:bg-black/10 dark:hover:bg-white/10 flex items-center justify-center text-muted" title="Copy Verse" onclick="window.copyVerseText('${esc(v.text)}', '${curBook.km} ${state.chapter}:${v.v}')">
+                    <button class="w-7 h-7 rounded hover:bg-raised flex items-center justify-center text-muted" title="Copy Verse" onclick="window.copyVerseText('${esc(v.text)}', '${curBook.km} ${state.chapter}:${v.v}')">
                       <i class="fa-regular fa-copy text-xs"></i>
                     </button>
-                    <button class="w-7 h-7 rounded-full hover:bg-black/10 dark:hover:bg-white/10 flex items-center justify-center text-[#1877F2]" title="Design Verse Card" onclick="window.designSingleVerse('${esc(v.text)}', '${curBook.km} ${state.chapter}:${v.v}')">
+                    <button class="w-7 h-7 rounded hover:bg-raised flex items-center justify-center text-brand" title="Design Verse Card" onclick="window.designSingleVerse('${esc(v.text)}', '${curBook.km} ${state.chapter}:${v.v}')">
                       <i class="fa-solid fa-palette text-xs"></i>
                     </button>
                   </div>
@@ -590,25 +499,25 @@
   function renderParallel() {
     const curBook = BOOKS.find(b => b.name === state.book) || BOOKS[0];
     return `
-      <div class="space-y-3.5">
+      <div class="space-y-4">
         ${renderControlsBar(true)}
 
-        <div class="fb-card p-5 sm:p-6 space-y-4">
-          <div class="flex items-center justify-between border-b border-[#e4e6eb] dark:border-[#393a3b] pb-3">
+        <div class="card p-5 sm:p-6 bg-surface border border-line space-y-4">
+          <div class="flex items-center justify-between border-b border-line pb-3">
             <h1 class="text-lg sm:text-xl font-bold font-khmer text-ink">
               ${curBook.km} ${state.chapter} • <span class="text-sm text-muted font-sans font-normal">${curBook.name} ${state.chapter}</span>
             </h1>
-            <span class="fb-badge !px-3">Bilingual Parallel</span>
+            <span class="text-xs font-bold text-brand bg-brand/10 px-2.5 py-0.5 rounded-full">Bilingual Parallel</span>
           </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 divide-y md:divide-y-0 md:divide-x divide-[#e4e6eb] dark:divide-[#393a3b]">
-            <div class="space-y-2.5 pr-0 md:pr-3">
-              <div class="font-bold text-xs uppercase tracking-wider text-[#1877F2] pb-1 border-b border-[#e4e6eb] dark:border-[#393a3b]">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 divide-y md:divide-y-0 md:divide-x divide-line">
+            <div class="space-y-2 pr-0 md:pr-3">
+              <div class="font-bold text-xs uppercase tracking-wider text-[#1877F2] pb-1 border-b border-line/60">
                 ${state.version}
               </div>
               <div class="space-y-2 text-[14.5px]">
                 ${state.verses.map(v => `
-                  <div class="p-2.5 rounded-lg bg-black/[0.02] dark:bg-white/[0.02] border border-[#e4e6eb]/60 dark:border-[#393a3b]/60">
+                  <div class="p-2.5 rounded-lg bg-raised/50 border border-line/50">
                     <span class="font-bold text-xs text-[#1877F2] mr-1">${v.v}.</span>
                     <span class="font-khmer text-ink leading-relaxed">${esc(v.text)}</span>
                   </div>
@@ -616,13 +525,13 @@
               </div>
             </div>
 
-            <div class="space-y-2.5 pt-3 md:pt-0 pl-0 md:pl-3">
-              <div class="font-bold text-xs uppercase tracking-wider text-emerald-600 pb-1 border-b border-[#e4e6eb] dark:border-[#393a3b]">
+            <div class="space-y-2 pt-3 md:pt-0 pl-0 md:pl-3">
+              <div class="font-bold text-xs uppercase tracking-wider text-emerald-600 pb-1 border-b border-line/60">
                 ${state.version2}
               </div>
               <div class="space-y-2 text-[14.5px]">
                 ${state.verses2.map(v => `
-                  <div class="p-2.5 rounded-lg bg-black/[0.02] dark:bg-white/[0.02] border border-[#e4e6eb]/60 dark:border-[#393a3b]/60">
+                  <div class="p-2.5 rounded-lg bg-raised/50 border border-line/50">
                     <span class="font-bold text-xs text-emerald-600 mr-1">${v.v}.</span>
                     <span class="font-serif italic text-ink/90 leading-relaxed">${esc(v.text)}</span>
                   </div>
@@ -635,87 +544,82 @@
     `;
   }
 
-  // 3. Scripture Card Designer Tool (Clean Facebook UI Layout)
+  // 3. Scripture Card Designer Tool (Balanced 2-Column Standard Card)
   function renderDesigner() {
     const d = state.designer;
     return `
       <div class="space-y-4">
         
-        <!-- Header -->
-        <div class="fb-card p-4 flex items-center justify-between">
+        <div class="card p-4 bg-surface border border-line flex items-center justify-between">
           <div>
             <h1 class="text-xl font-bold text-ink flex items-center gap-2">
-              <i class="fa-solid fa-palette text-[#1877F2]"></i> Scripture Card Designer
+              <i class="fa-solid fa-palette text-brand"></i> Scripture Card Designer
             </h1>
-            <p class="text-xs text-muted">Create elegant Gospel verse graphics formatted for Facebook, Stories, and Telegram.</p>
+            <p class="text-xs text-muted">Generate shareable HD Gospel verse graphics formatted for Facebook, Stories, and Telegram.</p>
           </div>
-          <button class="fb-btn-blue text-xs shadow-sm" onclick="window.downloadCardImage()">
-            <i class="fa-solid fa-download"></i>
-            <span>Export HD PNG</span>
+          <button class="btn btn-primary text-xs shadow-sm" onclick="window.downloadCardImage()">
+            <i class="fa-solid fa-download mr-1"></i> Export HD PNG
           </button>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-start">
           
           <!-- Left: Canvas Card Preview -->
-          <div class="lg:col-span-6 fb-card p-4 sm:p-5 flex flex-col items-center justify-center space-y-3">
-            <div class="relative w-full max-w-[380px] aspect-square overflow-hidden rounded-xl shadow-md border border-[#e4e6eb] dark:border-[#393a3b] bg-black">
+          <div class="md:col-span-6 card p-4 bg-surface border border-line flex flex-col items-center justify-center space-y-3">
+            <div class="relative w-full max-w-[340px] aspect-square overflow-hidden rounded-xl shadow-md border border-line bg-black">
               <canvas id="designer-canvas" width="1080" height="1080" class="w-full h-full object-contain block"></canvas>
             </div>
 
-            <!-- Canvas Quick Bar -->
-            <div class="flex items-center justify-between w-full max-w-[380px] text-xs text-muted pt-1">
+            <div class="flex items-center justify-between w-full max-w-[340px] text-xs text-muted pt-1">
               <span class="font-semibold">1080 &times; 1080px (HD)</span>
               <div class="flex items-center gap-1.5">
-                <button class="fb-btn-gray !py-1 !px-2.5 text-xs" onclick="window.copyCardImageToClipboard()">
-                  <i class="fa-regular fa-copy"></i> Copy
+                <button class="btn btn-neutral !py-1 !px-2.5 text-xs" onclick="window.copyCardImageToClipboard()">
+                  <i class="fa-regular fa-copy mr-1"></i> Copy
                 </button>
-                <button class="fb-btn-blue !py-1 !px-2.5 text-xs" onclick="window.shareCardToFaithInFeed()">
-                  <i class="fa-solid fa-share-nodes"></i> Post
+                <button class="btn btn-primary !py-1 !px-2.5 text-xs" onclick="window.shareCardToFaithInFeed()">
+                  <i class="fa-solid fa-share-nodes mr-1"></i> Post
                 </button>
               </div>
             </div>
           </div>
 
           <!-- Right: Customizer Form -->
-          <div class="lg:col-span-6 fb-card p-4 sm:p-5 space-y-3.5">
+          <div class="md:col-span-6 card p-4 bg-surface border border-line space-y-3.5">
             
             <div class="space-y-1">
               <label class="text-xs font-bold uppercase tracking-wider text-muted">Khmer Scripture Text</label>
-              <textarea id="card-txt-khmer" rows="3" class="fb-input w-full font-khmer text-sm leading-relaxed">${esc(d.textKhmer)}</textarea>
+              <textarea id="card-txt-khmer" rows="3" class="w-full p-2.5 text-sm font-khmer rounded-lg bg-raised border border-line text-ink outline-none focus:border-brand leading-relaxed">${esc(d.textKhmer)}</textarea>
             </div>
 
             <div class="space-y-1">
               <label class="text-xs font-bold uppercase tracking-wider text-muted">English Verse (Optional)</label>
-              <textarea id="card-txt-english" rows="2" class="fb-input w-full font-serif italic text-xs leading-relaxed">${esc(d.textEnglish)}</textarea>
+              <textarea id="card-txt-english" rows="2" class="w-full p-2.5 text-xs font-serif italic rounded-lg bg-raised border border-line text-ink outline-none focus:border-brand leading-relaxed">${esc(d.textEnglish)}</textarea>
             </div>
 
             <div class="space-y-1">
               <label class="text-xs font-bold uppercase tracking-wider text-muted">Reference Label</label>
-              <input type="text" id="card-txt-ref" value="${esc(d.ref)}" class="fb-input w-full font-bold text-xs">
+              <input type="text" id="card-txt-ref" value="${esc(d.ref)}" class="w-full px-3 py-1.5 text-xs font-bold rounded-lg bg-raised border border-line text-ink outline-none focus:border-brand">
             </div>
 
-            <!-- Wallpaper Background Grid -->
-            <div class="space-y-2 pt-2 border-t border-[#e4e6eb] dark:border-[#393a3b]">
+            <div class="space-y-2 pt-2 border-t border-line">
               <div class="flex justify-between items-center text-xs font-bold text-muted">
                 <span>Select Wallpaper</span>
-                <label for="card-upload-bg" class="text-[#1877F2] font-semibold hover:underline cursor-pointer">Upload Photo</label>
+                <label for="card-upload-bg" class="text-brand font-semibold hover:underline cursor-pointer">Upload Photo</label>
                 <input type="file" id="card-upload-bg" accept="image/*" class="hidden">
               </div>
               <div class="grid grid-cols-4 gap-2">
                 ${WALLPAPERS.map((url, i) => `
-                  <button class="relative h-12 rounded-lg overflow-hidden border-2 ${d.bgIndex === i && !d.customBg ? 'border-[#1877F2] ring-2 ring-[#1877F2]/30' : 'border-transparent'} transition" onclick="window.selectCardBg(${i})">
+                  <button class="relative h-12 rounded-lg overflow-hidden border-2 ${d.bgIndex === i && !d.customBg ? 'border-brand ring-2 ring-brand/30' : 'border-transparent'} transition" onclick="window.selectCardBg(${i})">
                     <img src="${url}" alt="" class="w-full h-full object-cover">
                   </button>
                 `).join('')}
               </div>
             </div>
 
-            <!-- Controls -->
-            <div class="grid grid-cols-2 gap-3 pt-2 border-t border-[#e4e6eb] dark:border-[#393a3b]">
+            <div class="grid grid-cols-2 gap-3 pt-2 border-t border-line">
               <div class="space-y-1">
                 <label class="text-[11px] font-bold text-muted">Font Family</label>
-                <select id="card-font" class="fb-input w-full text-xs font-semibold">
+                <select id="card-font" class="w-full p-1.5 text-xs bg-raised border border-line rounded-lg text-ink font-semibold">
                   <option value="Koh Santepheap" ${d.fontFamily === 'Koh Santepheap' ? 'selected' : ''}>Koh Santepheap</option>
                   <option value="Lora" ${d.fontFamily === 'Lora' ? 'selected' : ''}>Lora</option>
                   <option value="Inter" ${d.fontFamily === 'Inter' ? 'selected' : ''}>Inter Sans</option>
@@ -724,7 +628,7 @@
 
               <div class="space-y-1">
                 <label class="text-[11px] font-bold text-muted">Dark Tint Overlay</label>
-                <input type="range" min="15" max="80" value="${d.overlayOpacity}" id="card-overlay" class="w-full accent-[#1877F2] mt-1.5">
+                <input type="range" min="15" max="80" value="${d.overlayOpacity}" id="card-overlay" class="w-full accent-brand mt-1.5">
               </div>
             </div>
 
@@ -737,10 +641,10 @@
   // 4. Verse of the Day Tool
   function renderDaily() {
     const d = state.daily;
-    if (!d) return `<div class="fb-card p-12 text-center text-muted"><i class="fa-solid fa-circle-notch fa-spin text-2xl text-[#1877F2] mb-2"></i><p>Loading Verse of the Day...</p></div>`;
+    if (!d) return `<div class="card p-12 text-center text-muted"><i class="fa-solid fa-circle-notch fa-spin text-2xl text-brand mb-2"></i><p>Loading Verse of the Day...</p></div>`;
     return `
-      <div class="space-y-3.5">
-        <div class="bg-[linear-gradient(135deg,#1877f2,#0052cc)] rounded-xl p-6 sm:p-8 text-white shadow-md relative overflow-hidden space-y-4">
+      <div class="space-y-4">
+        <div class="bg-[linear-gradient(135deg,#1877f2,#0052cc)] rounded-2xl p-6 sm:p-8 text-white shadow-md relative overflow-hidden space-y-4">
           <div class="flex items-center justify-between text-xs text-amber-300 font-bold uppercase tracking-wider">
             <span>✨ VERSE OF THE DAY • ខគម្ពីរប្រចាំថ្ងៃ</span>
             <span class="text-white/80 font-medium">${d.date}</span>
@@ -758,7 +662,7 @@
             </div>
           </blockquote>
 
-          <div class="p-3 rounded-lg bg-black/20 backdrop-blur-md flex flex-wrap items-center justify-between gap-3">
+          <div class="p-3 rounded-xl bg-black/20 backdrop-blur-md flex flex-wrap items-center justify-between gap-3">
             <div class="flex items-center gap-3">
               <button class="w-9 h-9 rounded-full bg-white text-[#1877F2] flex items-center justify-center font-bold shadow hover:scale-105 transition" onclick="window.playAudioTrack('${d.audioUrl}')">
                 <i class="fa-solid fa-play ml-0.5 text-xs"></i>
@@ -770,18 +674,18 @@
             </div>
 
             <div class="flex items-center gap-1.5">
-              <button class="fb-btn-gray !bg-white/20 !text-white hover:!bg-white/30 text-xs !py-1 !px-2.5" onclick="window.designDailyVerse()">
-                <i class="fa-solid fa-palette"></i> Create Card
+              <button class="btn !bg-white/20 !text-white hover:!bg-white/30 text-xs !py-1 !px-2.5" onclick="window.designDailyVerse()">
+                <i class="fa-solid fa-palette mr-1"></i> Create Card
               </button>
-              <button class="fb-btn-gray !bg-white/20 !text-white hover:!bg-white/30 text-xs !py-1 !px-2.5" onclick="window.copyDailyVerse()">
-                <i class="fa-regular fa-copy"></i> Copy
+              <button class="btn !bg-white/20 !text-white hover:!bg-white/30 text-xs !py-1 !px-2.5" onclick="window.copyDailyVerse()">
+                <i class="fa-regular fa-copy mr-1"></i> Copy
               </button>
             </div>
           </div>
         </div>
 
-        <div class="fb-card p-5 space-y-2.5">
-          <div class="flex items-center gap-2 text-[#1877F2] text-xs font-bold uppercase tracking-wider">
+        <div class="card p-5 bg-surface border border-line space-y-2.5">
+          <div class="flex items-center gap-2 text-brand text-xs font-bold uppercase tracking-wider">
             <i class="fa-solid fa-seedling"></i>
             <span>Daily Devotional Reflection</span>
           </div>
@@ -797,35 +701,33 @@
   function renderConcordance() {
     const items = (state.concordanceResult && state.concordanceResult.items) || [];
     return `
-      <div class="space-y-3.5">
-        <div class="fb-card p-4 flex items-center justify-between">
-          <div>
-            <h1 class="text-xl font-bold text-ink">Concordance &amp; Word Study • វចនានុក្រម</h1>
-            <p class="text-xs text-muted">Explore original Greek and Hebrew root terms, Strong’s definitions, and key references.</p>
-          </div>
+      <div class="space-y-4">
+        <div class="card p-4 bg-surface border border-line">
+          <h1 class="text-xl font-bold text-ink">Concordance &amp; Word Study • វចនានុក្រម</h1>
+          <p class="text-xs text-muted">Explore original Greek and Hebrew root terms, Strong’s definitions, and key references.</p>
         </div>
 
-        <div class="fb-card p-3">
+        <div class="card p-3 bg-surface border border-line">
           <div class="flex items-center gap-2">
             <i class="fa-solid fa-magnifying-glass text-muted text-xs ml-2"></i>
             <input type="text" id="concordance-search" value="${esc(state.concordanceQuery)}" placeholder="Search root words: grace, faith, love, peace, prayer..." class="flex-1 bg-transparent px-2 py-1.5 text-xs text-ink outline-none">
-            <button class="fb-btn-blue text-xs !py-1.5 !px-3" onclick="window.searchConcordanceWord()">Search</button>
+            <button class="btn btn-primary text-xs !py-1.5 !px-3" onclick="window.searchConcordanceWord()">Search</button>
           </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           ${items.map(item => `
-            <div class="fb-card p-4 space-y-2 hover:shadow-md transition">
+            <div class="card p-4 bg-surface border border-line space-y-2 hover:shadow-md transition">
               <div class="flex items-center justify-between">
-                <span class="fb-badge text-[11px]">${item.language} • ${item.strongs}</span>
+                <span class="text-xs font-bold uppercase tracking-wider text-brand bg-brand/10 px-2 py-0.5 rounded-full">${item.language} • ${item.strongs}</span>
                 <span class="text-xs text-muted font-semibold">${item.occurrences}x</span>
               </div>
               <div>
-                <h3 class="text-base font-bold text-ink">${esc(item.word)} <span class="text-sm text-[#1877F2] font-serif font-normal">(${esc(item.original)})</span></h3>
+                <h3 class="text-base font-bold text-ink">${esc(item.word)} <span class="text-sm text-brand font-serif font-normal">(${esc(item.original)})</span></h3>
                 <p class="text-xs font-mono text-muted">${esc(item.transliteration)}</p>
               </div>
               <p class="text-[12.5px] text-ink/90 leading-relaxed">${esc(item.definition)}</p>
-              <div class="pt-2 border-t border-[#e4e6eb] dark:border-[#393a3b] text-xs text-muted">
+              <div class="pt-2 border-t border-line text-xs text-muted">
                 <strong class="text-ink">Key verses:</strong> ${item.keyVerses.join(', ')}
               </div>
             </div>
@@ -839,26 +741,26 @@
   function renderTyping() {
     const text = 'The LORD is my shepherd; I shall not want. He maketh me to lie down in green pastures: he leadeth me beside the still waters.';
     return `
-      <div class="space-y-3.5">
-        <div class="fb-card p-4">
+      <div class="space-y-4">
+        <div class="card p-4 bg-surface border border-line">
           <h1 class="text-xl font-bold text-ink">Focus Typing &amp; Memory • ហាត់វាយព្រះបន្ទូល</h1>
           <p class="text-xs text-muted">Practice scripture memorization and typing accuracy with live feedback.</p>
         </div>
 
-        <div class="fb-card p-5 space-y-4">
-          <div class="flex flex-wrap items-center justify-between gap-3 border-b border-[#e4e6eb] dark:border-[#393a3b] pb-3">
-            <span class="fb-badge !px-3">Psalm 23:1-3</span>
+        <div class="card p-5 bg-surface border border-line space-y-4">
+          <div class="flex flex-wrap items-center justify-between gap-3 border-b border-line pb-3">
+            <span class="text-xs font-bold text-brand bg-brand/10 px-3 py-1 rounded-full">Psalm 23:1-3</span>
             <div class="flex items-center gap-3 text-xs font-bold text-ink">
-              <span class="px-2.5 py-1 rounded bg-black/5 dark:bg-white/5">Speed: <strong class="text-[#1877F2]">${state.typingWpm}</strong> WPM</span>
-              <span class="px-2.5 py-1 rounded bg-black/5 dark:bg-white/5">Accuracy: <strong class="text-emerald-500">${state.typingAccuracy}%</strong></span>
+              <span class="px-2.5 py-1 rounded bg-raised">Speed: <strong class="text-brand">${state.typingWpm}</strong> WPM</span>
+              <span class="px-2.5 py-1 rounded bg-raised">Accuracy: <strong class="text-emerald-500">${state.typingAccuracy}%</strong></span>
             </div>
           </div>
 
-          <div class="p-4 rounded-lg bg-black/[0.02] dark:bg-white/[0.02] border border-[#e4e6eb] dark:border-[#393a3b] font-serif text-base leading-relaxed text-ink select-none">
+          <div class="p-4 rounded-xl bg-raised/60 border border-line font-serif text-base leading-relaxed text-ink select-none">
             ${text}
           </div>
 
-          <textarea id="typing-input-box" rows="3" placeholder="Start typing the passage here to test your memory and speed..." class="fb-input w-full text-sm leading-relaxed"></textarea>
+          <textarea id="typing-input-box" rows="3" placeholder="Start typing the passage here to test your memory and speed..." class="w-full p-3 text-sm rounded-xl bg-raised border border-line text-ink outline-none focus:border-brand leading-relaxed"></textarea>
         </div>
       </div>
     `;
@@ -867,112 +769,41 @@
   // 7. Sermon Notes Planner
   function renderNotes() {
     return `
-      <div class="space-y-3.5">
-        <div class="fb-card p-4 flex items-center justify-between">
+      <div class="space-y-4">
+        <div class="card p-4 bg-surface border border-line flex items-center justify-between">
           <div>
             <h1 class="text-xl font-bold text-ink">Sermon Notes Planner • កំណត់ត្រាទេសនា</h1>
             <p class="text-xs text-muted">Structured 3-part framework for capturing sermons, teachings, and personal insights.</p>
           </div>
-          <button class="fb-btn-blue text-xs shadow-sm" onclick="window.saveSermonNotesAction()">
-            <i class="fa-solid fa-save"></i> Save Notes
+          <button class="btn btn-primary text-xs shadow-sm" onclick="window.saveSermonNotesAction()">
+            <i class="fa-solid fa-save mr-1"></i> Save Notes
           </button>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-3.5">
-          <div class="fb-card p-4 space-y-2">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <div class="card p-4 bg-surface border border-line space-y-2">
             <div class="flex items-center gap-2 text-blue-600 font-bold text-sm">
               <i class="fa-solid fa-landmark"></i>
               <span>1. Doctrine (គោលលទ្ធិ)</span>
             </div>
-            <textarea id="notes-doctrine" rows="10" class="fb-input w-full text-xs leading-relaxed" placeholder="Write doctrine notes here...">${esc(state.notes.Doctrine)}</textarea>
+            <textarea id="notes-doctrine" rows="10" class="w-full p-2.5 text-xs rounded-lg bg-raised border border-line text-ink outline-none focus:border-brand leading-relaxed" placeholder="Write doctrine notes here...">${esc(state.notes.Doctrine)}</textarea>
           </div>
 
-          <div class="fb-card p-4 space-y-2">
+          <div class="card p-4 bg-surface border border-line space-y-2">
             <div class="flex items-center gap-2 text-emerald-600 font-bold text-sm">
               <i class="fa-solid fa-heart"></i>
-              <span>2. Encouragement (លើកទឹកចិត្ត)</span>
+              <span>2. Encouragement</span>
             </div>
-            <textarea id="notes-encouragement" rows="10" class="fb-input w-full text-xs leading-relaxed" placeholder="Write encouragement notes here...">${esc(state.notes.Encouragement)}</textarea>
+            <textarea id="notes-encouragement" rows="10" class="w-full p-2.5 text-xs rounded-lg bg-raised border border-line text-ink outline-none focus:border-brand leading-relaxed" placeholder="Write encouragement notes here...">${esc(state.notes.Encouragement)}</textarea>
           </div>
 
-          <div class="fb-card p-4 space-y-2">
+          <div class="card p-4 bg-surface border border-line space-y-2">
             <div class="flex items-center gap-2 text-purple-600 font-bold text-sm">
               <i class="fa-solid fa-person-walking"></i>
-              <span>3. Application (ការអនុវត្ត)</span>
+              <span>3. Application</span>
             </div>
-            <textarea id="notes-application" rows="10" class="fb-input w-full text-xs leading-relaxed" placeholder="Write application steps here...">${esc(state.notes.Application)}</textarea>
+            <textarea id="notes-application" rows="10" class="w-full p-2.5 text-xs rounded-lg bg-raised border border-line text-ink outline-none focus:border-brand leading-relaxed" placeholder="Write application steps here...">${esc(state.notes.Application)}</textarea>
           </div>
-        </div>
-      </div>
-    `;
-  }
-
-  // 8. Media Sanctuary
-  function renderMedia() {
-    return `
-      <div class="space-y-3.5">
-        <div class="fb-card p-4">
-          <h1 class="text-xl font-bold text-ink">Audio &amp; Video Sanctuary • សោតទស្សន៍</h1>
-          <p class="text-xs text-muted">Spoken audio blessings, meditation passages, and uplifting ministry audio.</p>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
-          ${[
-            { title: 'Faithful Heart • ពរជ័យដួងចិត្តស្មោះត្រង់', dur: '3:45', url: '/assets/audio/blessings/faithful-heart.mp3', img: '/assets/images/wallpapers/wallpaper-01.jpg' },
-            { title: 'Grace Morning • ព្រះគុណនាពេលព្រឹក', dur: '4:12', url: '/assets/audio/blessings/grace-morning.mp3', img: '/assets/images/wallpapers/wallpaper-02.jpg' },
-            { title: 'Still Waters • ទឹកស្ងប់ស្ងាត់ (Psalm 23)', dur: '5:20', url: '/assets/audio/blessings/still-waters.mp3', img: '/assets/images/wallpapers/wallpaper-03.jpg' },
-            { title: 'Hope Rising • ក្តីសង្ឃឹមរះឡើង', dur: '3:30', url: '/assets/audio/blessings/hope-rising.mp3', img: '/assets/images/wallpapers/wallpaper-04.jpg' },
-            { title: 'Peaceful Praise • សរសើរដោយសន្តិភាព', dur: '4:50', url: '/assets/audio/blessings/peaceful-praise.mp3', img: '/assets/images/wallpapers/wallpaper-05.jpg' },
-            { title: 'Joyful Light • ពន្លឺនៃសេចក្ដីអំណរ', dur: '3:15', url: '/assets/audio/blessings/joyful-light.mp3', img: '/assets/images/wallpapers/wallpaper-06.jpg' }
-          ].map(m => `
-            <div class="fb-card overflow-hidden group">
-              <div class="relative h-36 overflow-hidden">
-                <img src="${m.img}" alt="" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
-                <button class="absolute inset-0 m-auto w-10 h-10 rounded-full bg-[#1877F2] text-white flex items-center justify-center shadow-md hover:scale-110 transition" onclick="window.playAudioTrack('${m.url}')">
-                  <i class="fa-solid fa-play ml-0.5 text-xs"></i>
-                </button>
-                <span class="absolute bottom-2 right-2 px-2 py-0.5 rounded bg-black/70 text-white text-[10px] font-bold">${m.dur}</span>
-              </div>
-              <div class="p-3">
-                <h3 class="font-bold text-xs text-ink truncate">${esc(m.title)}</h3>
-                <p class="text-[11px] text-muted mt-0.5">Faith In Audio Sanctuary</p>
-              </div>
-            </div>
-          `).join('')}
-        </div>
-      </div>
-    `;
-  }
-
-  // 9. Quotes Library
-  function renderQuotes() {
-    return `
-      <div class="space-y-3.5">
-        <div class="fb-card p-4">
-          <h1 class="text-xl font-bold text-ink">Inspirational Quotes • សម្រង់ពាក្យ</h1>
-          <p class="text-xs text-muted">Theological wisdom and encouraging thoughts from historical preachers and Christian leaders.</p>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
-          ${[
-            { text: "Visit many good books, but live in the Bible.", author: "Charles Spurgeon", cat: "Scripture" },
-            { text: "The Bible was not given for our information only, but for our transformation.", author: "D. L. Moody", cat: "Growth" },
-            { text: "Faith does not eliminate questions. But faith knows where to take them.", author: "Elisabeth Elliot", cat: "Faith" },
-            { text: "God is most glorified in us when we are most satisfied in Him.", author: "John Piper", cat: "Worship" },
-            { text: "Never be afraid to trust an unknown future to a known God.", author: "Corrie ten Boom", cat: "Trust" },
-            { text: "To be a Christian without prayer is no more possible than to be alive without breathing.", author: "Martin Luther", cat: "Prayer" }
-          ].map(q => `
-            <div class="fb-card p-4 space-y-2.5">
-              <div class="flex justify-between items-center text-xs text-muted">
-                <span class="fb-badge text-[10.5px]">${q.cat}</span>
-                <button class="w-6 h-6 rounded-full hover:bg-black/10 dark:hover:bg-white/10 flex items-center justify-center text-muted" title="Copy" onclick="navigator.clipboard.writeText('${esc(q.text)} — ${esc(q.author)}'); window.toast && toast('Quote copied!');">
-                  <i class="fa-regular fa-copy text-xs"></i>
-                </button>
-              </div>
-              <p class="font-serif italic text-sm text-ink leading-relaxed">“${esc(q.text)}”</p>
-              <div class="font-bold text-xs text-ink/80">— ${esc(q.author)}</div>
-            </div>
-          `).join('')}
         </div>
       </div>
     `;
@@ -993,8 +824,6 @@
       case 'concordance': root.innerHTML = renderConcordance(); break;
       case 'typing': root.innerHTML = renderTyping(); break;
       case 'notes': root.innerHTML = renderNotes(); break;
-      case 'media': root.innerHTML = renderMedia(); break;
-      case 'quotes': root.innerHTML = renderQuotes(); break;
       default: root.innerHTML = renderReader(); break;
     }
 
@@ -1034,7 +863,7 @@
     });
 
     $('#btn-play-audio')?.addEventListener('click', () => {
-      setTool('daily');
+      window.switchTool('daily');
     });
 
     $('#card-txt-khmer')?.addEventListener('input', (e) => {
@@ -1188,7 +1017,7 @@
   window.designSingleVerse = (text, ref) => {
     state.designer.textKhmer = text;
     state.designer.ref = ref;
-    setTool('designer');
+    window.switchTool('designer');
   };
 
   window.sendChapterToDesigner = () => {
@@ -1196,7 +1025,7 @@
       state.designer.textKhmer = state.verses[0].text;
       state.designer.ref = `${state.book} ${state.chapter}`;
     }
-    setTool('designer');
+    window.switchTool('designer');
   };
 
   window.designDailyVerse = () => {
@@ -1205,7 +1034,7 @@
       state.designer.textEnglish = state.daily.text;
       state.designer.ref = `${state.daily.khmerRef} • ${state.daily.ref}`;
     }
-    setTool('designer');
+    window.switchTool('designer');
   };
 
   window.copyDailyVerse = () => {
@@ -1238,18 +1067,12 @@
   };
 
   document.addEventListener('DOMContentLoaded', () => {
-    $$('.fb-nav-btn').forEach(btn => {
-      btn.addEventListener('click', () => setTool(btn.dataset.tool));
-    });
-    $$('[data-tool-mob]').forEach(btn => {
-      btn.addEventListener('click', () => setTool(btn.dataset.toolMob));
-    });
-
     const params = new URLSearchParams(window.location.search);
     if (params.get('tool')) state.activeTool = params.get('tool');
     if (params.get('book')) state.book = params.get('book');
     if (params.get('chapter')) state.chapter = Number(params.get('chapter'));
 
+    window.switchTool(state.activeTool);
     loadChapterVerses();
     loadDailyVerse();
     loadConcordance();
@@ -1257,6 +1080,6 @@
 
 })();
 </script>
-<script src="/faithin-app/assets/faithin-live.js?v=20260902-fb-v2"></script>
+<script src="/faithin-app/assets/faithin-live.js?v=20260902-std-v1"></script>
 </body>
 </html>
