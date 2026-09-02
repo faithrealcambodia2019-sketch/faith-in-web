@@ -97,15 +97,15 @@ export const BIBLE_BOOKS: readonly BibleBook[] = [
 export const BIBLE_VERSIONS: readonly BibleVersion[] = [
   {
     id: "KHMER_OLD_1954",
-    label: "ព្រះគម្ពីរបរិសុទ្ធ ១៩៥៤",
+    label: "ព្រះគម្ពីរបរិសុទ្ធ ១៩៥៤ (ពគប)",
     shortLabel: "KHOV 1954",
     language: "km",
     languageLabel: "ភាសាខ្មែរ (Khmer)",
-    source: "youversion",
+    source: "bible-api",
     upstreamId: "1270",
     attribution: "© 1954, 1962 Bible Society in Cambodia",
     attributionUrl: "https://www.bible.com/versions/1270",
-    requiresPublisherAccess: true,
+    requiresPublisherAccess: false,
   },
   {
     id: "KJV",
@@ -248,7 +248,7 @@ export function resolveBibleChapter(
   return { version, book, chapter };
 }
 
-export function publicBibleVersions(youVersionConfigured: boolean) {
+export function publicBibleVersions(_youVersionConfigured?: boolean) {
   return BIBLE_VERSIONS.map((version) => ({
     id: version.id,
     label: version.label,
@@ -257,8 +257,8 @@ export function publicBibleVersions(youVersionConfigured: boolean) {
     languageLabel: version.languageLabel,
     attribution: version.attribution,
     attributionUrl: version.attributionUrl,
-    available: version.source !== "youversion" || youVersionConfigured,
-    requiresPublisherAccess: Boolean(version.requiresPublisherAccess),
+    available: true,
+    requiresPublisherAccess: false,
   }));
 }
 
