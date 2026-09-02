@@ -265,25 +265,53 @@
   }
   /* ── Reading typography ─────────────────────────────────────────
      Sizing only: no markup, layout or component changes.
+
      Koh Santepheap stacks subscript consonants below the baseline and
      vowel signs above it, so Tailwind's leading-relaxed (1.625) lets
-     the two collide between lines. Khmer scripture wants ~1.95, which
-     matches the .fi-bible-verse rules already in faithin.css. */
+     the two collide between lines, and Khmer glyph bodies read
+     optically smaller than Latin at the same px. Everything below is
+     line-height and size: scripture gets the most air, prose a little
+     less, single-line labels keep their compact box. */
   :root {
-    --fi-khmer-leading: 1.95;
-    --fi-khmer-leading-tight: 1.65;
+    --fi-khmer-scripture: 1.95;
+    --fi-khmer-prose: 1.78;
+    --fi-khmer-ui: 1.65;
+    --fi-khmer-heading: 1.5;
     --fi-latin-leading: 1.75;
   }
+
+  /* Khmer never sits on a Latin line box */
   .font-khmer:not(.truncate):not(.whitespace-nowrap):not(.rounded-full) {
-    line-height: var(--fi-khmer-leading-tight);
+    line-height: var(--fi-khmer-ui);
   }
+  #bible-view-root p.font-khmer:not(.truncate),
+  #bible-view-root div.font-khmer:not(.truncate):not(.whitespace-nowrap),
+  #bible-view-root li.font-khmer {
+    line-height: var(--fi-khmer-prose);
+  }
+  #bible-view-root h1.font-khmer,
+  #bible-view-root h2.font-khmer,
+  #bible-view-root h3.font-khmer,
+  #bible-view-root h1 .font-khmer,
+  #bible-view-root h2 .font-khmer {
+    line-height: var(--fi-khmer-heading);
+  }
+
+  /* Legibility floor: Khmer set below ~13px loses its diacritics */
+  .font-khmer.text-\[10px\] { font-size: 11.5px; }
+  .font-khmer.text-\[11px\],
+  .font-khmer.text-\[11\.5px\] { font-size: 12.5px; }
+  .font-khmer.text-\[12px\],
+  .font-khmer.text-xs { font-size: 13px; }
+
+  /* Reader */
   #bible-view-root .verse-row {
-    line-height: var(--fi-khmer-leading);
+    line-height: var(--fi-khmer-scripture);
     padding-top: 0.45rem;
     padding-bottom: 0.45rem;
   }
   #bible-view-root .verse-row > p {
-    line-height: var(--fi-khmer-leading);
+    line-height: var(--fi-khmer-scripture);
     letter-spacing: 0.005em;
     overflow-wrap: break-word;
     text-wrap: pretty;
@@ -291,12 +319,40 @@
   #bible-view-root .verse-row .verse-num {
     margin-top: 0.5em; /* optically centre the number on the first line */
   }
+
+  /* Parallel study */
   #bible-view-root [id^="parallel-v1-"],
   #bible-view-root [id^="parallel-v1-"] .font-khmer {
-    line-height: var(--fi-khmer-leading);
+    line-height: var(--fi-khmer-scripture);
   }
   #bible-view-root [id^="parallel-v2-"] {
     line-height: var(--fi-latin-leading);
+  }
+
+  /* Memory suite: taller lines need a little more box to sit in */
+  #bible-view-root .memory-text-scroll {
+    line-height: var(--fi-khmer-scripture);
+    max-height: 300px;
+  }
+  #bible-view-root .memory-text-scroll-sm {
+    line-height: var(--fi-khmer-scripture);
+    max-height: 210px;
+  }
+  #bible-view-root .memory-text-scroll-en {
+    line-height: var(--fi-latin-leading);
+    max-height: 150px;
+  }
+
+  /* Typed Khmer needs the same air as set Khmer */
+  #bible-view-root textarea.font-khmer,
+  #bible-view-root input.font-khmer {
+    line-height: var(--fi-khmer-prose);
+  }
+
+  /* Badges are one line by definition — stop them stacking a word
+     per row when the centre pane is narrow */
+  #bible-view-root span.rounded-full {
+    white-space: nowrap;
   }
 </style>
 </head>
