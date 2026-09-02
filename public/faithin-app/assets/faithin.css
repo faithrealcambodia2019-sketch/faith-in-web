@@ -33,8 +33,27 @@ html.dark{
   --rose: 247 122 139;
 }
 
+/* Universal Typography: Inter for English, Koh Santepheap for all Khmer glyphs */
+html, body, input, button, select, optgroup, option, textarea,
+h1, h2, h3, h4, h5, h6, p, span, a, label, div, blockquote, article, section,
+.font-sans {
+  font-family: 'Inter', 'Koh Santepheap', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+}
+
+.font-serif {
+  font-family: 'Lora', 'Koh Santepheap', Georgia, serif !important;
+}
+
+.font-khmer,
+:lang(km),
+[lang="km"],
+.khmer-text,
+.fi-bible-verses.is-khmer,
+.fi-bible-verses.is-khmer * {
+  font-family: 'Koh Santepheap', sans-serif !important;
+}
+
 body{
-  font-family: 'Inter', 'Koh Santepheap', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   background: rgb(var(--canvas));
   color: rgb(var(--ink));
   -webkit-font-smoothing: antialiased;
