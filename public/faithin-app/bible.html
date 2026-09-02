@@ -319,6 +319,11 @@
   #bible-view-root .verse-row .verse-num {
     margin-top: 0.5em; /* optically centre the number on the first line */
   }
+  /* The verses are Khmer paragraphs, so they also match the prose rule
+     above; these outrank it and keep scripture on the wider leading. */
+  #bible-view-root .verse-row > p.font-khmer:not(.truncate) {
+    line-height: var(--fi-khmer-scripture);
+  }
 
   /* Parallel study */
   #bible-view-root [id^="parallel-v1-"],
@@ -330,11 +335,13 @@
   }
 
   /* Memory suite: taller lines need a little more box to sit in */
-  #bible-view-root .memory-text-scroll {
+  #bible-view-root .memory-text-scroll,
+  #bible-view-root div.memory-text-scroll.font-khmer:not(.truncate) {
     line-height: var(--fi-khmer-scripture);
     max-height: 300px;
   }
-  #bible-view-root .memory-text-scroll-sm {
+  #bible-view-root .memory-text-scroll-sm,
+  #bible-view-root div.memory-text-scroll-sm.font-khmer:not(.truncate) {
     line-height: var(--fi-khmer-scripture);
     max-height: 210px;
   }
