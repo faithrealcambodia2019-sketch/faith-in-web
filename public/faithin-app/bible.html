@@ -18,7 +18,7 @@
 <link href="/faithin-app/assets/faithin-fonts.css" rel="stylesheet"/>
 <link href="/faithin-app/assets/faithin-icons.css" rel="stylesheet"/>
 <link href="/faithin-app/assets/faithin-tw.css" rel="stylesheet"/>
-<link href="/faithin-app/assets/faithin.css?v=20260902-svg-icons-v4" rel="stylesheet"/>
+<link href="/faithin-app/assets/faithin.css?v=20260902-pro-icons-v5" rel="stylesheet"/>
 <style>
   body {
     background-color: #f0f2f5 !important;
@@ -40,16 +40,16 @@
   .fb-tab {
     display: inline-flex;
     align-items: center;
-    gap: 7px;
-    padding: 7px 14px;
+    gap: 8px;
+    padding: 8px 16px;
     border-radius: 9999px;
-    font-size: 13px;
+    font-size: 13.5px;
     font-weight: 600;
     color: #65676b;
     background-color: transparent;
     transition: all 0.15s ease;
     cursor: pointer;
-    border: none;
+    border: 1px solid transparent;
     white-space: nowrap;
   }
   .dark .fb-tab {
@@ -66,6 +66,8 @@
   .fb-tab.is-active {
     background-color: #1877f2 !important;
     color: #ffffff !important;
+    border-color: #1877f2 !important;
+    box-shadow: 0 2px 4px rgba(24, 119, 242, 0.25);
   }
   .fb-tab.is-active svg {
     stroke: #ffffff !important;
@@ -156,17 +158,17 @@
   .nav-tool-btn {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
     width: 100%;
-    padding: 8px 10px;
-    border-radius: 8px;
+    padding: 9px 12px;
+    border-radius: 10px;
     font-size: 13.5px;
     font-weight: 600;
     color: #050505;
     background: transparent;
     border: none;
     cursor: pointer;
-    transition: background-color 0.12s ease;
+    transition: all 0.15s ease;
     text-align: left;
   }
   .dark .nav-tool-btn {
@@ -181,25 +183,29 @@
   .nav-tool-btn.is-active {
     background-color: #e7f3ff;
     color: #1877f2;
+    font-weight: 700;
   }
   .dark .nav-tool-btn.is-active {
     background-color: rgba(24, 119, 242, 0.2);
     color: #2d88ff;
   }
-  .tool-icon-circle {
-    width: 28px;
-    height: 28px;
-    border-radius: 9999px;
+  .pro-icon-badge {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
     color: #ffffff;
     flex-shrink: 0;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
   }
-  .tool-icon-circle svg {
-    width: 15px;
-    height: 15px;
-    stroke: currentColor;
+  .pro-icon-badge svg {
+    width: 16px;
+    height: 16px;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
   }
 </style>
 </head>
@@ -212,8 +218,13 @@
     
     <!-- User / Header Card -->
     <div class="fb-card p-3.5 flex items-center gap-3">
-      <div class="w-10 h-10 rounded-full bg-[#1877F2] text-white flex items-center justify-center shadow-sm shrink-0">
-        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+      <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#1877F2] to-[#0d5bbd] text-white flex items-center justify-center shadow-sm shrink-0">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"></path>
+          <path d="M6 6h10"></path>
+          <path d="M6 10h10"></path>
+          <path d="M11 2v8"></path>
+        </svg>
       </div>
       <div class="min-w-0">
         <h2 class="font-bold text-[14.5px] leading-tight text-ink truncate">Bible Studio</h2>
@@ -221,67 +232,67 @@
       </div>
     </div>
 
-    <!-- Navigation List with Guaranteed Icons -->
-    <div class="fb-card p-2 space-y-0.5">
+    <!-- Navigation List with Professional Vector Badges -->
+    <div class="fb-card p-2 space-y-1">
       
       <!-- 1. Reader -->
       <button class="nav-tool-btn is-active" data-btn-tool="reader" onclick="window.switchTool('reader')">
-        <div class="tool-icon-circle bg-[#1877F2]">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+        <div class="pro-icon-badge bg-gradient-to-br from-[#1877F2] to-[#0052cc]">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
         </div>
         <span class="truncate">Bible Reader • អានគម្ពីរ</span>
       </button>
 
       <!-- 2. Parallel -->
       <button class="nav-tool-btn" data-btn-tool="parallel" onclick="window.switchTool('parallel')">
-        <div class="tool-icon-circle bg-indigo-500">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="12" y1="3" x2="12" y2="21"></line></svg>
+        <div class="pro-icon-badge bg-gradient-to-br from-[#6366f1] to-[#4338ca]">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect width="18" height="18" x="3" y="3" rx="3"></rect><path d="M12 3v18"></path><path d="M7 8h2"></path><path d="M15 8h2"></path><path d="M7 12h2"></path><path d="M15 12h2"></path></svg>
         </div>
         <span class="truncate">Parallel Study • ទន្ទឹមគ្នា</span>
       </button>
 
       <!-- 3. Designer -->
       <button class="nav-tool-btn" data-btn-tool="designer" onclick="window.switchTool('designer')">
-        <div class="tool-icon-circle bg-purple-500">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"></circle><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"></circle><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"></circle><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"></circle><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.563-2.512 5.563-5.563C22 6.5 17.5 2 12 2z"></path></svg>
+        <div class="pro-icon-badge bg-gradient-to-br from-[#a855f7] to-[#7e22ce]">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2C6.5 2 2 6.5 2 12c0 3.5 2.5 6 6 6h1.5a2 2 0 0 0 2-2v-.5c0-.8.7-1.5 1.5-1.5h1c3.5 0 7-2.5 7-7 0-4-3.5-7-8-7z"></path><circle cx="7" cy="8" r="1.2" fill="currentColor"></circle><circle cx="11.5" cy="6.5" r="1.2" fill="currentColor"></circle><circle cx="16" cy="9" r="1.2" fill="currentColor"></circle></svg>
         </div>
-        <span class="truncate">Verse Card Designer</span>
+        <span class="truncate">Card Designer</span>
       </button>
 
       <!-- 4. Verse of the Day -->
       <button class="nav-tool-btn" data-btn-tool="daily" onclick="window.switchTool('daily')">
-        <div class="tool-icon-circle bg-amber-500">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+        <div class="pro-icon-badge bg-gradient-to-br from-[#f59e0b] to-[#d97706]">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2"></path><path d="M12 20v2"></path><path d="m4.93 4.93 1.41 1.41"></path><path d="m17.66 17.66 1.41 1.41"></path><path d="M2 12h2"></path><path d="M20 12h2"></path><path d="m6.34 17.66-1.41 1.41"></path><path d="m19.07 4.93-1.41 1.41"></path></svg>
         </div>
         <span class="truncate">Verse of the Day</span>
       </button>
 
       <!-- 5. Concordance -->
       <button class="nav-tool-btn" data-btn-tool="concordance" onclick="window.switchTool('concordance')">
-        <div class="tool-icon-circle bg-emerald-500">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        <div class="pro-icon-badge bg-gradient-to-br from-[#10b981] to-[#047857]">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="7"></circle><path d="m21 21-4.35-4.35"></path><path d="M8 11h6"></path><path d="M11 8v6"></path></svg>
         </div>
         <span class="truncate">Word Study &amp; Greek</span>
       </button>
 
       <!-- 6. Typing -->
       <button class="nav-tool-btn" data-btn-tool="typing" onclick="window.switchTool('typing')">
-        <div class="tool-icon-circle bg-rose">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2" ry="2"></rect><line x1="6" y1="8" x2="6" y2="8"></line><line x1="10" y1="8" x2="10" y2="8"></line><line x1="14" y1="8" x2="14" y2="8"></line><line x1="18" y1="8" x2="18" y2="8"></line><line x1="6" y1="12" x2="6" y2="12"></line><line x1="10" y1="12" x2="10" y2="12"></line><line x1="14" y1="12" x2="14" y2="12"></line><line x1="18" y1="12" x2="18" y2="12"></line><line x1="8" y1="16" x2="16" y2="16"></line></svg>
+        <div class="pro-icon-badge bg-gradient-to-br from-[#f43f5e] to-[#be123c]">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect width="20" height="14" x="2" y="5" rx="3"></rect><path d="M6 9h.01"></path><path d="M10 9h.01"></path><path d="M14 9h.01"></path><path d="M18 9h.01"></path><path d="M6 13h.01"></path><path d="M18 13h.01"></path><path d="M10 13h4"></path></svg>
         </div>
         <span class="truncate">Typing &amp; Memory</span>
       </button>
 
       <!-- 7. Sermon Notes -->
       <button class="nav-tool-btn" data-btn-tool="notes" onclick="window.switchTool('notes')">
-        <div class="tool-icon-circle bg-cyan-600">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+        <div class="pro-icon-badge bg-gradient-to-br from-[#06b6d4] to-[#0e7490]">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M16 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8z"></path><path d="M15 3v5h5"></path><path d="M7 13h10"></path><path d="M7 17h6"></path></svg>
         </div>
         <span class="truncate">Sermon Notes</span>
       </button>
     </div>
 
-    <!-- Quick Links -->
+    <!-- Community Shortcuts -->
     <div class="fb-card p-2 space-y-0.5 text-[13px]">
       <a href="/home" class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-muted hover:bg-black/5 dark:hover:bg-white/5 font-semibold transition">
         <svg class="w-4 h-4 text-[#1877F2]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
@@ -298,34 +309,34 @@
   <!-- ───── CENTER PANE (Main Experience) ───── -->
   <section class="fi-bible-main" id="center-pane">
 
-    <!-- Top Horizontal Tabs with SVG Icons -->
+    <!-- Top Horizontal Tabs with Professional Vector SVGs -->
     <div class="fb-card p-2 flex items-center gap-1.5 overflow-x-auto no-scrollbar">
       <button class="fb-tab is-active shrink-0" data-tab="reader" onclick="window.switchTool('reader')">
-        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
         <span>Reader</span>
       </button>
       <button class="fb-tab shrink-0" data-tab="parallel" onclick="window.switchTool('parallel')">
-        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="12" y1="3" x2="12" y2="21"></line></svg>
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="3" rx="3"></rect><path d="M12 3v18"></path><path d="M7 8h2"></path><path d="M15 8h2"></path></svg>
         <span>Parallel</span>
       </button>
       <button class="fb-tab shrink-0" data-tab="designer" onclick="window.switchTool('designer')">
-        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"></circle><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"></circle><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"></circle><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"></circle><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.563-2.512 5.563-5.563C22 6.5 17.5 2 12 2z"></path></svg>
-        <span>Designer</span>
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.5 2 2 6.5 2 12c0 3.5 2.5 6 6 6h1.5a2 2 0 0 0 2-2v-.5c0-.8.7-1.5 1.5-1.5h1c3.5 0 7-2.5 7-7 0-4-3.5-7-8-7z"></path><circle cx="7" cy="8" r="1.2" fill="currentColor"></circle><circle cx="11.5" cy="6.5" r="1.2" fill="currentColor"></circle><circle cx="16" cy="9" r="1.2" fill="currentColor"></circle></svg>
+        <span>Card Designer</span>
       </button>
       <button class="fb-tab shrink-0" data-tab="daily" onclick="window.switchTool('daily')">
-        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line></svg>
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2"></path><path d="M12 20v2"></path><path d="m4.93 4.93 1.41 1.41"></path><path d="m17.66 17.66 1.41 1.41"></path><path d="M2 12h2"></path><path d="M20 12h2"></path></svg>
         <span>Daily Verse</span>
       </button>
       <button class="fb-tab shrink-0" data-tab="concordance" onclick="window.switchTool('concordance')">
-        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"></circle><path d="m21 21-4.35-4.35"></path><path d="M8 11h6"></path><path d="M11 8v6"></path></svg>
         <span>Word Study</span>
       </button>
       <button class="fb-tab shrink-0" data-tab="typing" onclick="window.switchTool('typing')">
-        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2" ry="2"></rect><line x1="6" y1="8" x2="6" y2="8"></line><line x1="10" y1="8" x2="10" y2="8"></line><line x1="14" y1="8" x2="14" y2="8"></line><line x1="18" y1="8" x2="18" y2="8"></line><line x1="8" y1="16" x2="16" y2="16"></line></svg>
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="14" x="2" y="5" rx="3"></rect><path d="M6 9h.01"></path><path d="M10 9h.01"></path><path d="M14 9h.01"></path><path d="M18 9h.01"></path><path d="M10 13h4"></path></svg>
         <span>Memory</span>
       </button>
       <button class="fb-tab shrink-0" data-tab="notes" onclick="window.switchTool('notes')">
-        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8z"></path><path d="M15 3v5h5"></path><path d="M7 13h10"></path></svg>
         <span>Notes</span>
       </button>
     </div>
@@ -347,7 +358,7 @@
     <section class="fb-card p-4 space-y-3">
       <div class="flex items-center justify-between border-b border-[#e4e6eb] dark:border-[#393a3b] pb-2.5">
         <span class="text-xs font-bold text-[#1877F2] uppercase tracking-wider flex items-center gap-1.5">
-          <svg class="w-3.5 h-3.5 text-amber-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line></svg>
+          <svg class="w-4 h-4 text-amber-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2"></path><path d="M12 20v2"></path><path d="m4.93 4.93 1.41 1.41"></path><path d="m17.66 17.66 1.41 1.41"></path><path d="M2 12h2"></path><path d="M20 12h2"></path></svg>
           <span>Verse of the Day</span>
         </span>
         <button class="w-6 h-6 rounded-full hover:bg-black/5 dark:hover:bg-white/5 flex items-center justify-center text-muted" title="Copy" onclick="window.copyDailyVerse()">
@@ -368,7 +379,7 @@
     <!-- Word Study Spotlight -->
     <section class="fb-card p-4 space-y-2">
       <div class="flex items-center gap-1.5 text-xs font-bold text-emerald-600 uppercase tracking-wider">
-        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20"></path><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20"></path><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
         <span>Greek Root Study</span>
       </div>
       <h4 class="font-bold text-sm text-ink">Grace • <span class="text-xs text-[#1877F2] font-serif">χάρις (charis)</span></h4>
@@ -381,7 +392,7 @@
     <!-- Quote of the Day -->
     <section class="fb-card p-4 space-y-2">
       <div class="flex items-center gap-1.5 text-xs font-bold text-purple-600 uppercase tracking-wider">
-        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z"></path><path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z"></path></svg>
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z"></path><path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z"></path></svg>
         <span>Inspiration</span>
       </div>
       <p class="font-serif italic text-xs text-ink leading-relaxed">“Visit many good books, but live in the Bible.”</p>
@@ -394,9 +405,9 @@
 
 <audio id="bible-audio-player" preload="none" class="hidden"></audio>
 
-<script src="/faithin-app/assets/faithin-runtime.js?v=20260902-svg-icons-v4"></script>
-<script src="/assets/js/faith-in-backend.js?v=20260902-svg-icons-v4"></script>
-<script src="/faithin-app/assets/faithin.js?v=20260902-svg-icons-v4"></script>
+<script src="/faithin-app/assets/faithin-runtime.js?v=20260902-pro-icons-v5"></script>
+<script src="/assets/js/faith-in-backend.js?v=20260902-pro-icons-v5"></script>
+<script src="/faithin-app/assets/faithin.js?v=20260902-pro-icons-v5"></script>
 <script>
 (() => {
   'use strict';
@@ -604,7 +615,7 @@
             <button id="btn-font-dec" class="fb-gray-btn !py-1.5 !px-2.5 text-xs" title="Smaller font">A-</button>
             <button id="btn-font-inc" class="fb-gray-btn !py-1.5 !px-2.5 text-xs font-bold" title="Larger font">A+</button>
             <button id="btn-play-audio" class="fb-blue-btn !py-1.5 !px-3 text-xs ml-auto" title="Listen to Devotional">
-              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 18v-6a9 9 0 0 1 18 0v6"></path><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path></svg>
+              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 14h2a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H3a1 1 0 0 1-1-1v-5a1 1 0 0 1 1-1z"></path><path d="M21 14h-2a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h2a1 1 0 0 0 1-1v-5a1 1 0 0 0-1-1z"></path><path d="M2 14v-3a10 10 0 0 1 20 0v3"></path></svg>
               <span>Audio</span>
             </button>
           </div>
@@ -632,7 +643,7 @@
             </div>
             
             <button class="fb-blue-btn text-xs shadow-sm" onclick="window.sendChapterToDesigner()">
-              <svg class="w-3.5 h-3.5 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"></path></svg>
+              <svg class="w-3.5 h-3.5 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.5 2 2 6.5 2 12c0 3.5 2.5 6 6 6h1.5a2 2 0 0 0 2-2v-.5c0-.8.7-1.5 1.5-1.5h1c3.5 0 7-2.5 7-7 0-4-3.5-7-8-7z"></path><circle cx="7" cy="8" r="1.2" fill="currentColor"></circle><circle cx="11.5" cy="6.5" r="1.2" fill="currentColor"></circle><circle cx="16" cy="9" r="1.2" fill="currentColor"></circle></svg>
               <span>Make Card</span>
             </button>
           </div>
@@ -654,7 +665,7 @@
                       <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
                     </button>
                     <button class="w-7 h-7 rounded hover:bg-black/5 dark:hover:bg-white/5 flex items-center justify-center text-[#1877F2]" title="Design Verse Card" onclick="window.designSingleVerse('${esc(v.text)}', '${curBook.km} ${state.chapter}:${v.v}')">
-                      <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"></circle><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"></circle><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"></circle><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"></circle><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.563-2.512 5.563-5.563C22 6.5 17.5 2 12 2z"></path></svg>
+                      <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.5 2 2 6.5 2 12c0 3.5 2.5 6 6 6h1.5a2 2 0 0 0 2-2v-.5c0-.8.7-1.5 1.5-1.5h1c3.5 0 7-2.5 7-7 0-4-3.5-7-8-7z"></path><circle cx="7" cy="8" r="1.2" fill="currentColor"></circle><circle cx="11.5" cy="6.5" r="1.2" fill="currentColor"></circle><circle cx="16" cy="9" r="1.2" fill="currentColor"></circle></svg>
                     </button>
                   </div>
                 </div>
@@ -724,7 +735,7 @@
         <div class="fb-card p-4 flex items-center justify-between">
           <div>
             <h1 class="text-xl font-bold text-ink flex items-center gap-2">
-              <svg class="w-5 h-5 text-[#1877F2]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"></circle><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"></circle><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"></circle><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"></circle><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.563-2.512 5.563-5.563C22 6.5 17.5 2 12 2z"></path></svg>
+              <svg class="w-5 h-5 text-[#1877F2]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.5 2 2 6.5 2 12c0 3.5 2.5 6 6 6h1.5a2 2 0 0 0 2-2v-.5c0-.8.7-1.5 1.5-1.5h1c3.5 0 7-2.5 7-7 0-4-3.5-7-8-7z"></path><circle cx="7" cy="8" r="1.2" fill="currentColor"></circle><circle cx="11.5" cy="6.5" r="1.2" fill="currentColor"></circle><circle cx="16" cy="9" r="1.2" fill="currentColor"></circle></svg>
               <span>Scripture Card Designer</span>
             </h1>
             <p class="text-xs text-muted">Generate shareable HD Gospel verse graphics formatted for Facebook, Stories, and Telegram.</p>
@@ -850,7 +861,7 @@
 
             <div class="flex items-center gap-1.5">
               <button class="fb-gray-btn !bg-white/20 hover:!bg-white/30 text-xs !py-1 !px-2.5" onclick="window.designDailyVerse()">
-                <svg class="w-3 h-3 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"></circle><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"></circle><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"></circle><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"></circle><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.563-2.512 5.563-5.563C22 6.5 17.5 2 12 2z"></path></svg>
+                <svg class="w-3 h-3 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.5 2 2 6.5 2 12c0 3.5 2.5 6 6 6h1.5a2 2 0 0 0 2-2v-.5c0-.8.7-1.5 1.5-1.5h1c3.5 0 7-2.5 7-7 0-4-3.5-7-8-7z"></path><circle cx="7" cy="8" r="1.2" fill="currentColor"></circle><circle cx="11.5" cy="6.5" r="1.2" fill="currentColor"></circle><circle cx="16" cy="9" r="1.2" fill="currentColor"></circle></svg>
                 <span>Create Card</span>
               </button>
               <button class="fb-gray-btn !bg-white/20 hover:!bg-white/30 text-xs !py-1 !px-2.5" onclick="window.copyDailyVerse()">
@@ -863,7 +874,7 @@
 
         <div class="fb-card p-5 space-y-2.5">
           <div class="flex items-center gap-2 text-[#1877F2] text-xs font-bold uppercase tracking-wider">
-            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20"></path><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20"></path><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
             <span>Daily Devotional Reflection</span>
           </div>
           <h3 class="text-base font-bold text-ink">${esc(d.devotionalTitle)}</h3>
@@ -886,7 +897,7 @@
 
         <div class="fb-card p-3">
           <div class="flex items-center gap-2">
-            <svg class="w-4 h-4 text-muted ml-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <svg class="w-4 h-4 text-muted ml-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"></circle><path d="m21 21-4.35-4.35"></path><path d="M8 11h6"></path><path d="M11 8v6"></path></svg>
             <input type="text" id="concordance-search" value="${esc(state.concordanceQuery)}" placeholder="Search root words: grace, faith, love, peace, prayer..." class="flex-1 bg-transparent px-2 py-1.5 text-xs text-ink outline-none">
             <button class="fb-blue-btn text-xs !py-1.5 !px-3" onclick="window.searchConcordanceWord()">Search</button>
           </div>
@@ -1258,6 +1269,6 @@
 
 })();
 </script>
-<script src="/faithin-app/assets/faithin-live.js?v=20260902-svg-icons-v4"></script>
+<script src="/faithin-app/assets/faithin-live.js?v=20260902-pro-icons-v5"></script>
 </body>
 </html>
