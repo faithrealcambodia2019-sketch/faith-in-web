@@ -23,10 +23,10 @@
   .bible-tab-btn {
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem 0.85rem;
+    gap: 0.4rem;
+    padding: 0.45rem 0.7rem;
     border-radius: 9999px;
-    font-size: 0.8125rem;
+    font-size: 0.78125rem;
     font-weight: 600;
     color: rgb(var(--muted));
     background-color: transparent;
@@ -262,6 +262,41 @@
     border-radius: 4px;
     margin-right: 6px;
     vertical-align: middle;
+  }
+  /* ── Reading typography ─────────────────────────────────────────
+     Sizing only: no markup, layout or component changes.
+     Koh Santepheap stacks subscript consonants below the baseline and
+     vowel signs above it, so Tailwind's leading-relaxed (1.625) lets
+     the two collide between lines. Khmer scripture wants ~1.95, which
+     matches the .fi-bible-verse rules already in faithin.css. */
+  :root {
+    --fi-khmer-leading: 1.95;
+    --fi-khmer-leading-tight: 1.65;
+    --fi-latin-leading: 1.75;
+  }
+  .font-khmer:not(.truncate):not(.whitespace-nowrap):not(.rounded-full) {
+    line-height: var(--fi-khmer-leading-tight);
+  }
+  #bible-view-root .verse-row {
+    line-height: var(--fi-khmer-leading);
+    padding-top: 0.45rem;
+    padding-bottom: 0.45rem;
+  }
+  #bible-view-root .verse-row > p {
+    line-height: var(--fi-khmer-leading);
+    letter-spacing: 0.005em;
+    overflow-wrap: break-word;
+    text-wrap: pretty;
+  }
+  #bible-view-root .verse-row .verse-num {
+    margin-top: 0.5em; /* optically centre the number on the first line */
+  }
+  #bible-view-root [id^="parallel-v1-"],
+  #bible-view-root [id^="parallel-v1-"] .font-khmer {
+    line-height: var(--fi-khmer-leading);
+  }
+  #bible-view-root [id^="parallel-v2-"] {
+    line-height: var(--fi-latin-leading);
   }
 </style>
 </head>
@@ -499,7 +534,7 @@
     verses: [],
     verses2: [],
     loading: false,
-    fontSize: 15,
+    fontSize: 17,
     
     // Designer Pro
     designer: {
@@ -5155,12 +5190,12 @@
     });
 
     $('#btn-font-dec')?.addEventListener('click', () => {
-      state.fontSize = Math.max(13, state.fontSize - 1);
+      state.fontSize = Math.max(14, state.fontSize - 1);
       render();
     });
 
     $('#btn-font-inc')?.addEventListener('click', () => {
-      state.fontSize = Math.min(20, state.fontSize + 1);
+      state.fontSize = Math.min(26, state.fontSize + 1);
       render();
     });
 
