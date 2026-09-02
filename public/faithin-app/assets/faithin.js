@@ -22,6 +22,7 @@
 
   const NAV = [
     { id: 'home',    href: '/home',          icon: 'fa-house',       label: 'Home' },
+    { id: 'bible',   href: '/bible',         icon: 'fa-book-bible',  label: 'Bible' },
     { id: 'library', href: '/library',        icon: 'fa-book-open',   label: 'Library' },
     { id: 'network', href: '/network',        icon: 'fa-user-group',  label: 'Network' },
     { id: 'jobs',    href: '/jobs',           icon: 'fa-briefcase',   label: 'Jobs' }
@@ -129,6 +130,7 @@
                 </div>
               </div>
               <a href="/profile" class="side-link${page === 'profile' ? ' is-active' : ''}" role="menuitem"><i class="fa-regular fa-user"></i>View profile</a>
+              <a href="/bible" class="side-link${page === 'bible' ? ' is-active' : ''}" role="menuitem"><i class="fa-solid fa-book-bible text-[#1877F2]"></i>Bible Studio</a>
               <a href="/studio" class="side-link${page === 'studio' ? ' is-active' : ''}" role="menuitem"><i class="fa-solid fa-chart-line text-blue-500"></i>Creator Studio</a>
               <a href="/library?view=saved" class="side-link" role="menuitem"><i class="fa-solid fa-bookmark"></i>Saved items</a>
               <a href="/bible" class="side-link${page === 'bible' ? ' is-active' : ''}" role="menuitem"><i class="fa-solid fa-book-bible"></i>Bible reader</a>
@@ -153,12 +155,12 @@
     tabs.innerHTML = `
       <div class="grid grid-cols-5 h-14">
         <a href="/home" class="top-link min-w-0"${page === 'home' ? ' aria-current="page"' : ''}><i class="fa-solid fa-house"></i>Home</a>
-        <a href="/network" class="top-link min-w-0"${page === 'network' ? ' aria-current="page"' : ''}><i class="fa-solid fa-user-group"></i>Network</a>
+        <a href="/bible" class="top-link min-w-0"${page === 'bible' ? ' aria-current="page"' : ''}><i class="fa-solid fa-book-bible"></i>Bible</a>
         <button class="grid place-items-center" data-modal-open="modal-blessing" data-fallback="/home" aria-label="Add blessing">
           <span class="w-11 h-11 rounded-full bg-brand text-white dark:text-[#0b1120] grid place-items-center shadow-lift"><i class="fa-solid fa-plus"></i></span>
         </button>
-        <a href="/jobs" class="top-link min-w-0"${page === 'jobs' ? ' aria-current="page"' : ''}><i class="fa-solid fa-briefcase"></i>Jobs</a>
         <a href="/library" class="top-link min-w-0"${page === 'library' ? ' aria-current="page"' : ''}><i class="fa-solid fa-book-open"></i>Library</a>
+        <a href="/network" class="top-link min-w-0"${page === 'network' ? ' aria-current="page"' : ''}><i class="fa-solid fa-user-group"></i>Network</a>
       </div>`;
 
     const toasts = document.createElement('div');

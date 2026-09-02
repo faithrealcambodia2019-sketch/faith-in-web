@@ -48,6 +48,7 @@ const nextConfig: NextConfig = {
       { source: "/faithin-app/settings-security.html", destination: "/settings-security", permanent: true },
       { source: "/faithin-app/studio.html", destination: "/studio", permanent: true },
       { source: "/faithin-app/dashboard.html", destination: "/dashboard", permanent: true },
+      { source: "/faithin-app/bible.html", destination: "/bible", permanent: true },
     ];
   },
   async rewrites() {
@@ -57,6 +58,8 @@ const nextConfig: NextConfig = {
       beforeFiles: [
         { source: "/", destination: "/faithin-app/index.html" },
         { source: "/home", destination: "/faithin-app/index.html" },
+        { source: "/bible", destination: "/faithin-app/bible.html" },
+        { source: "/bible-study", destination: "/faithin-app/bible.html" },
         { source: "/article", destination: "/faithin-app/article.html" },
         { source: "/write", destination: "/faithin-app/article.html" },
         { source: "/jobs", destination: "/faithin-app/jobs.html" },

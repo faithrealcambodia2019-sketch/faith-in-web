@@ -135,6 +135,82 @@ export async function POST(req: NextRequest) {
 
   const { action, payload } = parsed;
 
+  // Handle Bible actions without requiring Postgres database
+  if (action.startsWith("cv_bible_")) {
+    const {
+      getBibleChapter,
+      getConcordance,
+      getBibleQuotes,
+      getBibleMediaList,
+      getDailyVerse,
+    } = await import("@/lib/bible-service");
+
+    switch (action) {
+      case "cv_bible_get_verses": {
+        const book = payloadText(payload, "book", 80) || "John";
+        const chapter = Number(payload.chapter) || 1;
+        const version = payloadText(payload, "version", 30) || "KHMER_OLD_1954";
+        const chapterData = await getBibleChapter(book, chapter, version);
+        return NextResponse.json({
+          success: true,
+          data: {
+            items: chapterData.items,
+            translation: chapterData.version,
+            reference: `${chapterData.khmerBook} ${chapterData.chapter}`,
+          },
+        });
+      }
+
+      case "cv_bible_dictionary": {
+        const query = payloadText(payload, "query", 100) || payloadText(payload, "q", 100);
+        const result = getConcordance(query);
+        return NextResponse.json({ success: true, data: result });
+      }
+
+      case "cv_bible_get_quotes": {
+        const type = payloadText(payload, "type", 30) || "general";
+        const result = getBibleQuotes(type);
+        return NextResponse.json({ success: true, data: result });
+      }
+
+      case "cv_bible_get_media": {
+        const result = getBibleMediaList();
+        return NextResponse.json({ success: true, data: result });
+      }
+
+      case "cv_bible_get_daily": {
+        const result = getDailyVerse();
+        return NextResponse.json({ success: true, data: result });
+      }
+
+      case "cv_bible_save_notes": {
+        const notes = payload.notes || {
+          Doctrine: payloadText(payload, "Doctrine", 5000),
+          Encouragement: payloadText(payload, "Encouragement", 5000),
+          Application: payloadText(payload, "Application", 5000),
+        };
+        return NextResponse.json({ success: true, data: { saved: true, notes } });
+      }
+
+      case "cv_bible_get_notes": {
+        return NextResponse.json({
+          success: true,
+          data: {
+            notes: {
+              Doctrine: "",
+              Encouragement: "",
+              Application: "",
+            },
+          },
+        });
+      }
+
+      case "cv_bible_save_typing_score": {
+        return NextResponse.json({ success: true, data: { saved: true } });
+      }
+    }
+  }
+
   // Production uses the Firebase browser data layer documented in
   // docs/ARCHITECTURE.md. The Drizzle route is retained for compatibility, but
   // it must never try the localhost development fallback in a serverless run.

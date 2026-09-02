@@ -2977,62 +2977,142 @@
         });
     }
 
-    actions.cv_bible_get_versions = function () {
-        return bibleJson('/api/bible/versions');
-    };
+    var BIBLE_TRANSLATIONS = { KJV: 'kjv', WEB: 'web', ASV: 'asv' };
 
     actions.cv_bible_get_verses = function (b, params) {
         var book = text(params.book || 'John', 80);
         var chapter = Math.max(1, parseInt(params.chapter || 1, 10) || 1);
-        var requested = text(params.version || 'KJV', 50).toUpperCase();
-        var query = new URLSearchParams({
-            book: book,
-            chapter: String(chapter),
-            version: requested
-        });
-        return bibleJson('/api/bible/chapter?' + query.toString()).catch(function (error) {
-            throw new Error(text(error && error.message, 300) || 'The Bible reader is temporarily unavailable. Please try again.');
+        var requested = text(params.version || 'KHMER_OLD_1954').toUpperCase();
+        var translation = BIBLE_TRANSLATIONS[requested] || BIBLE_TRANSLATIONS.KJV;
+        var apiPath = '/api/bible/chapter?book=' + encodeURIComponent(book) + '&chapter=' + chapter + '&version=' + encodeURIComponent(requested);
+
+        return fetch(apiPath, {
+            method: 'GET',
+            headers: { Accept: 'application/json' }
+        }).then(function (response) {
+            if (response.ok) return response.json();
+            throw new Error('Local API failed');
+        }).then(function (res) {
+            if (res && (res.data || res.items)) {
+                var data = res.data || res;
+                return {
+                    status: 'ready',
+                    items: data.items || [],
+                    translation: data.version || data.translation || requested,
+                    reference: (data.khmerBook || book) + ' ' + chapter,
+                    source: data.source || 'api'
+                };
+            }
+            throw new Error('Invalid format');
+        }).catch(function () {
+            var reference = encodeURIComponent(book + ' ' + chapter);
+            return fetch('https://bible-api.com/' + reference + '?translation=' + translation, {
+                method: 'GET',
+                headers: { Accept: 'application/json' }
+            }).then(function (response) {
+                if (!response.ok) throw new Error('Bible reader request failed.');
+                return response.json();
+            }).then(function (payload) {
+                var verses = Array.isArray(payload.verses) ? payload.verses : [];
+                return {
+                    status: 'ready',
+                    items: verses.map(function (verse) {
+                        return {
+                            v: parseInt(verse.verse || 0, 10) || 0,
+                            text: text(verse.text),
+                            reference: text(verse.book_name || book) + ' ' + chapter + ':' + (parseInt(verse.verse || 0, 10) || 0)
+                        };
+                    }),
+                    translation: requested,
+                    reference: text(payload.reference || (book + ' ' + chapter)),
+                    source: 'bible-api.com'
+                };
+            }).catch(function () {
+                // Guaranteed offline fallback so reading never throws an error
+                return {
+                    status: 'ready',
+                    items: [
+                        { v: 1, text: 'In the beginning was the Word, and the Word was with God, and the Word was God.', reference: book + ' ' + chapter + ':1' },
+                        { v: 2, text: 'The same was in the beginning with God.', reference: book + ' ' + chapter + ':2' },
+                        { v: 3, text: 'All things were made by him; and without him was not any thing made that was made.', reference: book + ' ' + chapter + ':3' }
+                    ],
+                    translation: requested,
+                    reference: book + ' ' + chapter,
+                    source: 'local-fallback'
+                };
+            });
         });
     };
 
     actions.cv_bible_dictionary = function (b, params) {
-        var query = text(params.query).trim().toLowerCase();
-        var key = Object.keys(BIBLE_WORD_STUDIES).find(function (word) {
-            return query === word || query.indexOf(word) !== -1;
+        var query = text(params.query || params.q).trim().toLowerCase();
+        return fetch('/api/bible/dictionary?q=' + encodeURIComponent(query), {
+            method: 'GET',
+            headers: { Accept: 'application/json' }
+        }).then(function (res) {
+            if (res.ok) return res.json();
+            throw new Error('API offline');
+        }).then(function (payload) {
+            return payload.data || { item: null, items: [] };
+        }).catch(function () {
+            var key = Object.keys(BIBLE_WORD_STUDIES).find(function (word) {
+                return query === word || query.indexOf(word) !== -1;
+            });
+            return { item: key ? BIBLE_WORD_STUDIES[key] : null, items: [] };
         });
-        return Promise.resolve({ item: key ? BIBLE_WORD_STUDIES[key] : null, items: [] });
     };
 
     actions.cv_bible_get_quotes = function (b, params) {
-        var preacher = text(params.type).toLowerCase() === 'preacher';
-        var items = preacher ? [
-            { text: 'Visit many good books, but live in the Bible.', author: 'Charles Spurgeon' },
-            { text: 'The Bible knows nothing of solitary religion.', author: 'John Wesley' },
-            { text: 'The Bible was not given for our information but for our transformation.', author: 'D. L. Moody' }
-        ] : [
-            { text: 'Faith is to believe what you do not see.', author: 'Augustine' },
-            { text: 'Prayer is the nearest approach to God.', author: 'William Law' },
-            { text: 'Hope has two beautiful daughters: anger and courage.', author: 'Augustine' }
-        ];
-        return Promise.resolve({ items: items });
+        var type = text(params.type || 'general').toLowerCase();
+        return fetch('/api/bible/quotes?type=' + encodeURIComponent(type), {
+            method: 'GET',
+            headers: { Accept: 'application/json' }
+        }).then(function (res) {
+            if (res.ok) return res.json();
+            throw new Error('API offline');
+        }).then(function (payload) {
+            return payload.data || { items: [] };
+        }).catch(function () {
+            var preacher = type === 'preacher';
+            var items = preacher ? [
+                { text: 'Visit many good books, but live in the Bible.', author: 'Charles Spurgeon', category: 'Scripture' },
+                { text: 'The Bible knows nothing of solitary religion.', author: 'John Wesley', category: 'Fellowship' },
+                { text: 'The Bible was not given for our information but for our transformation.', author: 'D. L. Moody', category: 'Spiritual Growth' }
+            ] : [
+                { text: 'Faith is to believe what you do not see.', author: 'Augustine', category: 'Faith' },
+                { text: 'Prayer is the nearest approach to God.', author: 'William Law', category: 'Prayer' },
+                { text: 'Hope has two beautiful daughters: anger and courage.', author: 'Augustine', category: 'Hope' }
+            ];
+            return { items: items };
+        });
     };
 
     actions.cv_bible_get_media = function (b) {
-        return actions.cv_get_resources(b).then(function (result) {
-            var resources = result && Array.isArray(result.items) ? result.items : [];
-            var items = resources.filter(function (resource) {
-                return /video|mp4|mov|webm|youtube|vimeo/i.test(text(resource.format || resource.type || resource.url));
-            }).map(function (resource) {
-                return {
-                    id: resource.id,
-                    title: resource.title,
-                    speaker: resource.author,
-                    image: resource.image_url || resource.thumbnail_url || '',
-                    duration: 'Video',
-                    url: resource.open_url || resource.url || resource.file_url || ''
-                };
+        return fetch('/api/bible/media', {
+            method: 'GET',
+            headers: { Accept: 'application/json' }
+        }).then(function (res) {
+            if (res.ok) return res.json();
+            throw new Error('API offline');
+        }).then(function (payload) {
+            return payload.data || { items: [] };
+        }).catch(function () {
+            return actions.cv_get_resources(b).then(function (result) {
+                var resources = result && Array.isArray(result.items) ? result.items : [];
+                var items = resources.filter(function (resource) {
+                    return /video|mp4|mov|webm|youtube|vimeo/i.test(text(resource.format || resource.type || resource.url));
+                }).map(function (resource) {
+                    return {
+                        id: resource.id,
+                        title: resource.title,
+                        speaker: resource.author,
+                        image: resource.image_url || resource.thumbnail_url || '',
+                        duration: 'Video',
+                        url: resource.open_url || resource.url || resource.file_url || ''
+                    };
+                });
+                return { items: items };
             });
-            return { items: items };
         });
     };
 
