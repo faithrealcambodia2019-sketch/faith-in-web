@@ -749,7 +749,10 @@ html.dark .chip.is-on{ color:#0b1120; }
    rows. Scoped to this page only; FaithIn's own blue, logo and Khmer type
    are untouched. */
 
-body[data-page="notifications"] {
+body[data-page="notifications"],
+body[data-page="profile"],
+body[data-page="settings"],
+body[data-page="settings-security"] {
   --fb-canvas: #F0F2F5;
   --fb-surface: #FFFFFF;
   --fb-text: #050505;
@@ -761,7 +764,10 @@ body[data-page="notifications"] {
   --fb-shadow: 0 1px 2px rgba(0, 0, 0, .2);
   background: var(--fb-canvas);
 }
-html.dark body[data-page="notifications"] {
+html.dark body[data-page="notifications"],
+html.dark body[data-page="profile"],
+html.dark body[data-page="settings"],
+html.dark body[data-page="settings-security"] {
   --fb-canvas: #18191A;
   --fb-surface: #242526;
   --fb-text: #E4E6EB;
@@ -773,7 +779,10 @@ html.dark body[data-page="notifications"] {
   --fb-shadow: 0 1px 2px rgba(0, 0, 0, .4);
 }
 
-body[data-page="notifications"] .card {
+body[data-page="notifications"] .card,
+body[data-page="profile"] .card,
+body[data-page="settings"] .card,
+body[data-page="settings-security"] .card {
   background: var(--fb-surface);
   border: 0;
   border-radius: 8px;
@@ -888,6 +897,130 @@ body[data-page="notifications"] section.card > button:last-child {
   padding-bottom: 10px;
 }
 body[data-page="notifications"] section.card > button:last-child:hover { filter: brightness(.95); }
+
+/* --- Profile and Settings: Facebook's surface --------------------------- */
+
+/* Profile ---------------------------------------------------------------- */
+
+/* Facebook gives the cover far more room than a banner strip, and hangs the
+   picture off its lower edge. */
+body[data-page="profile"] .media-plate {
+  height: 240px;
+}
+@media (min-width: 1024px) {
+  body[data-page="profile"] .media-plate { height: 316px; }
+}
+
+body[data-page="profile"] .profile-avatar-hero,
+body[data-page="profile"] #profile-avatar,
+body[data-page="profile"] [data-profile-hero-avatar] {
+  border-width: 5px !important;
+  box-shadow: none !important;
+}
+@media (min-width: 1024px) {
+  body[data-page="profile"] .profile-avatar-hero,
+  body[data-page="profile"] #profile-avatar,
+  body[data-page="profile"] [data-profile-hero-avatar] {
+    width: 168px !important;
+    height: 168px !important;
+    min-width: 168px !important;
+    min-height: 168px !important;
+    max-width: 168px !important;
+    max-height: 168px !important;
+  }
+}
+
+body[data-page="profile"] #profile-name {
+  font-size: 24px;
+  line-height: 1.25;
+  color: var(--fb-text);
+}
+@media (min-width: 1024px) {
+  body[data-page="profile"] #profile-name { font-size: 32px; }
+}
+body[data-page="profile"] .fi-profile-identity > p { color: var(--fb-secondary); }
+
+/* On a wide screen the name sits on the left and the actions on the right,
+   sharing one row, the way a Facebook profile header reads. */
+@media (min-width: 1024px) {
+  body[data-page="profile"] .fi-profile-body {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: end;
+    column-gap: 24px;
+  }
+  body[data-page="profile"] .fi-profile-avatar-row { grid-column: 1 / -1; }
+  body[data-page="profile"] .fi-profile-identity { grid-column: 1; grid-row: 2; }
+  body[data-page="profile"] .fi-profile-actions { grid-column: 2; grid-row: 2; margin-top: 0; }
+  body[data-page="profile"] .fi-profile-services { grid-column: 1 / -1; }
+}
+
+/* Facebook's secondary buttons are grey, not outlined */
+body[data-page="profile"] .btn-outline,
+body[data-page="profile"] .btn-neutral {
+  background: var(--fb-chip);
+  border-color: transparent;
+  color: var(--fb-text);
+}
+body[data-page="profile"] .btn-outline:hover,
+body[data-page="profile"] .btn-neutral:hover { filter: brightness(.95); }
+
+body[data-page="profile"] h2 { color: var(--fb-text); }
+
+/* Settings --------------------------------------------------------------- */
+
+body[data-page="settings"] h2.text-\[22px\],
+body[data-page="settings-security"] h2.text-\[22px\] {
+  font-size: 26px;
+  color: var(--fb-text);
+}
+
+/* Section titles sit inside the white card rather than on a grey strip */
+body[data-page="settings"] section.card > h3,
+body[data-page="settings-security"] section.card > h3 {
+  background: var(--fb-surface);
+  border-bottom: 1px solid rgb(var(--line));
+  padding: 14px 16px;
+  font-size: 17px;
+  color: var(--fb-text);
+}
+
+/* Rows take Facebook's inset hover plate instead of a full-bleed highlight */
+body[data-page="settings"] .settings-row,
+body[data-page="settings-security"] .settings-row {
+  margin: 4px 8px;
+  padding: 12px;
+  border-radius: 8px;
+  border-bottom: 0;
+}
+body[data-page="settings"] .settings-row:hover,
+body[data-page="settings-security"] .settings-row:hover {
+  background: var(--fb-hover);
+}
+body[data-page="settings"] .settings-row h4,
+body[data-page="settings-security"] .settings-row h4 { color: var(--fb-text); }
+body[data-page="settings"] .settings-row p,
+body[data-page="settings-security"] .settings-row p { color: var(--fb-secondary); }
+
+/* The rail's own header strip goes white, and the active section takes
+   Facebook's blue tint */
+body[data-page="settings"] aside .bg-raised,
+body[data-page="settings-security"] aside .bg-raised {
+  background: var(--fb-surface);
+}
+body[data-page="settings"] .side-link,
+body[data-page="settings-security"] .side-link {
+  border-radius: 8px;
+  font-size: 15px;
+}
+body[data-page="settings"] .side-link.is-active,
+body[data-page="settings-security"] .side-link.is-active {
+  background: var(--fb-tint);
+}
+html.dark body[data-page="settings"] .side-link.is-active,
+html.dark body[data-page="settings-security"] .side-link.is-active {
+  background: rgba(45, 136, 255, .18);
+}
 
 /* --- book spines (library) ---------------------------------------------- */
 .book-cover{
