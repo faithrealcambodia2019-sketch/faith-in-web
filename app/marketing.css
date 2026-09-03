@@ -780,3 +780,29 @@ body:has(.fi-page[data-skin="fb"]) .fi-header {
   border-bottom: 1px solid #DADDE1 !important;
   backdrop-filter: none !important;
 }
+
+/* The About page hand-writes a few gradient panels and oversized radii inline,
+   which the tokens above can't reach. Facebook's surfaces are flat: one white,
+   one hairline, 8px corners, no glow. */
+body:has(.fi-page[data-skin="fb"]) { background: #F0F2F5; }
+
+.fi-page[data-skin="fb"] .fi-btn--primary {
+  background: #2F5BEA;
+  box-shadow: none;
+}
+.fi-page[data-skin="fb"] .fi-btn--primary:hover { background: #2549C9; }
+
+.fi-page[data-skin="fb"] .rounded-3xl,
+.fi-page[data-skin="fb"] .rounded-2xl,
+.fi-page[data-skin="fb"] [class*="rounded-[28px]"],
+.fi-page[data-skin="fb"] [class*="rounded-[36px]"] { border-radius: 8px !important; }
+
+/* the soft blue glow behind the hero card */
+.fi-page[data-skin="fb"] [class*="-inset-6"][class*="radial-gradient"] { display: none; }
+
+.fi-page[data-skin="fb"] [class*="bg-gradient-to-br"] {
+  background-image: none !important;
+  background-color: #FFFFFF !important;
+  border-color: #DADDE1 !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, .2);
+}
