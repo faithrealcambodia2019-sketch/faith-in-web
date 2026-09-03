@@ -643,7 +643,7 @@
     activeTool: 'reader',
     book: 'John',
     chapter: 3,
-    version: 'KHMER_OLD_1954',
+    version: 'KJV',
     version2: 'KJV',
     verses: [],
     verses2: [],
@@ -3441,7 +3441,6 @@
           <div class="col-span-1 xl:col-span-3 space-y-0.5">
             <label class="text-[10.5px] font-bold uppercase tracking-wider text-muted">Translation</label>
             <select id="sel-version" class="w-full bg-raised border border-line rounded-lg px-2 py-1.5 text-xs font-medium text-ink outline-none focus:border-brand">
-              <option value="KHMER_OLD_1954" ${state.version === 'KHMER_OLD_1954' ? 'selected' : ''}>🇰🇭 ខ្មែរ ១៩៥៤ (ពគប)</option>
               <option value="KJV" ${state.version === 'KJV' ? 'selected' : ''}>🇺🇸 King James (KJV)</option>
               <option value="WEB" ${state.version === 'WEB' ? 'selected' : ''}>🌐 World English (WEB)</option>
               <option value="ASV" ${state.version === 'ASV' ? 'selected' : ''}>📖 ASV 1901</option>
@@ -3454,7 +3453,6 @@
             <select id="sel-version2" class="w-full bg-raised border border-line rounded-lg px-2 py-1.5 text-xs font-medium text-ink outline-none focus:border-brand">
               <option value="KJV" ${state.version2 === 'KJV' ? 'selected' : ''}>🇺🇸 King James (KJV)</option>
               <option value="WEB" ${state.version2 === 'WEB' ? 'selected' : ''}>🌐 World English (WEB)</option>
-              <option value="KHMER_OLD_1954" ${state.version2 === 'KHMER_OLD_1954' ? 'selected' : ''}>🇰🇭 ខ្មែរ ១៩៥៤</option>
               <option value="ASV" ${state.version2 === 'ASV' ? 'selected' : ''}>📖 ASV 1901</option>
             </select>
           </div>
