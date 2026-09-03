@@ -674,3 +674,109 @@
   font-size: 0.8125rem;
   color: var(--fi-ink-muted);
 }
+
+/* ==========================================================================
+   FACEBOOK SKIN — opt-in per page via data-skin="fb"
+   Surface values only. Same markup, same components, same order; what changes
+   is the ground colour, the card shape, the shadow and the type scale.
+   Delete this block and the attribute to put a page back as it was.
+   ========================================================================== */
+.fi-page[data-skin="fb"] {
+  --fi-bg: #F0F2F5;
+  --fi-surface: #FFFFFF;
+  --fi-surface-subtle: #F0F2F5;
+  --fi-surface-elevated: #FFFFFF;
+
+  --fi-border: #DADDE1;
+  --fi-border-subtle: #E4E6EB;
+  --fi-border-hover: #CED0D4;
+
+  --fi-ink-primary: #050505;
+  --fi-ink-secondary: #65676B;
+  --fi-ink-muted: #8A8D91;
+  --fi-ink-subtle: #BCC0C4;
+
+  /* Facebook's card shadow is a single hairline, not a soft cushion. */
+  --fi-shadow-xs: 0 1px 2px rgba(0, 0, 0, .1);
+  --fi-shadow-sm: 0 1px 2px rgba(0, 0, 0, .2);
+  --fi-shadow-md: 0 1px 2px rgba(0, 0, 0, .2);
+  --fi-shadow-lg: 0 12px 28px rgba(0, 0, 0, .2), 0 2px 4px rgba(0, 0, 0, .1);
+  --fi-shadow-xl: 0 12px 28px rgba(0, 0, 0, .2), 0 2px 4px rgba(0, 0, 0, .1);
+  --fi-shadow-glow: 0 1px 2px rgba(0, 0, 0, .2);
+
+  --fi-radius-sm: 6px;
+  --fi-radius-md: 8px;
+  --fi-radius-lg: 8px;
+  --fi-radius-xl: 8px;
+
+  --fi-transition: all .15s ease;
+  --fi-transition-bounce: all .15s ease;
+}
+
+/* The hero's warm radial wash belongs to the editorial look; on grey it reads
+   as a smudge. */
+.fi-page[data-skin="fb"] .fi-hero {
+  background: none;
+  padding-top: 32px;
+  padding-bottom: 40px;
+}
+
+/* Facebook packs its sections far tighter than an editorial page does. */
+.fi-page[data-skin="fb"] .fi-section {
+  padding-top: 44px;
+  padding-bottom: 44px;
+}
+@media (max-width: 768px) {
+  .fi-page[data-skin="fb"] .fi-section {
+    padding-top: 28px;
+    padding-bottom: 28px;
+  }
+}
+
+.fi-page[data-skin="fb"] .fi-card { padding: 20px; }
+
+/* Cards tint on hover rather than lifting — Facebook never floats a card. */
+.fi-page[data-skin="fb"] .fi-card:hover {
+  transform: none;
+  box-shadow: var(--fi-shadow-sm);
+  border-color: var(--fi-border);
+  background: #F7F8FA;
+}
+
+/* Type: smaller, lighter, and without the tight display tracking. */
+.fi-page[data-skin="fb"] .fi-hero h1 {
+  font-size: clamp(1.75rem, 3.6vw, 2.5rem);
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  line-height: 1.2;
+}
+.fi-page[data-skin="fb"] .fi-head h2 {
+  font-size: clamp(1.375rem, 2.2vw, 1.75rem);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+}
+.fi-page[data-skin="fb"] .fi-head { margin-bottom: 28px; }
+.fi-page[data-skin="fb"] .fi-head p,
+.fi-page[data-skin="fb"] .fi-hero p.fi-hero__lead {
+  font-size: 0.9375rem;
+  line-height: 1.5;
+}
+
+/* Facebook's pills are its chips: sentence case, no letterspacing. */
+.fi-page[data-skin="fb"] .fi-eyebrow {
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+/* Its buttons are soft rectangles, not lozenges. */
+.fi-page[data-skin="fb"] .fi-btn { border-radius: var(--fi-radius-sm); }
+
+/* White chrome over a grey canvas, the way Facebook stacks them. */
+body:has(.fi-page[data-skin="fb"]) .fi-header {
+  background: #FFFFFF !important;
+  border-bottom: 1px solid #DADDE1 !important;
+  backdrop-filter: none !important;
+}

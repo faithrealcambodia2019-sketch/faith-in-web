@@ -70,7 +70,7 @@ const promises = [
 
 export default function AboutPage() {
   return (
-    <div className="fi-page">
+    <div className="fi-page" data-skin="fb">
       {/* Hero */}
       <section className="fi-hero pb-16">
         <div className="fi-shell">
