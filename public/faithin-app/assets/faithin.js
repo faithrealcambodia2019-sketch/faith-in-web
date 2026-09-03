@@ -57,11 +57,11 @@
     const header = document.createElement('header');
     header.className = 'sticky top-0 z-50 bg-surface/85 backdrop-blur-xl border-b border-line';
     header.innerHTML = `
-      <div class="max-w-[1200px] xl:max-w-[1360px] 2xl:max-w-[1440px] mx-auto h-[56px] px-3 sm:px-4 flex items-center gap-3">
+      <div class="max-w-[1200px] mx-auto h-[56px] px-3 sm:px-4 flex items-center gap-3">
 
-        <a href="/home" class="fi-lockup shrink-0 text-brand" aria-label="Faith In home">
-          <span class="fi-lockup__word">FaithIn</span>
-          <i class="fa-solid fa-globe fi-lockup__glyph"></i>
+        <a href="/home" class="flex items-center gap-1.5 shrink-0 text-brand" aria-label="Faith In home">
+          <span class="text-[22px] font-extrabold tracking-tight leading-none">FaithIn</span>
+          <i class="fa-solid fa-globe text-[15px]"></i>
         </a>
 
         <div class="relative flex-1 max-w-[320px] hidden md:block">
