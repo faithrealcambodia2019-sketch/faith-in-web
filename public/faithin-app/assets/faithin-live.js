@@ -1497,6 +1497,7 @@
   }
 
   async function loadProfile(currentUser) {
+    applySearchIndexing(currentUser);
     const urlParams = new URLSearchParams(location.search);
     const rawTarget = urlParams.get('uid') || urlParams.get('member') || urlParams.get('user') || urlParams.get('id') || '';
     const targetUid = (rawTarget === 'undefined' || rawTarget === 'null' || !rawTarget.trim()) ? '' : rawTarget.trim();
@@ -1811,13 +1812,40 @@
     });
   }
 
+  // Switching search indexing off adds a robots directive to the member's
+  // profile, which is the part of Faith In that search engines actually crawl.
+  function applySearchIndexing(user) {
+    if (document.body.dataset.page !== 'profile') return;
+    if (user?.settings?.search_indexing === false) {
+      if (!document.querySelector('meta[name="robots"]')) {
+        const meta = document.createElement('meta');
+        meta.name = 'robots';
+        meta.content = 'noindex, nofollow';
+        document.head.appendChild(meta);
+      }
+    } else {
+      document.querySelector('meta[name="robots"]')?.remove();
+    }
+  }
+
   function loadSettings(user) {
     if (!user) return;
     const profileSummary = $$('#main h4').find(node => /name, location/i.test(node.textContent))?.parentElement?.querySelector('p'); if (profileSummary) profileSummary.textContent = [user.name, user.role, user.location].filter(Boolean).join(' · ');
     let settings = Object.assign({ theme: 'system', lang: 'English', content_languages: ['English', 'ភាសាខ្មែរ'], autoplay_videos: true, sound_effects: false, daily_verse: true, larger_text: false }, user.settings || {});
     const save = async changes => { try { const result = await api.request('cv_update_user_settings', changes); settings = result.settings || Object.assign(settings, changes); toast('Preference saved'); } catch (error) { toast(error.message); } };
     $('#theme-picker')?.addEventListener('click', event => { const button = event.target.closest('[data-theme-mode]'); if (button) save({ theme: button.dataset.themeMode }); });
-    const toggles = { 'Larger text': 'larger_text', 'Autoplay videos': 'autoplay_videos', 'Sound effects': 'sound_effects', 'Daily verse notification': 'daily_verse' };
+    const toggles = {
+      'Larger text': 'larger_text', 'Autoplay videos': 'autoplay_videos',
+      'Sound effects': 'sound_effects', 'Daily verse notification': 'daily_verse',
+      'Search engine indexing': 'search_indexing',
+      'Reactions': 'notify_reactions', 'Comments': 'notify_comments',
+      'New followers': 'notify_follows', 'Messages and replies': 'notify_messages',
+      'Posts and opportunities': 'notify_posts',
+    };
+    // Everything not yet chosen defaults to on, which is what the backend
+    // assumes when the field is undefined.
+    ['search_indexing', 'notify_reactions', 'notify_comments', 'notify_follows', 'notify_messages', 'notify_posts']
+      .forEach(key => { if (settings[key] === undefined) settings[key] = true; });
     Object.entries(toggles).forEach(([label, key]) => { const input = $(`input[aria-label="${label}"]`); if (!input) return; input.checked = !!settings[key]; input.addEventListener('change', () => { if (key === 'larger_text') document.documentElement.style.fontSize = input.checked ? '112.5%' : ''; save({ [key]: input.checked }); }); });
     const languageRows = $$('#main .settings-row').filter(row => /^(Language|Content language)$/i.test($('h4', row)?.textContent || ''));
     const openPicker = (title, options, multiple, current, onSave) => {
@@ -1828,6 +1856,24 @@
     };
     if (languageRows[0]) { const value = $$('p', languageRows[0])[1]; if (value) value.textContent = settings.lang; const button = $('button', languageRows[0]); button?.removeAttribute('data-toast'); if (button) button.onclick = () => openPicker('Faith In language', ['English', 'ភាសាខ្មែរ'], false, [settings.lang], lang => { if (value) value.textContent = lang; save({ lang }); }); }
     if (languageRows[1]) { const value = $$('p', languageRows[1])[1]; if (value) value.textContent = settings.content_languages.join(' · '); const button = $('button', languageRows[1]); button?.removeAttribute('data-toast'); if (button) button.onclick = () => openPicker('Content languages', ['English', 'ភាសាខ្មែរ', 'ไทย', 'မြန်မာ', 'Tiếng Việt'], true, settings.content_languages, languages => { if (value) value.textContent = languages.join(' · '); save({ content_languages: languages }); }); }
+    // Default audience for new posts — the composers read this when they
+    // publish, so choosing "Followers" here really does change what happens.
+    const AUDIENCE = { public: 'Public', followers: 'Followers only', private: 'Only me' };
+    const audienceValue = $('[data-audience-value]');
+    const paintAudience = () => {
+      if (audienceValue) audienceValue.textContent = AUDIENCE[settings.default_post_audience || 'public'] || 'Public';
+    };
+    paintAudience();
+    $('[data-audience-change]')?.addEventListener('click', () => {
+      openPicker('Default audience for new posts', Object.values(AUDIENCE), false,
+        [AUDIENCE[settings.default_post_audience || 'public']], choice => {
+          const code = Object.keys(AUDIENCE).find(key => AUDIENCE[key] === choice) || 'public';
+          settings.default_post_audience = code;
+          paintAudience();
+          save({ default_post_audience: code });
+        });
+    });
+
     // External calendar/contact OAuth is not configured. Remove those claims
     // instead of presenting buttons that pretend to sync third-party data.
     $$('#main section').find(section => /syncing options/i.test($('h3', section)?.textContent || ''))?.remove();

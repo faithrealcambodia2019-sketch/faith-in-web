@@ -2630,6 +2630,19 @@
         return requireUser(b).then(function (user) { return notificationCounts(b, user); });
     };
 
+    // A notification type the member has switched off in Settings never
+    // reaches them; the preference is applied here rather than hidden in the
+    // page, so the unread counts agree with the list.
+    var NOTIFICATION_PREFERENCE = {
+        reaction: 'notify_reactions',
+        comment: 'notify_comments',
+        follow: 'notify_follows',
+        message: 'notify_messages',
+        reply: 'notify_messages',
+        new_post: 'notify_posts',
+        job: 'notify_posts'
+    };
+
     actions.cv_social_get_notifications = function (b) {
         return requireUser(b).then(function (user) {
             var notificationQuery = b.dbMod.query(
@@ -2637,10 +2650,19 @@
                 b.dbMod.where('recipientUid', '==', user.uid),
                 b.dbMod.limit(100)
             );
-            return Promise.all([b.dbMod.getDocs(notificationQuery), notificationCounts(b, user)]).then(function (results) {
+            var settingsPromise = b.dbMod.getDoc(b.dbMod.doc(b.db, 'users', user.uid)).then(function (snap) {
+                return (snap.exists() ? snap.data().settings : null) || {};
+            }).catch(function () { return {}; });
+            return Promise.all([b.dbMod.getDocs(notificationQuery), notificationCounts(b, user), settingsPromise]).then(function (results) {
+                var prefs = results[2] || {};
+                var wanted = function (type) {
+                    var key = NOTIFICATION_PREFERENCE[text(type)];
+                    return !key || prefs[key] === undefined || !!prefs[key];
+                };
                 var items = [];
                 results[0].forEach(function (doc) {
                     var data = doc.data() || {};
+                    if (!wanted(data.type)) return;
                     items.push({
                         id: doc.id,
                         type: text(data.type),
@@ -2752,7 +2774,18 @@
                 if (params.phone !== undefined) {
                     settings.phone = text(params.phone, 40);
                 }
-                ['notifications', 'larger_text', 'autoplay_videos', 'sound_effects', 'daily_verse', 'two_step_verification', 'passkeys_enabled', 'remember_devices'].forEach(function (field) {
+                if (params.default_post_audience !== undefined) {
+                    settings.default_post_audience = visibilityOf(params.default_post_audience);
+                }
+                [
+                    'notifications', 'larger_text', 'autoplay_videos', 'sound_effects', 'daily_verse',
+                    'two_step_verification', 'passkeys_enabled', 'remember_devices',
+                    // per-type notification preferences — these filter what
+                    // cv_social_get_notifications returns
+                    'notify_reactions', 'notify_comments', 'notify_follows', 'notify_messages', 'notify_posts',
+                    // privacy
+                    'search_indexing'
+                ].forEach(function (field) {
                     if (params[field] !== undefined) settings[field] = String(params[field]) !== '0' && params[field] !== false;
                 });
                 var updates = {

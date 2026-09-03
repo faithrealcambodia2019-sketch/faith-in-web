@@ -15,7 +15,7 @@
 <link href="/faithin-app/assets/faithin-fonts.css" rel="stylesheet"/>
 <link href="/faithin-app/assets/faithin-icons.css" rel="stylesheet"/>
 <link href="/faithin-app/assets/faithin-tw.css?v=20260902-tw-v2" rel="stylesheet"/>
-<link href="/faithin-app/assets/faithin.css?v=20260903-fb-v7" rel="stylesheet"/>
+<link href="/faithin-app/assets/faithin.css?v=20260903-set-v8" rel="stylesheet"/>
 </head>
 <body class="font-sans min-h-screen pb-16 lg:pb-0" data-page="settings" data-search="Search settings">
 <main class="max-w-[1200px] mx-auto px-3 sm:px-4 py-5 grid gap-5 lg:grid-cols-[288px_minmax(0,1fr)] items-start" id="main">
@@ -38,11 +38,11 @@
   <i class="fa-solid fa-shield-halved"></i>
   <span>Sign in &amp; security</span>
 </a>
-<a class="side-link" href="#" data-settings-notice="Visibility preferences are linked to your profile privacy.">
+<a class="side-link" href="#privacy">
   <i class="fa-solid fa-eye"></i>
   <span>Visibility</span>
 </a>
-<a class="side-link" href="#" data-settings-notice="Manage communication preferences under Account Preferences.">
+<a class="side-link" href="#notifications">
   <i class="fa-solid fa-comment-dots"></i>
   <span>Communications</span>
 </a>
@@ -144,6 +144,77 @@
 </label>
 </div>
 </section>
+<!-- privacy -->
+<section class="card overflow-hidden" id="privacy">
+<h3 class="px-5 py-3.5 text-[15px] font-bold bg-raised border-b border-line">Privacy</h3>
+<div class="settings-row">
+<div class="min-w-0">
+<h4 class="text-[14.5px] font-semibold">Default audience for new posts</h4>
+<p class="text-[13px] text-muted mt-1">Who can see a post when you share it. You can still change the audience on any single post.</p>
+<p class="text-[13px] font-semibold mt-1" data-audience-value>Public</p>
+</div>
+<button class="btn btn-ghost !text-brand shrink-0" data-audience-change>Change</button>
+</div>
+<div class="settings-row">
+<div class="min-w-0">
+<h4 class="text-[14.5px] font-semibold">Search engine indexing</h4>
+<p class="text-[13px] text-muted mt-1">Allow search engines like Google to show your public profile in results.</p>
+</div>
+<label class="switch shrink-0 mt-1">
+<input aria-label="Search engine indexing" type="checkbox"/><span></span>
+</label>
+</div>
+</section>
+<!-- notifications -->
+<section class="card overflow-hidden" id="notifications">
+<h3 class="px-5 py-3.5 text-[15px] font-bold bg-raised border-b border-line">Notifications</h3>
+<p class="px-5 pt-3 text-[13px] text-muted">Choose what reaches your notifications. Anything switched off stops appearing, and stops counting toward your unread badge.</p>
+<div class="settings-row">
+<div class="min-w-0">
+<h4 class="text-[14.5px] font-semibold">Reactions</h4>
+<p class="text-[13px] text-muted mt-1">When someone reacts to something you shared.</p>
+</div>
+<label class="switch shrink-0 mt-1">
+<input aria-label="Reactions" type="checkbox"/><span></span>
+</label>
+</div>
+<div class="settings-row">
+<div class="min-w-0">
+<h4 class="text-[14.5px] font-semibold">Comments</h4>
+<p class="text-[13px] text-muted mt-1">When someone comments on your post.</p>
+</div>
+<label class="switch shrink-0 mt-1">
+<input aria-label="Comments" type="checkbox"/><span></span>
+</label>
+</div>
+<div class="settings-row">
+<div class="min-w-0">
+<h4 class="text-[14.5px] font-semibold">New followers</h4>
+<p class="text-[13px] text-muted mt-1">When someone starts following you.</p>
+</div>
+<label class="switch shrink-0 mt-1">
+<input aria-label="New followers" type="checkbox"/><span></span>
+</label>
+</div>
+<div class="settings-row">
+<div class="min-w-0">
+<h4 class="text-[14.5px] font-semibold">Messages and replies</h4>
+<p class="text-[13px] text-muted mt-1">When someone messages you or replies to you.</p>
+</div>
+<label class="switch shrink-0 mt-1">
+<input aria-label="Messages and replies" type="checkbox"/><span></span>
+</label>
+</div>
+<div class="settings-row">
+<div class="min-w-0">
+<h4 class="text-[14.5px] font-semibold">Posts and opportunities</h4>
+<p class="text-[13px] text-muted mt-1">New posts from people you follow, and ministry opportunities shared with the community.</p>
+</div>
+<label class="switch shrink-0 mt-1">
+<input aria-label="Posts and opportunities" type="checkbox"/><span></span>
+</label>
+</div>
+</section>
 <!-- account management -->
 <section class="card overflow-hidden">
 <h3 class="px-5 py-3.5 text-[15px] font-bold bg-raised border-b border-line">Account management</h3>
@@ -167,9 +238,9 @@
 </footer>
 </div>
 </main>
-<script src="/faithin-app/assets/faithin-runtime.js?v=20260903-fb-v7"></script>
-<script src="/assets/js/faith-in-backend.js?v=20260902-bible-v1"></script>
-<script src="/faithin-app/assets/faithin.js?v=20260903-fb-v7"></script>
+<script src="/faithin-app/assets/faithin-runtime.js?v=20260903-set-v8"></script>
+<script src="/assets/js/faith-in-backend.js?v=20260903-set-v8"></script>
+<script src="/faithin-app/assets/faithin.js?v=20260903-set-v8"></script>
 <script>
   /* The theme picker drives the real theme via the shared FI.setTheme(). */
   const picker = document.getElementById('theme-picker');
@@ -186,6 +257,6 @@
   document.addEventListener('fi:theme', e => paintPicker(e.detail.mode));
   paintPicker(FI.getTheme());
 </script>
-<script src="/faithin-app/assets/faithin-live.js?v=20260903-fb-v7"></script>
+<script src="/faithin-app/assets/faithin-live.js?v=20260903-set-v8"></script>
 </body>
 </html>

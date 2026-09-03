@@ -6,6 +6,10 @@
   const api = window.FIData;
   const feed = $('#posts');
   const needUser = () => window.FILive.requireUser();
+  // Whatever the member chose as their default audience in Settings is what a
+  // new post gets, unless the composer asks for something specific.
+  const defaultAudience = () => (window.FILive && window.FILive.user && window.FILive.user.settings
+    && window.FILive.user.settings.default_post_audience) || 'public';
   let loadedPosts = [], feedQuery = '', sortMode = 'Top', followingIds = new Set();
 
   const LEGACY_MEDIA_BASE = 'https://nckvrhdyrikrbpgjlqlw.supabase.co/storage/v1/object/public/faithin-media/migrated/';
@@ -470,7 +474,7 @@
   blessingVideoInput?.addEventListener('change', () => selectBlessingMedia(blessingVideoInput.files || [], 'video'));
   $('#blessing-media-remove')?.addEventListener('click', clearBlessingMedia);
   $$('[data-chip]').forEach(chip => chip.addEventListener('click', () => { ta.value = `${ta.value.trim()} ${chip.textContent} `.trimStart(); ta.dispatchEvent(new Event('input')); ta.focus(); }));
-  postBtn?.addEventListener('click', async () => { if (!needUser()) return; busy(postBtn, true, blessingMediaFiles.length ? 'Uploading' : 'Posting'); try { const files = blessingMediaFiles.length ? { 'post_media[]': blessingMediaFiles } : {}; await api.request('cv_create_post', { content: ta.value.trim(), type: 'blessing', visibility: 'public' }, files); ta.value = ''; clearBlessingMedia(); closeModal(); toast('Your blessing is live 🕊️'); await loadPosts(); } catch (error) { toast(error.message); } finally { busy(postBtn, false, 'Post'); ta.dispatchEvent(new Event('input')); } });
+  postBtn?.addEventListener('click', async () => { if (!needUser()) return; busy(postBtn, true, blessingMediaFiles.length ? 'Uploading' : 'Posting'); try { const files = blessingMediaFiles.length ? { 'post_media[]': blessingMediaFiles } : {}; await api.request('cv_create_post', { content: ta.value.trim(), type: 'blessing', visibility: defaultAudience() }, files); ta.value = ''; clearBlessingMedia(); closeModal(); toast('Your blessing is live 🕊️'); await loadPosts(); } catch (error) { toast(error.message); } finally { busy(postBtn, false, 'Post'); ta.dispatchEvent(new Event('input')); } });
 
   const fileInput = $('#file-input'), preview = $('#preview'), dropzone = $('#dropzone');
   const mediaPickerTitle = $('#media-picker-title'), mediaPickerHelp = $('#media-picker-help'), mediaPickerIcon = $('#media-picker-icon');
@@ -518,7 +522,7 @@
   fileInput?.addEventListener('change', () => showFiles(fileInput.files));
   ['dragover','dragleave','drop'].forEach(type => dropzone?.addEventListener(type, event => { event.preventDefault(); dropzone.classList.toggle('border-brand', type === 'dragover'); if (type === 'drop') showFiles(event.dataTransfer.files); }));
   const photoDone = $$('#modal-photo button').find(button => button.textContent.trim() === 'Done');
-  photoDone?.addEventListener('click', async () => { if (!needUser()) return; if (!selectedFiles.length) return toast(mediaMode === 'video' ? 'Choose a video.' : 'Choose at least one photo.'); busy(photoDone, true, 'Uploading'); try { await api.request('cv_create_post', { type: mediaMode === 'video' ? 'video' : 'post', visibility: 'public' }, { 'post_media[]': selectedFiles }); closeModal(); toast(mediaMode === 'video' ? 'Video shared' : 'Photos shared'); showFiles([]); await loadPosts(); } catch (error) { toast(error.message); } finally { busy(photoDone, false, 'Done'); } });
+  photoDone?.addEventListener('click', async () => { if (!needUser()) return; if (!selectedFiles.length) return toast(mediaMode === 'video' ? 'Choose a video.' : 'Choose at least one photo.'); busy(photoDone, true, 'Uploading'); try { await api.request('cv_create_post', { type: mediaMode === 'video' ? 'video' : 'post', visibility: defaultAudience() }, { 'post_media[]': selectedFiles }); closeModal(); toast(mediaMode === 'video' ? 'Video shared' : 'Photos shared'); showFiles([]); await loadPosts(); } catch (error) { toast(error.message); } finally { busy(photoDone, false, 'Done'); } });
 
   const prayerButton = $$('#modal-prayer button').find(button => /request prayer/i.test(button.textContent));
   prayerButton?.removeAttribute('data-toast');
@@ -683,7 +687,7 @@
         article_title: title || 'Untitled Article',
         article_body: bodyEl ? bodyEl.innerHTML : text,
         content: text || title,
-        visibility: 'public'
+        visibility: defaultAudience()
       }, files);
       closeModal();
       hideArticlePreview();
