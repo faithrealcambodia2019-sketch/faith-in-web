@@ -731,6 +731,152 @@ html.dark .chip.is-on{ color:#0b1120; }
 }
 .fi-notif-summary > div:first-child { border-top: 0; padding-top: 0; }
 
+/* --- Notifications: Facebook-style surface ------------------------------
+   Facebook's page furniture — a grey canvas with white cards floating on
+   it, 8px corners, a shadow instead of a border, big avatars and roomy
+   rows. Scoped to this page only; FaithIn's own blue, logo and Khmer type
+   are untouched. */
+
+body[data-page="notifications"] {
+  --fb-canvas: #F0F2F5;
+  --fb-surface: #FFFFFF;
+  --fb-text: #050505;
+  --fb-secondary: #65676B;
+  --fb-hover: #F2F2F2;
+  --fb-chip: #E4E6EB;
+  --fb-unread: #EDF4FE;
+  --fb-tint: #E7F3FF;
+  --fb-shadow: 0 1px 2px rgba(0, 0, 0, .2);
+  background: var(--fb-canvas);
+}
+html.dark body[data-page="notifications"] {
+  --fb-canvas: #18191A;
+  --fb-surface: #242526;
+  --fb-text: #E4E6EB;
+  --fb-secondary: #B0B3B8;
+  --fb-hover: #3A3B3C;
+  --fb-chip: #3A3B3C;
+  --fb-unread: rgba(45, 136, 255, .12);
+  --fb-tint: rgba(45, 136, 255, .18);
+  --fb-shadow: 0 1px 2px rgba(0, 0, 0, .4);
+}
+
+body[data-page="notifications"] .card {
+  background: var(--fb-surface);
+  border: 0;
+  border-radius: 8px;
+  box-shadow: var(--fb-shadow);
+}
+
+/* Section heading: a real heading, the way Facebook sets "New" and
+   "Earlier" — not a micro-caps label. */
+body[data-page="notifications"] .fi-notif-day {
+  top: 57px;
+  padding: 16px 16px 8px;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: normal;
+  text-transform: none;
+  color: var(--fb-text);
+  background: var(--fb-surface);
+  border-bottom: 0;
+}
+
+/* Rows: Facebook's proportions — a 56px avatar, 15px sentence, a rounded
+   hover plate inset from the card edge, and no divider lines. */
+body[data-page="notifications"] .divide-y > :not([hidden]) ~ :not([hidden]) {
+  border-top-width: 0;
+}
+body[data-page="notifications"] .fi-notif-row {
+  gap: 12px;
+  align-items: center;
+  margin: 0 8px;
+  padding: 8px;
+  border-radius: 8px;
+}
+body[data-page="notifications"] .fi-notif-row:hover {
+  background: var(--fb-hover);
+}
+body[data-page="notifications"] .fi-notif-row.notif-unread {
+  background: var(--fb-unread);
+  box-shadow: none;
+}
+body[data-page="notifications"] .fi-notif-row.notif-unread:hover {
+  background: var(--fb-unread);
+  filter: brightness(.97);
+}
+body[data-page="notifications"] .fi-notif-avatar,
+body[data-page="notifications"] .fi-notif-avatar .avatar,
+body[data-page="notifications"] .fi-notif-avatar img {
+  width: 56px;
+  height: 56px;
+}
+body[data-page="notifications"] .fi-notif-kind {
+  width: 28px;
+  height: 28px;
+  right: -3px;
+  bottom: -3px;
+  font-size: 12px;
+  box-shadow: 0 0 0 2px var(--fb-surface);
+}
+body[data-page="notifications"] .fi-notif-text {
+  font-size: 15px;
+  line-height: 1.4;
+  color: var(--fb-text);
+}
+body[data-page="notifications"] .fi-notif-time {
+  margin-top: 4px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--fb-secondary);
+}
+body[data-page="notifications"] .notif-unread .fi-notif-time {
+  color: #1877F2;
+}
+body[data-page="notifications"] .fi-notif-row .fi-notif-dot {
+  width: 12px;
+  height: 12px;
+}
+
+/* Filter pills, Facebook's flavour: grey by default, tinted blue when on */
+body[data-page="notifications"] .chip {
+  border: 0;
+  padding: 8px 14px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--fb-text);
+  background: var(--fb-chip);
+}
+body[data-page="notifications"] .chip:hover { filter: brightness(.95); }
+body[data-page="notifications"] .chip.is-on {
+  background: var(--fb-tint);
+  color: #1877F2;
+}
+html.dark body[data-page="notifications"] .chip.is-on { color: #2D88FF; }
+
+/* Rails and headings pick up the same type colours */
+body[data-page="notifications"] .side-link { border-radius: 8px; font-size: 15px; }
+body[data-page="notifications"] .side-link.is-active { background: var(--fb-tint); }
+html.dark body[data-page="notifications"] .side-link.is-active { background: rgba(45, 136, 255, .15); }
+body[data-page="notifications"] h2 { color: var(--fb-text); }
+body[data-page="notifications"] .fi-notif-summary dd { color: var(--fb-text); }
+body[data-page="notifications"] .fi-notif-summary dt { color: var(--fb-secondary); }
+
+/* Footer link: Facebook's full-width "See previous notifications" */
+body[data-page="notifications"] section.card > button:last-child {
+  border-top: 0;
+  margin: 4px 8px 8px;
+  width: calc(100% - 16px);
+  border-radius: 8px;
+  background: var(--fb-chip);
+  color: var(--fb-text);
+  font-size: 15px;
+  font-weight: 600;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+body[data-page="notifications"] section.card > button:last-child:hover { filter: brightness(.95); }
+
 /* --- book spines (library) ---------------------------------------------- */
 .book-cover{
   border-radius: 3px 8px 8px 3px;
