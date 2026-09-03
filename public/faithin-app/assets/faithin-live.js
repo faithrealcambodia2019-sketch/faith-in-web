@@ -1887,6 +1887,7 @@
       email_verified: true,
       phone: user.phone || user.settings?.phone || '+855 12 345 678',
       two_step_verification: user.settings?.two_step_verification !== undefined ? user.settings.two_step_verification : true,
+      two_step_enrolled: false,
       passkeys_enabled: !!user.settings?.passkeys_enabled,
       remember_devices: user.settings?.remember_devices !== undefined ? user.settings.remember_devices : true,
       last_password_change: 'August 2026'
@@ -2002,15 +2003,20 @@
               <h3 class="text-[18px] font-bold">Change password</h3>
               <button type="button" class="icon-btn" data-modal-close><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <p class="text-[13px] text-muted">Enter a new secure password of at least 6 characters, or send a password reset link to your email.</p>
+            <p class="text-[13px] text-muted">Confirm your current password, then choose a new one of at least 8 characters. If you have forgotten it, send yourself a reset link instead.</p>
             <div class="space-y-3">
               <div>
+                <label class="block text-[12.5px] font-semibold text-muted mb-1">Current password</label>
+                <input type="password" name="current_password" class="field" placeholder="••••••••" autocomplete="current-password" required>
+              </div>
+              <div>
                 <label class="block text-[12.5px] font-semibold text-muted mb-1">New password</label>
-                <input type="password" name="password" class="field" placeholder="••••••••" minlength="6" required>
+                <input type="password" name="password" class="field" placeholder="••••••••" minlength="8" autocomplete="new-password" required>
+                <p class="text-[12px] mt-1" data-pass-strength>&nbsp;</p>
               </div>
               <div>
                 <label class="block text-[12.5px] font-semibold text-muted mb-1">Confirm new password</label>
-                <input type="password" name="confirm_password" class="field" placeholder="••••••••" minlength="6" required>
+                <input type="password" name="confirm_password" class="field" placeholder="••••••••" minlength="8" autocomplete="new-password" required>
               </div>
             </div>
             <div class="flex flex-col gap-2 pt-2">
@@ -2032,34 +2038,68 @@
             toast(err.message);
           }
         };
+        // Live feedback while typing, so a weak password is caught before the
+        // member submits rather than after.
+        const strengthOf = value => {
+          if (value.length < 8) return { label: 'Too short — use at least 8 characters', tone: 'text-rose' };
+          let score = 0;
+          if (/[a-z]/.test(value) && /[A-Z]/.test(value)) score++;
+          if (/[0-9]/.test(value)) score++;
+          if (/[^A-Za-z0-9]/.test(value)) score++;
+          if (value.length >= 12) score++;
+          if (score <= 1) return { label: 'Weak — mix upper and lower case, numbers or symbols', tone: 'text-rose' };
+          if (score === 2) return { label: 'Fair — a longer passphrase would be stronger', tone: 'text-amber-600' };
+          return { label: 'Strong', tone: 'text-emerald-600' };
+        };
+        const strengthNote = $('[data-pass-strength]', modal);
+        $('input[name="password"]', modal)?.addEventListener('input', event => {
+          const value = event.target.value;
+          if (!strengthNote) return;
+          if (!value) { strengthNote.innerHTML = '&nbsp;'; strengthNote.className = 'text-[12px] mt-1'; return; }
+          const { label, tone } = strengthOf(value);
+          strengthNote.textContent = label;
+          strengthNote.className = `text-[12px] mt-1 font-semibold ${tone}`;
+        });
+
         $('[data-pass-form]', modal).onsubmit = async event => {
           event.preventDefault();
           const form = new FormData(event.target);
+          const current = String(form.get('current_password') || '');
           const p1 = String(form.get('password') || '');
           const p2 = String(form.get('confirm_password') || '');
           if (p1 !== p2) return toast('Passwords do not match.');
+          if (p1.length < 8) return toast('Choose a password of at least 8 characters.');
+          const submit = $('button[type="submit"]', modal);
+          if (submit) { submit.disabled = true; submit.textContent = 'Updating…'; }
           try {
-            await api.request('cv_update_password', { password: p1 });
+            await api.request('cv_update_password', { password: p1, current_password: current });
             toast('Password successfully updated.');
             modal.remove();
           } catch (err) {
             toast(err.message);
+            if (submit) { submit.disabled = false; submit.textContent = 'Update password'; }
           }
         };
       };
     }
 
     // 4. Two-step verification
+    // The badge reports what the auth provider has actually enrolled. A stored
+    // preference is not protection, and telling a member they have a second
+    // factor when no code is ever asked for is worse than telling them nothing.
     const twoFaRow = $('[data-security-2fa-row]');
     const twoFaBadge = $('[data-security-2fa-badge]');
-    const update2FaUI = (enabled) => {
-      security.two_step_verification = enabled;
-      if (twoFaBadge) {
-        twoFaBadge.textContent = enabled ? 'On' : 'Off';
-        twoFaBadge.className = `status-badge ${enabled ? 'status-on' : 'status-off'}`;
-      }
-    };
-    update2FaUI(security.two_step_verification);
+    const twoFaSub = $('[data-security-2fa-sub]');
+    const twoFaEnrolled = !!security.two_step_enrolled;
+    if (twoFaBadge) {
+      twoFaBadge.textContent = twoFaEnrolled ? 'On' : 'Not set up';
+      twoFaBadge.className = `status-badge ${twoFaEnrolled ? 'status-on' : 'status-off'}`;
+    }
+    if (twoFaSub) {
+      twoFaSub.textContent = twoFaEnrolled
+        ? 'A second factor is enrolled on this account.'
+        : 'Your account is protected by your password alone.';
+    }
 
     if (twoFaRow) {
       twoFaRow.onclick = () => {
@@ -2071,32 +2111,20 @@
               <h3 class="text-[18px] font-bold">Two-step verification</h3>
               <button type="button" class="icon-btn" data-modal-close><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <p class="text-[13px] text-muted">Require an authentication code via Authenticator app or email whenever you sign in to a new device.</p>
-            <div class="p-4 rounded-xl bg-raised border border-line flex items-center justify-between">
-              <div>
-                <p class="font-semibold text-[14px]">Enable 2-Step Verification</p>
-                <p class="text-[12px] text-muted mt-0.5">High security account protection</p>
+            ${twoFaEnrolled ? `
+              <p class="text-[13px] text-muted">A second factor is enrolled on this account. You are asked for a code when signing in on a new device.</p>
+            ` : `
+              <div class="p-4 rounded-xl border border-amber-500/30 bg-amber-500/10">
+                <p class="text-[13.5px] font-bold text-amber-700">Not set up yet</p>
+                <p class="text-[13px] text-ink/80 mt-1">Your account is protected by your password alone. Two-step verification is not switched on for Faith In yet, so no code is asked for at sign-in.</p>
               </div>
-              <label class="switch">
-                <input type="checkbox" ${security.two_step_verification ? 'checked' : ''} data-2fa-toggle>
-                <span></span>
-              </label>
-            </div>
-            <button type="button" class="btn btn-primary w-full" data-modal-close>Done</button>
+              <p class="text-[13px] text-muted">Until it is available, the strongest thing you can do is use a long, unique password and keep your email account secure — a reset link goes there.</p>
+            `}
+            <button type="button" class="btn btn-primary w-full" data-modal-close>Close</button>
           </div>
         `;
         document.body.appendChild(modal);
         $$('[data-modal-close]', modal).forEach(btn => btn.onclick = () => modal.remove());
-        $('[data-2fa-toggle]', modal)?.addEventListener('change', async (e) => {
-          const val = e.target.checked;
-          try {
-            await api.request('cv_update_user_settings', { two_step_verification: val });
-            update2FaUI(val);
-            toast(val ? 'Two-step verification enabled.' : 'Two-step verification disabled.');
-          } catch (err) {
-            toast(err.message);
-          }
-        });
       };
     }
 

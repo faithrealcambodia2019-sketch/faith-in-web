@@ -871,23 +871,58 @@
         });
     };
 
+    // Changing a password now requires proving you know the current one.
+    // Without that, anyone who reaches an unlocked signed-in browser could set
+    // a new password and lock the real owner out of their account.
     actions.cv_update_password = function (b, params) {
         return requireUser(b).then(function (user) {
             var newPass = text(params.new_password || params.password);
-            if (!newPass || newPass.length < 6) {
-                throw new Error('Password must be at least 6 characters.');
+            var currentPass = text(params.current_password);
+            if (!newPass || newPass.length < 8) {
+                throw new Error('Choose a password of at least 8 characters.');
             }
-            if (typeof b.authMod.updatePassword === 'function') {
-                return b.authMod.updatePassword(user, newPass).then(function () {
-                    return b.dbMod.updateDoc(b.dbMod.doc(b.db, 'users', user.uid), {
-                        last_password_change: new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' }),
-                        updatedAt: b.dbMod.serverTimestamp()
-                    }).catch(function () {}).then(function () {
-                        return { success: true, updated: true };
+            if (currentPass && currentPass === newPass) {
+                throw new Error('Choose a password you have not used before.');
+            }
+            if (typeof b.authMod.updatePassword !== 'function') {
+                throw new Error('Password changes are unavailable right now. Please try again shortly.');
+            }
+
+            var usesPassword = (user.providerData || []).some(function (entry) {
+                return entry && entry.providerId === 'password';
+            });
+            var confirmed = Promise.resolve();
+            if (usesPassword) {
+                if (!currentPass) {
+                    throw new Error('Enter your current password to confirm this change.');
+                }
+                if (b.authMod.EmailAuthProvider && typeof b.authMod.reauthenticateWithCredential === 'function') {
+                    confirmed = b.authMod.reauthenticateWithCredential(
+                        user,
+                        b.authMod.EmailAuthProvider.credential(user.email || '', currentPass)
+                    ).catch(function (error) {
+                        var code = (error && error.code) || '';
+                        if (code === 'auth/wrong-password' || code === 'auth/invalid-credential') {
+                            throw new Error('That current password is not correct.');
+                        }
+                        if (code === 'auth/too-many-requests') {
+                            throw new Error('Too many attempts. Wait a few minutes and try again.');
+                        }
+                        throw error;
                     });
-                });
+                }
             }
-            return { success: true, updated: true };
+
+            return confirmed.then(function () {
+                return b.authMod.updatePassword(user, newPass);
+            }).then(function () {
+                return b.dbMod.updateDoc(b.dbMod.doc(b.db, 'users', user.uid), {
+                    last_password_change: new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' }),
+                    updatedAt: b.dbMod.serverTimestamp()
+                }).catch(function () {});
+            }).then(function () {
+                return { success: true, updated: true };
+            });
         });
     };
 
@@ -2816,6 +2851,9 @@
                     email: user.email || data.email || '',
                     email_verified: isVerified,
                     phone: text(data.phone || settings.phone || '+855 12 345 678'),
+                    // Whether a second factor is really enrolled with the auth
+                    // provider — a stored preference is not protection.
+                    two_step_enrolled: !!(user.multiFactor && (user.multiFactor.enrolledFactors || []).length),
                     two_step_verification: settings.two_step_verification !== undefined ? !!settings.two_step_verification : true,
                     passkeys_enabled: !!settings.passkeys_enabled,
                     remember_devices: settings.remember_devices !== undefined ? !!settings.remember_devices : true,
