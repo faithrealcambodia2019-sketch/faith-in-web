@@ -604,6 +604,133 @@ html.dark .chip.is-on{ color:#0b1120; }
 .notif-unread{ background: rgb(var(--brand-soft) / .55); box-shadow: inset 3px 0 0 rgb(var(--brand)); }
 .notif-unread:hover{ background: rgb(var(--brand-soft)); }
 
+/* --- Notifications ------------------------------------------------------ */
+
+/* A date header every time the day changes, so a long list reads as a
+   timeline instead of one undifferentiated column. */
+.fi-notif-day {
+  position: sticky;
+  /* clears the app header, which is sticky and 57px tall */
+  top: 57px;
+  z-index: 2;
+  padding: 8px 16px;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: rgb(var(--muted));
+  background: rgb(var(--raised));
+  border-bottom: 1px solid rgb(var(--line));
+}
+
+.fi-notif-row {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  padding: 14px 16px;
+  cursor: pointer;
+  transition: background .15s ease;
+}
+.fi-notif-row:hover { background: rgb(var(--raised)); }
+.fi-notif-row:focus-visible {
+  outline: 2px solid rgb(var(--brand));
+  outline-offset: -2px;
+}
+
+.fi-notif-avatar {
+  position: relative;
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+}
+.fi-notif-avatar .avatar,
+.fi-notif-avatar img {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* A small mark on the avatar says what happened before the sentence does. */
+.fi-notif-kind {
+  position: absolute;
+  right: -2px;
+  bottom: -2px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 9.5px;
+  color: #fff;
+  background: #64748b;
+  box-shadow: 0 0 0 2px rgb(var(--surface));
+}
+.fi-notif-kind.is-reaction { background: #E11D48; }
+.fi-notif-kind.is-comment  { background: #1877F2; }
+.fi-notif-kind.is-follow   { background: #059669; }
+.fi-notif-kind.is-message  { background: #4F46E5; }
+.fi-notif-kind.is-reply    { background: #0284C7; }
+.fi-notif-kind.is-job      { background: #D97706; }
+.fi-notif-kind.is-new_post { background: #475569; }
+
+.fi-notif-body { min-width: 0; flex: 1; }
+.fi-notif-text {
+  font-size: 14px;
+  line-height: 1.55;
+  color: rgb(var(--ink));
+  overflow-wrap: break-word;
+}
+.fi-notif-time {
+  display: block;
+  margin-top: 3px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: rgb(var(--muted));
+}
+.fi-notif-row .fi-notif-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: rgb(var(--brand));
+  flex-shrink: 0;
+  align-self: center;
+}
+
+.fi-notif-skeleton {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  padding: 14px 16px;
+}
+.fi-notif-skeleton .fi-skel-avatar,
+.fi-notif-skeleton .fi-skel-lines > span {
+  background: linear-gradient(90deg, rgb(var(--raised)) 25%, rgb(var(--line)) 37%, rgb(var(--raised)) 63%);
+  background-size: 400% 100%;
+  animation: fi-shimmer 1.4s ease-in-out infinite;
+  border-radius: 6px;
+}
+.fi-notif-skeleton .fi-skel-avatar { width: 44px; height: 44px; border-radius: 50%; flex-shrink: 0; }
+.fi-notif-skeleton .fi-skel-lines { flex: 1; display: block; }
+.fi-notif-skeleton .fi-skel-lines > span { display: block; height: 11px; }
+.fi-notif-skeleton .fi-skel-lines > span + span { margin-top: 8px; width: 42%; }
+@media (prefers-reduced-motion: reduce) {
+  .fi-notif-skeleton .fi-skel-avatar,
+  .fi-notif-skeleton .fi-skel-lines > span { animation: none; }
+}
+
+.fi-notif-summary dt { font-size: 13px; color: rgb(var(--muted)); }
+.fi-notif-summary dd { font-size: 14px; font-weight: 700; color: rgb(var(--ink)); font-variant-numeric: tabular-nums; }
+.fi-notif-summary > div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 7px 0;
+  border-top: 1px solid rgb(var(--line));
+}
+.fi-notif-summary > div:first-child { border-top: 0; padding-top: 0; }
+
 /* --- book spines (library) ---------------------------------------------- */
 .book-cover{
   border-radius: 3px 8px 8px 3px;

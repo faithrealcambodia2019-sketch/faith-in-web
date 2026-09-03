@@ -1022,33 +1022,172 @@
     location.href = target;
   }
 
+  // ── Notification helpers: relative time, day grouping, type marks ────────
+  const FI_NOTIF_KIND = {
+    reaction: { icon: 'fa-heart',        label: 'reacted to your post' },
+    comment:  { icon: 'fa-comment',      label: 'commented on your post' },
+    follow:   { icon: 'fa-user-plus',    label: 'followed you' },
+    message:  { icon: 'fa-envelope',     label: 'sent you a message' },
+    reply:    { icon: 'fa-reply',        label: 'replied to you' },
+    new_post: { icon: 'fa-pen-nib',      label: 'shared a new post' },
+    job:      { icon: 'fa-briefcase',    label: 'shared a ministry opportunity' },
+  };
+
+  // "3 hours ago" reads faster than a timestamp; the exact time stays in the
+  // title attribute for anyone who wants it.
+  function fiRelativeTime(value) {
+    const then = value ? new Date(value) : null;
+    if (!then || isNaN(then)) return '';
+    const seconds = Math.round((Date.now() - then.getTime()) / 1000);
+    if (seconds < 45) return 'just now';
+    const units = [['year', 31536000], ['month', 2592000], ['week', 604800], ['day', 86400], ['hour', 3600], ['minute', 60]];
+    for (const [unit, size] of units) {
+      const amount = Math.floor(seconds / size);
+      if (amount >= 1) {
+        try {
+          return new Intl.RelativeTimeFormat(undefined, { numeric: 'auto' }).format(-amount, unit);
+        } catch (_) {
+          return `${amount} ${unit}${amount === 1 ? '' : 's'} ago`;
+        }
+      }
+    }
+    return 'just now';
+  }
+
+  function fiNotifDayLabel(value) {
+    const then = value ? new Date(value) : null;
+    if (!then || isNaN(then)) return 'Earlier';
+    const startOfDay = date => { const copy = new Date(date); copy.setHours(0, 0, 0, 0); return copy.getTime(); };
+    const days = Math.round((startOfDay(new Date()) - startOfDay(then)) / 86400000);
+    if (days <= 0) return 'Today';
+    if (days === 1) return 'Yesterday';
+    if (days < 7) return 'This week';
+    if (days < 30) return 'This month';
+    return 'Earlier';
+  }
+
+  // Five identical "reacted to your post" rows are noise. Consecutive
+  // notifications of the same kind about the same thing collapse into one.
+  function fiGroupNotifications(items) {
+    const grouped = [];
+    for (const item of items) {
+      const key = `${item.type || ''}__${item.object_id || item.id}`;
+      const previous = grouped[grouped.length - 1];
+      if (previous && previous.key === key && item.object_id) {
+        previous.items.push(item);
+        previous.actors.push(item.actor || {});
+        continue;
+      }
+      grouped.push({ key, lead: item, items: [item], actors: [item.actor || {}] });
+    }
+    return grouped;
+  }
+
+  function fiNotifSentence(group, labels) {
+    const names = [];
+    for (const actor of group.actors) {
+      const name = actor?.name || 'A member';
+      if (!names.includes(name)) names.push(name);
+    }
+    const label = labels[group.lead.type] || 'sent an update';
+    if (names.length === 1) return `<strong>${esc(names[0])}</strong> ${esc(label)}`;
+    if (names.length === 2) return `<strong>${esc(names[0])}</strong> and <strong>${esc(names[1])}</strong> ${esc(label)}`;
+    return `<strong>${esc(names[0])}</strong> and <strong>${names.length - 1} others</strong> ${esc(label)}`;
+  }
+
+  function fiNotifSkeleton(count) {
+    return Array.from({ length: count || 6 }, () =>
+      `<div class="fi-notif-skeleton" aria-hidden="true"><span class="fi-skel-avatar"></span>`
+      + `<span class="fi-skel-lines"><span></span><span></span></span></div>`).join('');
+  }
+
   async function loadNotifications() {
     const center = $('#main > section.card'); const holder = center?.querySelector('.divide-y'); if (!holder) return;
+    holder.innerHTML = fiNotifSkeleton(6);
     let allItems = [], shown = 12, active = new URLSearchParams(location.search).get('filter') || 'all', searchQuery = '';
     const groups = { all: null, jobs: ['job'], post: ['reaction', 'comment', 'new_post'], 'my posts': ['reaction', 'comment', 'new_post'], mention: ['reply', 'message'], mentions: ['reply', 'message'], follow: ['follow'], connections: ['follow'] };
     const labels = { reaction: 'reacted to your post', comment: 'commented on your post', follow: 'followed you', message: 'sent you a message', reply: 'replied to you', new_post: 'shared a new post', job: 'shared a ministry opportunity' };
     const earlier = center.querySelector(':scope > button');
+    const emptyMessages = {
+      all: ['You are all caught up', 'New reactions, comments and follows will appear here.'],
+      jobs: ['No ministry opportunities yet', 'Opportunities shared with the community will appear here.'],
+      'my posts': ['Nothing on your posts yet', 'Reactions and comments on what you share will appear here.'],
+      post: ['Nothing on your posts yet', 'Reactions and comments on what you share will appear here.'],
+      mentions: ['No mentions yet', 'Replies and messages addressed to you will appear here.'],
+      mention: ['No mentions yet', 'Replies and messages addressed to you will appear here.'],
+      connections: ['No new connections yet', 'When someone follows you, it shows up here.'],
+      follow: ['No new connections yet', 'When someone follows you, it shows up here.'],
+    };
+
     const render = () => {
       const types = groups[active] || null;
       const filtered = allItems.filter(item => (!types || types.includes(item.type)) && (!searchQuery || `${item.actor?.name || ''} ${labels[item.type] || ''}`.toLowerCase().includes(searchQuery)));
-      const items = filtered.slice(0, shown);
-      holder.innerHTML = items.length ? items.map(item => {
-        const actor = item.actor || {};
-        return `<article class="${item.is_read ? '' : 'notif-unread'} p-4 flex gap-3.5 relative cursor-pointer hover:bg-raised transition-colors" data-notification-id="${esc(item.id)}" data-notification-type="${esc(item.type || '')}" data-object-id="${esc(item.object_id || '')}" data-actor-uid="${esc(actor.uid || '')}">${avatarMarkup(actor, 'avatar w-12 h-12 text-[13px] object-cover')}<div class="min-w-0 flex-1"><p class="text-[14px]"><strong>${esc(actor.name || 'A member')}</strong> ${esc(labels[item.type] || 'sent an update')}</p><p class="text-[12px] ${item.is_read ? 'text-muted' : 'text-brand'} mt-1.5">${esc(item.created_at ? new Date(item.created_at).toLocaleString() : '')}</p></div>${item.is_read ? '' : '<span class="w-2.5 h-2.5 rounded-full bg-brand shrink-0 self-center"></span>'}</article>`;
-      }).join('') : emptyState('You are all caught up.');
-      if (earlier) { earlier.classList.toggle('hidden', shown >= filtered.length); earlier.innerHTML = 'Show earlier notifications <i class="fa-solid fa-arrow-down text-[11px] ml-1"></i>'; }
+      const groupedAll = fiGroupNotifications(filtered);
+      const groupsToShow = groupedAll.slice(0, shown);
+
+      if (!groupsToShow.length) {
+        const [headline, detail] = emptyMessages[active] || emptyMessages.all;
+        holder.innerHTML = `<div class="fi-library-empty" style="border:0;background:none"><i class="fa-regular fa-bell"></i><h3>${esc(headline)}</h3><p>${esc(detail)}</p></div>`;
+      } else {
+        let lastDay = '';
+        holder.innerHTML = groupsToShow.map(group => {
+          const item = group.lead;
+          const actor = item.actor || {};
+          const kind = FI_NOTIF_KIND[item.type] || { icon: 'fa-bell' };
+          const unread = group.items.some(entry => !entry.is_read);
+          const day = fiNotifDayLabel(item.created_at);
+          const heading = day === lastDay ? '' : `<p class="fi-notif-day">${esc(day)}</p>`;
+          lastDay = day;
+          const exact = item.created_at ? new Date(item.created_at).toLocaleString() : '';
+          const ids = group.items.map(entry => entry.id).join(',');
+          return heading
+            + `<article class="fi-notif-row ${unread ? 'notif-unread' : ''}" tabindex="0" role="link"`
+            + ` data-notification-id="${esc(item.id)}" data-notification-ids="${esc(ids)}"`
+            + ` data-notification-type="${esc(item.type || '')}" data-object-id="${esc(item.object_id || '')}" data-actor-uid="${esc(actor.uid || '')}">`
+            + `<span class="fi-notif-avatar">${avatarMarkup(actor, 'avatar')}`
+            + `<span class="fi-notif-kind is-${esc(item.type || 'other')}"><i class="fa-solid ${kind.icon}"></i></span></span>`
+            + `<span class="fi-notif-body">`
+            + `<span class="fi-notif-text">${fiNotifSentence(group, labels)}</span>`
+            + `<time class="fi-notif-time" title="${esc(exact)}">${esc(fiRelativeTime(item.created_at))}</time>`
+            + `</span>`
+            + (unread ? '<span class="fi-notif-dot" aria-label="Unread"></span>' : '')
+            + `</article>`;
+        }).join('');
+      }
+      if (earlier) { earlier.classList.toggle('hidden', shown >= groupedAll.length); earlier.innerHTML = 'Show earlier notifications <i class="fa-solid fa-arrow-down text-[11px] ml-1"></i>'; }
+      renderSummary();
+    };
+
+    // What is waiting, at a glance — the right rail was carrying nothing but
+    // the verse of the day.
+    const renderSummary = () => {
+      const panel = $('#notif-summary'), list = $('[data-notif-summary]');
+      if (!panel || !list || !allItems.length) return;
+      const unread = allItems.filter(item => !item.is_read);
+      const countOf = type => unread.filter(item => item.type === type).length;
+      const rows = [
+        ['Unread', unread.length],
+        ['Reactions', countOf('reaction')],
+        ['Comments', countOf('comment')],
+        ['New followers', countOf('follow')],
+      ];
+      list.innerHTML = rows.map(([label, value]) => `<div><dt>${esc(label)}</dt><dd>${value}</dd></div>`).join('');
+      panel.hidden = false;
     };
     try {
       const result = await api.request('cv_social_get_notifications');
       allItems = result.items || []; render();
-      holder.onclick = async event => {
-        const row = event.target.closest('[data-notification-id]');
+      const openRow = row => {
         if (!row) return;
-        const notifId = row.dataset.notificationId;
-        const item = allItems.find(entry => entry.id === notifId);
-        
-        api.request('cv_social_mark_notifications_read', { id: notifId }).catch(() => {});
-        if (item) item.is_read = true;
+        // A grouped row stands for every notification inside it, so reading it
+        // clears all of them.
+        const ids = String(row.dataset.notificationIds || row.dataset.notificationId || '').split(',').filter(Boolean);
+        ids.forEach(id => {
+          api.request('cv_social_mark_notifications_read', { id }).catch(() => {});
+          const entry = allItems.find(candidate => candidate.id === id);
+          if (entry) entry.is_read = true;
+        });
+        const item = allItems.find(entry => entry.id === row.dataset.notificationId);
         render();
 
         if (!item) return;
@@ -1069,14 +1208,24 @@
           location.href = objId ? `/jobs?id=${encodeURIComponent(objId)}` : '/jobs';
         }
       };
+      holder.onclick = event => openRow(event.target.closest('[data-notification-id]'));
+      holder.onkeydown = event => {
+        if (event.key !== 'Enter' && event.key !== ' ') return;
+        const row = event.target.closest('[data-notification-id]');
+        if (!row) return;
+        event.preventDefault();
+        openRow(row);
+      };
       if (earlier) earlier.onclick = () => { shown += 12; render(); };
       const chips = $('[data-chip-group]', center);
       const activeLabel = { post: 'My posts', mention: 'Mentions', follow: 'Connections' }[active] || 'All';
       $$('.chip', chips).forEach(chip => chip.classList.toggle('is-on', chip.textContent.trim() === activeLabel));
       chips?.addEventListener('click', event => { const chip = event.target.closest('.chip'); if (!chip) return; active = chip.textContent.trim().toLowerCase(); shown = 12; render(); });
-      if (chips && !chips.querySelector('[data-mark-read]')) { const mark = document.createElement('button'); mark.className = 'ml-auto text-[12px] font-semibold text-brand whitespace-nowrap'; mark.dataset.markRead = ''; mark.textContent = 'Mark all read'; mark.onclick = async () => { await api.request('cv_social_mark_notifications_read', {}); allItems.forEach(item => { item.is_read = true; }); render(); toast('Notifications marked as read'); }; chips.appendChild(mark); }
+      if (chips && !chips.querySelector('[data-mark-read]')) { const mark = document.createElement('button'); mark.className = 'ml-auto text-[12.5px] font-semibold text-brand whitespace-nowrap px-2.5 py-1 rounded-lg hover:bg-brand/10 transition'; mark.dataset.markRead = ''; mark.textContent = 'Mark all read'; mark.onclick = async () => { await api.request('cv_social_mark_notifications_read', {}); allItems.forEach(item => { item.is_read = true; }); render(); toast('Notifications marked as read'); }; chips.appendChild(mark); }
       document.addEventListener('fi:search', event => { searchQuery = event.detail.query.toLowerCase(); shown = 12; render(); });
-    } catch (error) { holder.innerHTML = emptyState(error.message); }
+    } catch (error) {
+      holder.innerHTML = `<div class="fi-library-empty" style="border:0;background:none"><i class="fa-regular fa-bell-slash"></i><h3>Notifications could not load</h3><p>${esc(error.message || 'Please try again in a moment.')}</p></div>`;
+    }
   }
 
   function openProfileEditor(user, focusField) {
