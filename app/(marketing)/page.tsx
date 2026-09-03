@@ -35,8 +35,8 @@ export default function HomePage() {
           <div className="fi-hero__grid">
             {/* Hero Left Copy */}
             <div className="space-y-6">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#FEF7E6] border border-[#FCE8BF] text-xs font-bold text-[#B87814] shadow-xs">
-                <Sparkles className="w-3.5 h-3.5 text-[#D9941E]" />
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#E9EFFE] border border-[#C9D8FC] text-xs font-bold text-[#1E40AF] shadow-xs">
+                <Sparkles className="w-3.5 h-3.5 text-[#2F5BEA]" />
                 <span>Bilingual Christian Community • សហគមន៍គ្រីស្ទបរិស័ទ</span>
               </div>
 
@@ -65,7 +65,7 @@ export default function HomePage() {
                   href="/bible-study"
                   className="fi-btn fi-btn--secondary fi-btn--lg"
                 >
-                  <BookOpen className="w-4 h-4 text-[#D9941E]" />
+                  <BookOpen className="w-4 h-4 text-[#2F5BEA]" />
                   <span>Explore Bible Studio</span>
                 </Link>
               </div>
@@ -77,11 +77,11 @@ export default function HomePage() {
                   <span className="font-semibold text-charcoal-800">100% Free Forever</span>
                 </div>
                 <div className="fi-trust-item">
-                  <ShieldCheck className="w-4 h-4 text-[#2563EB]" />
+                  <ShieldCheck className="w-4 h-4 text-[#2F5BEA]" />
                   <span className="font-semibold text-charcoal-800">No Ads or Data Selling</span>
                 </div>
                 <div className="fi-trust-item">
-                  <Users className="w-4 h-4 text-[#D9941E]" />
+                  <Users className="w-4 h-4 text-[#2F5BEA]" />
                   <span className="font-semibold text-charcoal-800">Global Diaspora Fellowship</span>
                 </div>
               </div>
@@ -129,12 +129,12 @@ export default function HomePage() {
             {/* Card 1: Bilingual Scripture */}
             <div className="fi-card fi-card--highlight flex flex-col justify-between space-y-6">
               <div className="space-y-4">
-                <div className="w-12 h-12 rounded-2xl bg-[#FEF7E6] border border-[#FCE8BF] text-[#B87814] flex items-center justify-center shadow-xs">
+                <div className="w-12 h-12 rounded-2xl bg-[#E9EFFE] border border-[#C9D8FC] text-[#1E40AF] flex items-center justify-center shadow-xs">
                   <BookOpen className="w-6 h-6" />
                 </div>
 
                 <div className="space-y-1">
-                  <div className="text-xs font-bold uppercase tracking-wider text-[#B87814]">
+                  <div className="text-xs font-bold uppercase tracking-wider text-[#1E40AF]">
                     Scripture • ព្រះគម្ពីរ
                   </div>
                   <h3 className="text-xl font-extrabold text-charcoal-900">
@@ -149,7 +149,7 @@ export default function HomePage() {
 
               <Link
                 href="/bible-study"
-                className="inline-flex items-center gap-1.5 text-sm font-bold text-[#B87814] hover:underline"
+                className="inline-flex items-center gap-1.5 text-sm font-bold text-[#1E40AF] hover:underline"
               >
                 <span>Explore Bible Studio</span>
                 <ArrowRight className="w-4 h-4" />
@@ -159,12 +159,12 @@ export default function HomePage() {
             {/* Card 2: Audio Blessings */}
             <div className="fi-card flex flex-col justify-between space-y-6">
               <div className="space-y-4">
-                <div className="w-12 h-12 rounded-2xl bg-[#EFF6FF] border border-[#DBEAFE] text-[#2563EB] flex items-center justify-center shadow-xs">
+                <div className="w-12 h-12 rounded-2xl bg-[#E9EFFE] border border-[#C9D8FC] text-[#2F5BEA] flex items-center justify-center shadow-xs">
                   <Headphones className="w-6 h-6" />
                 </div>
 
                 <div className="space-y-1">
-                  <div className="text-xs font-bold uppercase tracking-wider text-[#2563EB]">
+                  <div className="text-xs font-bold uppercase tracking-wider text-[#2F5BEA]">
                     Spoken Blessings • សម្លេងព្រះពរ
                   </div>
                   <h3 className="text-xl font-extrabold text-charcoal-900">
@@ -179,7 +179,7 @@ export default function HomePage() {
 
               <Link
                 href={site.appPath}
-                className="inline-flex items-center gap-1.5 text-sm font-bold text-[#2563EB] hover:underline"
+                className="inline-flex items-center gap-1.5 text-sm font-bold text-[#2F5BEA] hover:underline"
               >
                 <span>Listen to Blessings</span>
                 <ArrowRight className="w-4 h-4" />
@@ -219,12 +219,12 @@ export default function HomePage() {
             {/* Card 4: Scripture Design Studio */}
             <div className="fi-card flex flex-col justify-between space-y-6">
               <div className="space-y-4">
-                <div className="w-12 h-12 rounded-2xl bg-[#FEF7E6] border border-[#FCE8BF] text-[#B87814] flex items-center justify-center shadow-xs">
+                <div className="w-12 h-12 rounded-2xl bg-[#E9EFFE] border border-[#C9D8FC] text-[#1E40AF] flex items-center justify-center shadow-xs">
                   <Palette className="w-6 h-6" />
                 </div>
 
                 <div className="space-y-1">
-                  <div className="text-xs font-bold uppercase tracking-wider text-[#B87814]">
+                  <div className="text-xs font-bold uppercase tracking-wider text-[#1E40AF]">
                     Creative Gospel • រចនារូបភាព
                   </div>
                   <h3 className="text-xl font-extrabold text-charcoal-900">
@@ -239,7 +239,7 @@ export default function HomePage() {
 
               <Link
                 href="/bible-study#designer"
-                className="inline-flex items-center gap-1.5 text-sm font-bold text-[#B87814] hover:underline"
+                className="inline-flex items-center gap-1.5 text-sm font-bold text-[#1E40AF] hover:underline"
               >
                 <span>Create Verse Cards</span>
                 <ArrowRight className="w-4 h-4" />
@@ -249,12 +249,12 @@ export default function HomePage() {
             {/* Card 5: Christian Jobs & Ministry */}
             <div className="fi-card flex flex-col justify-between space-y-6">
               <div className="space-y-4">
-                <div className="w-12 h-12 rounded-2xl bg-[#EFF6FF] border border-[#DBEAFE] text-[#2563EB] flex items-center justify-center shadow-xs">
+                <div className="w-12 h-12 rounded-2xl bg-[#E9EFFE] border border-[#C9D8FC] text-[#2F5BEA] flex items-center justify-center shadow-xs">
                   <Briefcase className="w-6 h-6" />
                 </div>
 
                 <div className="space-y-1">
-                  <div className="text-xs font-bold uppercase tracking-wider text-[#2563EB]">
+                  <div className="text-xs font-bold uppercase tracking-wider text-[#2F5BEA]">
                     Calling &amp; Ministry • ឱកាសការងារ
                   </div>
                   <h3 className="text-xl font-extrabold text-charcoal-900">
@@ -269,7 +269,7 @@ export default function HomePage() {
 
               <Link
                 href="/features"
-                className="inline-flex items-center gap-1.5 text-sm font-bold text-[#2563EB] hover:underline"
+                className="inline-flex items-center gap-1.5 text-sm font-bold text-[#2F5BEA] hover:underline"
               >
                 <span>Browse Opportunities</span>
                 <ArrowRight className="w-4 h-4" />
@@ -367,7 +367,7 @@ export default function HomePage() {
         <div className="fi-shell">
           <div className="fi-cta-banner">
             <div className="max-w-2xl mx-auto space-y-6 relative z-10">
-              <span className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/10 text-xs font-bold text-[#EBB94F] border border-white/15">
+              <span className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/10 text-xs font-bold text-[#5C81F2] border border-white/15">
                 <Sparkles className="w-3.5 h-3.5" />
                 <span>Join the Community Today</span>
               </span>

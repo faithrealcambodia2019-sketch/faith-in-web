@@ -6,12 +6,12 @@ export default function NotFound() {
   return (
     <div className="min-h-[70vh] flex items-center justify-center px-4 py-16">
       <div className="max-w-md w-full bg-white border border-[#EAE7DC] rounded-3xl p-8 sm:p-10 text-center shadow-lg space-y-6">
-        <div className="w-16 h-16 rounded-3xl bg-[#FEF7E6] border border-[#FCE8BF] text-[#B87814] flex items-center justify-center mx-auto shadow-xs">
-          <Sparkles className="w-8 h-8 text-[#D9941E]" />
+        <div className="w-16 h-16 rounded-3xl bg-[#E9EFFE] border border-[#C9D8FC] text-[#1E40AF] flex items-center justify-center mx-auto shadow-xs">
+          <Sparkles className="w-8 h-8 text-[#2F5BEA]" />
         </div>
 
         <div className="space-y-2">
-          <span className="text-xs font-bold uppercase tracking-wider text-[#B87814]">
+          <span className="text-xs font-bold uppercase tracking-wider text-[#1E40AF]">
             404 • Page Not Found
           </span>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-charcoal-900 tracking-tight">

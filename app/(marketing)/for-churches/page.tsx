@@ -55,7 +55,7 @@ export default function ForChurchesPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {/* Tool 1 */}
             <div className="fi-card space-y-4">
-              <div className="w-12 h-12 rounded-2xl bg-[#FEF7E6] border border-[#FCE8BF] text-[#B87814] flex items-center justify-center shadow-xs">
+              <div className="w-12 h-12 rounded-2xl bg-[#E9EFFE] border border-[#C9D8FC] text-[#1E40AF] flex items-center justify-center shadow-xs">
                 <Users className="w-6 h-6" />
               </div>
               <h3 className="text-xl font-extrabold text-charcoal-900">
@@ -68,7 +68,7 @@ export default function ForChurchesPage() {
 
             {/* Tool 2 */}
             <div className="fi-card space-y-4">
-              <div className="w-12 h-12 rounded-2xl bg-[#EFF6FF] border border-[#DBEAFE] text-[#2563EB] flex items-center justify-center shadow-xs">
+              <div className="w-12 h-12 rounded-2xl bg-[#E9EFFE] border border-[#C9D8FC] text-[#2F5BEA] flex items-center justify-center shadow-xs">
                 <BookOpen className="w-6 h-6" />
               </div>
               <h3 className="text-xl font-extrabold text-charcoal-900">

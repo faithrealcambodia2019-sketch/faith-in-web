@@ -28,7 +28,7 @@ export default function TermsPage() {
           {/* Summary Callout */}
           <div className="bg-[#FAF9F5] border border-[#EAE7DC] rounded-3xl p-6 sm:p-8 space-y-3">
             <div className="flex items-center gap-2 text-sm font-extrabold text-charcoal-900">
-              <HeartHandshake className="w-5 h-5 text-[#D9941E]" />
+              <HeartHandshake className="w-5 h-5 text-[#2F5BEA]" />
               <span>Sanctuary Covenant</span>
             </div>
             <p className="text-sm text-charcoal-700 leading-relaxed">
@@ -86,7 +86,7 @@ export default function TermsPage() {
               </h2>
               <p>
                 For questions concerning these terms, reach us at{" "}
-                <a href={`mailto:${site.contactEmail}`} className="text-[#D9941E] font-bold hover:underline">
+                <a href={`mailto:${site.contactEmail}`} className="text-[#2F5BEA] font-bold hover:underline">
                   {site.contactEmail}
                 </a>.
               </p>

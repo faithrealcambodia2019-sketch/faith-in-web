@@ -17,15 +17,15 @@
   --fi-ink-muted: #6A7B95;
   --fi-ink-subtle: #9AA8BC;
 
-  --fi-gold: #D9941E;
-  --fi-gold-hover: #EBB94F;
-  --fi-gold-deep: #B87814;
-  --fi-gold-light: #FEF7E6;
-  --fi-gold-glow: rgba(217, 148, 30, 0.22);
+  --fi-gold: #2F5BEA;
+  --fi-gold-hover: #5C81F2;
+  --fi-gold-deep: #1E40AF;
+  --fi-gold-light: #E9EFFE;
+  --fi-gold-glow: rgba(47, 91, 234, 0.22);
 
-  --fi-serene: #2563EB;
-  --fi-serene-light: #EFF6FF;
-  --fi-serene-border: #DBEAFE;
+  --fi-serene: #2F5BEA;
+  --fi-serene-light: #E9EFFE;
+  --fi-serene-border: #C9D8FC;
 
   --fi-sage: #059669;
   --fi-sage-light: #ECFDF5;
@@ -93,6 +93,6 @@ body {
 
 /* Selection */
 ::selection {
-  background: rgba(217, 148, 30, 0.25);
+  background: rgba(47, 91, 234, 0.25);
   color: var(--fi-ink-primary);
 }

@@ -54,11 +54,11 @@ export default function FeaturesPage() {
             {features.map((f) => (
               <div
                 key={f.slug}
-                className="fi-card flex flex-col justify-between space-y-6 hover:border-[#D9941E]/50 transition-all"
+                className="fi-card flex flex-col justify-between space-y-6 hover:border-[#2F5BEA]/50 transition-all"
               >
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <div className="w-12 h-12 rounded-2xl bg-[#FEF7E6] border border-[#FCE8BF] text-[#B87814] flex items-center justify-center shadow-xs">
+                    <div className="w-12 h-12 rounded-2xl bg-[#E9EFFE] border border-[#C9D8FC] text-[#1E40AF] flex items-center justify-center shadow-xs">
                       {f.icon === "book-open" && <BookOpen className="w-6 h-6" />}
                       {f.icon === "heart-handshake" && <Heart className="w-6 h-6" />}
                       {f.icon === "hands-praying" && <Users className="w-6 h-6" />}
@@ -68,7 +68,7 @@ export default function FeaturesPage() {
                     </div>
 
                     {f.badge && (
-                      <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#FEF7E6] text-[#B87814] border border-[#FCE8BF]">
+                      <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#E9EFFE] text-[#1E40AF] border border-[#C9D8FC]">
                         {f.badge}
                       </span>
                     )}
@@ -76,7 +76,7 @@ export default function FeaturesPage() {
 
                   <div className="space-y-1">
                     {f.khmerTitle && (
-                      <div className="text-xs font-khmer font-bold text-[#B87814]">
+                      <div className="text-xs font-khmer font-bold text-[#1E40AF]">
                         {f.khmerTitle}
                       </div>
                     )}
@@ -96,7 +96,7 @@ export default function FeaturesPage() {
                   </span>
                   <Link
                     href={f.slug === "bible-study" ? "/bible-study" : site.appPath}
-                    className="inline-flex items-center gap-1 text-[#B87814] hover:underline"
+                    className="inline-flex items-center gap-1 text-[#1E40AF] hover:underline"
                   >
                     <span>Open {f.title}</span>
                     <ArrowRight className="w-3.5 h-3.5" />
@@ -122,11 +122,11 @@ export default function FeaturesPage() {
               </p>
               <div className="space-y-3 pt-2">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-[#FEF7E6] text-[#B87814] flex items-center justify-center font-bold text-sm">✓</div>
+                  <div className="w-8 h-8 rounded-full bg-[#E9EFFE] text-[#1E40AF] flex items-center justify-center font-bold text-sm">✓</div>
                   <span className="text-sm font-semibold text-charcoal-800">Direct 1-to-1 messaging with custom FaithIn chat</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-[#EFF6FF] text-[#2563EB] flex items-center justify-center font-bold text-sm">✓</div>
+                  <div className="w-8 h-8 rounded-full bg-[#E9EFFE] text-[#2F5BEA] flex items-center justify-center font-bold text-sm">✓</div>
                   <span className="text-sm font-semibold text-charcoal-800">Follow Bible channels, pastors, and Christian friends</span>
                 </div>
                 <div className="flex items-center gap-3">

@@ -4,7 +4,8 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { site, primaryNav } from "@/lib/site-content";
-import { Menu, X, ArrowRight, Sparkles, Globe } from "lucide-react";
+import { Menu, X, ArrowRight, Globe } from "lucide-react";
+import { BrandWordmark } from "./BrandWordmark";
 
 export function SiteHeader() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -41,13 +42,8 @@ export function SiteHeader() {
         <div className="fi-shell fi-header__inner">
         {/* Brand Logo */}
         <Link href="/" className="fi-logo group" aria-label={`${site.name} Homepage`}>
-          <span className="flex items-center gap-2">
-            <span className="w-8 h-8 rounded-xl bg-gradient-to-tr from-[#D9941E] to-[#EBB94F] flex items-center justify-center text-charcoal-900 shadow-sm group-hover:scale-105 transition-transform">
-              <Sparkles className="w-4 h-4 text-white" />
-            </span>
-            <span className="font-extrabold text-xl tracking-tight text-charcoal-900">
-              Faith<span className="text-[#D9941E]">In</span>
-            </span>
+          <span className="flex items-center group-hover:scale-[1.03] transition-transform origin-left">
+            <BrandWordmark textClassName="text-xl sm:text-[1.35rem]" iconClassName="w-[1.05em] h-[1.05em]" />
           </span>
         </Link>
 
@@ -74,7 +70,7 @@ export function SiteHeader() {
         {/* Right Header Actions */}
         <div className="hidden sm:flex items-center gap-3">
           <div className="hidden lg:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#F7F6F0] border border-[#EAE7DC] text-xs font-semibold text-charcoal-600">
-            <Globe className="w-3.5 h-3.5 text-[#D9941E]" />
+            <Globe className="w-3.5 h-3.5 text-[#2F5BEA]" />
             <span>ខ្មែរ • EN</span>
           </div>
 
@@ -136,7 +132,7 @@ export function SiteHeader() {
                     onClick={() => setMobileMenuOpen(false)}
                     className={`flex items-center justify-between px-4 py-3 rounded-2xl text-base font-semibold transition-colors ${
                       isActive
-                        ? "bg-[#FEF7E6] text-[#B87814]"
+                        ? "bg-[#E9EFFE] text-[#1E40AF]"
                         : "text-charcoal-800 hover:bg-[#F7F6F0]"
                     }`}
                   >
@@ -150,7 +146,7 @@ export function SiteHeader() {
             <div className="pt-4 border-t border-[#EAE7DC]">
               <div className="flex items-center justify-between px-4 py-2 text-sm text-charcoal-600 bg-[#F7F6F0] rounded-xl">
                 <span className="flex items-center gap-2">
-                  <Globe className="w-4 h-4 text-[#D9941E]" />
+                  <Globe className="w-4 h-4 text-[#2F5BEA]" />
                   <span>Supported Languages</span>
                 </span>
                 <span className="font-semibold text-charcoal-900">Khmer / English</span>

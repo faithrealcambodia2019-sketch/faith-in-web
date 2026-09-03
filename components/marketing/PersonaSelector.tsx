@@ -38,7 +38,7 @@ export function PersonaSelector() {
         <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
           <div className="md:col-span-8 space-y-4">
             <div className="flex items-center gap-2">
-              <span className="text-xs font-bold uppercase tracking-wider text-[#B87814] bg-[#FEF7E6] px-3 py-1 rounded-full border border-[#FCE8BF]">
+              <span className="text-xs font-bold uppercase tracking-wider text-[#1E40AF] bg-[#E9EFFE] px-3 py-1 rounded-full border border-[#C9D8FC]">
                 {current.khmerStage}
               </span>
               <span className="text-xs text-charcoal-500 font-medium">Personalized Journey</span>
@@ -78,9 +78,9 @@ export function PersonaSelector() {
           </div>
 
           {/* Inspirational Visual Quote for Persona */}
-          <div className="md:col-span-4 bg-gradient-to-br from-[#FEF7E6] to-[#FAF9F5] border border-[#FCE8BF] rounded-2xl p-6 flex flex-col justify-between space-y-4">
+          <div className="md:col-span-4 bg-gradient-to-br from-[#E9EFFE] to-[#FAF9F5] border border-[#C9D8FC] rounded-2xl p-6 flex flex-col justify-between space-y-4">
             <div className="space-y-2">
-              <div className="w-8 h-8 rounded-xl bg-white text-[#D9941E] flex items-center justify-center shadow-xs">
+              <div className="w-8 h-8 rounded-xl bg-white text-[#2F5BEA] flex items-center justify-center shadow-xs">
                 <Sparkles className="w-4 h-4" />
               </div>
               <h4 className="font-extrabold text-charcoal-900 text-sm">
@@ -91,7 +91,7 @@ export function PersonaSelector() {
               </p>
             </div>
 
-            <div className="pt-2 border-t border-[#FCE8BF]/60 text-[11px] font-bold text-[#B87814]">
+            <div className="pt-2 border-t border-[#C9D8FC]/60 text-[11px] font-bold text-[#1E40AF]">
               FAITH IN COMPANION
             </div>
           </div>

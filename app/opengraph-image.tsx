@@ -27,36 +27,48 @@ export default async function OpengraphImage() {
           <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
             <div
               style={{
-                width: 52,
-                height: 52,
-                borderRadius: 16,
-                background: "linear-gradient(135deg, #EBB94F, #D9941E)",
                 display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                color: "#0D1017",
+                alignItems: "baseline",
+                fontSize: 44,
+                fontWeight: 900,
+                letterSpacing: "-0.03em",
+                color: "#5C81F2",
               }}
             >
-              <span
-                style={{
-                  width: 24,
-                  height: 24,
-                  display: "flex",
-                  background: "#0D1017",
-                  clipPath: "polygon(50% 0, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0 50%, 39% 39%)",
-                }}
-              />
+              FaithIn
             </div>
             <div
               style={{
+                width: 44,
+                height: 44,
+                borderRadius: "50%",
+                border: "4px solid #5C81F2",
                 display: "flex",
-                alignItems: "baseline",
-                fontSize: 36,
-                fontWeight: 900,
-                letterSpacing: "-0.03em",
+                alignItems: "center",
+                justifyContent: "center",
+                position: "relative",
               }}
             >
-              Faith<span style={{ color: "#D9941E" }}>In</span>
+              <div
+                style={{
+                  width: 18,
+                  height: 36,
+                  borderRadius: "50%",
+                  border: "3px solid #5C81F2",
+                  display: "flex",
+                }}
+              />
+              <div
+                style={{
+                  position: "absolute",
+                  top: 17,
+                  left: 0,
+                  width: 36,
+                  height: 3,
+                  background: "#5C81F2",
+                  display: "flex",
+                }}
+              />
             </div>
           </div>
 
@@ -71,7 +83,7 @@ export default async function OpengraphImage() {
               border: "1px solid rgba(255, 255, 255, 0.15)",
               fontSize: 18,
               fontWeight: 700,
-              color: "#EBB94F",
+              color: "#5C81F2",
             }}
           >
             Bilingual • ខ្មែរ / EN
@@ -132,7 +144,7 @@ export default async function OpengraphImage() {
               </span>
             ))}
           </div>
-          <div style={{ color: "#EBB94F", fontWeight: 700 }}>faithin.co</div>
+          <div style={{ color: "#5C81F2", fontWeight: 700 }}>faithin.co</div>
         </div>
       </div>
     ),

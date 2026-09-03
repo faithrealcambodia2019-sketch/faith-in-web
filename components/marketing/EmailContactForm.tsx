@@ -9,7 +9,7 @@ type EmailContactFormProps = {
 };
 
 const fieldClass =
-  "w-full px-4 py-3 rounded-xl border border-[#EAE7DC] bg-[#FAF9F5] focus:bg-white focus:border-[#D9941E] focus:ring-2 focus:ring-[#FCE8BF] outline-none text-sm text-charcoal-900 transition-colors";
+  "w-full px-4 py-3 rounded-xl border border-[#EAE7DC] bg-[#FAF9F5] focus:bg-white focus:border-[#2F5BEA] focus:ring-2 focus:ring-[#C9D8FC] outline-none text-sm text-charcoal-900 transition-colors";
 
 const labelClass =
   "block text-xs font-bold uppercase tracking-wider text-charcoal-700 mb-1.5";

@@ -34,7 +34,7 @@ export function HeroInteractiveWidget() {
   return (
     <div className="w-full max-w-lg mx-auto bg-white border border-[#EAE7DC] rounded-3xl p-5 sm:p-6 shadow-xl relative overflow-hidden transition-all duration-300">
       {/* Decorative Warm Top Line */}
-      <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#EBB94F] via-[#D9941E] to-[#B87814]" />
+      <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#5C81F2] via-[#2F5BEA] to-[#1E40AF]" />
 
       {/* Widget Header & Navigation Tabs */}
       <div className="flex items-center justify-between pb-4 border-b border-[#EAE7DC] gap-2">
@@ -47,7 +47,7 @@ export function HeroInteractiveWidget() {
                 : "hover:text-charcoal-900"
             }`}
           >
-            <BookOpen className="w-3.5 h-3.5 text-[#D9941E]" />
+            <BookOpen className="w-3.5 h-3.5 text-[#2F5BEA]" />
             <span>Scripture</span>
           </button>
 
@@ -59,7 +59,7 @@ export function HeroInteractiveWidget() {
                 : "hover:text-charcoal-900"
             }`}
           >
-            <Headphones className="w-3.5 h-3.5 text-[#2563EB]" />
+            <Headphones className="w-3.5 h-3.5 text-[#2F5BEA]" />
             <span>Audio Blessing</span>
           </button>
 
@@ -86,7 +86,7 @@ export function HeroInteractiveWidget() {
       {activeTab === "scripture" && (
         <div className="pt-4 space-y-4 animate-fade-in">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-[#B87814] bg-[#FEF7E6] px-2.5 py-0.5 rounded-full border border-[#FCE8BF]">
+            <span className="text-xs font-bold uppercase tracking-wider text-[#1E40AF] bg-[#E9EFFE] px-2.5 py-0.5 rounded-full border border-[#C9D8FC]">
               Verse of the Day • ព្រះបន្ទូលប្រចាំថ្ងៃ
             </span>
 
@@ -126,7 +126,7 @@ export function HeroInteractiveWidget() {
               </p>
             )}
 
-            <div className="flex items-center justify-between pt-1 text-xs font-bold text-[#B87814]">
+            <div className="flex items-center justify-between pt-1 text-xs font-bold text-[#1E40AF]">
               <span>យ៉ូហាន ៣:១៦ • JOHN 3:16</span>
               <span className="text-[11px] text-charcoal-400 font-normal">Khmer &amp; English</span>
             </div>
@@ -137,13 +137,13 @@ export function HeroInteractiveWidget() {
               onClick={handleCopy}
               className="inline-flex items-center gap-1.5 text-xs font-semibold text-charcoal-600 hover:text-charcoal-900 transition-colors px-3 py-1.5 rounded-full hover:bg-black/5"
             >
-              {copied ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Sparkles className="w-3.5 h-3.5 text-[#D9941E]" />}
+              {copied ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Sparkles className="w-3.5 h-3.5 text-[#2F5BEA]" />}
               <span>{copied ? "Copied to clipboard" : "Copy verse"}</span>
             </button>
 
             <Link
               href="/bible-study"
-              className="inline-flex items-center gap-1 text-xs font-bold text-[#B87814] hover:underline"
+              className="inline-flex items-center gap-1 text-xs font-bold text-[#1E40AF] hover:underline"
             >
               <span>Design verse card</span>
               <ArrowRight className="w-3.5 h-3.5" />
@@ -156,17 +156,17 @@ export function HeroInteractiveWidget() {
       {activeTab === "audio" && (
         <div className="pt-4 space-y-4 animate-fade-in">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-[#2563EB] bg-[#EFF6FF] px-2.5 py-0.5 rounded-full border border-[#DBEAFE]">
+            <span className="text-xs font-bold uppercase tracking-wider text-[#2F5BEA] bg-[#E9EFFE] px-2.5 py-0.5 rounded-full border border-[#C9D8FC]">
               Daily Spoken Blessing • សម្លេងព្រះពរ
             </span>
             <span className="text-xs text-charcoal-500 font-medium">1:45 min devotion</span>
           </div>
 
-          <div className="p-4 rounded-2xl bg-gradient-to-br from-[#F8FAFC] to-[#EFF6FF]/60 border border-[#DBEAFE] space-y-3">
+          <div className="p-4 rounded-2xl bg-gradient-to-br from-[#F8FAFC] to-[#E9EFFE]/60 border border-[#C9D8FC] space-y-3">
             <div className="flex items-center gap-3">
               <button
                 onClick={() => setIsPlaying(!isPlaying)}
-                className="w-12 h-12 rounded-2xl bg-[#2563EB] hover:bg-[#1D4ED8] text-white flex items-center justify-center shadow-md transition-all group shrink-0"
+                className="w-12 h-12 rounded-2xl bg-[#2F5BEA] hover:bg-[#1E40AF] text-white flex items-center justify-center shadow-md transition-all group shrink-0"
                 aria-label={isPlaying ? "Pause audio" : "Play audio"}
               >
                 {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5 ml-0.5" />}
@@ -177,19 +177,19 @@ export function HeroInteractiveWidget() {
                   Peaceful Morning Grace (សេចក្ដីសុខសាន្ត)
                 </div>
                 <div className="text-xs text-charcoal-500 flex items-center gap-1.5 mt-0.5">
-                  <Volume2 className="w-3.5 h-3.5 text-[#2563EB]" />
+                  <Volume2 className="w-3.5 h-3.5 text-[#2F5BEA]" />
                   <span>Calm spoken Scripture with acoustic cello</span>
                 </div>
               </div>
             </div>
 
             {/* Audio waveform simulator */}
-            <div className="flex items-center gap-1 h-8 px-2 bg-white/80 rounded-xl border border-[#DBEAFE]">
+            <div className="flex items-center gap-1 h-8 px-2 bg-white/80 rounded-xl border border-[#C9D8FC]">
               {[40, 65, 80, 45, 90, 70, 50, 85, 95, 60, 40, 75, 85, 60, 30, 55, 70, 85, 40, 60, 75].map((h, i) => (
                 <div
                   key={i}
                   className={`flex-1 rounded-full transition-all duration-300 ${
-                    isPlaying ? "bg-[#2563EB]" : "bg-charcoal-200"
+                    isPlaying ? "bg-[#2F5BEA]" : "bg-charcoal-200"
                   }`}
                   style={{
                     height: isPlaying ? `${Math.max(20, (h * (i % 3 + 1)) % 100)}%` : `${h * 0.4}%`,
@@ -206,7 +206,7 @@ export function HeroInteractiveWidget() {
 
             <Link
               href={site.appPath}
-              className="inline-flex items-center gap-1 text-xs font-bold text-[#2563EB] hover:underline"
+              className="inline-flex items-center gap-1 text-xs font-bold text-[#2F5BEA] hover:underline"
             >
               <span>Listen in app</span>
               <ArrowRight className="w-3.5 h-3.5" />

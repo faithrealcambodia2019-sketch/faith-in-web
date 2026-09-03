@@ -9,9 +9,9 @@ export function TrustImpactSection() {
         {platformStats.map((stat) => (
           <div
             key={stat.label}
-            className="bg-white border border-[#EAE7DC] rounded-3xl p-6 text-center shadow-sm space-y-1 hover:border-[#D9941E]/40 transition-colors"
+            className="bg-white border border-[#EAE7DC] rounded-3xl p-6 text-center shadow-sm space-y-1 hover:border-[#2F5BEA]/40 transition-colors"
           >
-            <div className="text-3xl sm:text-4xl font-extrabold text-[#D9941E] tracking-tight">
+            <div className="text-3xl sm:text-4xl font-extrabold text-[#2F5BEA] tracking-tight">
               {stat.value}
             </div>
             <div className="text-sm font-bold text-charcoal-900">{stat.label}</div>
@@ -28,7 +28,7 @@ export function TrustImpactSection() {
             className="bg-white border border-[#EAE7DC] rounded-3xl p-6 sm:p-8 shadow-sm flex flex-col justify-between space-y-6 hover:shadow-md transition-shadow relative overflow-hidden"
           >
             <div className="space-y-4">
-              <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#B87814]">
+              <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#1E40AF]">
                 <Sparkles className="w-4 h-4" aria-hidden="true" />
                 <span>{story.audience}</span>
               </div>
@@ -69,7 +69,7 @@ export function TrustImpactSection() {
             <span>SSL Encrypted</span>
           </span>
           <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-[#EAE7DC] text-xs font-bold text-charcoal-700 shadow-xs">
-            <Globe className="w-3.5 h-3.5 text-[#2563EB]" />
+            <Globe className="w-3.5 h-3.5 text-[#2F5BEA]" />
             <span>Global Reach</span>
           </span>
         </div>

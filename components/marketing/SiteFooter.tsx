@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { site, footerNav } from "@/lib/site-content";
-import { Sparkles, Heart, Shield } from "lucide-react";
+import { Heart, Shield } from "lucide-react";
+import { BrandWordmark } from "./BrandWordmark";
 
 export function SiteFooter() {
   return (
@@ -10,14 +11,7 @@ export function SiteFooter() {
           {/* Brand & Mission Column */}
           <div className="space-y-4">
             <Link href="/" className="fi-logo group" aria-label={`${site.name} Homepage`}>
-              <span className="flex items-center gap-2">
-                <span className="w-8 h-8 rounded-xl bg-gradient-to-tr from-[#D9941E] to-[#EBB94F] flex items-center justify-center text-charcoal-900 shadow-sm">
-                  <Sparkles className="w-4 h-4 text-white" />
-                </span>
-                <span className="font-extrabold text-xl tracking-tight text-charcoal-900">
-                  Faith<span className="text-[#D9941E]">In</span>
-                </span>
-              </span>
+              <BrandWordmark textClassName="text-xl" />
             </Link>
 
             <p className="text-sm leading-relaxed text-charcoal-600 max-w-sm">
@@ -32,7 +26,7 @@ export function SiteFooter() {
                 <span>Private & Ad-Free</span>
               </span>
               <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white border border-[#EAE7DC]">
-                <Heart className="w-3.5 h-3.5 text-[#2563EB]" />
+                <Heart className="w-3.5 h-3.5 text-[#2F5BEA]" />
                 <span>100% Free Forever</span>
               </span>
             </div>
@@ -61,7 +55,7 @@ export function SiteFooter() {
             <span className="font-serif italic text-charcoal-700">
               «ដ្បិតព្រះទ្រង់ស្រឡាញ់មនុស្សលោក ដល់ម៉្លេះបានជាទ្រង់ប្រទានព្រះរាជបុត្រាទ្រង់តែ១»
             </span>
-            <span className="font-semibold text-[#D9941E]">— យ៉ូហាន ៣:១៦</span>
+            <span className="font-semibold text-[#2F5BEA]">— យ៉ូហាន ៣:១៦</span>
           </div>
 
           <div className="flex items-center gap-6">

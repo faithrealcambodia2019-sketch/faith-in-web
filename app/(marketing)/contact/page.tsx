@@ -47,16 +47,16 @@ export default function ContactPage() {
               <div className="space-y-4">
                 <a
                   href={`mailto:${site.contactEmail}`}
-                  className="fi-card p-5 flex items-start gap-4 hover:border-[#D9941E] transition-all group block text-inherit no-underline"
+                  className="fi-card p-5 flex items-start gap-4 hover:border-[#2F5BEA] transition-all group block text-inherit no-underline"
                 >
-                  <div className="w-10 h-10 rounded-xl bg-[#FEF7E6] text-[#B87814] flex items-center justify-center shrink-0">
+                  <div className="w-10 h-10 rounded-xl bg-[#E9EFFE] text-[#1E40AF] flex items-center justify-center shrink-0">
                     <Mail className="w-5 h-5" />
                   </div>
                   <div>
                     <div className="text-xs font-bold uppercase tracking-wider text-charcoal-400">
                       General &amp; Partnerships
                     </div>
-                    <div className="text-base font-bold text-charcoal-900 group-hover:text-[#D9941E] transition-colors">
+                    <div className="text-base font-bold text-charcoal-900 group-hover:text-[#2F5BEA] transition-colors">
                       {site.contactEmail}
                     </div>
                     <div className="text-xs text-charcoal-500 mt-0.5">
@@ -67,16 +67,16 @@ export default function ContactPage() {
 
                 <a
                   href={`mailto:${site.supportEmail}`}
-                  className="fi-card p-5 flex items-start gap-4 hover:border-[#2563EB] transition-all group block text-inherit no-underline"
+                  className="fi-card p-5 flex items-start gap-4 hover:border-[#2F5BEA] transition-all group block text-inherit no-underline"
                 >
-                  <div className="w-10 h-10 rounded-xl bg-[#EFF6FF] text-[#2563EB] flex items-center justify-center shrink-0">
+                  <div className="w-10 h-10 rounded-xl bg-[#E9EFFE] text-[#2F5BEA] flex items-center justify-center shrink-0">
                     <MessageSquare className="w-5 h-5" />
                   </div>
                   <div>
                     <div className="text-xs font-bold uppercase tracking-wider text-charcoal-400">
                       Technical &amp; Member Support
                     </div>
-                    <div className="text-base font-bold text-charcoal-900 group-hover:text-[#2563EB] transition-colors">
+                    <div className="text-base font-bold text-charcoal-900 group-hover:text-[#2F5BEA] transition-colors">
                       {site.supportEmail}
                     </div>
                     <div className="text-xs text-charcoal-500 mt-0.5">
@@ -88,7 +88,7 @@ export default function ContactPage() {
 
               <div className="p-6 rounded-2xl bg-white border border-[#EAE7DC] space-y-3 shadow-xs">
                 <div className="flex items-center gap-2 text-xs font-bold text-charcoal-700">
-                  <Clock className="w-4 h-4 text-[#D9941E]" />
+                  <Clock className="w-4 h-4 text-[#2F5BEA]" />
                   <span>Support Hours</span>
                 </div>
                 <p className="text-xs text-charcoal-600 leading-relaxed">

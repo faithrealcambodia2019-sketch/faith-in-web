@@ -11,14 +11,14 @@ export function FaithJourneyPathway() {
   const getIcon = (icon: string) => {
     switch (icon) {
       case "compass":
-        return <Compass className="w-6 h-6 text-[#D9941E]" />;
+        return <Compass className="w-6 h-6 text-[#2F5BEA]" />;
       case "headphones":
-        return <Headphones className="w-6 h-6 text-[#2563EB]" />;
+        return <Headphones className="w-6 h-6 text-[#2F5BEA]" />;
       case "users":
         return <Users className="w-6 h-6 text-[#059669]" />;
       case "sparkles":
       default:
-        return <Sparkles className="w-6 h-6 text-[#D9941E]" />;
+        return <Sparkles className="w-6 h-6 text-[#2F5BEA]" />;
     }
   };
 
@@ -36,7 +36,7 @@ export function FaithJourneyPathway() {
               onClick={() => setSelectedStep(index)}
               className={`p-4 md:p-5 rounded-2xl text-left border transition-all duration-200 relative overflow-hidden flex flex-col justify-between ${
                 isSelected
-                  ? "bg-white border-[#D9941E] shadow-md ring-2 ring-[#D9941E]/20"
+                  ? "bg-white border-[#2F5BEA] shadow-md ring-2 ring-[#2F5BEA]/20"
                   : "bg-white/70 hover:bg-white border-[#EAE7DC] hover:border-[#D6D2C2] shadow-xs"
               }`}
             >
@@ -44,7 +44,7 @@ export function FaithJourneyPathway() {
                 <span
                   className={`text-xs font-black tracking-wider uppercase px-2 py-0.5 rounded-full ${
                     isSelected
-                      ? "bg-[#FEF7E6] text-[#B87814] border border-[#FCE8BF]"
+                      ? "bg-[#E9EFFE] text-[#1E40AF] border border-[#C9D8FC]"
                       : "bg-[#F7F6F0] text-charcoal-500"
                   }`}
                 >
@@ -66,7 +66,7 @@ export function FaithJourneyPathway() {
               </div>
 
               {isSelected && (
-                <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-[#EBB94F] to-[#D9941E]" />
+                <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-[#5C81F2] to-[#2F5BEA]" />
               )}
             </button>
           );
@@ -77,7 +77,7 @@ export function FaithJourneyPathway() {
       <div className="bg-white border border-[#EAE7DC] rounded-3xl p-6 sm:p-10 shadow-lg relative overflow-hidden">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
           <div className="lg:col-span-7 space-y-4">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#FEF7E6] border border-[#FCE8BF] text-xs font-bold text-[#B87814]">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#E9EFFE] border border-[#C9D8FC] text-xs font-bold text-[#1E40AF]">
               <Sparkles className="w-3.5 h-3.5" />
               <span>Step {current.number} • {current.highlight}</span>
             </div>
@@ -112,7 +112,7 @@ export function FaithJourneyPathway() {
               <span className="text-xs font-bold text-charcoal-500 uppercase tracking-wider">
                 Experience Preview
               </span>
-              <span className="text-xs font-bold text-[#D9941E] bg-[#FEF7E6] px-2 py-0.5 rounded">
+              <span className="text-xs font-bold text-[#2F5BEA] bg-[#E9EFFE] px-2 py-0.5 rounded">
                 {current.step} Experience
               </span>
             </div>
