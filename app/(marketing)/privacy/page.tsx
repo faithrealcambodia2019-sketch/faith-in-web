@@ -21,7 +21,7 @@ function SectionNumber({ n }: { n: number }) {
   return (
     <span
       aria-hidden="true"
-      className="shrink-0 w-9 h-9 rounded-full bg-gold-100 border border-gold-200 text-gold-600 font-extrabold text-[15px] grid place-items-center"
+      className="shrink-0 w-9 h-9 rounded-full bg-brand-100 border border-brand-200 text-brand-600 font-extrabold text-[15px] grid place-items-center"
     >
       {n}
     </span>
@@ -56,7 +56,7 @@ export default function PrivacyPage() {
             once and know where you stand.
           </p>
           <p className="inline-flex items-center gap-2 rounded-full border border-[#EAE7DC] bg-white px-3.5 py-1.5 text-[13px] font-semibold text-charcoal-500">
-            <CalendarDays className="w-3.5 h-3.5 text-gold-500" aria-hidden="true" />
+            <CalendarDays className="w-3.5 h-3.5 text-brand-500" aria-hidden="true" />
             Last revised August 2026 · Effective immediately
           </p>
         </div>
@@ -76,9 +76,9 @@ export default function PrivacyPage() {
                     <li key={section.id}>
                       <a
                         href={`#${section.id}`}
-                        className="block -ml-px border-l-2 border-transparent pl-4 py-1.5 text-[13.5px] leading-snug text-charcoal-500 transition hover:border-gold-400 hover:text-charcoal-900"
+                        className="block -ml-px border-l-2 border-transparent pl-4 py-1.5 text-[13.5px] leading-snug text-charcoal-500 transition hover:border-brand-400 hover:text-charcoal-900"
                       >
-                        <span className="text-gold-600 font-bold mr-1.5">{index + 1}.</span>
+                        <span className="text-brand-600 font-bold mr-1.5">{index + 1}.</span>
                         {section.label}
                       </a>
                     </li>
@@ -89,9 +89,9 @@ export default function PrivacyPage() {
 
             <div className="min-w-0 space-y-8">
               {/* Plain language summary */}
-              <div className="rounded-3xl border border-gold-200 bg-gradient-to-b from-gold-50 to-[#FFFDF7] p-6 sm:p-8 space-y-5">
-                <div className="flex items-center gap-2 text-[13.5px] font-extrabold uppercase tracking-[0.08em] text-gold-600">
-                  <ShieldCheck className="w-[18px] h-[18px] text-gold-500" aria-hidden="true" />
+              <div className="rounded-3xl border border-brand-200 bg-gradient-to-b from-brand-50 to-white p-6 sm:p-8 space-y-5">
+                <div className="flex items-center gap-2 text-[13.5px] font-extrabold uppercase tracking-[0.08em] text-brand-600">
+                  <ShieldCheck className="w-[18px] h-[18px] text-brand-500" aria-hidden="true" />
                   Plain language summary
                 </div>
                 <p className="text-[15.5px] text-charcoal-800 leading-relaxed max-w-[62ch]">
@@ -108,9 +108,9 @@ export default function PrivacyPage() {
                   ].map(({ icon: Icon, label }) => (
                     <div
                       key={label}
-                      className="flex items-center gap-2.5 rounded-2xl border border-gold-200/70 bg-white/70 px-3.5 py-3"
+                      className="flex items-center gap-2.5 rounded-2xl border border-brand-200/70 bg-white/70 px-3.5 py-3"
                     >
-                      <Icon className="w-4 h-4 text-gold-500 shrink-0" aria-hidden="true" />
+                      <Icon className="w-4 h-4 text-brand-500 shrink-0" aria-hidden="true" />
                       <span className="text-[13px] font-bold text-charcoal-800 leading-snug">{label}</span>
                     </div>
                   ))}
@@ -154,7 +154,7 @@ export default function PrivacyPage() {
                         <li key={item} className="flex gap-3">
                           <span
                             aria-hidden="true"
-                            className="mt-[9px] w-1.5 h-1.5 rounded-full bg-gold-400 shrink-0"
+                            className="mt-[9px] w-1.5 h-1.5 rounded-full bg-brand-400 shrink-0"
                           />
                           <span>{item}</span>
                         </li>
@@ -176,7 +176,7 @@ export default function PrivacyPage() {
                         "We never embed tracking pixels from third-party social ad platforms.",
                       ].map((item) => (
                         <li key={item} className="flex gap-3 items-start">
-                          <Ban className="w-[18px] h-[18px] text-gold-500 shrink-0 mt-0.5" aria-hidden="true" />
+                          <Ban className="w-[18px] h-[18px] text-brand-500 shrink-0 mt-0.5" aria-hidden="true" />
                           <span className="font-semibold text-charcoal-800">{item}</span>
                         </li>
                       ))}
@@ -202,14 +202,14 @@ export default function PrivacyPage() {
                     Contacting us
                   </SectionHeading>
                   <div className="sm:ml-[50px] max-w-[68ch]">
-                    <div className="rounded-2xl border border-gold-200 bg-gold-50 p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center gap-4 sm:justify-between">
+                    <div className="rounded-2xl border border-brand-200 bg-brand-50 p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center gap-4 sm:justify-between">
                       <p className="text-[15px] text-charcoal-800 leading-relaxed max-w-[42ch]">
                         Questions about this policy, or about your own information? Write to us and
                         a person will answer.
                       </p>
                       <a
                         href={`mailto:${site.contactEmail}`}
-                        className="inline-flex items-center justify-center gap-2 rounded-full bg-gold-500 px-5 py-3 text-[14px] font-bold text-white shadow-sm transition hover:bg-gold-600 shrink-0"
+                        className="inline-flex items-center justify-center gap-2 rounded-full bg-brand-500 px-5 py-3 text-[14px] font-bold text-white shadow-sm transition hover:bg-brand-600 shrink-0"
                       >
                         <Mail className="w-4 h-4" aria-hidden="true" />
                         {site.contactEmail}

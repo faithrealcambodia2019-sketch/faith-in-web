@@ -9,6 +9,21 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        // FaithIn's own blue, as a ramp. The marketing pages were written
+        // against `gold-*`; new work should use `brand-*` so the accent
+        // colour lives in one place.
+        brand: {
+          50: "#F7F9FE",
+          100: "#E9EFFE",
+          200: "#CBD8FA",
+          300: "#A3B8F5",
+          400: "#6D8AF0",
+          500: "#2F5BEA",
+          600: "#2549C9",
+          700: "#1E40AF",
+          800: "#1A3489",
+          900: "#172B6B",
+        },
         gold: {
           50: "#FFFDF7",
           100: "#FEF7E6",
