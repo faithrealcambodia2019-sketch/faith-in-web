@@ -311,6 +311,23 @@
       const avatar = authorPhoto ? `<img class="absolute top-2.5 left-2.5 avatar w-9 h-9 object-cover ring-[3px] ring-white/80" src="${esc(authorPhoto)}" alt="${esc(author.name || 'Faith In member')}">` : `<span class="absolute top-2.5 left-2.5 avatar w-9 h-9 text-[11px] ring-[3px] ring-white/80">${esc(api.initials(author.name))}</span>`;
       return `<button class="snap-start shrink-0 w-[112px] h-[172px] rounded-card overflow-hidden relative text-left text-white" style="background:linear-gradient(180deg,${colors[index % colors.length]},#111827)" data-blessing-post="${esc(post.id)}">${blessingImage ? `<img class="absolute inset-0 w-full h-full object-cover" src="${esc(blessingImage)}" alt="Blessing image"><span class="absolute inset-0" style="background:linear-gradient(180deg,rgba(0,0,0,.2),rgba(0,0,0,.35) 48%,rgba(0,0,0,.78))"></span>` : ''}${avatar}<span class="absolute inset-x-3 top-1/2 -translate-y-1/2 text-center font-serif italic text-[13px] line-clamp-4">${esc(post.content || 'Shared a blessing')}</span><span class="absolute bottom-2.5 left-3 right-3 text-[11.5px] font-semibold truncate">${esc(author.name || 'Faith In Member')}</span></button>`;
     }).join('');
+    syncRailArrows(rail);
+  }
+
+  // The rail's scroll arrows only mean something when there is somewhere to
+  // scroll; with one or two blessings they pointed at empty space.
+  function syncRailArrows(rail) {
+    const arrows = $$('[data-rail-prev],[data-rail-next]');
+    if (!arrows.length) return;
+    const apply = () => {
+      const scrollable = rail.scrollWidth > rail.clientWidth + 4;
+      arrows.forEach(button => { button.style.display = scrollable ? '' : 'none'; });
+    };
+    apply();
+    if (!rail.dataset.railArrowsBound) {
+      rail.dataset.railArrowsBound = '1';
+      window.addEventListener('resize', apply, { passive: true });
+    }
   }
 
   function getCachedMembers() {

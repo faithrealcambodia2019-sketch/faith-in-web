@@ -604,6 +604,18 @@ html.dark .chip.is-on{ color:#0b1120; }
 .notif-unread{ background: rgb(var(--brand-soft) / .55); box-shadow: inset 3px 0 0 rgb(var(--brand)); }
 .notif-unread:hover{ background: rgb(var(--brand-soft)); }
 
+/* Sticky rails that are taller than the viewport: let the rail scroll its
+   own content, otherwise everything below the fold becomes unreachable once
+   the rail sticks. */
+.rail-scroll {
+  max-height: calc(100vh - 80px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.rail-scroll::-webkit-scrollbar { display: none; }
+
 /* --- Notifications ------------------------------------------------------ */
 
 /* A date header every time the day changes, so a long list reads as a
