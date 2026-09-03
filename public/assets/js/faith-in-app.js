@@ -699,7 +699,7 @@
         const isBlue = meta.type === 'blue';
         const isPurple = meta.type === 'purple';
         const colors = isBlue
-            ? { shell: 'bg-blue-600 text-white shadow-blue-200/70', ring: 'ring-blue-100', shadow: '0 8px 18px rgba(37,99,235,.22)' }
+            ? { shell: 'bg-blue-600 text-white shadow-blue-200/70', ring: 'ring-blue-100', shadow: '0 8px 18px rgba(47, 91, 234,.22)' }
             : (isPurple
                 ? { shell: 'bg-purple-600 text-white shadow-purple-200/70', ring: 'ring-purple-100', shadow: '0 8px 18px rgba(124,58,237,.28)' }
                 : { shell: 'bg-amber-400 text-slate-900 shadow-amber-200/70', ring: 'ring-amber-100', shadow: '0 8px 18px rgba(251,191,36,.28)' });
@@ -3079,7 +3079,7 @@ window.signOut = () => {
     }
 
     const cvPostReactions = {
-        like: { key: 'like', label: 'Amen', icon: '👍', iconName: 'thumbs-up', color: '#5b89d6', badgeBg: '#5b89d6', stroke: '#1f4e99', fill: '#9cbbf1', bgColor: '#eff6ff' },
+        like: { key: 'like', label: 'Amen', icon: '👍', iconName: 'thumbs-up', color: '#5b89d6', badgeBg: '#5b89d6', stroke: '#1f4e99', fill: '#9cbbf1', bgColor: '#e9effe' },
         celebrate: { key: 'celebrate', label: 'Hallelujah', icon: '✦', iconName: 'sparkles', color: '#71a856', badgeBg: '#71a856', stroke: '#285915', fill: '#b4d9a3', bgColor: '#f0fdf4' },
         support: { key: 'support', label: 'Praise the Lord', icon: '🤝', iconName: 'praying', color: '#b09ac8', badgeBg: '#b09ac8', stroke: '#4e346e', fill: '#d3c5e3', bgColor: '#faf5ff' },
         love: { key: 'love', label: 'Love', icon: '❤️', iconName: 'heart', color: '#cd6e57', badgeBg: '#cd6e57', stroke: '#732111', fill: '#e8a89b', bgColor: '#fff7ed' },
@@ -3276,7 +3276,7 @@ window.signOut = () => {
                         trigger.classList.toggle('is-active', amenSelected);
                         if (amenSelected) {
                             trigger.style.setProperty('--cv-reaction-active-color', meta.color);
-                            trigger.style.setProperty('--cv-reaction-active-bg', meta.bgColor || '#eff6ff');
+                            trigger.style.setProperty('--cv-reaction-active-bg', meta.bgColor || '#e9effe');
                         } else {
                             trigger.style.removeProperty('--cv-reaction-active-color');
                             trigger.style.removeProperty('--cv-reaction-active-bg');

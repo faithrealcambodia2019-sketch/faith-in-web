@@ -29,6 +29,22 @@ module.exports = {
         khmer: ['"Koh Santepheap"', '"Noto Serif Khmer"', 'serif'],
       },
       colors: {
+        // Parts of the interface were built in Facebook blue and Tailwind
+        // blue, both a shade off FaithIn's own #2F5BEA. The `blue-*` ramp is
+        // remapped onto the brand so every stray utility lands on it — one
+        // change instead of forty call sites, reversible by deleting this.
+        blue: {
+          50: '#F4F7FE',
+          100: '#E9EFFE',
+          200: '#CBD8FA',
+          300: '#A3B8F5',
+          400: '#6D8AF0',
+          500: '#2F5BEA',
+          600: '#2549C9',
+          700: '#1E40AF',
+          800: '#1A3489',
+          900: '#172B6B',
+        },
         surface: 'rgb(var(--surface) / <alpha-value>)',
         raised: 'rgb(var(--raised) / <alpha-value>)',
         canvas: 'rgb(var(--canvas) / <alpha-value>)',

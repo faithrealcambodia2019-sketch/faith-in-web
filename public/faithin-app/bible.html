@@ -17,8 +17,8 @@
 <link rel="dns-prefetch" href="https://bible-api.com">
 <link href="/faithin-app/assets/faithin-fonts.css" rel="stylesheet"/>
 <link href="/faithin-app/assets/faithin-icons.css" rel="stylesheet"/>
-<link href="/faithin-app/assets/faithin-tw.css?v=20260902-tw-v2" rel="stylesheet"/>
-<link href="/faithin-app/assets/faithin.css?v=20260903-sec-v9" rel="stylesheet"/>
+<link href="/faithin-app/assets/faithin-tw.css?v=20260903-brand-v2" rel="stylesheet"/>
+<link href="/faithin-app/assets/faithin.css?v=20260903-brand-v2" rel="stylesheet"/>
 <style>
   .bible-tab-btn {
     display: inline-flex;
@@ -40,10 +40,10 @@
     color: rgb(var(--ink));
   }
   .bible-tab-btn.is-active {
-    background-color: #1877f2;
+    background-color: #2f5bea;
     color: #ffffff;
-    border-color: #1877f2;
-    box-shadow: 0 1px 2px rgba(24, 119, 242, 0.2);
+    border-color: #2f5bea;
+    box-shadow: 0 1px 2px rgba(47, 91, 234, 0.2);
   }
   .side-link {
     white-space: nowrap !important;
@@ -52,8 +52,8 @@
     white-space: nowrap !important;
   }
   .side-link.is-active {
-    background-color: rgba(24, 119, 242, 0.09) !important;
-    color: #1877f2 !important;
+    background-color: rgba(47, 91, 234, 0.09) !important;
+    color: #2f5bea !important;
     font-weight: 700 !important;
   }
   .verse-row {
@@ -73,8 +73,8 @@
     height: 1.5rem;
     font-size: 0.75rem;
     font-weight: 700;
-    color: #1877f2;
-    background-color: rgba(24, 119, 242, 0.1);
+    color: #2f5bea;
+    background-color: rgba(47, 91, 234, 0.1);
     border-radius: 9999px;
     margin-right: 0.5rem;
     vertical-align: middle;
@@ -128,14 +128,14 @@
   .memory-text-scroll-en::-webkit-scrollbar-thumb,
   .memory-text-scroll-sm::-webkit-scrollbar-thumb,
   .memory-list-scroll::-webkit-scrollbar-thumb {
-    background: rgba(24, 119, 242, 0.5);
+    background: rgba(47, 91, 234, 0.5);
     border-radius: 4px;
   }
   .memory-text-scroll::-webkit-scrollbar-thumb:hover,
   .memory-text-scroll-en::-webkit-scrollbar-thumb:hover,
   .memory-text-scroll-sm::-webkit-scrollbar-thumb:hover,
   .memory-list-scroll::-webkit-scrollbar-thumb:hover {
-    background: rgba(24, 119, 242, 0.8);
+    background: rgba(47, 91, 234, 0.8);
   }
   .rail-scroll {
     max-height: calc(100vh - 80px);
@@ -180,8 +180,8 @@
     transition: all 0.15s ease;
   }
   .memory-search-input:focus {
-    border-color: #1877f2;
-    box-shadow: 0 0 0 3px rgba(24, 119, 242, 0.15);
+    border-color: #2f5bea;
+    box-shadow: 0 0 0 3px rgba(47, 91, 234, 0.15);
     background-color: rgb(var(--surface));
   }
   .memory-search-input::placeholder {
@@ -226,8 +226,8 @@
     border-left: 3px solid #EC4899 !important;
   }
   .verse-speaking {
-    background-color: rgba(24, 119, 242, 0.15) !important;
-    border-left: 3px solid #1877f2 !important;
+    background-color: rgba(47, 91, 234, 0.15) !important;
+    border-left: 3px solid #2f5bea !important;
     transition: all 0.2s ease;
   }
   .reader-theme-sepia {
@@ -257,8 +257,8 @@
     padding: 0 3px;
     font-size: 10.5px;
     font-weight: 700;
-    color: #1877f2;
-    background-color: rgba(24, 119, 242, 0.08);
+    color: #2f5bea;
+    background-color: rgba(47, 91, 234, 0.08);
     border-radius: 4px;
     margin-right: 6px;
     vertical-align: middle;
@@ -373,7 +373,7 @@
   .reader-theme-dark .text-ink { color: #e2e8f0; }
   .reader-theme-dark .text-muted { color: #94a3b8; }
   .reader-theme-dark .border-line { border-color: #1e293b; }
-  .reader-theme-dark .verse-num { color: #93c5fd; background-color: rgba(147, 197, 253, 0.12); }
+  .reader-theme-dark .verse-num { color: #a3b8f5; background-color: rgba(147, 197, 253, 0.12); }
   .reader-theme-sepia .verse-num { color: #8a5a1a; background-color: rgba(138, 90, 26, 0.12); }
 
   /* ── Search fields ──────────────────────────────────────────────
@@ -423,9 +423,9 @@
     
     <!-- User Profile Card -->
     <section class="card overflow-hidden">
-      <div class="h-[62px] bg-[linear-gradient(120deg,#1877f2,#3b82f6_50%,#1e40af)]"></div>
+      <div class="h-[62px] bg-[linear-gradient(120deg,#2f5bea,#4f76ed_50%,#1e40af)]"></div>
       <div class="px-4 pb-4 -mt-8 flex flex-col items-center text-center">
-        <span class="avatar w-16 h-16 text-[20px] ring-4 ring-surface" data-current-user-avatar style="background:linear-gradient(135deg,#1877f2,#1e40af)">FI</span>
+        <span class="avatar w-16 h-16 text-[20px] ring-4 ring-surface" data-current-user-avatar style="background:linear-gradient(135deg,#2f5bea,#1e40af)">FI</span>
         <a class="mt-2.5 font-bold text-[15px] hover:underline inline-flex items-center text-ink" href="/profile" data-current-user-name>
           Faith In
           <span class="fi-verified-tick ml-1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"></polyline></svg></span>
@@ -435,11 +435,11 @@
       <div class="border-t border-line grid grid-cols-2 divide-x divide-line text-center text-xs">
         <div class="py-2.5 px-1">
           <span class="block text-muted text-[11px]">Old Testament</span>
-          <span class="font-bold text-[#1877F2]">39 Books</span>
+          <span class="font-bold text-[#2F5BEA]">39 Books</span>
         </div>
         <div class="py-2.5 px-1">
           <span class="block text-muted text-[11px]">New Testament</span>
-          <span class="font-bold text-[#1877F2]">27 Books</span>
+          <span class="font-bold text-[#2F5BEA]">27 Books</span>
         </div>
       </div>
     </section>
@@ -447,7 +447,7 @@
     <!-- Main Navigation Links -->
     <nav aria-label="Sections" class="space-y-1">
       <a class="nav-item" href="/home"><i class="fa-solid fa-house"></i>Home Feed</a>
-      <a aria-current="page" class="nav-item is-active" href="/bible"><i class="fa-solid fa-book-bible text-[#1877F2]"></i>Bible Studio</a>
+      <a aria-current="page" class="nav-item is-active" href="/bible"><i class="fa-solid fa-book-bible text-[#2F5BEA]"></i>Bible Studio</a>
       <a class="nav-item" href="/library"><i class="fa-solid fa-book-open text-amber-500"></i>Resource Library</a>
       <a class="nav-item" href="/network"><i class="fa-solid fa-globe text-indigo-500"></i>Find Users</a>
       <a class="nav-item" href="/jobs"><i class="fa-solid fa-briefcase text-emerald-600"></i>Find Jobs</a>
@@ -585,7 +585,7 @@
     <!-- Verse of the Day Widget -->
     <section id="right-votd-widget" class="card p-4 bg-surface border border-line space-y-3">
       <div class="flex items-center justify-between border-b border-line pb-2.5">
-        <div class="flex items-center gap-2 text-xs font-bold text-[#1877F2] uppercase tracking-wider">
+        <div class="flex items-center gap-2 text-xs font-bold text-[#2F5BEA] uppercase tracking-wider">
           <i class="fa-solid fa-sun text-amber-500"></i> Verse of the Day
         </div>
         <button class="w-7 h-7 rounded-full hover:bg-raised flex items-center justify-center text-muted" title="Share" onclick="window.copyDailyVerse()">
@@ -595,7 +595,7 @@
       <blockquote class="space-y-1.5" id="right-votd">
         <p class="font-khmer text-sm text-ink leading-relaxed font-medium" id="right-votd-km">«ដ្បិតព្រះទ្រង់ស្រឡាញ់មនុស្សលោក...»</p>
         <p class="font-serif italic text-xs text-muted leading-relaxed" id="right-votd-en">“For God so loved the world...”</p>
-        <div class="text-xs font-bold text-[#1877F2] pt-1" id="right-votd-ref">John 3:16 • យ៉ូហាន ៣:១៦</div>
+        <div class="text-xs font-bold text-[#2F5BEA] pt-1" id="right-votd-ref">John 3:16 • យ៉ូហាន ៣:១៦</div>
       </blockquote>
       <div class="pt-2 border-t border-line flex items-center justify-between">
         <button class="btn btn-neutral !py-1 !px-2.5 !text-xs" data-side-tool="daily" onclick="window.switchTool('daily')">Open Devotional</button>
@@ -632,9 +632,9 @@
 
 <audio id="bible-audio-player" preload="none" class="hidden"></audio>
 
-<script src="/faithin-app/assets/faithin-runtime.js?v=20260903-sec-v9"></script>
-<script src="/assets/js/faith-in-backend.js?v=20260903-sec-v9"></script>
-<script src="/faithin-app/assets/faithin.js?v=20260903-sec-v9"></script>
+<script src="/faithin-app/assets/faithin-runtime.js?v=20260903-brand-v2"></script>
+<script src="/assets/js/faith-in-backend.js?v=20260903-brand-v2"></script>
+<script src="/faithin-app/assets/faithin.js?v=20260903-brand-v2"></script>
 <script>
 (() => {
   'use strict';
@@ -3964,7 +3964,7 @@
     if (!d) return `<div class="card p-8 text-center text-muted"><i class="fa-solid fa-circle-notch fa-spin text-2xl text-brand mb-2"></i><p class="text-xs">Loading Verse of the Day...</p></div>`;
     return `
       <div class="space-y-3.5">
-        <div class="bg-[linear-gradient(135deg,#1877f2,#0052cc)] rounded-xl p-4 sm:p-5 text-white shadow-xs relative overflow-hidden space-y-3">
+        <div class="bg-[linear-gradient(135deg,#2f5bea,#1e40af)] rounded-xl p-4 sm:p-5 text-white shadow-xs relative overflow-hidden space-y-3">
           <div class="flex items-center justify-between text-[11px] text-amber-300 font-bold uppercase tracking-wider">
             <span>✨ VERSE OF THE DAY • ខគម្ពីរប្រចាំថ្ងៃ</span>
             <span class="text-white/80 font-normal text-[11px]">${d.date}</span>
@@ -3984,7 +3984,7 @@
 
           <div class="p-2.5 rounded-lg bg-black/20 backdrop-blur-md flex flex-wrap items-center justify-between gap-2.5">
             <div class="flex items-center gap-2.5">
-              <button class="w-8 h-8 rounded-full bg-white text-[#1877F2] flex items-center justify-center font-bold text-xs shadow hover:scale-105 transition" onclick="window.playAudioTrack('${d.audioUrl}')">
+              <button class="w-8 h-8 rounded-full bg-white text-[#2F5BEA] flex items-center justify-center font-bold text-xs shadow hover:scale-105 transition" onclick="window.playAudioTrack('${d.audioUrl}')">
                 <i class="fa-solid fa-play ml-0.5 text-[11px]"></i>
               </button>
               <div>
@@ -4195,7 +4195,7 @@
       <div class="space-y-4">
         
         <!-- Header Banner -->
-        <div class="card p-4 sm:p-5 bg-gradient-to-r from-[#1877F2]/10 via-rose-500/10 to-indigo-500/10 border border-brand/20 space-y-2">
+        <div class="card p-4 sm:p-5 bg-gradient-to-r from-[#2F5BEA]/10 via-rose-500/10 to-indigo-500/10 border border-brand/20 space-y-2">
           <div class="flex flex-wrap items-center justify-between gap-2">
             <div class="flex items-center gap-2">
               <span class="w-8 h-8 rounded-lg bg-rose-500 text-white flex items-center justify-center font-bold text-sm shadow-sm"><i class="fa-solid fa-brain"></i></span>
@@ -6220,6 +6220,6 @@
 
 })();
 </script>
-<script src="/faithin-app/assets/faithin-live.js?v=20260903-sec-v9"></script>
+<script src="/faithin-app/assets/faithin-live.js?v=20260903-brand-v2"></script>
 </body>
 </html>

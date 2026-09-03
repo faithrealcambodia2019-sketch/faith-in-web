@@ -1303,7 +1303,7 @@
                 value="${esc(user.name || user.displayName || '')}"
                 required
                 style="width: 100%; box-sizing: border-box; padding: 8px 12px; background: #f0f2f5; border: 1px solid #ccd0d5; border-radius: 6px; font-size: 14px; color: #1c1e21; outline: none; transition: all 0.15s; font-family: inherit;"
-                onfocus="this.style.background='#fff'; this.style.borderColor='#1877f2'; this.style.boxShadow='0 0 0 1px #1877f2';"
+                onfocus="this.style.background='#fff'; this.style.borderColor='#2f5bea'; this.style.boxShadow='0 0 0 1px #2f5bea';"
                 onblur="this.style.background='#f0f2f5'; this.style.borderColor='#ccd0d5'; this.style.boxShadow='none';"
               />
             </div>
@@ -1320,7 +1320,7 @@
                   name="role"
                   value="${esc(user.role || '')}"
                   style="width: 100%; box-sizing: border-box; padding: 8px 12px; background: #f0f2f5; border: 1px solid #ccd0d5; border-radius: 6px; font-size: 14px; color: #1c1e21; outline: none; transition: all 0.15s; font-family: inherit;"
-                  onfocus="this.style.background='#fff'; this.style.borderColor='#1877f2'; this.style.boxShadow='0 0 0 1px #1877f2';"
+                  onfocus="this.style.background='#fff'; this.style.borderColor='#2f5bea'; this.style.boxShadow='0 0 0 1px #2f5bea';"
                   onblur="this.style.background='#f0f2f5'; this.style.borderColor='#ccd0d5'; this.style.boxShadow='none';"
                 />
               </div>
@@ -1334,7 +1334,7 @@
                   name="location"
                   value="${esc(user.location || '')}"
                   style="width: 100%; box-sizing: border-box; padding: 8px 12px; background: #f0f2f5; border: 1px solid #ccd0d5; border-radius: 6px; font-size: 14px; color: #1c1e21; outline: none; transition: all 0.15s; font-family: inherit;"
-                  onfocus="this.style.background='#fff'; this.style.borderColor='#1877f2'; this.style.boxShadow='0 0 0 1px #1877f2';"
+                  onfocus="this.style.background='#fff'; this.style.borderColor='#2f5bea'; this.style.boxShadow='0 0 0 1px #2f5bea';"
                   onblur="this.style.background='#f0f2f5'; this.style.borderColor='#ccd0d5'; this.style.boxShadow='none';"
                 />
               </div>
@@ -1352,7 +1352,7 @@
                   name="industry"
                   value="${esc(user.industry || '')}"
                   style="width: 100%; box-sizing: border-box; padding: 8px 12px; background: #f0f2f5; border: 1px solid #ccd0d5; border-radius: 6px; font-size: 14px; color: #1c1e21; outline: none; transition: all 0.15s; font-family: inherit;"
-                  onfocus="this.style.background='#fff'; this.style.borderColor='#1877f2'; this.style.boxShadow='0 0 0 1px #1877f2';"
+                  onfocus="this.style.background='#fff'; this.style.borderColor='#2f5bea'; this.style.boxShadow='0 0 0 1px #2f5bea';"
                   onblur="this.style.background='#f0f2f5'; this.style.borderColor='#ccd0d5'; this.style.boxShadow='none';"
                 />
               </div>
@@ -1366,7 +1366,7 @@
                   name="church"
                   value="${esc(user.church || '')}"
                   style="width: 100%; box-sizing: border-box; padding: 8px 12px; background: #f0f2f5; border: 1px solid #ccd0d5; border-radius: 6px; font-size: 14px; color: #1c1e21; outline: none; transition: all 0.15s; font-family: inherit;"
-                  onfocus="this.style.background='#fff'; this.style.borderColor='#1877f2'; this.style.boxShadow='0 0 0 1px #1877f2';"
+                  onfocus="this.style.background='#fff'; this.style.borderColor='#2f5bea'; this.style.boxShadow='0 0 0 1px #2f5bea';"
                   onblur="this.style.background='#f0f2f5'; this.style.borderColor='#ccd0d5'; this.style.boxShadow='none';"
                 />
               </div>
@@ -1383,7 +1383,7 @@
                 name="ministry"
                 value="${esc(user.ministry || '')}"
                 style="width: 100%; box-sizing: border-box; padding: 8px 12px; background: #f0f2f5; border: 1px solid #ccd0d5; border-radius: 6px; font-size: 14px; color: #1c1e21; outline: none; transition: all 0.15s; font-family: inherit;"
-                onfocus="this.style.background='#fff'; this.style.borderColor='#1877f2'; this.style.boxShadow='0 0 0 1px #1877f2';"
+                onfocus="this.style.background='#fff'; this.style.borderColor='#2f5bea'; this.style.boxShadow='0 0 0 1px #2f5bea';"
                 onblur="this.style.background='#f0f2f5'; this.style.borderColor='#ccd0d5'; this.style.boxShadow='none';"
               />
             </div>
@@ -1398,7 +1398,7 @@
                 name="bio"
                 rows="3"
                 style="width: 100%; box-sizing: border-box; padding: 8px 12px; background: #f0f2f5; border: 1px solid #ccd0d5; border-radius: 6px; font-size: 14px; color: #1c1e21; outline: none; resize: vertical; min-height: 70px; font-family: inherit; transition: all 0.15s;"
-                onfocus="this.style.background='#fff'; this.style.borderColor='#1877f2'; this.style.boxShadow='0 0 0 1px #1877f2';"
+                onfocus="this.style.background='#fff'; this.style.borderColor='#2f5bea'; this.style.boxShadow='0 0 0 1px #2f5bea';"
                 onblur="this.style.background='#f0f2f5'; this.style.borderColor='#ccd0d5'; this.style.boxShadow='none';"
               >${esc(user.bio || user.about || '')}</textarea>
             </div>
@@ -1411,7 +1411,7 @@
           <button type="button" style="padding: 8px 18px; font-size: 14px; font-weight: 700; color: #4b4f56; background: #e4e6eb; border: none; border-radius: 6px; cursor: pointer; transition: background 0.15s; font-family: inherit;" data-profile-close>
             Cancel
           </button>
-          <button type="button" style="padding: 8px 22px; font-size: 14px; font-weight: 700; color: #ffffff; background: #1877f2; border: none; border-radius: 6px; cursor: pointer; transition: background 0.15s; font-family: inherit;" data-profile-save>
+          <button type="button" style="padding: 8px 22px; font-size: 14px; font-weight: 700; color: #ffffff; background: #2f5bea; border: none; border-radius: 6px; cursor: pointer; transition: background 0.15s; font-family: inherit;" data-profile-save>
             Save profile
           </button>
         </div>
@@ -2414,7 +2414,7 @@
           ? data.analytics.engagements
           : (metricType === 'New Followers' ? data.analytics.followers : data.analytics.impressions);
         const metricLabel = metricType || 'Impressions';
-        const color = metricType === 'Engagements' ? '#9333ea' : (metricType === 'New Followers' ? '#16a34a' : '#2563eb');
+        const color = metricType === 'Engagements' ? '#9333ea' : (metricType === 'New Followers' ? '#16a34a' : '#2f5bea');
         
         const labels = data.analytics.labels;
         const values = datasetData;
