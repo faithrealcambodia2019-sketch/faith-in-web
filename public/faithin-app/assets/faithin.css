@@ -2592,3 +2592,35 @@ html.dark .article-preview-body blockquote {
 @media (prefers-reduced-motion: reduce) {
   .fi-bible-loading span { animation: none; }
 }
+
+/* ── brand lockup ──────────────────────────────────────────────────────────
+   The wordmark and globe, set to the same spec the marketing header uses so
+   the two halves of the product read as one brand. The glyph is sized in em
+   so it tracks the wordmark instead of drifting at small breakpoints.       */
+.fi-lockup {
+  display: inline-flex;
+  align-items: center;
+  gap: .3em;
+  font-size: 22px;
+  line-height: 1;
+}
+.fi-lockup__word {
+  font-weight: 800;
+  letter-spacing: -.03em;
+  line-height: 1;
+}
+.fi-lockup__glyph {
+  font-size: .72em;
+  line-height: 1;
+  transform: translateY(-.02em);
+}
+@media (max-width: 420px) {
+  .fi-lockup { font-size: 20px; }
+}
+
+/* The rails stay pinned to the shell edges so they line up with the header
+   lockup, while the feed itself keeps a readable measure and centres in
+   whatever width is left. Same behaviour Facebook's feed has. */
+@media (min-width: 1280px) {
+  #main > #feed { max-width: 700px; margin-inline: auto; width: 100%; }
+}
