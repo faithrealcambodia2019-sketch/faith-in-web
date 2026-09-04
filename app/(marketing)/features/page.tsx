@@ -2,17 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { site, features } from "@/lib/site-content";
 import { ContactsWidget } from "@/components/ContactsWidget";
-import {
-  ArrowRight,
-  ShieldCheck,
-  Sparkles,
-  Globe,
-  Activity,
-  Layers,
-  AudioLines,
-  Compass,
-  Zap,
-} from "lucide-react";
+import { BookOpen, Headphones, Heart, Palette, Briefcase, Users, ArrowRight, ShieldCheck, Layers, Zap } from "lucide-react";
 
 export const metadata: Metadata = {
   title: `Features — ${site.name}`,
@@ -37,7 +27,7 @@ export default function FeaturesPage() {
           <div className="pt-4 flex flex-wrap items-center justify-center gap-3">
             <Link href={site.appPath} className="fi-btn fi-btn--primary">
               <span>Try All Features in App</span>
-              <ArrowRight className="w-4 h-4" />
+              <ArrowRight, ShieldCheck, Layers, Zap className="w-4 h-4" />
             </Link>
             <Link href="/bible-study" className="fi-btn fi-btn--secondary">
               <span>View Bible Studio</span>
@@ -100,7 +90,7 @@ export default function FeaturesPage() {
                     className="inline-flex items-center gap-1 text-[#1E40AF] hover:underline"
                   >
                     <span>Open {f.title}</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
+                    <ArrowRight, ShieldCheck, Layers, Zap className="w-3.5 h-3.5" />
                   </Link>
                 </div>
               </div>
@@ -138,7 +128,7 @@ export default function FeaturesPage() {
               <div className="pt-2">
                 <Link href={site.appPath} className="fi-btn fi-btn--primary">
                   <span>Open Community Network</span>
-                  <ArrowRight className="w-4 h-4" />
+                  <ArrowRight, ShieldCheck, Layers, Zap className="w-4 h-4" />
                 </Link>
               </div>
             </div>
@@ -215,7 +205,7 @@ export default function FeaturesPage() {
               <div className="flex justify-center gap-4">
                 <Link href={site.appPath} className="fi-btn fi-btn--primary fi-btn--lg">
                   <span>Open Faith In Free</span>
-                  <ArrowRight className="w-4 h-4" />
+                  <ArrowRight, ShieldCheck, Layers, Zap className="w-4 h-4" />
                 </Link>
               </div>
             </div>

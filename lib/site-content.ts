@@ -96,7 +96,7 @@ export const journeyPathway: JourneyStep[] = [
     title: "Discover Hope & Truth",
     description:
       "Begin with Scripture in your native language. Explore side-by-side Khmer and English verses with crystal-clear formatting and thoughtful devotional commentary.",
-    icon: "compass",
+    icon: "briefcase",
     highlight: "Bilingual Scripture Study",
     actionText: "Read Today's Verse",
     actionHref: "/bible-study",
@@ -132,7 +132,7 @@ export const journeyPathway: JourneyStep[] = [
     title: "Grow & Share Faith",
     description:
       "Create beautiful shareable Scripture art cards for Telegram and Facebook, discover Christian employment opportunities, and serve your local church.",
-    icon: "audio-lines",
+    icon: "headphones",
     highlight: "Scripture Design Studio & Jobs",
     actionText: "Explore Growth Tools",
     actionHref: "/features",
@@ -158,7 +158,7 @@ export const features: Feature[] = [
     summary: "Side-by-side Khmer Standard Version and English Bible with tailored Khmer font rendering.",
     detail:
       "Read Scripture with optimized line heights, syllable break handling, instant cross-references, and verse-by-verse translation alignment tailored for bilingual speakers and learners.",
-    icon: "sparkles",
+    icon: "book-open",
     category: "Scripture",
     badge: "Essential",
   },
@@ -180,7 +180,7 @@ export const features: Feature[] = [
     summary: "Share your burdens and celebrate answered prayers with compassionate Christians worldwide.",
     detail:
       "Post prayer requests publicly or anonymously. Click 'I prayed for you' to let believers know they are not walking alone in their struggles.",
-    icon: "globe",
+    icon: "hands-praying",
     category: "Fellowship",
     badge: "Live",
   },
@@ -191,7 +191,7 @@ export const features: Feature[] = [
     summary: "Listen to high-definition spoken blessings, morning devotions, and peaceful reflections.",
     detail:
       "Immerse your spirit in spoken Scripture and gentle worship audio tracks, recorded in gentle Khmer and English voices to start and end your day in tranquility.",
-    icon: "audio-lines",
+    icon: "headphones",
     category: "Growth",
     badge: "Popular",
   },
@@ -202,7 +202,7 @@ export const features: Feature[] = [
     summary: "Transform favorite Bible verses into breathtaking visual cards for Telegram, Instagram, and Facebook.",
     detail:
       "Choose elegant typography, background wallpapers, and custom layouts designed specifically to respect Khmer vowel/consonant rendering rules.",
-    icon: "layers",
+    icon: "palette",
     category: "Growth",
     badge: "New",
   },
@@ -213,7 +213,7 @@ export const features: Feature[] = [
     summary: "Find purposeful career opportunities with faith-based organizations, churches, and NGOs.",
     detail:
       "Connect mission-minded professionals with Christian employers, educational institutions, translation teams, and non-profit ministries.",
-    icon: "compass",
+    icon: "briefcase",
     category: "Ministry",
     badge: "Live",
   },
