@@ -47,19 +47,19 @@ export default function ContactPage() {
               <div className="space-y-4">
                 <a
                   href={`mailto:${site.contactEmail}`}
-                  className="fi-card p-5 flex items-start gap-4 hover:border-[#2F5BEA] transition-all group block text-inherit no-underline"
+                  className="bg-[#F0F2F5] rounded-[24px] p-5 sm:p-6 hover:bg-[#E4E6EB] transition-colors cursor-pointer group flex items-start gap-4 border-0 shadow-none text-inherit no-underline"
                 >
-                  <div className="w-10 h-10 rounded-xl bg-[#E9EFFE] text-[#1E40AF] flex items-center justify-center shrink-0">
-                    <Mail className="w-5 h-5" />
+                  <div className="bg-white rounded-xl p-3 shadow-sm group-hover:scale-105 transition-transform duration-300 shrink-0">
+                    <Mail className="w-6 h-6 text-blue-600" strokeWidth={2.5} />
                   </div>
                   <div>
-                    <div className="text-xs font-bold uppercase tracking-wider text-charcoal-400">
+                    <div className="text-xs font-bold uppercase tracking-wider text-blue-700">
                       General &amp; Partnerships
                     </div>
-                    <div className="text-base font-bold text-charcoal-900 group-hover:text-[#2F5BEA] transition-colors">
+                    <div className="text-base font-extrabold text-charcoal-900 group-hover:text-blue-700 transition-colors">
                       {site.contactEmail}
                     </div>
-                    <div className="text-xs text-charcoal-500 mt-0.5">
+                    <div className="text-xs text-charcoal-600 mt-0.5">
                       General questions and partnerships
                     </div>
                   </div>
@@ -67,28 +67,28 @@ export default function ContactPage() {
 
                 <a
                   href={`mailto:${site.supportEmail}`}
-                  className="fi-card p-5 flex items-start gap-4 hover:border-[#2F5BEA] transition-all group block text-inherit no-underline"
+                  className="bg-[#F0F2F5] rounded-[24px] p-5 sm:p-6 hover:bg-[#E4E6EB] transition-colors cursor-pointer group flex items-start gap-4 border-0 shadow-none text-inherit no-underline"
                 >
-                  <div className="w-10 h-10 rounded-xl bg-[#E9EFFE] text-[#2F5BEA] flex items-center justify-center shrink-0">
-                    <MessageSquare className="w-5 h-5" />
+                  <div className="bg-white rounded-xl p-3 shadow-sm group-hover:scale-105 transition-transform duration-300 shrink-0">
+                    <MessageSquare className="w-6 h-6 text-teal-600" strokeWidth={2.5} />
                   </div>
                   <div>
-                    <div className="text-xs font-bold uppercase tracking-wider text-charcoal-400">
+                    <div className="text-xs font-bold uppercase tracking-wider text-teal-700">
                       Technical &amp; Member Support
                     </div>
-                    <div className="text-base font-bold text-charcoal-900 group-hover:text-[#2F5BEA] transition-colors">
+                    <div className="text-base font-extrabold text-charcoal-900 group-hover:text-teal-700 transition-colors">
                       {site.supportEmail}
                     </div>
-                    <div className="text-xs text-charcoal-500 mt-0.5">
+                    <div className="text-xs text-charcoal-600 mt-0.5">
                       Account assistance &amp; feedback
                     </div>
                   </div>
                 </a>
               </div>
 
-              <div className="p-6 rounded-2xl bg-white border border-[#EAE7DC] space-y-3 shadow-xs">
-                <div className="flex items-center gap-2 text-xs font-bold text-charcoal-700">
-                  <Clock className="w-4 h-4 text-[#2F5BEA]" />
+              <div className="p-6 rounded-[24px] bg-[#F0F2F5] border-0 space-y-3">
+                <div className="flex items-center gap-2 text-xs font-bold text-charcoal-800">
+                  <Clock className="w-4 h-4 text-blue-600" strokeWidth={2.5} />
                   <span>Support Hours</span>
                 </div>
                 <p className="text-xs text-charcoal-600 leading-relaxed">
@@ -98,7 +98,7 @@ export default function ContactPage() {
             </div>
 
             {/* Interactive Contact Form */}
-            <div className="lg:col-span-7 bg-white border border-[#EAE7DC] rounded-3xl p-6 sm:p-10 shadow-lg space-y-6">
+            <div className="lg:col-span-7 bg-[#F0F2F5] rounded-[28px] p-6 sm:p-10 border-0 space-y-6">
               <div className="space-y-2">
                 <h3 className="text-2xl font-extrabold text-charcoal-900">
                   Prepare an email to our team

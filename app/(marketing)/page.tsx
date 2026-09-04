@@ -9,10 +9,12 @@ import { FaqAccordion } from "@/components/marketing/FaqAccordion";
 import {
   Sparkles,
   ArrowRight,
-  AudioLines,
-  Activity,
-  Layers,
-  Compass,
+  BookOpen,
+  Headphones,
+  Heart,
+  Palette,
+  Briefcase,
+  Users,
   ShieldCheck,
   CheckCircle2,
   Globe,
@@ -64,7 +66,7 @@ export default function HomePage() {
                   href="/bible-study"
                   className="fi-btn fi-btn--secondary fi-btn--lg"
                 >
-                  <Sparkles className="w-4 h-4 text-[#2F5BEA]" />
+                  <BookOpen className="w-4 h-4 text-[#2F5BEA]" />
                   <span>Explore Bible Studio</span>
                 </Link>
               </div>
@@ -126,183 +128,195 @@ export default function HomePage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
             {/* Card 1: Bilingual Scripture */}
-            <div className="fi-card fi-card--highlight flex flex-col justify-between space-y-6">
+            <div className="bg-[#F0F2F5] rounded-[24px] p-6 sm:p-8 hover:bg-[#E4E6EB] transition-colors cursor-pointer group flex flex-col justify-between border-0 shadow-none">
               <div className="space-y-4">
-                <div className="w-12 h-12 rounded-2xl bg-[#E9EFFE] border border-[#C9D8FC] text-[#1E40AF] flex items-center justify-center shadow-xs">
-                  <Sparkles className="w-6 h-6" />
+                <div className="bg-white rounded-xl p-3 w-fit shadow-sm group-hover:scale-105 transition-transform duration-300">
+                  <BookOpen className="w-8 h-8 text-blue-600" strokeWidth={2.5} />
                 </div>
 
                 <div className="space-y-1">
-                  <div className="text-xs font-bold uppercase tracking-wider text-[#1E40AF]">
+                  <div className="text-xs font-bold uppercase tracking-wider text-blue-700">
                     Scripture • ព្រះគម្ពីរ
                   </div>
-                  <h3 className="text-xl font-extrabold text-charcoal-900">
+                  <h3 className="text-xl font-extrabold text-charcoal-900 leading-tight">
                     Bilingual Bible Studio
                   </h3>
                 </div>
 
-                <p className="text-sm text-charcoal-600 leading-relaxed">
+                <p className="text-[15px] text-charcoal-600 leading-relaxed">
                   Read Khmer Standard Version alongside English translations with customized line heights, syllable handling, and instant verse lookups.
                 </p>
               </div>
 
-              <Link
-                href="/bible-study"
-                className="inline-flex items-center gap-1.5 text-sm font-bold text-[#1E40AF] hover:underline"
-              >
-                <span>Explore Bible Studio</span>
-                <ArrowRight className="w-4 h-4" />
-              </Link>
+              <div className="pt-6 mt-6 border-t border-slate-300/50 flex items-center justify-between text-xs font-bold">
+                <Link
+                  href="/bible-study"
+                  className="inline-flex items-center gap-1.5 text-sm font-bold text-blue-700 group-hover:text-blue-800 transition-colors"
+                >
+                  <span>Explore Bible Studio</span>
+                  <ArrowRight className="w-4 h-4 ml-1 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />
+                </Link>
+              </div>
             </div>
 
             {/* Card 2: Audio Blessings */}
-            <div className="fi-card flex flex-col justify-between space-y-6">
+            <div className="bg-[#F0F2F5] rounded-[24px] p-6 sm:p-8 hover:bg-[#E4E6EB] transition-colors cursor-pointer group flex flex-col justify-between border-0 shadow-none">
               <div className="space-y-4">
-                <div className="w-12 h-12 rounded-2xl bg-[#E9EFFE] border border-[#C9D8FC] text-[#2F5BEA] flex items-center justify-center shadow-xs">
-                  <AudioLines className="w-6 h-6" />
+                <div className="bg-white rounded-xl p-3 w-fit shadow-sm group-hover:scale-105 transition-transform duration-300">
+                  <Headphones className="w-8 h-8 text-teal-600" strokeWidth={2.5} />
                 </div>
 
                 <div className="space-y-1">
-                  <div className="text-xs font-bold uppercase tracking-wider text-[#2F5BEA]">
+                  <div className="text-xs font-bold uppercase tracking-wider text-teal-700">
                     Spoken Blessings • សម្លេងព្រះពរ
                   </div>
-                  <h3 className="text-xl font-extrabold text-charcoal-900">
+                  <h3 className="text-xl font-extrabold text-charcoal-900 leading-tight">
                     Daily Audio Devotionals
                   </h3>
                 </div>
 
-                <p className="text-sm text-charcoal-600 leading-relaxed">
+                <p className="text-[15px] text-charcoal-600 leading-relaxed">
                   Start and end each day in tranquility with soothing spoken Scripture, morning declarations of grace, and peaceful melodies.
                 </p>
               </div>
 
-              <Link
-                href={site.appPath}
-                className="inline-flex items-center gap-1.5 text-sm font-bold text-[#2F5BEA] hover:underline"
-              >
-                <span>Listen to Blessings</span>
-                <ArrowRight className="w-4 h-4" />
-              </Link>
+              <div className="pt-6 mt-6 border-t border-slate-300/50 flex items-center justify-between text-xs font-bold">
+                <Link
+                  href={site.appPath}
+                  className="inline-flex items-center gap-1.5 text-sm font-bold text-teal-700 group-hover:text-teal-800 transition-colors"
+                >
+                  <span>Listen to Blessings</span>
+                  <ArrowRight className="w-4 h-4 ml-1 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />
+                </Link>
+              </div>
             </div>
 
             {/* Card 3: Prayer Wall */}
-            <div className="fi-card flex flex-col justify-between space-y-6">
+            <div className="bg-[#F0F2F5] rounded-[24px] p-6 sm:p-8 hover:bg-[#E4E6EB] transition-colors cursor-pointer group flex flex-col justify-between border-0 shadow-none">
               <div className="space-y-4">
-                <div className="w-12 h-12 rounded-2xl bg-[#ECFDF5] border border-[#D1FAE5] text-[#059669] flex items-center justify-center shadow-xs">
-                  <Activity className="w-6 h-6" />
+                <div className="bg-white rounded-xl p-3 w-fit shadow-sm group-hover:scale-105 transition-transform duration-300">
+                  <Heart className="w-8 h-8 text-teal-500" strokeWidth={2.5} />
                 </div>
 
                 <div className="space-y-1">
-                  <div className="text-xs font-bold uppercase tracking-wider text-[#059669]">
+                  <div className="text-xs font-bold uppercase tracking-wider text-teal-700">
                     Intercession • បន្ទប់អធិស្ឋាន
                   </div>
-                  <h3 className="text-xl font-extrabold text-charcoal-900">
+                  <h3 className="text-xl font-extrabold text-charcoal-900 leading-tight">
                     Global Prayer Sanctuary
                   </h3>
                 </div>
 
-                <p className="text-sm text-charcoal-600 leading-relaxed">
+                <p className="text-[15px] text-charcoal-600 leading-relaxed">
                   Share your burdens and celebrate victories. Post publicly or anonymously and know that believers worldwide are praying for you.
                 </p>
               </div>
 
-              <Link
-                href={site.appPath}
-                className="inline-flex items-center gap-1.5 text-sm font-bold text-[#059669] hover:underline"
-              >
-                <span>Visit Prayer Wall</span>
-                <ArrowRight className="w-4 h-4" />
-              </Link>
+              <div className="pt-6 mt-6 border-t border-slate-300/50 flex items-center justify-between text-xs font-bold">
+                <Link
+                  href={site.appPath}
+                  className="inline-flex items-center gap-1.5 text-sm font-bold text-teal-700 group-hover:text-teal-800 transition-colors"
+                >
+                  <span>Visit Prayer Wall</span>
+                  <ArrowRight className="w-4 h-4 ml-1 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />
+                </Link>
+              </div>
             </div>
 
             {/* Card 4: Scripture Design Studio */}
-            <div className="fi-card flex flex-col justify-between space-y-6">
+            <div className="bg-[#F0F2F5] rounded-[24px] p-6 sm:p-8 hover:bg-[#E4E6EB] transition-colors cursor-pointer group flex flex-col justify-between border-0 shadow-none">
               <div className="space-y-4">
-                <div className="w-12 h-12 rounded-2xl bg-[#E9EFFE] border border-[#C9D8FC] text-[#1E40AF] flex items-center justify-center shadow-xs">
-                  <Layers className="w-6 h-6" />
+                <div className="bg-white rounded-xl p-3 w-fit shadow-sm group-hover:scale-105 transition-transform duration-300">
+                  <Palette className="w-8 h-8 text-purple-500" strokeWidth={2.5} />
                 </div>
 
                 <div className="space-y-1">
-                  <div className="text-xs font-bold uppercase tracking-wider text-[#1E40AF]">
+                  <div className="text-xs font-bold uppercase tracking-wider text-purple-700">
                     Creative Gospel • រចនារូបភាព
                   </div>
-                  <h3 className="text-xl font-extrabold text-charcoal-900">
+                  <h3 className="text-xl font-extrabold text-charcoal-900 leading-tight">
                     Scripture Card Designer
                   </h3>
                 </div>
 
-                <p className="text-sm text-charcoal-600 leading-relaxed">
+                <p className="text-[15px] text-charcoal-600 leading-relaxed">
                   Turn your favorite verses into striking visual artwork with curated wallpapers, Khmer calligraphy layouts, and instant export for Telegram &amp; Instagram.
                 </p>
               </div>
 
-              <Link
-                href="/bible-study#designer"
-                className="inline-flex items-center gap-1.5 text-sm font-bold text-[#1E40AF] hover:underline"
-              >
-                <span>Create Verse Cards</span>
-                <ArrowRight className="w-4 h-4" />
-              </Link>
+              <div className="pt-6 mt-6 border-t border-slate-300/50 flex items-center justify-between text-xs font-bold">
+                <Link
+                  href="/bible-study#designer"
+                  className="inline-flex items-center gap-1.5 text-sm font-bold text-purple-700 group-hover:text-purple-800 transition-colors"
+                >
+                  <span>Create Verse Cards</span>
+                  <ArrowRight className="w-4 h-4 ml-1 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />
+                </Link>
+              </div>
             </div>
 
             {/* Card 5: Christian Jobs & Ministry */}
-            <div className="fi-card flex flex-col justify-between space-y-6">
+            <div className="bg-[#F0F2F5] rounded-[24px] p-6 sm:p-8 hover:bg-[#E4E6EB] transition-colors cursor-pointer group flex flex-col justify-between border-0 shadow-none">
               <div className="space-y-4">
-                <div className="w-12 h-12 rounded-2xl bg-[#E9EFFE] border border-[#C9D8FC] text-[#2F5BEA] flex items-center justify-center shadow-xs">
-                  <Compass className="w-6 h-6" />
+                <div className="bg-white rounded-xl p-3 w-fit shadow-sm group-hover:scale-105 transition-transform duration-300">
+                  <Briefcase className="w-8 h-8 text-orange-500" strokeWidth={2.5} />
                 </div>
 
                 <div className="space-y-1">
-                  <div className="text-xs font-bold uppercase tracking-wider text-[#2F5BEA]">
+                  <div className="text-xs font-bold uppercase tracking-wider text-orange-700">
                     Calling &amp; Ministry • ឱកាសការងារ
                   </div>
-                  <h3 className="text-xl font-extrabold text-charcoal-900">
+                  <h3 className="text-xl font-extrabold text-charcoal-900 leading-tight">
                     Christian Career Network
                   </h3>
                 </div>
 
-                <p className="text-sm text-charcoal-600 leading-relaxed">
+                <p className="text-[15px] text-charcoal-600 leading-relaxed">
                   Discover career opportunities with faith-based organizations, churches, mission teams, and non-profits across Southeast Asia and beyond.
                 </p>
               </div>
 
-              <Link
-                href="/features"
-                className="inline-flex items-center gap-1.5 text-sm font-bold text-[#2F5BEA] hover:underline"
-              >
-                <span>Browse Opportunities</span>
-                <ArrowRight className="w-4 h-4" />
-              </Link>
+              <div className="pt-6 mt-6 border-t border-slate-300/50 flex items-center justify-between text-xs font-bold">
+                <Link
+                  href="/features"
+                  className="inline-flex items-center gap-1.5 text-sm font-bold text-orange-700 group-hover:text-orange-800 transition-colors"
+                >
+                  <span>Browse Opportunities</span>
+                  <ArrowRight className="w-4 h-4 ml-1 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />
+                </Link>
+              </div>
             </div>
 
             {/* Card 6: Church Ministry Toolkit */}
-            <div className="fi-card flex flex-col justify-between space-y-6">
+            <div className="bg-[#F0F2F5] rounded-[24px] p-6 sm:p-8 hover:bg-[#E4E6EB] transition-colors cursor-pointer group flex flex-col justify-between border-0 shadow-none">
               <div className="space-y-4">
-                <div className="w-12 h-12 rounded-2xl bg-[#ECFDF5] border border-[#D1FAE5] text-[#059669] flex items-center justify-center shadow-xs">
-                  <Globe className="w-6 h-6" />
+                <div className="bg-white rounded-xl p-3 w-fit shadow-sm group-hover:scale-105 transition-transform duration-300">
+                  <Users className="w-8 h-8 text-blue-600" strokeWidth={2.5} />
                 </div>
 
                 <div className="space-y-1">
-                  <div className="text-xs font-bold uppercase tracking-wider text-[#059669]">
+                  <div className="text-xs font-bold uppercase tracking-wider text-blue-700">
                     For Churches • សម្រាប់ក្រុមជំនុំ
                   </div>
-                  <h3 className="text-xl font-extrabold text-charcoal-900">
+                  <h3 className="text-xl font-extrabold text-charcoal-900 leading-tight">
                     Church Discipleship Toolkit
                   </h3>
                 </div>
 
-                <p className="text-sm text-charcoal-600 leading-relaxed">
+                <p className="text-[15px] text-charcoal-600 leading-relaxed">
                   Equip your pastors, youth leaders, and home fellowship groups with digital discipleship tools, sermon media templates, and coordinated prayer chains.
                 </p>
               </div>
 
-              <Link
-                href="/for-churches"
-                className="inline-flex items-center gap-1.5 text-sm font-bold text-[#059669] hover:underline"
-              >
-                <span>Church Solutions</span>
-                <ArrowRight className="w-4 h-4" />
-              </Link>
+              <div className="pt-6 mt-6 border-t border-slate-300/50 flex items-center justify-between text-xs font-bold">
+                <Link
+                  href="/for-churches"
+                  className="inline-flex items-center gap-1.5 text-sm font-bold text-blue-700 group-hover:text-blue-800 transition-colors"
+                >
+                  <span>Church Solutions</span>
+                  <ArrowRight className="w-4 h-4 ml-1 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />
+                </Link>
+              </div>
             </div>
           </div>
         </div>
