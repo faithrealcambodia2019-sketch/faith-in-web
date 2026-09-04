@@ -251,7 +251,8 @@ service cloud.firestore {
       function validResourceShape() {
         return request.resource.data.keys().hasOnly([
           'authorUid', 'author', 'title', 'description', 'category', 'format',
-          'country', 'file_url', 'filename', 'thumbnail_url', 'allow_download',
+          'country', 'translated_by', 'language', 'file_url', 'filename',
+          'thumbnail_url', 'allow_download',
           'download_count', 'view_count', 'createdAt', 'updatedAt'
         ])
           && request.resource.data.authorUid == request.auth.uid
@@ -261,6 +262,10 @@ service cloud.firestore {
           && request.resource.data.title.size() <= 300
           && request.resource.data.description is string
           && request.resource.data.description.size() <= 2000
+          && request.resource.data.get('translated_by', '') is string
+          && request.resource.data.get('translated_by', '').size() <= 300
+          && request.resource.data.get('language', '') is string
+          && request.resource.data.get('language', '').size() <= 100
           && validHttpsUrl(request.resource.data.file_url)
           && request.resource.data.file_url != ''
           && validHttpsUrl(request.resource.data.thumbnail_url)
@@ -281,7 +286,8 @@ service cloud.firestore {
       allow update: if (
           isAuthor()
           && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
-            'title', 'description', 'category', 'format', 'country', 'file_url',
+            'title', 'description', 'category', 'format', 'country',
+            'translated_by', 'language', 'file_url',
             'filename', 'thumbnail_url', 'allow_download', 'updatedAt'
           ])
           && validResourceShape()
