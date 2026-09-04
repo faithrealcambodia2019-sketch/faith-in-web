@@ -11,6 +11,7 @@ import {
   Layers,
   AudioLines,
   Compass,
+  Zap,
 } from "lucide-react";
 
 export const metadata: Metadata = {
