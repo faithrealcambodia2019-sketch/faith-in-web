@@ -9,22 +9,22 @@
   --fi-shell-narrow: 840px;
   --fi-header-height: 72px;
 
-  --fi-bg: #020617;
-  --fi-surface: #0f172a;
-  --fi-surface-subtle: #1e293b;
-  --fi-surface-elevated: #1e293b;
+  --fi-bg: #F8FAFC;
+  --fi-surface: #FFFFFF;
+  --fi-surface-subtle: #F1F5F9;
+  --fi-surface-elevated: #FFFFFF;
   --fi-surface-dark: #0D1017;
   --fi-surface-dark-elevated: #161B26;
 
-  --fi-border: rgba(255, 255, 255, 0.1);
-  --fi-border-subtle: rgba(255, 255, 255, 0.05);
-  --fi-border-hover: rgba(99, 102, 241, 0.5);
+  --fi-border: #E2E8F0;
+  --fi-border-subtle: #F1F5F9;
+  --fi-border-hover: #CBD5E1;
   --fi-border-dark: #334155;
 
-  --fi-ink-primary: #f8fafc;
-  --fi-ink-secondary: #cbd5e1;
-  --fi-ink-muted: #94a3b8;
-  --fi-ink-subtle: #64748b;
+  --fi-ink-primary: #0F172A;
+  --fi-ink-secondary: #334155;
+  --fi-ink-muted: #64748B;
+  --fi-ink-subtle: #94A3B8;
   --fi-ink-light: #F8FAFC;
   --fi-ink-light-muted: #CBD5E1;
 
@@ -237,7 +237,7 @@
 }
 
 .fi-btn--secondary {
-  background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  background: var(--fi-surface);
   color: var(--fi-ink-primary);
   border-color: var(--fi-border);
   box-shadow: var(--fi-shadow-xs);
@@ -289,7 +289,7 @@
 
 /* Cards & Elevated Containers */
 .fi-card {
-  background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  background: var(--fi-surface);
   border: 1px solid var(--fi-border);
   border-radius: var(--fi-radius-lg);
   padding: 32px;
@@ -373,10 +373,10 @@
   right: 0;
   z-index: 50;
   height: var(--fi-header-height);
-  background: rgba(2, 6, 23, 0.7);
+  background: rgba(252, 252, 250, 0.88);
   backdrop-filter: blur(16px) saturate(180%);
   -webkit-backdrop-filter: blur(16px) saturate(180%);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid var(--fi-border);
   transition: var(--fi-transition);
 }
 
@@ -524,7 +524,7 @@
 
 /* Scripture Spotlight Card */
 .fi-scripture-box {
-  background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  background: var(--fi-surface);
   border: 1px solid var(--fi-border);
   border-radius: var(--fi-radius-xl);
   padding: 32px;
@@ -566,7 +566,7 @@
 
 /* Journey Pathway Step */
 .fi-pathway-card {
-  background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  background: var(--fi-surface);
   border: 1px solid var(--fi-border);
   border-radius: var(--fi-radius-lg);
   padding: 32px;

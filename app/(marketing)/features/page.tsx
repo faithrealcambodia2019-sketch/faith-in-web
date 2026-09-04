@@ -47,23 +47,25 @@ export default function FeaturesPage() {
       </section>
 
       {/* Feature Showcase Grid */}
-      <section className="fi-section fi-section--subtle">
+      <section className="fi-section bg-white">
         <div className="fi-shell">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {features.map((f) => (
               <div
                 key={f.slug}
-                className="fi-card flex flex-col justify-between space-y-6 hover:border-[#2F5BEA]/50 transition-all"
+                className="bg-[#F0F2F5] rounded-[24px] p-6 sm:p-8 hover:bg-[#E4E6EB] transition-colors cursor-pointer group flex flex-col justify-between"
               >
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <div className="w-12 h-12 rounded-2xl bg-[#E9EFFE] border border-[#C9D8FC] text-[#1E40AF] flex items-center justify-center shadow-xs">
-                      {f.icon === "sparkles" && <Sparkles className="w-6 h-6" />}
-                      {f.icon === "globe" && <Globe className="w-6 h-6" />}
-                      {f.icon === "activity" && <Activity className="w-6 h-6" />}
-                      {f.icon === "audio-lines" && <AudioLines className="w-6 h-6" />}
-                      {f.icon === "layers" && <Layers className="w-6 h-6" />}
-                      {f.icon === "compass" && <Compass className="w-6 h-6" />}
+                    <div className="w-full flex justify-center mb-6 pt-4">
+                      <div className="text-6xl drop-shadow-sm group-hover:scale-105 transition-transform duration-300">
+                        {f.icon === "sparkles" && "✨"}
+                        {f.icon === "globe" && "🌍"}
+                        {f.icon === "activity" && "📊"}
+                        {f.icon === "audio-lines" && "🎧"}
+                        {f.icon === "layers" && "📚"}
+                        {f.icon === "compass" && "🧭"}
+                      </div>
                     </div>
 
                     {f.badge && (
@@ -149,7 +151,7 @@ export default function FeaturesPage() {
       </section>
 
       {/* Modern Technology Comparison */}
-      <section className="fi-section fi-section--subtle">
+      <section className="fi-section bg-white">
         <div className="fi-shell">
           <div className="fi-head">
             <span className="fi-eyebrow">The Difference • ភាពខុសប្លែក</span>
@@ -200,7 +202,7 @@ export default function FeaturesPage() {
       </section>
 
       {/* CTA */}
-      <section className="fi-section fi-section--subtle">
+      <section className="fi-section bg-white">
         <div className="fi-shell">
           <div className="fi-cta-banner">
             <div className="max-w-2xl mx-auto space-y-6 relative z-10">
