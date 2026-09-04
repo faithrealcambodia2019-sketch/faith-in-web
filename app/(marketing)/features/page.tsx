@@ -4,20 +4,13 @@ import { site, features } from "@/lib/site-content";
 import { ContactsWidget } from "@/components/ContactsWidget";
 import {
   ArrowRight,
-  BookOpen,
-  Headphones,
-  Heart,
-  Palette,
-  Briefcase,
-  Users,
   ShieldCheck,
+  Sparkles,
+  Globe,
+  Activity,
   Layers,
-  Zap,
-  Brain,
-  Network,
-  Cpu,
-  Wand2,
-  Bot,
+  AudioLines,
+  Compass,
 } from "lucide-react";
 
 export const metadata: Metadata = {
@@ -64,12 +57,12 @@ export default function FeaturesPage() {
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <div className="w-12 h-12 rounded-2xl bg-[#E9EFFE] border border-[#C9D8FC] text-[#1E40AF] flex items-center justify-center shadow-xs">
-                      {f.icon === "brain" && <Brain className="w-6 h-6" />}
-                      {f.icon === "network" && <Network className="w-6 h-6" />}
-                      {f.icon === "cpu" && <Cpu className="w-6 h-6" />}
-                      {f.icon === "bot" && <Bot className="w-6 h-6" />}
-                      {f.icon === "wand2" && <Wand2 className="w-6 h-6" />}
-                      {f.icon === "zap" && <Zap className="w-6 h-6" />}
+                      {f.icon === "sparkles" && <Sparkles className="w-6 h-6" />}
+                      {f.icon === "globe" && <Globe className="w-6 h-6" />}
+                      {f.icon === "activity" && <Activity className="w-6 h-6" />}
+                      {f.icon === "audio-lines" && <AudioLines className="w-6 h-6" />}
+                      {f.icon === "layers" && <Layers className="w-6 h-6" />}
+                      {f.icon === "compass" && <Compass className="w-6 h-6" />}
                     </div>
 
                     {f.badge && (

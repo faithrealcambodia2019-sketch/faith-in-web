@@ -9,14 +9,13 @@ import { FaqAccordion } from "@/components/marketing/FaqAccordion";
 import {
   Sparkles,
   ArrowRight,
-  Brain,
-  Bot,
-  Cpu,
-  Wand2,
-  Zap,
+  AudioLines,
+  Activity,
+  Layers,
+  Compass,
   ShieldCheck,
   CheckCircle2,
-  Network,
+  Globe,
 } from "lucide-react";
 
 export const metadata: Metadata = {
@@ -65,7 +64,7 @@ export default function HomePage() {
                   href="/bible-study"
                   className="fi-btn fi-btn--secondary fi-btn--lg"
                 >
-                  <Brain className="w-4 h-4 text-[#2F5BEA]" />
+                  <Sparkles className="w-4 h-4 text-[#2F5BEA]" />
                   <span>Explore Bible Studio</span>
                 </Link>
               </div>
@@ -81,7 +80,7 @@ export default function HomePage() {
                   <span className="font-semibold text-charcoal-800">No Ads or Data Selling</span>
                 </div>
                 <div className="fi-trust-item">
-                  <Network className="w-4 h-4 text-[#2F5BEA]" />
+                  <Globe className="w-4 h-4 text-[#2F5BEA]" />
                   <span className="font-semibold text-charcoal-800">Global Diaspora Fellowship</span>
                 </div>
               </div>
@@ -130,7 +129,7 @@ export default function HomePage() {
             <div className="fi-card fi-card--highlight flex flex-col justify-between space-y-6">
               <div className="space-y-4">
                 <div className="w-12 h-12 rounded-2xl bg-[#E9EFFE] border border-[#C9D8FC] text-[#1E40AF] flex items-center justify-center shadow-xs">
-                  <Brain className="w-6 h-6" />
+                  <Sparkles className="w-6 h-6" />
                 </div>
 
                 <div className="space-y-1">
@@ -160,7 +159,7 @@ export default function HomePage() {
             <div className="fi-card flex flex-col justify-between space-y-6">
               <div className="space-y-4">
                 <div className="w-12 h-12 rounded-2xl bg-[#E9EFFE] border border-[#C9D8FC] text-[#2F5BEA] flex items-center justify-center shadow-xs">
-                  <Bot className="w-6 h-6" />
+                  <AudioLines className="w-6 h-6" />
                 </div>
 
                 <div className="space-y-1">
@@ -190,7 +189,7 @@ export default function HomePage() {
             <div className="fi-card flex flex-col justify-between space-y-6">
               <div className="space-y-4">
                 <div className="w-12 h-12 rounded-2xl bg-[#ECFDF5] border border-[#D1FAE5] text-[#059669] flex items-center justify-center shadow-xs">
-                  <Cpu className="w-6 h-6" />
+                  <Activity className="w-6 h-6" />
                 </div>
 
                 <div className="space-y-1">
@@ -220,7 +219,7 @@ export default function HomePage() {
             <div className="fi-card flex flex-col justify-between space-y-6">
               <div className="space-y-4">
                 <div className="w-12 h-12 rounded-2xl bg-[#E9EFFE] border border-[#C9D8FC] text-[#1E40AF] flex items-center justify-center shadow-xs">
-                  <Wand2 className="w-6 h-6" />
+                  <Layers className="w-6 h-6" />
                 </div>
 
                 <div className="space-y-1">
@@ -250,7 +249,7 @@ export default function HomePage() {
             <div className="fi-card flex flex-col justify-between space-y-6">
               <div className="space-y-4">
                 <div className="w-12 h-12 rounded-2xl bg-[#E9EFFE] border border-[#C9D8FC] text-[#2F5BEA] flex items-center justify-center shadow-xs">
-                  <Zap className="w-6 h-6" />
+                  <Compass className="w-6 h-6" />
                 </div>
 
                 <div className="space-y-1">
@@ -280,7 +279,7 @@ export default function HomePage() {
             <div className="fi-card flex flex-col justify-between space-y-6">
               <div className="space-y-4">
                 <div className="w-12 h-12 rounded-2xl bg-[#ECFDF5] border border-[#D1FAE5] text-[#059669] flex items-center justify-center shadow-xs">
-                  <Network className="w-6 h-6" />
+                  <Globe className="w-6 h-6" />
                 </div>
 
                 <div className="space-y-1">
