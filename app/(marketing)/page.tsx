@@ -9,14 +9,14 @@ import { FaqAccordion } from "@/components/marketing/FaqAccordion";
 import {
   Sparkles,
   ArrowRight,
-  BookOpen,
-  Headphones,
-  Heart,
-  Palette,
-  Briefcase,
+  Brain,
+  Bot,
+  Cpu,
+  Wand2,
+  Zap,
   ShieldCheck,
   CheckCircle2,
-  Users,
+  Network,
 } from "lucide-react";
 
 export const metadata: Metadata = {
@@ -65,7 +65,7 @@ export default function HomePage() {
                   href="/bible-study"
                   className="fi-btn fi-btn--secondary fi-btn--lg"
                 >
-                  <BookOpen className="w-4 h-4 text-[#2F5BEA]" />
+                  <Brain className="w-4 h-4 text-[#2F5BEA]" />
                   <span>Explore Bible Studio</span>
                 </Link>
               </div>
@@ -81,7 +81,7 @@ export default function HomePage() {
                   <span className="font-semibold text-charcoal-800">No Ads or Data Selling</span>
                 </div>
                 <div className="fi-trust-item">
-                  <Users className="w-4 h-4 text-[#2F5BEA]" />
+                  <Network className="w-4 h-4 text-[#2F5BEA]" />
                   <span className="font-semibold text-charcoal-800">Global Diaspora Fellowship</span>
                 </div>
               </div>
@@ -130,7 +130,7 @@ export default function HomePage() {
             <div className="fi-card fi-card--highlight flex flex-col justify-between space-y-6">
               <div className="space-y-4">
                 <div className="w-12 h-12 rounded-2xl bg-[#E9EFFE] border border-[#C9D8FC] text-[#1E40AF] flex items-center justify-center shadow-xs">
-                  <BookOpen className="w-6 h-6" />
+                  <Brain className="w-6 h-6" />
                 </div>
 
                 <div className="space-y-1">
@@ -160,7 +160,7 @@ export default function HomePage() {
             <div className="fi-card flex flex-col justify-between space-y-6">
               <div className="space-y-4">
                 <div className="w-12 h-12 rounded-2xl bg-[#E9EFFE] border border-[#C9D8FC] text-[#2F5BEA] flex items-center justify-center shadow-xs">
-                  <Headphones className="w-6 h-6" />
+                  <Bot className="w-6 h-6" />
                 </div>
 
                 <div className="space-y-1">
@@ -190,7 +190,7 @@ export default function HomePage() {
             <div className="fi-card flex flex-col justify-between space-y-6">
               <div className="space-y-4">
                 <div className="w-12 h-12 rounded-2xl bg-[#ECFDF5] border border-[#D1FAE5] text-[#059669] flex items-center justify-center shadow-xs">
-                  <Heart className="w-6 h-6" />
+                  <Cpu className="w-6 h-6" />
                 </div>
 
                 <div className="space-y-1">
@@ -220,7 +220,7 @@ export default function HomePage() {
             <div className="fi-card flex flex-col justify-between space-y-6">
               <div className="space-y-4">
                 <div className="w-12 h-12 rounded-2xl bg-[#E9EFFE] border border-[#C9D8FC] text-[#1E40AF] flex items-center justify-center shadow-xs">
-                  <Palette className="w-6 h-6" />
+                  <Wand2 className="w-6 h-6" />
                 </div>
 
                 <div className="space-y-1">
@@ -250,7 +250,7 @@ export default function HomePage() {
             <div className="fi-card flex flex-col justify-between space-y-6">
               <div className="space-y-4">
                 <div className="w-12 h-12 rounded-2xl bg-[#E9EFFE] border border-[#C9D8FC] text-[#2F5BEA] flex items-center justify-center shadow-xs">
-                  <Briefcase className="w-6 h-6" />
+                  <Zap className="w-6 h-6" />
                 </div>
 
                 <div className="space-y-1">
@@ -280,7 +280,7 @@ export default function HomePage() {
             <div className="fi-card flex flex-col justify-between space-y-6">
               <div className="space-y-4">
                 <div className="w-12 h-12 rounded-2xl bg-[#ECFDF5] border border-[#D1FAE5] text-[#059669] flex items-center justify-center shadow-xs">
-                  <Users className="w-6 h-6" />
+                  <Network className="w-6 h-6" />
                 </div>
 
                 <div className="space-y-1">

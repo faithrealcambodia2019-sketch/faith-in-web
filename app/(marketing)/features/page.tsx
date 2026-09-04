@@ -13,6 +13,11 @@ import {
   ShieldCheck,
   Layers,
   Zap,
+  Brain,
+  Network,
+  Cpu,
+  Wand2,
+  Bot,
 } from "lucide-react";
 
 export const metadata: Metadata = {
@@ -59,12 +64,12 @@ export default function FeaturesPage() {
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <div className="w-12 h-12 rounded-2xl bg-[#E9EFFE] border border-[#C9D8FC] text-[#1E40AF] flex items-center justify-center shadow-xs">
-                      {f.icon === "book-open" && <BookOpen className="w-6 h-6" />}
-                      {f.icon === "heart-handshake" && <Heart className="w-6 h-6" />}
-                      {f.icon === "hands-praying" && <Users className="w-6 h-6" />}
-                      {f.icon === "sparkles" && <Headphones className="w-6 h-6" />}
-                      {f.icon === "palette" && <Palette className="w-6 h-6" />}
-                      {f.icon === "briefcase" && <Briefcase className="w-6 h-6" />}
+                      {f.icon === "brain" && <Brain className="w-6 h-6" />}
+                      {f.icon === "network" && <Network className="w-6 h-6" />}
+                      {f.icon === "cpu" && <Cpu className="w-6 h-6" />}
+                      {f.icon === "bot" && <Bot className="w-6 h-6" />}
+                      {f.icon === "wand2" && <Wand2 className="w-6 h-6" />}
+                      {f.icon === "zap" && <Zap className="w-6 h-6" />}
                     </div>
 
                     {f.badge && (
