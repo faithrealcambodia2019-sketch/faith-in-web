@@ -28,17 +28,17 @@
   --fi-ink-light: #F8FAFC;
   --fi-ink-light-muted: #CBD5E1;
 
-  --fi-gold: #2F5BEA;
-  --fi-gold-hover: #5C81F2;
-  --fi-gold-deep: #1E40AF;
-  --fi-gold-light: #E9EFFE;
-  --fi-gold-border: #C9D8FC;
-  --fi-gold-glow: rgba(47, 91, 234, 0.22);
+  --fi-gold: #D9941E;
+  --fi-gold-hover: #EBB94F;
+  --fi-gold-deep: #B87814;
+  --fi-gold-light: #FEF7E6;
+  --fi-gold-border: #FCE8BF;
+  --fi-gold-glow: rgba(217, 148, 30, 0.22);
 
-  --fi-serene: #2F5BEA;
-  --fi-serene-hover: #1E40AF;
-  --fi-serene-light: #E9EFFE;
-  --fi-serene-border: #C9D8FC;
+  --fi-serene: #2563EB;
+  --fi-serene-hover: #1D4ED8;
+  --fi-serene-light: #EFF6FF;
+  --fi-serene-border: #DBEAFE;
 
   --fi-sage: #059669;
   --fi-sage-hover: #047857;
@@ -224,16 +224,16 @@
 }
 
 .fi-btn--primary {
-  background: linear-gradient(135deg, #5C81F2 0%, #2F5BEA 100%);
-  color: #FFFFFF;
-  border-color: #2F5BEA;
-  box-shadow: 0 4px 14px 0 rgba(47, 91, 234, 0.35);
+  background: linear-gradient(135deg, #EBB94F 0%, #D9941E 100%);
+  color: #0D1017;
+  border-color: #D9941E;
+  box-shadow: 0 4px 14px 0 rgba(217, 148, 30, 0.35);
 }
 
 .fi-btn--primary:hover {
-  background: linear-gradient(135deg, #7A9BFF 0%, #2449C9 100%);
+  background: linear-gradient(135deg, #F0C466 0%, #E5A02B 100%);
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px 0 rgba(47, 91, 234, 0.45);
+  box-shadow: 0 6px 20px 0 rgba(217, 148, 30, 0.45);
 }
 
 .fi-btn--secondary {
@@ -267,13 +267,13 @@
   background: var(--fi-serene);
   color: #FFFFFF;
   border-color: var(--fi-serene);
-  box-shadow: 0 4px 12px rgba(47, 91, 234, 0.25);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
 }
 
 .fi-btn--serene:hover {
   background: var(--fi-serene-hover);
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(47, 91, 234, 0.35);
+  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.35);
 }
 
 .fi-btn--quiet {
@@ -312,13 +312,13 @@
 }
 
 .fi-card--dark:hover {
-  border-color: rgba(47, 91, 234, 0.4);
+  border-color: rgba(217, 148, 30, 0.4);
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
 }
 
 .fi-card--highlight {
   border-color: var(--fi-gold-border);
-  background: linear-gradient(180deg, #FFFFFF 0%, #F7F9FF 100%);
+  background: linear-gradient(180deg, #FFFFFF 0%, #FEFDF9 100%);
 }
 
 .fi-card--highlight::before {
@@ -328,7 +328,7 @@
   left: 0;
   right: 0;
   height: 3px;
-  background: linear-gradient(90deg, #5C81F2, #2F5BEA, #1E40AF);
+  background: linear-gradient(90deg, #EBB94F, #D9941E, #B87814);
 }
 
 /* Grids */
@@ -441,7 +441,7 @@
   padding-top: 60px;
   padding-bottom: 84px;
   overflow: hidden;
-  background: radial-gradient(circle at 50% 0%, rgba(47, 91, 234, 0.08) 0%, rgba(252, 252, 250, 0) 70%);
+  background: radial-gradient(circle at 50% 0%, rgba(217, 148, 30, 0.08) 0%, rgba(252, 252, 250, 0) 70%);
 }
 
 .fi-hero__grid {
@@ -468,7 +468,7 @@
 }
 
 .fi-hero-highlight {
-  background: linear-gradient(135deg, #1E40AF 0%, #2F5BEA 50%, #5C81F2 100%);
+  background: linear-gradient(135deg, #B87814 0%, #D9941E 50%, #EBB94F 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -601,7 +601,7 @@
   transform: translateX(-50%);
   width: 400px;
   height: 200px;
-  background: radial-gradient(circle, rgba(47, 91, 234, 0.3) 0%, rgba(47, 91, 234, 0) 70%);
+  background: radial-gradient(circle, rgba(217, 148, 30, 0.3) 0%, rgba(217, 148, 30, 0) 70%);
   pointer-events: none;
 }
 
@@ -673,136 +673,4 @@
   border-top: 1px solid var(--fi-border);
   font-size: 0.8125rem;
   color: var(--fi-ink-muted);
-}
-
-/* ==========================================================================
-   FACEBOOK SKIN — opt-in per page via data-skin="fb"
-   Surface values only. Same markup, same components, same order; what changes
-   is the ground colour, the card shape, the shadow and the type scale.
-   Delete this block and the attribute to put a page back as it was.
-   ========================================================================== */
-.fi-page[data-skin="fb"] {
-  --fi-bg: #F0F2F5;
-  --fi-surface: #FFFFFF;
-  --fi-surface-subtle: #F0F2F5;
-  --fi-surface-elevated: #FFFFFF;
-
-  --fi-border: #DADDE1;
-  --fi-border-subtle: #E4E6EB;
-  --fi-border-hover: #CED0D4;
-
-  --fi-ink-primary: #050505;
-  --fi-ink-secondary: #65676B;
-  --fi-ink-muted: #8A8D91;
-  --fi-ink-subtle: #BCC0C4;
-
-  /* Facebook's card shadow is a single hairline, not a soft cushion. */
-  --fi-shadow-xs: 0 1px 2px rgba(0, 0, 0, .1);
-  --fi-shadow-sm: 0 1px 2px rgba(0, 0, 0, .2);
-  --fi-shadow-md: 0 1px 2px rgba(0, 0, 0, .2);
-  --fi-shadow-lg: 0 12px 28px rgba(0, 0, 0, .2), 0 2px 4px rgba(0, 0, 0, .1);
-  --fi-shadow-xl: 0 12px 28px rgba(0, 0, 0, .2), 0 2px 4px rgba(0, 0, 0, .1);
-  --fi-shadow-glow: 0 1px 2px rgba(0, 0, 0, .2);
-
-  --fi-radius-sm: 6px;
-  --fi-radius-md: 8px;
-  --fi-radius-lg: 8px;
-  --fi-radius-xl: 8px;
-
-  --fi-transition: all .15s ease;
-  --fi-transition-bounce: all .15s ease;
-}
-
-/* The hero's warm radial wash belongs to the editorial look; on grey it reads
-   as a smudge. */
-.fi-page[data-skin="fb"] .fi-hero {
-  background: none;
-  padding-top: 32px;
-  padding-bottom: 40px;
-}
-
-/* Facebook packs its sections far tighter than an editorial page does. */
-.fi-page[data-skin="fb"] .fi-section {
-  padding-top: 44px;
-  padding-bottom: 44px;
-}
-@media (max-width: 768px) {
-  .fi-page[data-skin="fb"] .fi-section {
-    padding-top: 28px;
-    padding-bottom: 28px;
-  }
-}
-
-.fi-page[data-skin="fb"] .fi-card { padding: 20px; }
-
-/* Cards tint on hover rather than lifting — Facebook never floats a card. */
-.fi-page[data-skin="fb"] .fi-card:hover {
-  transform: none;
-  box-shadow: var(--fi-shadow-sm);
-  border-color: var(--fi-border);
-  background: #F7F8FA;
-}
-
-/* Type: smaller, lighter, and without the tight display tracking. */
-.fi-page[data-skin="fb"] .fi-hero h1 {
-  font-size: clamp(1.75rem, 3.6vw, 2.5rem);
-  font-weight: 700;
-  letter-spacing: -0.015em;
-  line-height: 1.2;
-}
-.fi-page[data-skin="fb"] .fi-head h2 {
-  font-size: clamp(1.375rem, 2.2vw, 1.75rem);
-  font-weight: 700;
-  letter-spacing: -0.01em;
-  line-height: 1.25;
-}
-.fi-page[data-skin="fb"] .fi-head { margin-bottom: 28px; }
-.fi-page[data-skin="fb"] .fi-head p,
-.fi-page[data-skin="fb"] .fi-hero p.fi-hero__lead {
-  font-size: 0.9375rem;
-  line-height: 1.5;
-}
-
-/* Facebook's pills are its chips: sentence case, no letterspacing. */
-.fi-page[data-skin="fb"] .fi-eyebrow {
-  text-transform: none;
-  letter-spacing: 0;
-  font-size: 0.8125rem;
-  font-weight: 600;
-}
-
-/* Its buttons are soft rectangles, not lozenges. */
-.fi-page[data-skin="fb"] .fi-btn { border-radius: var(--fi-radius-sm); }
-
-/* White chrome over a grey canvas, the way Facebook stacks them. */
-body:has(.fi-page[data-skin="fb"]) .fi-header {
-  background: #FFFFFF !important;
-  border-bottom: 1px solid #DADDE1 !important;
-  backdrop-filter: none !important;
-}
-
-/* The About page hand-writes a few gradient panels and oversized radii inline,
-   which the tokens above can't reach. Facebook's surfaces are flat: one white,
-   one hairline, 8px corners, no glow. */
-body:has(.fi-page[data-skin="fb"]) { background: #F0F2F5; }
-
-.fi-page[data-skin="fb"] .fi-btn--primary {
-  background: #2F5BEA;
-  box-shadow: none;
-}
-.fi-page[data-skin="fb"] .fi-btn--primary:hover { background: #2549C9; }
-
-.fi-page[data-skin="fb"] .rounded-3xl,
-.fi-page[data-skin="fb"] .rounded-2xl,
-.fi-page[data-skin="fb"] [class*="rounded-[28px]"],
-.fi-page[data-skin="fb"] [class*="rounded-[36px]"] { border-radius: 8px !important; }
-
-/* the soft blue glow behind the hero card */
-.fi-page[data-skin="fb"] [class*="-inset-6"][class*="radial-gradient"] { display: none; }
-
-.fi-page[data-skin="fb"] [class*="bg-gradient-to-br"] {
-  background-image: none !important;
-  background-color: #FFFFFF !important;
-  border-color: #DADDE1 !important;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, .2);
 }
