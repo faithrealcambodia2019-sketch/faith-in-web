@@ -40,61 +40,67 @@ export default function FeaturesPage() {
       <section className="fi-section bg-white">
         <div className="fi-shell">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {features.map((f) => (
-              <div
-                key={f.slug}
-                className="bg-[#F0F2F5] rounded-[24px] p-6 sm:p-8 hover:bg-[#E4E6EB] transition-colors cursor-pointer group flex flex-col justify-between"
-              >
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div className="w-full flex justify-center mb-6 pt-4">
-                      <div className="text-6xl drop-shadow-sm group-hover:scale-105 transition-transform duration-300">
-                        {f.icon === "sparkles" && "✨"}
-                        {f.icon === "globe" && "🌍"}
-                        {f.icon === "activity" && "📊"}
-                        {f.icon === "audio-lines" && "🎧"}
-                        {f.icon === "layers" && "📚"}
-                        {f.icon === "compass" && "🧭"}
+            {features.map((f) => {
+              let Icon = BookOpen;
+              let iconColor = "text-blue-600";
+              let badgeColor = "bg-blue-100 text-blue-700";
+              
+              if (f.icon === "book-open") { Icon = BookOpen; iconColor = "text-blue-600"; badgeColor = "bg-blue-100 text-blue-700"; }
+              if (f.icon === "headphones" || f.icon === "sparkles") { Icon = Headphones; iconColor = "text-teal-600"; badgeColor = "bg-teal-100 text-teal-700"; }
+              if (f.icon === "heart-handshake" || f.icon === "hands-praying") { Icon = Heart; iconColor = "text-teal-500"; badgeColor = "bg-teal-100 text-teal-700"; }
+              if (f.icon === "palette") { Icon = Palette; iconColor = "text-purple-500"; badgeColor = "bg-orange-100 text-orange-700"; }
+              if (f.icon === "briefcase") { Icon = Briefcase; iconColor = "text-orange-500"; badgeColor = "bg-orange-100 text-orange-700"; }
+              if (f.icon === "users" || f.icon === "network") { Icon = Users; iconColor = "text-slate-600"; badgeColor = "bg-slate-100 text-slate-700"; }
+
+              return (
+                <div
+                  key={f.slug}
+                  className="bg-[#F0F2F5] rounded-[24px] p-6 sm:p-8 hover:bg-[#E4E6EB] transition-colors cursor-pointer group flex flex-col justify-between border-0 shadow-none"
+                >
+                  <div className="space-y-4">
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="bg-white rounded-xl p-3 shadow-sm group-hover:scale-105 transition-transform duration-300">
+                        <Icon className={`w-8 h-8 ${iconColor}`} strokeWidth={2.5} />
                       </div>
+                      
+                      {f.badge && (
+                        <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold ${badgeColor}`}>
+                          {f.badge}
+                        </span>
+                      )}
                     </div>
 
-                    {f.badge && (
-                      <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#E9EFFE] text-[#1E40AF] border border-[#C9D8FC]">
-                        {f.badge}
-                      </span>
-                    )}
+                    <div className="space-y-1">
+                      {f.khmerTitle && (
+                        <div className="text-xs font-khmer font-bold text-[#1E40AF]">
+                          {f.khmerTitle}
+                        </div>
+                      )}
+                      <h3 className="text-xl font-extrabold text-charcoal-900 leading-tight">
+                        {f.title}
+                      </h3>
+                    </div>
+
+                    <p className="text-[15px] text-charcoal-600 leading-relaxed">
+                      {f.detail}
+                    </p>
                   </div>
 
-                  <div className="space-y-1">
-                    {f.khmerTitle && (
-                      <div className="text-xs font-khmer font-bold text-[#1E40AF]">
-                        {f.khmerTitle}
-                      </div>
-                    )}
-                    <h3 className="text-xl font-extrabold text-charcoal-900">
-                      {f.title}
-                    </h3>
+                  <div className="pt-6 mt-6 border-t border-slate-300/50 flex items-center justify-between text-xs font-bold">
+                    <span className="text-charcoal-500 uppercase tracking-wider">
+                      {f.category}
+                    </span>
+                    <Link
+                      href={f.slug === "bible-study" ? "/bible-study" : site.appPath}
+                      className="inline-flex items-center gap-1 text-[#1E40AF] group-hover:text-blue-700 transition-colors"
+                    >
+                      <span>Open {f.title}</span>
+                      <ArrowRight className="w-4 h-4 ml-1 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />
+                    </Link>
                   </div>
-
-                  <p className="text-sm text-charcoal-600 leading-relaxed">
-                    {f.detail}
-                  </p>
                 </div>
-
-                <div className="pt-2 border-t border-[#EAE7DC]/60 flex items-center justify-between text-xs font-bold">
-                  <span className="text-charcoal-500 uppercase tracking-wider">
-                    {f.category}
-                  </span>
-                  <Link
-                    href={f.slug === "bible-study" ? "/bible-study" : site.appPath}
-                    className="inline-flex items-center gap-1 text-[#1E40AF] hover:underline"
-                  >
-                    <span>Open {f.title}</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
-                  </Link>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </section>
