@@ -118,16 +118,16 @@ export default function FeaturesPage() {
                 Stay updated with ministry friends, discover community leaders, and initiate encouraging conversations with our streamlined FaithIn Contacts network.
               </p>
               <div className="space-y-3 pt-2">
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-[#E9EFFE] text-[#1E40AF] flex items-center justify-center font-bold text-sm">✓</div>
+                <div className="flex items-center gap-3.5 p-3.5 rounded-2xl bg-[#F0F2F5] hover:bg-[#E4E6EB] transition-colors">
+                  <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-sm shadow-xs shrink-0">✓</div>
                   <span className="text-sm font-semibold text-charcoal-800">Direct 1-to-1 messaging with custom FaithIn chat</span>
                 </div>
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-[#E9EFFE] text-[#2F5BEA] flex items-center justify-center font-bold text-sm">✓</div>
+                <div className="flex items-center gap-3.5 p-3.5 rounded-2xl bg-[#F0F2F5] hover:bg-[#E4E6EB] transition-colors">
+                  <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-sm shadow-xs shrink-0">✓</div>
                   <span className="text-sm font-semibold text-charcoal-800">Follow Bible channels, pastors, and Christian friends</span>
                 </div>
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-[#ECFDF5] text-[#059669] flex items-center justify-center font-bold text-sm">✓</div>
+                <div className="flex items-center gap-3.5 p-3.5 rounded-2xl bg-[#F0F2F5] hover:bg-[#E4E6EB] transition-colors">
+                  <div className="w-8 h-8 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-sm shadow-xs shrink-0">✓</div>
                   <span className="text-sm font-semibold text-charcoal-800">Privacy-preserving community with instant search</span>
                 </div>
               </div>
@@ -158,40 +158,46 @@ export default function FeaturesPage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="fi-card p-6 space-y-4">
-              <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center">
-                <ShieldCheck className="w-5 h-5" />
+            <div className="bg-[#F0F2F5] rounded-[24px] p-6 sm:p-8 hover:bg-[#E4E6EB] transition-colors cursor-pointer group flex flex-col justify-between border-0 shadow-none space-y-4">
+              <div className="space-y-4">
+                <div className="bg-white rounded-xl p-3 w-fit shadow-sm group-hover:scale-105 transition-transform duration-300">
+                  <ShieldCheck className="w-8 h-8 text-emerald-600" strokeWidth={2.5} />
+                </div>
+                <h3 className="text-xl font-extrabold text-charcoal-900 leading-tight">
+                  100% Ad-Free Sanctuary
+                </h3>
+                <p className="text-[15px] text-charcoal-600 leading-relaxed">
+                  No third-party trackers, no behavioral ads, and no selling your personal spiritual journey to marketers.
+                </p>
               </div>
-              <h3 className="text-lg font-extrabold text-charcoal-900">
-                100% Ad-Free Sanctuary
-              </h3>
-              <p className="text-sm text-charcoal-600 leading-relaxed">
-                No third-party trackers, no behavioral ads, and no selling your personal spiritual journey to marketers.
-              </p>
             </div>
 
-            <div className="fi-card p-6 space-y-4">
-              <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center">
-                <Layers className="w-5 h-5" />
+            <div className="bg-[#F0F2F5] rounded-[24px] p-6 sm:p-8 hover:bg-[#E4E6EB] transition-colors cursor-pointer group flex flex-col justify-between border-0 shadow-none space-y-4">
+              <div className="space-y-4">
+                <div className="bg-white rounded-xl p-3 w-fit shadow-sm group-hover:scale-105 transition-transform duration-300">
+                  <Layers className="w-8 h-8 text-blue-600" strokeWidth={2.5} />
+                </div>
+                <h3 className="text-xl font-extrabold text-charcoal-900 leading-tight">
+                  True Bilingual Engine
+                </h3>
+                <p className="text-[15px] text-charcoal-600 leading-relaxed">
+                  Tailored font rendering engine designed specifically for Khmer script ligatures, line heights, and dual-language reading.
+                </p>
               </div>
-              <h3 className="text-lg font-extrabold text-charcoal-900">
-                True Bilingual Engine
-              </h3>
-              <p className="text-sm text-charcoal-600 leading-relaxed">
-                Tailored font rendering engine designed specifically for Khmer script ligatures, line heights, and dual-language reading.
-              </p>
             </div>
 
-            <div className="fi-card p-6 space-y-4">
-              <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center">
-                <Zap className="w-5 h-5" />
+            <div className="bg-[#F0F2F5] rounded-[24px] p-6 sm:p-8 hover:bg-[#E4E6EB] transition-colors cursor-pointer group flex flex-col justify-between border-0 shadow-none space-y-4">
+              <div className="space-y-4">
+                <div className="bg-white rounded-xl p-3 w-fit shadow-sm group-hover:scale-105 transition-transform duration-300">
+                  <Zap className="w-8 h-8 text-amber-500" strokeWidth={2.5} />
+                </div>
+                <h3 className="text-xl font-extrabold text-charcoal-900 leading-tight">
+                  Ultra-Fast &amp; Mobile First
+                </h3>
+                <p className="text-[15px] text-charcoal-600 leading-relaxed">
+                  Loads instantaneously on 3G, 4G, 5G, and slow mobile connections across Cambodia, North America, Europe, and Asia.
+                </p>
               </div>
-              <h3 className="text-lg font-extrabold text-charcoal-900">
-                Ultra-Fast &amp; Mobile First
-              </h3>
-              <p className="text-sm text-charcoal-600 leading-relaxed">
-                Loads instantaneously on 3G, 4G, 5G, and slow mobile connections across Cambodia, North America, Europe, and Asia.
-              </p>
             </div>
           </div>
         </div>
