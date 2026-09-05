@@ -54,18 +54,19 @@
     const media = Array.isArray(post.media_items) ? post.media_items : [];
     const items = media.length ? media : (post.cover_image_url ? [{ type: 'image', url: post.cover_image_url }] : []);
     if (!items.length) return '';
-    return `<div class="border-y border-line bg-raised grid gap-1 ${items.length > 1 ? 'grid-cols-2' : ''}" data-media>${items.slice(0, 4).map(item => {
+    return `<div class="border-y border-line bg-raised grid gap-1 ${items.length > 1 ? 'grid-cols-2' : ''}" data-media>${items.slice(0, 4).map((item, itemIndex) => {
       const url = esc(mediaUrl(item.url || item.preview_url || item.local_url || ''));
+      const hook = `data-media-item data-media-index="${itemIndex}" data-media-type="${esc(item.type || 'image')}" data-media-url="${url}"`;
       // preload="none": with metadata preloading, every feed render opened a
       // range request against Blob for every video on the page, and a video
       // whose blob is failing gets retried by the browser over and over. Wait
       // for an actual play. Use a poster when the item carries one.
       if (item.type === 'video') {
         const poster = esc(mediaUrl(item.thumbnail_url || item.poster_url || ''));
-        return `<video class="fi-feed-video" controls playsinline preload="none"${poster ? ` poster="${poster}"` : ''} src="${url}"></video>`;
+        return `<div class="fi-media-cell" ${hook}><video class="fi-feed-video" controls playsinline preload="none"${poster ? ` poster="${poster}"` : ''} src="${url}"></video><button type="button" class="fi-media-expand" data-media-open aria-label="Open video full screen"><i class="fa-solid fa-up-right-and-down-left-from-center"></i></button></div>`;
       }
       if (item.type === 'audio') return `<div class="p-5"><audio class="w-full" controls src="${url}"></audio></div>`;
-      return `<img class="w-full max-h-[620px] object-cover" src="${url}" alt="Shared media" loading="lazy" decoding="async">`;
+      return `<div class="fi-media-cell" ${hook}><img class="w-full max-h-[620px] object-cover" src="${url}" alt="Shared media" loading="lazy" decoding="async" data-media-open tabindex="0" role="button" aria-label="Open image full screen"></div>`;
     }).join('')}</div>`;
   }
 
@@ -120,6 +121,192 @@
       img.addEventListener('error', clear, { once: true });
     });
   }
+
+  // ── media viewer ─────────────────────────────────────────────────────────
+  // Facebook opens a photo by growing it out of the thumbnail rather than
+  // fading a fresh panel over the top, so the eye keeps hold of which picture
+  // it clicked. Same here: measure the thumbnail, measure where the full-size
+  // media lands, animate between the two. Reduced-motion gets a plain fade.
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+  function mediaFileName(url) {
+    try {
+      const name = decodeURIComponent(new URL(url, window.location.href).pathname.split('/').pop() || '');
+      return /\.[a-z0-9]{2,5}$/i.test(name) ? name : '';
+    } catch (_) { return ''; }
+  }
+
+  // A same-origin <a download> is not enough: this media lives on another
+  // host, and a cross-origin download attribute is ignored — the browser
+  // navigates instead. Pull the bytes down and hand over a blob so the file
+  // saves under its own name. A store that refuses cross-origin reads can't
+  // be blobbed, so fall back to opening it rather than failing silently.
+  async function saveMedia(url, button) {
+    const label = button.innerHTML;
+    button.disabled = true;
+    button.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i>Saving';
+    try {
+      const response = await fetch(url, { mode: 'cors' });
+      if (!response.ok) throw new Error(String(response.status));
+      const blob = await response.blob();
+      const href = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = href;
+      link.download = mediaFileName(url) || ('faithin-' + Date.now());
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setTimeout(() => URL.revokeObjectURL(href), 10000);
+      button.innerHTML = '<i class="fa-solid fa-check"></i>Saved';
+    } catch (_) {
+      window.open(url, '_blank', 'noopener');
+      button.innerHTML = '<i class="fa-solid fa-arrow-up-right-from-square"></i>Opened';
+    }
+    setTimeout(() => { button.disabled = false; button.innerHTML = label; }, 2200);
+  }
+
+  function openMediaViewer(items, startIndex, originCell) {
+    if (!items.length) return;
+    let index = Math.min(Math.max(startIndex, 0), items.length - 1);
+
+    const view = document.createElement('div');
+    view.className = 'fi-viewer';
+    view.setAttribute('role', 'dialog');
+    view.setAttribute('aria-modal', 'true');
+    view.setAttribute('aria-label', 'Media viewer');
+    view.innerHTML =
+        '<div class="fi-viewer-bar">'
+      +   '<span class="fi-viewer-count" data-viewer-count></span>'
+      +   '<div class="fi-viewer-actions">'
+      +     '<button type="button" class="fi-viewer-btn" data-viewer-save><i class="fa-solid fa-download"></i>Download</button>'
+      +     '<button type="button" class="fi-viewer-btn is-icon" data-viewer-close aria-label="Close viewer"><i class="fa-solid fa-xmark"></i></button>'
+      +   '</div>'
+      + '</div>'
+      + '<button type="button" class="fi-viewer-nav is-prev" data-viewer-prev aria-label="Previous"><i class="fa-solid fa-chevron-left"></i></button>'
+      + '<div class="fi-viewer-stage" data-viewer-stage></div>'
+      + '<button type="button" class="fi-viewer-nav is-next" data-viewer-next aria-label="Next"><i class="fa-solid fa-chevron-right"></i></button>';
+
+    const stage = view.querySelector('[data-viewer-stage]');
+    const counter = view.querySelector('[data-viewer-count]');
+    const prevBtn = view.querySelector('[data-viewer-prev]');
+    const nextBtn = view.querySelector('[data-viewer-next]');
+    const saveBtn = view.querySelector('[data-viewer-save]');
+    const scrollLock = document.body.style.overflow;
+
+    function grow(el, fromNode) {
+      if (reducedMotion.matches || !fromNode || !el.animate) return;
+      const from = fromNode.getBoundingClientRect();
+      const to = el.getBoundingClientRect();
+      if (!from.width || !to.width) return;
+      el.animate([
+        {
+          transform: 'translate(' + ((from.left + from.width / 2) - (to.left + to.width / 2)) + 'px,'
+            + ((from.top + from.height / 2) - (to.top + to.height / 2)) + 'px) '
+            + 'scale(' + (from.width / to.width) + ',' + (from.height / to.height) + ')',
+          opacity: 0.35
+        },
+        { transform: 'none', opacity: 1 }
+      ], { duration: 260, easing: 'cubic-bezier(.22,1,.36,1)' });
+    }
+
+    function render(fromNode) {
+      const item = items[index];
+      stage.innerHTML = item.type === 'video'
+        ? '<video class="fi-viewer-media" controls autoplay playsinline src="' + esc(item.url) + '"></video>'
+        : '<img class="fi-viewer-media" src="' + esc(item.url) + '" alt="Shared media">';
+      counter.textContent = items.length > 1 ? (index + 1) + ' / ' + items.length : '';
+      prevBtn.hidden = nextBtn.hidden = items.length < 2;
+      const el = stage.firstElementChild;
+      if (el.tagName === 'IMG' && !el.complete) el.addEventListener('load', () => grow(el, fromNode), { once: true });
+      else grow(el, fromNode);
+    }
+
+    function step(delta) {
+      index = (index + delta + items.length) % items.length;
+      render(null);
+    }
+
+    function close() {
+      const el = stage.firstElementChild;
+      const media = stage.querySelector('video');
+      if (media) { try { media.pause(); } catch (_) {} }
+      document.removeEventListener('keydown', onKey);
+      document.body.style.overflow = scrollLock;
+      const back = items[index] && items[index].cell;
+      if (!reducedMotion.matches && el && el.animate && back && back.isConnected) {
+        const from = el.getBoundingClientRect();
+        const to = back.getBoundingClientRect();
+        if (from.width && to.width) {
+          el.animate([
+            { transform: 'none', opacity: 1 },
+            {
+              transform: 'translate(' + ((to.left + to.width / 2) - (from.left + from.width / 2)) + 'px,'
+                + ((to.top + to.height / 2) - (from.top + from.height / 2)) + 'px) '
+                + 'scale(' + (to.width / from.width) + ',' + (to.height / from.height) + ')',
+              opacity: 0.2
+            }
+          ], { duration: 200, easing: 'cubic-bezier(.4,0,.2,1)' });
+        }
+      }
+      view.classList.remove('is-open');
+      setTimeout(() => view.remove(), reducedMotion.matches ? 0 : 200);
+    }
+
+    function onKey(event) {
+      if (event.key === 'Escape') close();
+      else if (event.key === 'ArrowRight') step(1);
+      else if (event.key === 'ArrowLeft') step(-1);
+    }
+
+    view.addEventListener('click', event => {
+      if (event.target === view || event.target === stage) return close();
+      if (event.target.closest('[data-viewer-close]')) return close();
+      if (event.target.closest('[data-viewer-prev]')) return step(-1);
+      if (event.target.closest('[data-viewer-next]')) return step(1);
+      const save = event.target.closest('[data-viewer-save]');
+      if (save) saveMedia(items[index].url, save);
+    });
+
+    document.addEventListener('keydown', onKey);
+    document.body.style.overflow = 'hidden';
+    document.body.appendChild(view);
+    requestAnimationFrame(() => view.classList.add('is-open'));
+    render(originCell);
+    saveBtn.focus({ preventScroll: true });
+  }
+
+  function cellsOf(mediaBlock) {
+    return Array.from(mediaBlock.querySelectorAll('[data-media-item]'))
+      .map(cell => ({ type: cell.dataset.mediaType, url: cell.dataset.mediaUrl, cell }))
+      .filter(item => item.url);
+  }
+
+  function openFromCell(cell) {
+    const block = cell.closest('[data-media]');
+    if (!block) return;
+    const items = cellsOf(block);
+    const at = items.findIndex(item => item.cell === cell);
+    if (at < 0) return;
+    openMediaViewer(items, at, cell);
+  }
+
+  feed?.addEventListener('click', event => {
+    const trigger = event.target.closest('[data-media-open]');
+    if (!trigger || !feed.contains(trigger)) return;
+    const cell = trigger.closest('[data-media-item]');
+    if (!cell) return;
+    event.preventDefault();
+    openFromCell(cell);
+  });
+
+  feed?.addEventListener('keydown', event => {
+    if (event.key !== 'Enter' && event.key !== ' ') return;
+    const trigger = event.target.closest && event.target.closest('img[data-media-open]');
+    if (!trigger) return;
+    event.preventDefault();
+    const cell = trigger.closest('[data-media-item]');
+    if (cell) openFromCell(cell);
+  });
 
   feed?.addEventListener('error', event => {
     const el = event.target;
