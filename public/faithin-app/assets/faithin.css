@@ -750,6 +750,7 @@ html.dark .chip.is-on{ color:#0b1120; }
    are untouched. */
 
 body[data-page="home"],
+body[data-page="network"],
 body[data-page="notifications"],
 body[data-page="profile"],
 body[data-page="settings"],
@@ -766,6 +767,7 @@ body[data-page="settings-security"] {
   background: var(--fb-canvas);
 }
 html.dark body[data-page="home"],
+html.dark body[data-page="network"],
 html.dark body[data-page="notifications"],
 html.dark body[data-page="profile"],
 html.dark body[data-page="settings"],
@@ -782,6 +784,7 @@ html.dark body[data-page="settings-security"] {
 }
 
 body[data-page="home"] .card,
+body[data-page="network"] .card,
 body[data-page="notifications"] .card,
 body[data-page="profile"] .card,
 body[data-page="settings"] .card,
@@ -2870,3 +2873,37 @@ html.dark body[data-page="home"] .card .border-line { border-color: #3E4042; }
 @media (prefers-reduced-motion: reduce) {
   .fi-viewer { transition: none; }
 }
+
+/* Network, continued. Facebook's people cards carry solid rectangular
+   buttons — a filled primary and a grey secondary — rather than outlined
+   lozenges. Shapes and fills only: the labels, icons, states and order are
+   exactly as they were. */
+body[data-page="network"] [data-connect],
+body[data-page="network"] [data-message] {
+  min-height: 36px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 6px;
+  font-size: 15px;
+  font-weight: 600;
+  transition: filter .15s ease, background .15s ease;
+}
+
+/* Not yet connected — Facebook's filled "Add friend". */
+body[data-page="network"] [data-connect].btn-outline {
+  background: rgb(var(--brand));
+  color: #fff;
+}
+body[data-page="network"] [data-connect].btn-outline:hover { background: rgb(var(--brand-strong)); }
+
+/* Already following, and Message: its grey secondary. */
+body[data-page="network"] [data-connect].btn-neutral,
+body[data-page="network"] [data-message] {
+  background: var(--fb-chip);
+  color: var(--fb-text);
+}
+body[data-page="network"] [data-connect].btn-neutral:hover,
+body[data-page="network"] [data-message]:hover { filter: brightness(.95); }
+
+body[data-page="network"] [data-message] { margin-top: 8px; }
+body[data-page="network"] .side-link:hover { background: var(--fb-hover); }
