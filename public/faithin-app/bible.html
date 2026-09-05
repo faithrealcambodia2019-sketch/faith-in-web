@@ -17,8 +17,8 @@
 <link rel="dns-prefetch" href="https://bible-api.com">
 <link href="/faithin-app/assets/faithin-fonts.css" rel="stylesheet"/>
 <link href="/faithin-app/assets/faithin-icons.css" rel="stylesheet"/>
-<link href="/faithin-app/assets/faithin-tw.css?v=20260905-notif" rel="stylesheet"/>
-<link href="/faithin-app/assets/faithin.css?v=20260905-notif" rel="stylesheet"/>
+<link href="/faithin-app/assets/faithin-tw.css?v=20260905-csp" rel="stylesheet"/>
+<link href="/faithin-app/assets/faithin.css?v=20260905-csp" rel="stylesheet"/>
 <style>
   .bible-tab-btn {
     display: inline-flex;
@@ -459,16 +459,16 @@
       <!-- Group 1: Scripture & Study -->
       <div class="space-y-0.5">
         <h3 class="text-[10.5px] font-bold uppercase tracking-wider text-muted px-2 py-0.5 whitespace-nowrap">Scripture &amp; Study</h3>
-        <button class="side-link w-full text-left flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-ink hover:bg-raised whitespace-nowrap" data-side-tool="reader" onclick="window.switchTool('reader')">
+        <button class="side-link w-full text-left flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-ink hover:bg-raised whitespace-nowrap" data-side-tool="reader" data-h-click="0">
           <span class="flex items-center gap-2 min-w-0 truncate"><i class="fa-solid fa-book-open text-blue-500 w-4 text-center shrink-0"></i> <span class="truncate">Bible Reader</span></span>
         </button>
-        <button class="side-link w-full text-left flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-ink hover:bg-raised whitespace-nowrap" data-side-tool="parallel" onclick="window.switchTool('parallel')">
+        <button class="side-link w-full text-left flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-ink hover:bg-raised whitespace-nowrap" data-side-tool="parallel" data-h-click="1">
           <span class="flex items-center gap-2 min-w-0 truncate"><i class="fa-solid fa-columns-3 text-indigo-500 w-4 text-center shrink-0"></i> <span class="truncate">Parallel Study</span></span>
         </button>
-        <button class="side-link w-full text-left flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-ink hover:bg-raised whitespace-nowrap" data-side-tool="concordance" onclick="window.switchTool('concordance')">
+        <button class="side-link w-full text-left flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-ink hover:bg-raised whitespace-nowrap" data-side-tool="concordance" data-h-click="2">
           <span class="flex items-center gap-2 min-w-0 truncate"><i class="fa-solid fa-magnifying-glass text-emerald-500 w-4 text-center shrink-0"></i> <span class="truncate">Word Study</span></span>
         </button>
-        <button class="side-link w-full text-left flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-ink hover:bg-raised whitespace-nowrap" data-side-tool="resources" onclick="window.switchTool('resources')">
+        <button class="side-link w-full text-left flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-ink hover:bg-raised whitespace-nowrap" data-side-tool="resources" data-h-click="3">
           <span class="flex items-center gap-2 min-w-0 truncate"><i class="fa-solid fa-graduation-cap text-cyan-600 w-4 text-center shrink-0"></i> <span class="truncate">Study Resources</span></span>
           <span class="text-[9px] font-bold text-cyan-600 bg-cyan-500/10 px-1.5 py-0.5 rounded-full shrink-0">NEW</span>
         </button>
@@ -477,11 +477,11 @@
       <!-- Group 2: History & Theology -->
       <div class="space-y-0.5 pt-1 border-t border-line">
         <h3 class="text-[10.5px] font-bold uppercase tracking-wider text-muted px-2 py-0.5 whitespace-nowrap">History &amp; Theology</h3>
-        <button class="side-link w-full text-left flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-ink hover:bg-raised whitespace-nowrap" data-side-tool="history" onclick="window.switchTool('history')">
+        <button class="side-link w-full text-left flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-ink hover:bg-raised whitespace-nowrap" data-side-tool="history" data-h-click="4">
           <span class="flex items-center gap-2 min-w-0 truncate"><i class="fa-solid fa-church text-amber-600 w-4 text-center shrink-0"></i> <span class="truncate">Church History</span></span>
           <span class="text-[9px] font-bold text-amber-600 bg-amber-500/10 px-1.5 py-0.5 rounded-full shrink-0">NEW</span>
         </button>
-        <button class="side-link w-full text-left flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-ink hover:bg-raised whitespace-nowrap" data-side-tool="atlas" onclick="window.switchTool('atlas')">
+        <button class="side-link w-full text-left flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-ink hover:bg-raised whitespace-nowrap" data-side-tool="atlas" data-h-click="5">
           <span class="flex items-center gap-2 min-w-0 truncate"><i class="fa-solid fa-map-location-dot text-rose-500 w-4 text-center shrink-0"></i> <span class="truncate">Atlas &amp; Maps</span></span>
           <span class="text-[9px] font-bold text-rose-600 bg-rose-500/10 px-1.5 py-0.5 rounded-full shrink-0">NEW</span>
         </button>
@@ -490,15 +490,15 @@
       <!-- Group 3: Creative & Growth -->
       <div class="space-y-0.5 pt-1 border-t border-line">
         <h3 class="text-[10.5px] font-bold uppercase tracking-wider text-muted px-2 py-0.5 whitespace-nowrap">Creative &amp; Growth</h3>
-        <button class="side-link w-full text-left flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-ink hover:bg-raised whitespace-nowrap" data-side-tool="designer" onclick="window.switchTool('designer')">
+        <button class="side-link w-full text-left flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-ink hover:bg-raised whitespace-nowrap" data-side-tool="designer" data-h-click="6">
           <span class="flex items-center gap-2 min-w-0 truncate"><i class="fa-solid fa-palette text-purple-500 w-4 text-center shrink-0"></i> <span class="truncate">Card Studio</span></span>
           <span class="text-[9px] font-bold text-amber-600 bg-amber-500/10 px-1.5 py-0.5 rounded-full shrink-0">PRO</span>
         </button>
-        <button class="side-link w-full text-left flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-ink hover:bg-raised whitespace-nowrap" data-side-tool="typing" onclick="window.switchTool('typing')">
+        <button class="side-link w-full text-left flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-ink hover:bg-raised whitespace-nowrap" data-side-tool="typing" data-h-click="7">
           <span class="flex items-center gap-2 min-w-0 truncate"><i class="fa-solid fa-brain text-rose-500 w-4 text-center shrink-0"></i> <span class="truncate">Memory Suite</span></span>
           <span class="text-[9px] font-bold text-rose-600 bg-rose-500/10 px-1.5 py-0.5 rounded-full shrink-0">CPTI</span>
         </button>
-        <button class="side-link w-full text-left flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-ink hover:bg-raised whitespace-nowrap" data-side-tool="plans" onclick="window.switchTool('plans')">
+        <button class="side-link w-full text-left flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-ink hover:bg-raised whitespace-nowrap" data-side-tool="plans" data-h-click="8">
           <span class="flex items-center gap-2 min-w-0 truncate"><i class="fa-solid fa-calendar-check text-blue-600 w-4 text-center shrink-0"></i> <span class="truncate">Reading Plans</span></span>
           <span class="text-[9px] font-bold text-blue-600 bg-blue-500/10 px-1.5 py-0.5 rounded-full shrink-0">NEW</span>
         </button>
@@ -507,14 +507,14 @@
       <!-- Group 4: Devotional & Life -->
       <div class="space-y-0.5 pt-1 border-t border-line">
         <h3 class="text-[10.5px] font-bold uppercase tracking-wider text-muted px-2 py-0.5 whitespace-nowrap">Devotional &amp; Life</h3>
-        <button class="side-link w-full text-left flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-ink hover:bg-raised whitespace-nowrap" data-side-tool="prayer" onclick="window.switchTool('prayer')">
+        <button class="side-link w-full text-left flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-ink hover:bg-raised whitespace-nowrap" data-side-tool="prayer" data-h-click="9">
           <span class="flex items-center gap-2 min-w-0 truncate"><i class="fa-solid fa-hands-praying text-teal-600 w-4 text-center shrink-0"></i> <span class="truncate">Prayer Journal</span></span>
           <span class="text-[9px] font-bold text-teal-600 bg-teal-500/10 px-1.5 py-0.5 rounded-full shrink-0">NEW</span>
         </button>
-        <button class="side-link w-full text-left flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-ink hover:bg-raised whitespace-nowrap" data-side-tool="daily" onclick="window.switchTool('daily')">
+        <button class="side-link w-full text-left flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-ink hover:bg-raised whitespace-nowrap" data-side-tool="daily" data-h-click="10">
           <span class="flex items-center gap-2 min-w-0 truncate"><i class="fa-solid fa-sun text-amber-500 w-4 text-center shrink-0"></i> <span class="truncate">Verse of the Day</span></span>
         </button>
-        <button class="side-link w-full text-left flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-ink hover:bg-raised whitespace-nowrap" data-side-tool="notes" onclick="window.switchTool('notes')">
+        <button class="side-link w-full text-left flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-ink hover:bg-raised whitespace-nowrap" data-side-tool="notes" data-h-click="11">
           <span class="flex items-center gap-2 min-w-0 truncate"><i class="fa-solid fa-pen-to-square text-cyan-600 w-4 text-center shrink-0"></i> <span class="truncate">Sermon Notes</span></span>
         </button>
       </div>
@@ -528,40 +528,40 @@
 
     <!-- Top Tools Segment Tabs (Facebook Style Pills) -->
     <div class="card p-2 bg-surface border border-line flex items-center gap-1.5 overflow-x-auto no-scrollbar">
-      <button class="bible-tab-btn is-active shrink-0" data-tab="reader" data-side-tool="reader" onclick="window.switchTool('reader')">
+      <button class="bible-tab-btn is-active shrink-0" data-tab="reader" data-side-tool="reader" data-h-click="12">
         <i class="fa-solid fa-book-open text-blue-500"></i><span>Reader</span>
       </button>
-      <button class="bible-tab-btn shrink-0" data-tab="parallel" data-side-tool="parallel" onclick="window.switchTool('parallel')">
+      <button class="bible-tab-btn shrink-0" data-tab="parallel" data-side-tool="parallel" data-h-click="13">
         <i class="fa-solid fa-columns-3 text-indigo-500"></i><span>Parallel</span>
       </button>
-      <button class="bible-tab-btn shrink-0" data-tab="concordance" data-side-tool="concordance" onclick="window.switchTool('concordance')">
+      <button class="bible-tab-btn shrink-0" data-tab="concordance" data-side-tool="concordance" data-h-click="14">
         <i class="fa-solid fa-magnifying-glass text-emerald-500"></i><span>Word Study</span>
       </button>
-      <button class="bible-tab-btn shrink-0" data-tab="resources" data-side-tool="resources" onclick="window.switchTool('resources')">
+      <button class="bible-tab-btn shrink-0" data-tab="resources" data-side-tool="resources" data-h-click="15">
         <i class="fa-solid fa-graduation-cap text-cyan-600"></i><span>Resources</span>
       </button>
-      <button class="bible-tab-btn shrink-0" data-tab="history" data-side-tool="history" onclick="window.switchTool('history')">
+      <button class="bible-tab-btn shrink-0" data-tab="history" data-side-tool="history" data-h-click="16">
         <i class="fa-solid fa-church text-amber-600"></i><span>Church History</span>
       </button>
-      <button class="bible-tab-btn shrink-0" data-tab="designer" data-side-tool="designer" onclick="window.switchTool('designer')">
+      <button class="bible-tab-btn shrink-0" data-tab="designer" data-side-tool="designer" data-h-click="17">
         <i class="fa-solid fa-palette text-purple-500"></i><span>Card Studio</span>
       </button>
-      <button class="bible-tab-btn shrink-0" data-tab="plans" data-side-tool="plans" onclick="window.switchTool('plans')">
+      <button class="bible-tab-btn shrink-0" data-tab="plans" data-side-tool="plans" data-h-click="18">
         <i class="fa-solid fa-calendar-check text-blue-600"></i><span>Reading Plans</span>
       </button>
-      <button class="bible-tab-btn shrink-0" data-tab="typing" data-side-tool="typing" onclick="window.switchTool('typing')">
+      <button class="bible-tab-btn shrink-0" data-tab="typing" data-side-tool="typing" data-h-click="19">
         <i class="fa-solid fa-brain text-rose-500"></i><span>Memory (CPTI)</span>
       </button>
-      <button class="bible-tab-btn shrink-0" data-tab="atlas" data-side-tool="atlas" onclick="window.switchTool('atlas')">
+      <button class="bible-tab-btn shrink-0" data-tab="atlas" data-side-tool="atlas" data-h-click="20">
         <i class="fa-solid fa-map-location-dot text-rose-500"></i><span>Atlas &amp; Maps</span>
       </button>
-      <button class="bible-tab-btn shrink-0" data-tab="prayer" data-side-tool="prayer" onclick="window.switchTool('prayer')">
+      <button class="bible-tab-btn shrink-0" data-tab="prayer" data-side-tool="prayer" data-h-click="21">
         <i class="fa-solid fa-hands-praying text-teal-600"></i><span>Prayer Journal</span>
       </button>
-      <button class="bible-tab-btn shrink-0" data-tab="daily" data-side-tool="daily" onclick="window.switchTool('daily')">
+      <button class="bible-tab-btn shrink-0" data-tab="daily" data-side-tool="daily" data-h-click="22">
         <i class="fa-solid fa-sun text-amber-500"></i><span>Daily Verse</span>
       </button>
-      <button class="bible-tab-btn shrink-0" data-tab="notes" data-side-tool="notes" onclick="window.switchTool('notes')">
+      <button class="bible-tab-btn shrink-0" data-tab="notes" data-side-tool="notes" data-h-click="23">
         <i class="fa-solid fa-pen-to-square text-cyan-600"></i><span>Sermon Notes</span>
       </button>
     </div>
@@ -588,7 +588,7 @@
         <div class="flex items-center gap-2 text-xs font-bold text-[#2F5BEA] uppercase tracking-wider">
           <i class="fa-solid fa-sun text-amber-500"></i> Verse of the Day
         </div>
-        <button class="w-7 h-7 rounded-full hover:bg-raised flex items-center justify-center text-muted" title="Share" onclick="window.copyDailyVerse()">
+        <button class="w-7 h-7 rounded-full hover:bg-raised flex items-center justify-center text-muted" title="Share" data-h-click="24">
           <i class="fa-regular fa-copy text-xs"></i>
         </button>
       </div>
@@ -598,8 +598,8 @@
         <div class="text-xs font-bold text-[#2F5BEA] pt-1" id="right-votd-ref">John 3:16 • យ៉ូហាន ៣:១៦</div>
       </blockquote>
       <div class="pt-2 border-t border-line flex items-center justify-between">
-        <button class="btn btn-neutral !py-1 !px-2.5 !text-xs" data-side-tool="daily" onclick="window.switchTool('daily')">Open Devotional</button>
-        <button class="btn btn-primary !py-1 !px-2.5 !text-xs" onclick="window.designDailyVerse()">Design Card</button>
+        <button class="btn btn-neutral !py-1 !px-2.5 !text-xs" data-side-tool="daily" data-h-click="25">Open Devotional</button>
+        <button class="btn btn-primary !py-1 !px-2.5 !text-xs" data-h-click="26">Design Card</button>
       </div>
     </section>
 
@@ -612,7 +612,7 @@
         <h4 class="font-bold text-sm text-ink">Grace • <span class="text-xs text-brand font-serif">χάρις (charis)</span></h4>
         <p class="text-xs text-muted mt-1 leading-relaxed">God's unmerited favor and divine enablement freely bestowed through Jesus Christ.</p>
       </div>
-      <button class="text-xs text-brand font-semibold hover:underline block pt-1" data-side-tool="concordance" onclick="window.switchTool('concordance')">
+      <button class="text-xs text-brand font-semibold hover:underline block pt-1" data-side-tool="concordance" data-h-click="27">
         Explore 9 biblical word studies →
       </button>
     </section>
@@ -632,9 +632,9 @@
 
 <audio id="bible-audio-player" preload="none" class="hidden"></audio>
 
-<script src="/faithin-app/assets/faithin-runtime.js?v=20260905-notif"></script>
-<script src="/assets/js/faith-in-backend.js?v=20260905-notif"></script>
-<script src="/faithin-app/assets/faithin.js?v=20260905-notif"></script>
+<script src="/faithin-app/assets/faithin-runtime.js?v=20260905-csp"></script>
+<script src="/assets/js/faith-in-backend.js?v=20260905-csp"></script>
+<script src="/faithin-app/assets/faithin.js?v=20260905-csp"></script>
 <script>
 (() => {
   'use strict';
@@ -3459,13 +3459,13 @@
           ` : `
           <!-- Chapter Nav & Audio Action -->
           <div class="col-span-2 xl:col-span-3 flex items-center justify-end gap-1 pt-0.5">
-            <button class="btn btn-neutral !py-1.5 !px-2 text-xs" onclick="window.prevChapter()" title="Previous Chapter (Left Arrow)">
+            <button class="btn btn-neutral !py-1.5 !px-2 text-xs" data-h-click="28" title="Previous Chapter (Left Arrow)">
               <i class="fa-solid fa-chevron-left text-[11px]"></i>
             </button>
-            <button class="btn btn-neutral !py-1.5 !px-2 text-xs" onclick="window.nextChapter()" title="Next Chapter (Right Arrow)">
+            <button class="btn btn-neutral !py-1.5 !px-2 text-xs" data-h-click="29" title="Next Chapter (Right Arrow)">
               <i class="fa-solid fa-chevron-right text-[11px]"></i>
             </button>
-            <button class="btn ${state.audioSpeechActive ? 'btn-neutral !bg-rose-500 text-white' : 'btn-primary'} !py-1.5 !px-2.5 text-xs ml-0.5 shadow-2xs" onclick="window.toggleChapterAudioSpeech()">
+            <button class="btn ${state.audioSpeechActive ? 'btn-neutral !bg-rose-500 text-white' : 'btn-primary'} !py-1.5 !px-2.5 text-xs ml-0.5 shadow-2xs" data-h-click="30">
               <i class="fa-solid ${state.audioSpeechActive ? 'fa-stop' : 'fa-volume-high'} mr-1 text-[11px]"></i>
               <span>${state.audioSpeechActive ? 'Stop' : 'Listen'}</span>
             </button>
@@ -3481,16 +3481,16 @@
           <div class="flex items-center gap-2 bg-raised px-2.5 py-1 rounded-lg border border-line flex-1 max-w-xs">
             <i class="fa-solid fa-magnifying-glass text-muted text-[11px]"></i>
             <input type="text" id="reader-search-input" value="${esc(state.readerSearchQuery)}" placeholder="Filter verses in ${curBook.km} ${state.chapter}..." class="bg-transparent text-xs text-ink outline-none flex-1">
-            ${state.readerSearchQuery ? `<button onclick="window.clearReaderSearch()" class="text-muted hover:text-ink text-[10px]">✕</button>` : ''}
+            ${state.readerSearchQuery ? `<button data-h-click="31" class="text-muted hover:text-ink text-[10px]">✕</button>` : ''}
           </div>
 
           <!-- Display & Font Controls -->
           <div class="flex items-center gap-1.5">
             <!-- Theme Switcher -->
             <div class="flex items-center gap-0.5 bg-raised p-0.5 rounded-lg border border-line">
-              <button class="px-2 py-0.5 rounded text-[10.5px] font-semibold transition ${state.readerTheme === 'default' ? 'bg-surface text-brand shadow-2xs' : 'text-muted'}" onclick="window.setReaderTheme('default')" title="Default Light/Dark">Standard</button>
-              <button class="px-2 py-0.5 rounded text-[10.5px] font-semibold transition ${state.readerTheme === 'sepia' ? 'bg-[#f4ebd4] text-[#433422] font-bold shadow-2xs' : 'text-muted'}" onclick="window.setReaderTheme('sepia')" title="Warm Sepia">Sepia</button>
-              <button class="px-2 py-0.5 rounded text-[10.5px] font-semibold transition ${state.readerTheme === 'dark' ? 'bg-[#0f172a] text-sky-400 font-bold shadow-2xs' : 'text-muted'}" onclick="window.setReaderTheme('dark')" title="Deep Midnight">Night</button>
+              <button class="px-2 py-0.5 rounded text-[10.5px] font-semibold transition ${state.readerTheme === 'default' ? 'bg-surface text-brand shadow-2xs' : 'text-muted'}" data-h-click="32" title="Default Light/Dark">Standard</button>
+              <button class="px-2 py-0.5 rounded text-[10.5px] font-semibold transition ${state.readerTheme === 'sepia' ? 'bg-[#f4ebd4] text-[#433422] font-bold shadow-2xs' : 'text-muted'}" data-h-click="33" title="Warm Sepia">Sepia</button>
+              <button class="px-2 py-0.5 rounded text-[10.5px] font-semibold transition ${state.readerTheme === 'dark' ? 'bg-[#0f172a] text-sky-400 font-bold shadow-2xs' : 'text-muted'}" data-h-click="34" title="Deep Midnight">Night</button>
             </div>
 
             <!-- Font Size -->
@@ -3539,10 +3539,10 @@
             </div>
             
             <div class="flex items-center gap-1.5">
-              <button class="btn btn-neutral text-xs shrink-0 !py-1 !px-2.5" onclick="window.copyChapterPassage()" title="Copy entire chapter">
+              <button class="btn btn-neutral text-xs shrink-0 !py-1 !px-2.5" data-h-click="35" title="Copy entire chapter">
                 <i class="fa-regular fa-copy mr-1 text-[11px]"></i> Copy
               </button>
-              <button class="btn btn-primary text-xs shrink-0 whitespace-nowrap shadow-2xs !py-1 !px-3" onclick="window.sendChapterToDesigner()">
+              <button class="btn btn-primary text-xs shrink-0 whitespace-nowrap shadow-2xs !py-1 !px-3" data-h-click="36">
                 <i class="fa-solid fa-palette mr-1 text-[11px]"></i> Make Card
               </button>
             </div>
@@ -3560,7 +3560,7 @@
               ${filteredVerses.length === 0 ? `
                 <div class="p-6 text-center text-muted space-y-1">
                   <p class="text-xs font-bold text-ink">No verses matching "${esc(state.readerSearchQuery)}"</p>
-                  <button class="text-xs text-brand hover:underline" onclick="window.clearReaderSearch()">Clear filter</button>
+                  <button class="text-xs text-brand hover:underline" data-h-click="37">Clear filter</button>
                 </div>
               ` : filteredVerses.map(v => {
                 const isSpeaking = state.audioSpeakingVerse === v.v;
@@ -3599,11 +3599,11 @@
 
           <!-- Bottom Chapter Navigation -->
           <div class="flex items-center justify-between pt-4 border-t border-line">
-            <button class="btn btn-neutral text-xs !py-1.5 !px-3 flex items-center gap-1.5" onclick="window.prevChapter()">
+            <button class="btn btn-neutral text-xs !py-1.5 !px-3 flex items-center gap-1.5" data-h-click="38">
               <i class="fa-solid fa-arrow-left text-[11px]"></i> Previous
             </button>
             <span class="text-[11.5px] text-muted font-semibold">${curBook.km} ${state.chapter} of ${curBook.ch}</span>
-            <button class="btn btn-neutral text-xs !py-1.5 !px-3 flex items-center gap-1.5" onclick="window.nextChapter()">
+            <button class="btn btn-neutral text-xs !py-1.5 !px-3 flex items-center gap-1.5" data-h-click="39">
               Next <i class="fa-solid fa-arrow-right text-[11px]"></i>
             </button>
           </div>
@@ -3722,10 +3722,10 @@
             </div>
             
             <div class="flex items-center gap-2">
-              <button class="btn btn-neutral text-xs shrink-0 whitespace-nowrap shadow-xs" onclick="window.downloadCardImage(1)">
+              <button class="btn btn-neutral text-xs shrink-0 whitespace-nowrap shadow-xs" data-h-click="40">
                 <i class="fa-solid fa-download mr-1 text-brand"></i> Export HD PNG
               </button>
-              <button class="btn btn-primary text-xs shrink-0 whitespace-nowrap shadow-sm" onclick="window.downloadCardImage(2)">
+              <button class="btn btn-primary text-xs shrink-0 whitespace-nowrap shadow-sm" data-h-click="41">
                 <i class="fa-solid fa-wand-magic-sparkles mr-1"></i> Export 4K Ultra HD
               </button>
             </div>
@@ -3741,10 +3741,10 @@
             <div class="flex items-center justify-between text-xs font-semibold pb-2 border-b border-line">
               <span class="text-muted text-[11px] uppercase tracking-wider font-bold">Ratio Format</span>
               <div class="flex items-center gap-1 bg-raised p-1 rounded-lg">
-                <button class="px-2 py-1 rounded text-xs transition ${d.aspectRatio === '1:1' ? 'bg-brand text-white font-bold shadow-xs' : 'text-muted hover:text-ink'}" onclick="window.setDesignerRatio('1:1')" title="1:1 Square">1:1</button>
-                <button class="px-2 py-1 rounded text-xs transition ${d.aspectRatio === '9:16' ? 'bg-brand text-white font-bold shadow-xs' : 'text-muted hover:text-ink'}" onclick="window.setDesignerRatio('9:16')" title="9:16 Story / Reel">9:16</button>
-                <button class="px-2 py-1 rounded text-xs transition ${d.aspectRatio === '16:9' ? 'bg-brand text-white font-bold shadow-xs' : 'text-muted hover:text-ink'}" onclick="window.setDesignerRatio('16:9')" title="16:9 Landscape">16:9</button>
-                <button class="px-2 py-1 rounded text-xs transition ${d.aspectRatio === '4:5' ? 'bg-brand text-white font-bold shadow-xs' : 'text-muted hover:text-ink'}" onclick="window.setDesignerRatio('4:5')" title="4:5 Portrait">4:5</button>
+                <button class="px-2 py-1 rounded text-xs transition ${d.aspectRatio === '1:1' ? 'bg-brand text-white font-bold shadow-xs' : 'text-muted hover:text-ink'}" data-h-click="42" title="1:1 Square">1:1</button>
+                <button class="px-2 py-1 rounded text-xs transition ${d.aspectRatio === '9:16' ? 'bg-brand text-white font-bold shadow-xs' : 'text-muted hover:text-ink'}" data-h-click="43" title="9:16 Story / Reel">9:16</button>
+                <button class="px-2 py-1 rounded text-xs transition ${d.aspectRatio === '16:9' ? 'bg-brand text-white font-bold shadow-xs' : 'text-muted hover:text-ink'}" data-h-click="44" title="16:9 Landscape">16:9</button>
+                <button class="px-2 py-1 rounded text-xs transition ${d.aspectRatio === '4:5' ? 'bg-brand text-white font-bold shadow-xs' : 'text-muted hover:text-ink'}" data-h-click="45" title="4:5 Portrait">4:5</button>
               </div>
             </div>
 
@@ -3759,13 +3759,13 @@
             <div class="pt-1 flex items-center justify-between text-xs border-t border-line">
               <span class="text-muted font-medium text-[11px]">${dims.label}</span>
               <div class="flex items-center gap-1.5">
-                <button class="btn btn-neutral !py-1 !px-2.5 text-xs" onclick="window.randomizeCardStyle()" title="Shuffle wallpaper & theme">
+                <button class="btn btn-neutral !py-1 !px-2.5 text-xs" data-h-click="46" title="Shuffle wallpaper & theme">
                   <i class="fa-solid fa-shuffle mr-1 text-purple-500"></i> Shuffle
                 </button>
-                <button class="btn btn-neutral !py-1 !px-2.5 text-xs" onclick="window.copyCardImageToClipboard()" title="Copy to clipboard">
+                <button class="btn btn-neutral !py-1 !px-2.5 text-xs" data-h-click="47" title="Copy to clipboard">
                   <i class="fa-regular fa-copy mr-1"></i> Copy
                 </button>
-                <button class="btn btn-primary !py-1 !px-2.5 text-xs" onclick="window.shareCardToFaithInFeed()" title="Share to Community Feed">
+                <button class="btn btn-primary !py-1 !px-2.5 text-xs" data-h-click="48" title="Share to Community Feed">
                   <i class="fa-solid fa-share-nodes mr-1"></i> Post
                 </button>
               </div>
@@ -3863,9 +3863,9 @@
                     <span class="text-muted font-normal">${d.blurLevel === 0 ? 'Sharp (0px)' : (d.blurLevel === 3 ? 'Soft (3px)' : 'Dreamy (6px)')}</span>
                   </div>
                   <div class="flex items-center gap-1">
-                    <button class="flex-1 py-1 rounded text-xs transition ${d.blurLevel === 0 ? 'bg-brand text-white font-bold' : 'bg-raised text-muted'}" onclick="window.setDesignerBlur(0)">Sharp</button>
-                    <button class="flex-1 py-1 rounded text-xs transition ${d.blurLevel === 3 ? 'bg-brand text-white font-bold' : 'bg-raised text-muted'}" onclick="window.setDesignerBlur(3)">Soft</button>
-                    <button class="flex-1 py-1 rounded text-xs transition ${d.blurLevel === 6 ? 'bg-brand text-white font-bold' : 'bg-raised text-muted'}" onclick="window.setDesignerBlur(6)">Dreamy</button>
+                    <button class="flex-1 py-1 rounded text-xs transition ${d.blurLevel === 0 ? 'bg-brand text-white font-bold' : 'bg-raised text-muted'}" data-h-click="49">Sharp</button>
+                    <button class="flex-1 py-1 rounded text-xs transition ${d.blurLevel === 3 ? 'bg-brand text-white font-bold' : 'bg-raised text-muted'}" data-h-click="50">Soft</button>
+                    <button class="flex-1 py-1 rounded text-xs transition ${d.blurLevel === 6 ? 'bg-brand text-white font-bold' : 'bg-raised text-muted'}" data-h-click="51">Dreamy</button>
                   </div>
                 </div>
               </div>
@@ -3894,7 +3894,7 @@
 
                 <div class="space-y-1">
                   <label class="text-[11px] font-bold text-muted">English Font</label>
-                  <select id="card-font-en" class="w-full p-2 text-xs bg-raised border border-line rounded-xl text-ink font-semibold" onchange="window.setDesignerFontEnglish(this.value)">
+                  <select id="card-font-en" class="w-full p-2 text-xs bg-raised border border-line rounded-xl text-ink font-semibold" data-h-change="52">
                     <option value="Lora" ${d.fontEnglish === 'Lora' ? 'selected' : ''}>Lora (Classic Serif)</option>
                     <option value="Playfair Display" ${d.fontEnglish === 'Playfair Display' ? 'selected' : ''}>Playfair (Luxury Serif)</option>
                     <option value="Inter" ${d.fontEnglish === 'Inter' ? 'selected' : ''}>Inter (Modern Sans)</option>
@@ -3904,7 +3904,7 @@
 
                 <div class="space-y-1">
                   <label class="text-[11px] font-bold text-muted">Frame Style</label>
-                  <select class="w-full p-2 text-xs bg-raised border border-line rounded-xl text-ink font-semibold" onchange="window.setDesignerBorderStyle(this.value)">
+                  <select class="w-full p-2 text-xs bg-raised border border-line rounded-xl text-ink font-semibold" data-h-change="53">
                     <option value="none" ${d.borderStyle === 'none' ? 'selected' : ''}>No Frame (Clean)</option>
                     <option value="gold-minimal" ${d.borderStyle === 'gold-minimal' ? 'selected' : ''}>Minimalist Line Frame</option>
                     <option value="double" ${d.borderStyle === 'double' ? 'selected' : ''}>Double Elegant Frame</option>
@@ -3927,13 +3927,13 @@
                 <div class="space-y-1.5">
                   <label class="text-[11px] font-bold text-muted">Text Alignment</label>
                   <div class="flex items-center gap-1">
-                    <button class="flex-1 py-1 rounded-lg text-xs transition ${d.textAlign === 'left' ? 'bg-brand text-white font-bold' : 'bg-raised text-muted hover:text-ink'}" onclick="window.setDesignerTextAlign('left')">
+                    <button class="flex-1 py-1 rounded-lg text-xs transition ${d.textAlign === 'left' ? 'bg-brand text-white font-bold' : 'bg-raised text-muted hover:text-ink'}" data-h-click="54">
                       <i class="fa-solid fa-align-left mr-1"></i> Left
                     </button>
-                    <button class="flex-1 py-1 rounded-lg text-xs transition ${d.textAlign === 'center' ? 'bg-brand text-white font-bold' : 'bg-raised text-muted hover:text-ink'}" onclick="window.setDesignerTextAlign('center')">
+                    <button class="flex-1 py-1 rounded-lg text-xs transition ${d.textAlign === 'center' ? 'bg-brand text-white font-bold' : 'bg-raised text-muted hover:text-ink'}" data-h-click="55">
                       <i class="fa-solid fa-align-center mr-1"></i> Center
                     </button>
-                    <button class="flex-1 py-1 rounded-lg text-xs transition ${d.textAlign === 'right' ? 'bg-brand text-white font-bold' : 'bg-raised text-muted hover:text-ink'}" onclick="window.setDesignerTextAlign('right')">
+                    <button class="flex-1 py-1 rounded-lg text-xs transition ${d.textAlign === 'right' ? 'bg-brand text-white font-bold' : 'bg-raised text-muted hover:text-ink'}" data-h-click="56">
                       <i class="fa-solid fa-align-right mr-1"></i> Right
                     </button>
                   </div>
@@ -3943,7 +3943,7 @@
               <!-- Watermark toggle -->
               <div class="pt-2 border-t border-line flex items-center justify-between">
                 <div class="flex items-center gap-2">
-                  <input type="checkbox" id="designer-branding-check" ${d.showBranding ? 'checked' : ''} onchange="window.toggleDesignerBranding(this.checked)" class="rounded text-brand accent-brand">
+                  <input type="checkbox" id="designer-branding-check" ${d.showBranding ? 'checked' : ''} data-h-change="57" class="rounded text-brand accent-brand">
                   <label for="designer-branding-check" class="text-xs font-semibold text-ink cursor-pointer">Show "FAITH IN • ព្រះគម្ពីរ" Branding Header</label>
                 </div>
                 <span class="text-[10px] text-muted">Can be toggled off for clean wallpaper export</span>
@@ -3994,10 +3994,10 @@
             </div>
 
             <div class="flex items-center gap-1.5">
-              <button class="btn btn-neutral !bg-white/20 hover:!bg-white/30 text-white text-xs !py-1 !px-2.5" onclick="window.designDailyVerse()">
+              <button class="btn btn-neutral !bg-white/20 hover:!bg-white/30 text-white text-xs !py-1 !px-2.5" data-h-click="58">
                 <i class="fa-solid fa-palette mr-1 text-[11px]"></i> Create Card
               </button>
-              <button class="btn btn-neutral !bg-white/20 hover:!bg-white/30 text-white text-xs !py-1 !px-2.5" onclick="window.copyDailyVerse()">
+              <button class="btn btn-neutral !bg-white/20 hover:!bg-white/30 text-white text-xs !py-1 !px-2.5" data-h-click="59">
                 <i class="fa-regular fa-copy mr-1 text-[11px]"></i> Copy
               </button>
             </div>
@@ -4031,7 +4031,7 @@
           <div class="flex items-center gap-2">
             <i class="fa-solid fa-magnifying-glass text-muted text-xs ml-2"></i>
             <input type="text" id="concordance-search" value="${esc(state.concordanceQuery)}" placeholder="Search root words: grace, faith, love, peace, prayer..." class="flex-1 bg-transparent px-2 py-1.5 text-xs text-ink outline-none">
-            <button class="btn btn-primary text-xs !py-1.5 !px-3" onclick="window.searchConcordanceWord()">Search</button>
+            <button class="btn btn-primary text-xs !py-1.5 !px-3" data-h-click="60">Search</button>
           </div>
         </div>
 
@@ -4077,16 +4077,16 @@
 
         <!-- Practice Modes Switcher -->
         <div class="flex items-center gap-1 bg-raised p-1 rounded-lg text-xs font-semibold w-full sm:w-auto overflow-x-auto no-scrollbar">
-          <button class="px-2.5 py-1 rounded-md transition shrink-0 ${state.memoryMode === 'recite' ? 'bg-brand text-white shadow-xs' : 'text-muted hover:text-ink'}" onclick="window.setMemoryMode('recite')">
+          <button class="px-2.5 py-1 rounded-md transition shrink-0 ${state.memoryMode === 'recite' ? 'bg-brand text-white shadow-xs' : 'text-muted hover:text-ink'}" data-h-click="61">
             <i class="fa-solid fa-book-open mr-1"></i> អាន
           </button>
-          <button class="px-2.5 py-1 rounded-md transition shrink-0 ${state.memoryMode === 'hide' ? 'bg-brand text-white shadow-xs' : 'text-muted hover:text-ink'}" onclick="window.setMemoryMode('hide')">
+          <button class="px-2.5 py-1 rounded-md transition shrink-0 ${state.memoryMode === 'hide' ? 'bg-brand text-white shadow-xs' : 'text-muted hover:text-ink'}" data-h-click="62">
             <i class="fa-solid fa-puzzle-piece mr-1"></i> លាក់ពាក្យ
           </button>
-          <button class="px-2.5 py-1 rounded-md transition shrink-0 ${state.memoryMode === 'typing' ? 'bg-brand text-white shadow-xs' : 'text-muted hover:text-ink'}" onclick="window.setMemoryMode('typing')">
+          <button class="px-2.5 py-1 rounded-md transition shrink-0 ${state.memoryMode === 'typing' ? 'bg-brand text-white shadow-xs' : 'text-muted hover:text-ink'}" data-h-click="63">
             <i class="fa-solid fa-keyboard mr-1"></i> វាយអក្សរ
           </button>
-          <button class="px-2.5 py-1 rounded-md transition shrink-0 ${state.memoryMode === 'flashcard' ? 'bg-brand text-white shadow-xs' : 'text-muted hover:text-ink'}" onclick="window.setMemoryMode('flashcard')">
+          <button class="px-2.5 py-1 rounded-md transition shrink-0 ${state.memoryMode === 'flashcard' ? 'bg-brand text-white shadow-xs' : 'text-muted hover:text-ink'}" data-h-click="64">
             <i class="fa-solid fa-repeat mr-1"></i> កាត
           </button>
         </div>
@@ -4111,10 +4111,10 @@
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-[11px] text-muted">
             <span>Click any hidden box to reveal:</span>
             <div class="flex flex-wrap items-center gap-1 font-semibold">
-              <button class="px-2 py-0.5 rounded border text-[10.5px] ${state.memoryHideLevel === 25 ? 'bg-brand text-white border-brand' : 'bg-raised border-line'}" onclick="window.setMemoryHideLevel(25)">25%</button>
-              <button class="px-2 py-0.5 rounded border text-[10.5px] ${state.memoryHideLevel === 50 ? 'bg-brand text-white border-brand' : 'bg-raised border-line'}" onclick="window.setMemoryHideLevel(50)">50%</button>
-              <button class="px-2 py-0.5 rounded border text-[10.5px] ${state.memoryHideLevel === 100 ? 'bg-brand text-white border-brand' : 'bg-raised border-line'}" onclick="window.setMemoryHideLevel(100)">100%</button>
-              <button class="px-2 py-0.5 rounded border text-[10.5px] bg-raised border-line text-brand" onclick="window.revealAllWords()">Reveal All</button>
+              <button class="px-2 py-0.5 rounded border text-[10.5px] ${state.memoryHideLevel === 25 ? 'bg-brand text-white border-brand' : 'bg-raised border-line'}" data-h-click="65">25%</button>
+              <button class="px-2 py-0.5 rounded border text-[10.5px] ${state.memoryHideLevel === 50 ? 'bg-brand text-white border-brand' : 'bg-raised border-line'}" data-h-click="66">50%</button>
+              <button class="px-2 py-0.5 rounded border text-[10.5px] ${state.memoryHideLevel === 100 ? 'bg-brand text-white border-brand' : 'bg-raised border-line'}" data-h-click="67">100%</button>
+              <button class="px-2 py-0.5 rounded border text-[10.5px] bg-raised border-line text-brand" data-h-click="68">Reveal All</button>
             </div>
           </div>
 
@@ -4137,7 +4137,7 @@
 
       <!-- Mode 4: Flashcard Flip -->
       ${state.memoryMode === 'flashcard' ? `
-        <div class="p-5 sm:p-6 rounded-xl bg-gradient-to-br from-brand/10 to-indigo-600/10 border border-brand/30 text-center cursor-pointer space-y-2.5 hover:shadow-sm transition" onclick="window.toggleFlashcard()" id="memory-flashcard">
+        <div class="p-5 sm:p-6 rounded-xl bg-gradient-to-br from-brand/10 to-indigo-600/10 border border-brand/30 text-center cursor-pointer space-y-2.5 hover:shadow-sm transition" data-h-click="69" id="memory-flashcard">
           <div class="text-[10.5px] font-bold text-brand uppercase tracking-wider">Tap to Flip Card 🔄</div>
           <h3 class="text-base sm:text-lg font-bold font-khmer text-ink py-2" id="flashcard-front">
             ${currentPassage.refKhmer}
@@ -4162,10 +4162,10 @@
         </div>
 
         <div class="flex items-center gap-1 shrink-0">
-          <button class="btn btn-neutral !py-1 !px-2.5 text-xs" onclick="window.prevMemoryPassage()">
+          <button class="btn btn-neutral !py-1 !px-2.5 text-xs" data-h-click="70">
             <i class="fa-solid fa-chevron-left"></i>
           </button>
-          <button class="btn btn-neutral !py-1 !px-2.5 text-xs" onclick="window.nextMemoryPassage()">
+          <button class="btn btn-neutral !py-1 !px-2.5 text-xs" data-h-click="71">
             <i class="fa-solid fa-chevron-right"></i>
           </button>
         </div>
@@ -4216,22 +4216,22 @@
 
         <!-- 5-Section Part Filter Tabs -->
         <div class="card p-1.5 bg-surface border border-line flex items-center gap-1.5 overflow-x-auto no-scrollbar text-xs font-semibold">
-          <button class="px-3 py-1.5 rounded-lg whitespace-nowrap transition shrink-0 ${state.memoryPartFilter === 0 ? 'bg-brand text-white shadow-xs font-bold' : 'text-muted hover:text-ink hover:bg-raised'}" onclick="window.filterMemoryPart(0)">
+          <button class="px-3 py-1.5 rounded-lg whitespace-nowrap transition shrink-0 ${state.memoryPartFilter === 0 ? 'bg-brand text-white shadow-xs font-bold' : 'text-muted hover:text-ink hover:bg-raised'}" data-h-click="72">
             ទាំងអស់ (All)
           </button>
-          <button class="px-3 py-1.5 rounded-lg whitespace-nowrap transition shrink-0 ${state.memoryPartFilter === 1 ? 'bg-brand text-white shadow-xs font-bold' : 'text-muted hover:text-ink hover:bg-raised'}" onclick="window.filterMemoryPart(1)">
+          <button class="px-3 py-1.5 rounded-lg whitespace-nowrap transition shrink-0 ${state.memoryPartFilter === 1 ? 'bg-brand text-white shadow-xs font-bold' : 'text-muted hover:text-ink hover:bg-raised'}" data-h-click="73">
             ១: ទំនុកដំកើង &amp; ប្រាជ្ញា
           </button>
-          <button class="px-3 py-1.5 rounded-lg whitespace-nowrap transition shrink-0 ${state.memoryPartFilter === 2 ? 'bg-brand text-white shadow-xs font-bold' : 'text-muted hover:text-ink hover:bg-raised'}" onclick="window.filterMemoryPart(2)">
+          <button class="px-3 py-1.5 rounded-lg whitespace-nowrap transition shrink-0 ${state.memoryPartFilter === 2 ? 'bg-brand text-white shadow-xs font-bold' : 'text-muted hover:text-ink hover:bg-raised'}" data-h-click="74">
             ២: ព្រះគ្រីស្ទ &amp; ការសង្គ្រោះ
           </button>
-          <button class="px-3 py-1.5 rounded-lg whitespace-nowrap transition shrink-0 ${state.memoryPartFilter === 3 ? 'bg-brand text-white shadow-xs font-bold' : 'text-muted hover:text-ink hover:bg-raised'}" onclick="window.filterMemoryPart(3)">
+          <button class="px-3 py-1.5 rounded-lg whitespace-nowrap transition shrink-0 ${state.memoryPartFilter === 3 ? 'bg-brand text-white shadow-xs font-bold' : 'text-muted hover:text-ink hover:bg-raised'}" data-h-click="75">
             ៣: ព្រះវិញ្ញាណ &amp; ការអធិស្ឋាន
           </button>
-          <button class="px-3 py-1.5 rounded-lg whitespace-nowrap transition shrink-0 ${state.memoryPartFilter === 4 ? 'bg-brand text-white shadow-xs font-bold' : 'text-muted hover:text-ink hover:bg-raised'}" onclick="window.filterMemoryPart(4)">
+          <button class="px-3 py-1.5 rounded-lg whitespace-nowrap transition shrink-0 ${state.memoryPartFilter === 4 ? 'bg-brand text-white shadow-xs font-bold' : 'text-muted hover:text-ink hover:bg-raised'}" data-h-click="76">
             ៤: ព្រះបន្ទូល &amp; ជំនឿ
           </button>
-          <button class="px-3 py-1.5 rounded-lg whitespace-nowrap transition shrink-0 ${state.memoryPartFilter === 5 ? 'bg-brand text-white shadow-xs font-bold' : 'text-muted hover:text-ink hover:bg-raised'}" onclick="window.filterMemoryPart(5)">
+          <button class="px-3 py-1.5 rounded-lg whitespace-nowrap transition shrink-0 ${state.memoryPartFilter === 5 ? 'bg-brand text-white shadow-xs font-bold' : 'text-muted hover:text-ink hover:bg-raised'}" data-h-click="77">
             ៥: ជីវិតសិស្ស &amp; ជ័យជម្នះ
           </button>
         </div>
@@ -4244,7 +4244,7 @@
             </span>
             <input type="text" id="memory-search-input" class="memory-search-input" style="width:100%;height:42px;padding-left:42px!important;padding-right:36px!important;font-size:13.5px;border-radius:12px;" value="${esc(state.memorySearchQuery)}" placeholder="Search verse or topic...">
             ${state.memorySearchQuery ? `
-              <button class="memory-search-clear" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);z-index:2;" onclick="window.clearMemorySearch()" title="Clear search">
+              <button class="memory-search-clear" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);z-index:2;" data-h-click="78" title="Clear search">
                 <i class="fa-solid fa-circle-xmark"></i>
               </button>
             ` : ''}
@@ -4299,7 +4299,7 @@
             <h1 class="text-base sm:text-lg font-bold text-ink">Sermon Notes Planner • កំណត់ត្រាទេសនា</h1>
             <p class="text-xs text-muted">Structured 3-part framework for capturing sermons, teachings, and personal insights.</p>
           </div>
-          <button class="btn btn-primary text-xs shrink-0 whitespace-nowrap shadow-2xs !py-1.5 !px-3" onclick="window.saveSermonNotesAction()">
+          <button class="btn btn-primary text-xs shrink-0 whitespace-nowrap shadow-2xs !py-1.5 !px-3" data-h-click="79">
             <i class="fa-solid fa-save mr-1 text-[11px]"></i> Save Notes
           </button>
         </div>
@@ -4596,10 +4596,10 @@
             </div>
 
             <div class="flex items-center gap-1.5">
-              <button class="btn btn-neutral text-xs shrink-0 !py-1 !px-2.5" onclick="window.startGuidedPrayerTimer()">
+              <button class="btn btn-neutral text-xs shrink-0 !py-1 !px-2.5" data-h-click="80">
                 <i class="fa-solid fa-stopwatch text-teal-600 mr-1 text-[11px]"></i> 5-Min Guided
               </button>
-              <button class="btn btn-primary text-xs shrink-0 !py-1 !px-3 shadow-2xs" onclick="window.openNewPrayerModal(true)">
+              <button class="btn btn-primary text-xs shrink-0 !py-1 !px-3 shadow-2xs" data-h-click="81">
                 <i class="fa-solid fa-plus mr-1 text-[11px]"></i> New Prayer
               </button>
             </div>
@@ -4607,19 +4607,19 @@
 
           <!-- Category Filter Bar -->
           <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar pt-0.5 text-xs">
-            <button class="px-2.5 py-1 rounded-lg transition font-semibold shrink-0 ${filter === 'all' ? 'bg-brand text-white shadow-2xs' : 'bg-surface text-ink border border-line hover:bg-raised'}" onclick="window.setPrayerFilter('all')">
+            <button class="px-2.5 py-1 rounded-lg transition font-semibold shrink-0 ${filter === 'all' ? 'bg-brand text-white shadow-2xs' : 'bg-surface text-ink border border-line hover:bg-raised'}" data-h-click="82">
               All (${prayers.length})
             </button>
-            <button class="px-2.5 py-1 rounded-lg transition font-semibold shrink-0 ${filter === 'personal' ? 'bg-brand text-white shadow-2xs' : 'bg-surface text-ink border border-line hover:bg-raised'}" onclick="window.setPrayerFilter('personal')">
+            <button class="px-2.5 py-1 rounded-lg transition font-semibold shrink-0 ${filter === 'personal' ? 'bg-brand text-white shadow-2xs' : 'bg-surface text-ink border border-line hover:bg-raised'}" data-h-click="83">
               Personal (ផ្ទាល់ខ្លួន)
             </button>
-            <button class="px-2.5 py-1 rounded-lg transition font-semibold shrink-0 ${filter === 'church' ? 'bg-brand text-white shadow-2xs' : 'bg-surface text-ink border border-line hover:bg-raised'}" onclick="window.setPrayerFilter('church')">
+            <button class="px-2.5 py-1 rounded-lg transition font-semibold shrink-0 ${filter === 'church' ? 'bg-brand text-white shadow-2xs' : 'bg-surface text-ink border border-line hover:bg-raised'}" data-h-click="84">
               Church &amp; Ministry
             </button>
-            <button class="px-2.5 py-1 rounded-lg transition font-semibold shrink-0 ${filter === 'family' ? 'bg-brand text-white shadow-2xs' : 'bg-surface text-ink border border-line hover:bg-raised'}" onclick="window.setPrayerFilter('family')">
+            <button class="px-2.5 py-1 rounded-lg transition font-semibold shrink-0 ${filter === 'family' ? 'bg-brand text-white shadow-2xs' : 'bg-surface text-ink border border-line hover:bg-raised'}" data-h-click="85">
               Family &amp; Health
             </button>
-            <button class="px-2.5 py-1 rounded-lg transition font-semibold shrink-0 ${filter === 'answered' ? 'bg-emerald-600 text-white shadow-2xs font-bold' : 'bg-emerald-500/10 text-emerald-700 border border-emerald-500/30 hover:bg-emerald-500/20'}" onclick="window.setPrayerFilter('answered')">
+            <button class="px-2.5 py-1 rounded-lg transition font-semibold shrink-0 ${filter === 'answered' ? 'bg-emerald-600 text-white shadow-2xs font-bold' : 'bg-emerald-500/10 text-emerald-700 border border-emerald-500/30 hover:bg-emerald-500/20'}" data-h-click="86">
               🎉 Answered (${answeredCount})
             </button>
           </div>
@@ -4632,7 +4632,7 @@
               <i class="fa-solid fa-pen text-brand text-xs"></i>
               <span>Add Prayer Request • សរសេរសេចក្តីអធិស្ឋាន</span>
             </h3>
-            <button class="text-muted hover:text-ink text-xs font-bold" onclick="window.openNewPrayerModal(false)">✕ Cancel</button>
+            <button class="text-muted hover:text-ink text-xs font-bold" data-h-click="87">✕ Cancel</button>
           </div>
 
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -4662,7 +4662,7 @@
           </div>
 
           <div class="flex justify-end pt-1">
-            <button class="btn btn-primary text-xs !py-2 !px-4 shadow-sm" onclick="window.saveNewPrayer()">
+            <button class="btn btn-primary text-xs !py-2 !px-4 shadow-sm" data-h-click="88">
               <i class="fa-solid fa-floppy-disk mr-1.5"></i> Save to Prayer Wall
             </button>
           </div>
@@ -4767,10 +4767,10 @@
 
             <!-- View Mode Switcher -->
             <div class="flex items-center gap-1.5 bg-surface p-1 rounded-xl border border-line self-start sm:self-auto shrink-0">
-              <button class="px-2.5 py-1 rounded-lg text-xs font-semibold transition ${mode === 'era' ? 'bg-brand text-white shadow-2xs' : 'text-muted hover:text-ink hover:bg-raised'}" onclick="window.setHistoryViewMode('era')">
+              <button class="px-2.5 py-1 rounded-lg text-xs font-semibold transition ${mode === 'era' ? 'bg-brand text-white shadow-2xs' : 'text-muted hover:text-ink hover:bg-raised'}" data-h-click="89">
                 <i class="fa-solid fa-landmark mr-1"></i> Era &amp; Timeline
               </button>
-              <button class="px-2.5 py-1 rounded-lg text-xs font-semibold transition ${mode === 'chapters' ? 'bg-brand text-white shadow-2xs' : 'text-muted hover:text-ink hover:bg-raised'}" onclick="window.setHistoryViewMode('chapters')">
+              <button class="px-2.5 py-1 rounded-lg text-xs font-semibold transition ${mode === 'chapters' ? 'bg-brand text-white shadow-2xs' : 'text-muted hover:text-ink hover:bg-raised'}" data-h-click="90">
                 <i class="fa-solid fa-book-bookmark mr-1"></i> 48 Chapters Guide
               </button>
             </div>
@@ -4785,10 +4785,10 @@
               class="w-full pl-8 pr-8 py-1.5 rounded-lg text-xs bg-surface border border-line focus:outline-none focus:border-brand text-ink"
               placeholder="Search chapters and topics — Nicaea, Luther, Wesley…"
               value="${esc(state.history.searchQuery || '')}"
-              oninput="window.searchHistory(this.value)"
+              data-h-input="91"
             >
             ${state.history.searchQuery ? `
-              <button class="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted hover:text-ink text-xs" onclick="window.searchHistory('')">
+              <button class="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted hover:text-ink text-xs" data-h-click="92">
                 <i class="fa-solid fa-xmark"></i>
               </button>
             ` : ''}
@@ -4810,7 +4810,7 @@
           <div class="space-y-3">
             <div class="flex items-center justify-between px-1">
               <h3 class="text-xs font-bold text-ink">Search Results for "${esc(state.history.searchQuery)}" (${filteredChapters.length} chapters found)</h3>
-              <button class="text-xs text-brand hover:underline" onclick="window.searchHistory('')">Clear Search</button>
+              <button class="text-xs text-brand hover:underline" data-h-click="93">Clear Search</button>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -4897,7 +4897,7 @@
                       <i class="fa-solid fa-book-bookmark text-amber-600 text-xs"></i>
                       <span>Chapters in This Age (${selectedEra.chapters.length})</span>
                     </h4>
-                    <button class="text-[11px] text-brand font-semibold hover:underline" onclick="window.setHistoryViewMode('chapters')">View Full Summaries ➔</button>
+                    <button class="text-[11px] text-brand font-semibold hover:underline" data-h-click="94">View Full Summaries ➔</button>
                   </div>
                   <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                     ${selectedEra.chapters.map(ch => `
@@ -5045,19 +5045,19 @@
 
           <!-- Category Filter Bar -->
           <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar pt-0.5 text-xs">
-            <button class="px-2.5 py-1 rounded-lg transition font-semibold shrink-0 ${cat === 'all' ? 'bg-brand text-white shadow-2xs' : 'bg-surface text-ink border border-line hover:bg-raised'}" onclick="window.setResourceCategory('all')">
+            <button class="px-2.5 py-1 rounded-lg transition font-semibold shrink-0 ${cat === 'all' ? 'bg-brand text-white shadow-2xs' : 'bg-surface text-ink border border-line hover:bg-raised'}" data-h-click="95">
               All Resources (${STUDY_RESOURCES_DATA.length})
             </button>
-            <button class="px-2.5 py-1 rounded-lg transition font-semibold shrink-0 ${cat === 'methods' ? 'bg-brand text-white shadow-2xs' : 'bg-surface text-ink border border-line hover:bg-raised'}" onclick="window.setResourceCategory('methods')">
+            <button class="px-2.5 py-1 rounded-lg transition font-semibold shrink-0 ${cat === 'methods' ? 'bg-brand text-white shadow-2xs' : 'bg-surface text-ink border border-line hover:bg-raised'}" data-h-click="96">
               📖 Hermeneutics &amp; Methods
             </button>
-            <button class="px-2.5 py-1 rounded-lg transition font-semibold shrink-0 ${cat === 'creeds' ? 'bg-brand text-white shadow-2xs' : 'bg-surface text-ink border border-line hover:bg-raised'}" onclick="window.setResourceCategory('creeds')">
+            <button class="px-2.5 py-1 rounded-lg transition font-semibold shrink-0 ${cat === 'creeds' ? 'bg-brand text-white shadow-2xs' : 'bg-surface text-ink border border-line hover:bg-raised'}" data-h-click="97">
               📜 Creeds &amp; Confessions
             </button>
-            <button class="px-2.5 py-1 rounded-lg transition font-semibold shrink-0 ${cat === 'theology' ? 'bg-brand text-white shadow-2xs' : 'bg-surface text-ink border border-line hover:bg-raised'}" onclick="window.setResourceCategory('theology')">
+            <button class="px-2.5 py-1 rounded-lg transition font-semibold shrink-0 ${cat === 'theology' ? 'bg-brand text-white shadow-2xs' : 'bg-surface text-ink border border-line hover:bg-raised'}" data-h-click="98">
               🏛️ Systematic Theology
             </button>
-            <button class="px-2.5 py-1 rounded-lg transition font-semibold shrink-0 ${cat === 'cambodia' ? 'bg-brand text-white shadow-2xs' : 'bg-surface text-ink border border-line hover:bg-raised'}" onclick="window.setResourceCategory('cambodia')">
+            <button class="px-2.5 py-1 rounded-lg transition font-semibold shrink-0 ${cat === 'cambodia' ? 'bg-brand text-white shadow-2xs' : 'bg-surface text-ink border border-line hover:bg-raised'}" data-h-click="99">
               🇰🇭 Cambodia Heritage
             </button>
           </div>
@@ -5067,9 +5067,9 @@
         <div class="card p-2.5 bg-surface border border-line">
           <div class="flex items-center gap-2">
             <i class="fa-solid fa-magnifying-glass text-muted text-xs ml-2"></i>
-            <input type="text" id="resource-search-input" value="${esc(state.resources.searchQuery)}" placeholder="Search study guides, creeds, 5 solas, trinity, salvation..." class="flex-1 bg-transparent px-2 py-1 text-xs text-ink outline-none" oninput="window.searchResources()">
+            <input type="text" id="resource-search-input" value="${esc(state.resources.searchQuery)}" placeholder="Search study guides, creeds, 5 solas, trinity, salvation..." class="flex-1 bg-transparent px-2 py-1 text-xs text-ink outline-none" data-h-input="100">
             ${state.resources.searchQuery ? `
-              <button class="text-muted hover:text-ink text-xs px-2" onclick="document.getElementById('resource-search-input').value=''; window.searchResources();">✕ Clear</button>
+              <button class="text-muted hover:text-ink text-xs px-2" data-h-click="101">✕ Clear</button>
             ` : ''}
           </div>
         </div>
@@ -6220,6 +6220,7 @@
 
 })();
 </script>
-<script src="/faithin-app/assets/faithin-live.js?v=20260905-notif"></script>
+<script src="/faithin-app/assets/faithin-live.js?v=20260905-csp"></script>
+<script src="/faithin-app/assets/faithin-bible-handlers.js?v=20260905-csp"></script>
 </body>
 </html>

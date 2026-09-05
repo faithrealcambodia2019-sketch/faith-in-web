@@ -3277,6 +3277,32 @@ html.dark body[data-page="home"] .card .border-line { border-color: #3E4042; }
 }
 
 /* Video keeps its own controls; the expand button sits clear of them. */
+.fi-video-cell { position: relative; display: block; min-width: 0; background: #000; border-radius: 10px; overflow: hidden; }
+.fi-video-sound-btn {
+  position: absolute;
+  top: 10px;
+  right: 50px;
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 9999px;
+  cursor: pointer;
+  color: #fff;
+  background: rgb(0 0 0 / .65);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  font-size: 13px;
+  z-index: 10;
+  opacity: 0.85;
+  transition: opacity .15s ease, background .15s ease, transform .1s ease;
+}
+.fi-video-cell:hover .fi-video-sound-btn,
+.fi-video-sound-btn:focus-visible { opacity: 1; }
+.fi-video-sound-btn:hover { background: rgb(0 0 0 / .9); transform: scale(1.05); }
+@media (hover: none) { .fi-video-sound-btn { opacity: 1; } }
+
 .fi-media-expand {
   position: absolute;
   top: 10px;

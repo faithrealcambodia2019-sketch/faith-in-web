@@ -21,6 +21,16 @@ const contentSecurityPolicy = [
   "upgrade-insecure-requests",
 ].join("; ");
 
+/**
+ * The policy we are working towards: identical to the enforced one, minus
+ * 'unsafe-inline' in script-src. Served Report-Only so it measures the gap
+ * without breaking anything.
+ */
+const strictScriptPolicy = contentSecurityPolicy.replace(
+  "script-src 'self' 'unsafe-inline'",
+  "script-src 'self'"
+);
+
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
@@ -92,6 +102,18 @@ const nextConfig: NextConfig = {
           { key: "Origin-Agent-Cluster", value: "?1" },
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
           { key: "Content-Security-Policy", value: contentSecurityPolicy },
+          // The enforced policy above still carries 'unsafe-inline' in
+          // script-src, which is what makes an XSS bug exploitable rather than
+          // inert. Removing it means converting roughly 400 inline event
+          // handlers across bible.html and faith-in-app.js — too much to do
+          // blind on a live app.
+          //
+          // This reports what the strict policy WOULD block, without blocking
+          // anything. Violations appear in the browser console as
+          // "Refused to execute... (report only)", which turns the remaining
+          // work into a measured list instead of a guess. Delete this header
+          // once script-src is clean and the strict policy is enforced.
+          { key: "Content-Security-Policy-Report-Only", value: strictScriptPolicy },
           {
             key: "Permissions-Policy",
             value: "camera=(), microphone=(), geolocation=(), browsing-topics=()",

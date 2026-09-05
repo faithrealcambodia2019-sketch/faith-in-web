@@ -77,7 +77,9 @@
       // for an actual play. Use a poster when the item carries one.
       if (item.type === 'video') {
         const poster = esc(mediaUrl(item.thumbnail_url || item.poster_url || ''));
-        return `<div class="fi-media-cell" ${hook}><video class="fi-feed-video" controls playsinline preload="none"${poster ? ` poster="${poster}"` : ''} src="${url}"></video><button type="button" class="fi-media-expand" data-media-open aria-label="Open video full screen"><i class="fa-solid fa-up-right-and-down-left-from-center"></i></button></div>`;
+        const cleanUrl = mediaUrl(item.url || item.preview_url || item.local_url || '');
+        const videoSrc = cleanUrl.includes('#t=') ? esc(cleanUrl) : `${esc(cleanUrl)}#t=0.001`;
+        return `<div class="fi-media-cell fi-video-cell" ${hook}><video class="fi-feed-video" controls playsinline muted preload="metadata"${poster ? ` poster="${poster}"` : ''} src="${videoSrc}" loop></video><button type="button" class="fi-media-expand" data-media-open aria-label="Open video full screen"><i class="fa-solid fa-up-right-and-down-left-from-center"></i></button><button type="button" class="fi-video-sound-btn" data-video-sound aria-label="Toggle sound" title="Toggle sound"><i class="fa-solid fa-volume-xmark"></i></button></div>`;
       }
       if (item.type === 'audio') return `<div class="p-5"><audio class="w-full" controls src="${url}"></audio></div>`;
       return `<div class="fi-media-cell" ${hook}><img class="w-full max-h-[620px] object-cover" src="${url}" alt="Shared media" loading="lazy" decoding="async" data-media-open tabindex="0" role="button" aria-label="Open image full screen"></div>`;
@@ -133,6 +135,78 @@
       const clear = () => clearTimeout(timer);
       img.addEventListener('load', clear, { once: true });
       img.addEventListener('error', clear, { once: true });
+    });
+  }
+
+  // ── feed video autoplay and thumbnail extraction ─────────────────────────
+  const feedVideoObserver = typeof IntersectionObserver !== 'undefined' ? new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      const video = entry.target;
+      if (entry.isIntersecting && entry.intersectionRatio >= 0.35) {
+        video.muted = true;
+        const p = video.play();
+        if (p !== undefined) {
+          p.catch(() => {});
+        }
+      } else {
+        if (!video.paused) {
+          video.pause();
+        }
+      }
+    });
+  }, { threshold: [0, 0.35, 0.7] }) : null;
+
+  function initFeedVideos(root) {
+    if (!root) return;
+    root.querySelectorAll('video.fi-feed-video').forEach(video => {
+      if (video.dataset.feedVideoInit) return;
+      video.dataset.feedVideoInit = '1';
+      video.muted = true;
+
+      const captureThumb = () => {
+        if (video.poster && !video.poster.startsWith('data:image/svg')) return;
+        try {
+          const canvas = document.createElement('canvas');
+          canvas.width = video.videoWidth || 640;
+          canvas.height = video.videoHeight || 360;
+          if (canvas.width && canvas.height) {
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            const thumb = canvas.toDataURL('image/jpeg', 0.85);
+            if (thumb && thumb.length > 500) {
+              video.poster = thumb;
+            }
+          }
+        } catch (_) {}
+      };
+
+      video.addEventListener('loadeddata', captureThumb, { once: true });
+      video.addEventListener('seeked', captureThumb, { once: true });
+
+      const cell = video.closest('.fi-video-cell') || video.parentElement;
+      const soundBtn = cell?.querySelector('[data-video-sound]');
+      if (soundBtn) {
+        soundBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          e.preventDefault();
+          video.muted = !video.muted;
+          soundBtn.innerHTML = video.muted 
+            ? '<i class="fa-solid fa-volume-xmark"></i>' 
+            : '<i class="fa-solid fa-volume-high"></i>';
+        });
+      }
+
+      video.addEventListener('volumechange', () => {
+        if (soundBtn) {
+          soundBtn.innerHTML = video.muted 
+            ? '<i class="fa-solid fa-volume-xmark"></i>' 
+            : '<i class="fa-solid fa-volume-high"></i>';
+        }
+      });
+
+      if (feedVideoObserver) {
+        feedVideoObserver.observe(video);
+      }
     });
   }
 
@@ -456,6 +530,7 @@
 
     feed.innerHTML = items.length ? items.map(postHTML).join('') : `<section class="card p-8 text-center"><h2 class="font-bold">${feedQuery || sortMode === 'Following' ? 'No matching posts' : 'Your community feed is ready'}</h2><p class="text-muted text-[13.5px] mt-1">${sortMode === 'Following' ? 'Follow members from Network or Contacts to build this feed.' : 'Be the first to share a blessing or testimony.'}</p></section>`;
     watchForStall(feed);
+    initFeedVideos(feed);
 
     // Scroll to & highlight target post if coming from a notification
     const targetPostId = new URLSearchParams(location.search).get('post') || location.hash.replace(/^#post-/, '').replace(/^#/, '');
@@ -698,8 +773,7 @@
     chosen.forEach(file => {
       const url = URL.createObjectURL(file); blessingPreviewUrls.push(url);
       const element = document.createElement(mode === 'video' ? 'video' : 'img');
-      element.src = url;
-      if (mode === 'video') { element.controls = true; element.playsInline = true; element.preload = 'metadata'; }
+      if (mode === 'video') { element.controls = true; element.playsInline = true; element.preload = 'metadata'; element.muted = true; element.src = url + '#t=0.001'; }
       else element.alt = 'Blessing image preview';
       blessingPreview.appendChild(element);
     });
