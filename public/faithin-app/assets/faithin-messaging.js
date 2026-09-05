@@ -74,6 +74,7 @@
     searchQuery: '',
     searchMatches: [],
     currentMatchIdx: -1,
+    pinned: {},
     muted: false,
     blocked: false
   };
@@ -232,9 +233,11 @@
       .reverse()
       .slice(0, 9);
     host.innerHTML = images.length
-      ? images.map(message => `<img alt="${esc(message.attachment.name || 'Shared image')}" class="aspect-square w-full object-cover rounded-lg" src="${esc(message.attachment.data_url)}"/>`).join('')
+      ? images.map(message => `<img alt="${esc(message.attachment.name || 'Shared image')}" class="aspect-square w-full object-cover rounded-lg cursor-zoom-in hover:opacity-90 transition" data-lightbox-trigger src="${esc(message.attachment.data_url)}"/>`).join('')
       : '<p class="col-span-3 text-[12.5px] text-muted">Images shared in this conversation appear here.</p>';
-  /* ── bubble options & reactions ─────────────────────────────────────────── */
+  }
+
+  /* ── reactions & pinned messages ────────────────────────────────────────── */
 
   function loadReactions() {
     if (!state.threadId) return;
@@ -261,7 +264,78 @@
     }
     saveReactions();
     renderMessages();
-    if (chatDockEl && !chatDockEl.classList.contains('hidden')) renderDock();
+  }
+
+  function loadPinned() {
+    if (!state.threadId) return;
+    try {
+      state.pinned = JSON.parse(localStorage.getItem(`fi_pinned_${state.threadId}`)) || {};
+    } catch {
+      state.pinned = {};
+    }
+  }
+
+  function savePinned() {
+    if (!state.threadId) return;
+    try {
+      localStorage.setItem(`fi_pinned_${state.threadId}`, JSON.stringify(state.pinned));
+    } catch {}
+  }
+
+  function togglePin(messageId) {
+    if (!messageId) return;
+    if (state.pinned[messageId]) {
+      delete state.pinned[messageId];
+      toast('Message unpinned');
+    } else {
+      state.pinned[messageId] = true;
+      toast('Message pinned ★');
+    }
+    savePinned();
+    renderMessages();
+    renderPinnedList();
+  }
+
+  function renderPinnedList() {
+    const listEl = $('[data-pinned-list]');
+    const countEl = $('[data-pinned-count]');
+    const pinnedIds = Object.keys(state.pinned || {});
+    if (countEl) countEl.textContent = String(pinnedIds.length);
+    if (!listEl) return;
+    if (!pinnedIds.length) {
+      listEl.innerHTML = '<p class="text-[11.5px] text-muted italic">Hover any message and click ★ to pin.</p>';
+      return;
+    }
+    const all = state.messages.concat(state.pending);
+    const pinnedMessages = all.filter(m => state.pinned[m.id]);
+    if (!pinnedMessages.length) {
+      listEl.innerHTML = '<p class="text-[11.5px] text-muted italic">Pinned in earlier history.</p>';
+      return;
+    }
+    listEl.innerHTML = pinnedMessages.map(m => {
+      const snippet = esc((m.body || (m.attachment && m.attachment.name) || 'Attachment').slice(0, 55));
+      return `<button type="button" class="w-full text-left p-2 rounded-lg row-hover border border-line/60 bg-surface flex items-start gap-2 transition" data-jump-to-msg="${esc(m.id)}">
+        <i class="fa-solid fa-star text-amber-500 text-[10px] mt-0.5 shrink-0"></i>
+        <div class="min-w-0 flex-1">
+          <p class="text-[12px] text-ink leading-tight line-clamp-2">${snippet}</p>
+          <span class="text-[10px] text-faint mt-0.5 block">${clockTime(m.created_at)}</span>
+        </div>
+      </button>`;
+    }).join('');
+  }
+
+  function jumpToMessage(msgId) {
+    const el = document.querySelector(`[data-message-id="${msgId}"]`);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      const bubble = el.querySelector('.msg-bubble');
+      if (bubble) {
+        bubble.classList.add('is-search-active');
+        setTimeout(() => bubble.classList.remove('is-search-active'), 2000);
+      }
+    } else {
+      toast('Message is in earlier history.');
+    }
   }
 
   /* ── replying ───────────────────────────────────────────────────────────── */
@@ -310,11 +384,10 @@
     state.messages = state.messages.filter(m => String(m.id) !== String(messageId));
     state.pending = state.pending.filter(m => String(m.id) !== String(messageId));
     renderMessages();
-    if (chatDockEl && !chatDockEl.classList.contains('hidden')) renderDock();
     toast('Message removed from view');
   }
 
-  /* ── bubble theme ───────────────────────────────────────────────────────── */
+  /* ── chat theme ─────────────────────────────────────────────────────────── */
 
   const THEMES = {
     '#0866FF': 'Facebook Blue',
@@ -470,136 +543,208 @@
     state.messages = [];
     state.pending = [];
     renderMessages();
-    if (chatDockEl && !chatDockEl.classList.contains('hidden')) renderDock();
     toast('Conversation cleared');
   }
 
-  /* ── floating messenger bubble (chat head) & dock ────────────────────────── */
+  /* ── scripture verse quick share ───────────────────────────────────────── */
 
-  let bubbleHeadEl = null;
-  let chatDockEl = null;
+  const SCRIPTURE_VERSES = [
+    {
+      ref: 'Philippians 4:13',
+      text: 'I can do all things through Christ who strengthens me.',
+      topic: 'Strength'
+    },
+    {
+      ref: 'John 3:16',
+      text: 'For God so loved the world that He gave His only begotten Son, that whoever believes in Him should not perish but have everlasting life.',
+      topic: 'Salvation & Love'
+    },
+    {
+      ref: 'Psalm 23:1',
+      text: 'The Lord is my shepherd; I shall not want.',
+      topic: 'Comfort & Peace'
+    },
+    {
+      ref: 'Romans 8:28',
+      text: 'And we know that in all things God works for the good of those who love him, who have been called according to his purpose.',
+      topic: 'Hope & Purpose'
+    },
+    {
+      ref: 'Jeremiah 29:11',
+      text: '“For I know the plans I have for you,” declares the Lord, “plans to prosper you and not to harm you, plans to give you hope and a future.”',
+      topic: 'Future & Hope'
+    },
+    {
+      ref: 'Proverbs 3:5-6',
+      text: 'Trust in the Lord with all your heart and lean not on your own understanding; in all your ways submit to Him, and He will make your paths straight.',
+      topic: 'Trust & Guidance'
+    },
+    {
+      ref: 'Matthew 11:28',
+      text: 'Come to me, all you who are weary and burdened, and I will give you rest.',
+      topic: 'Rest & Peace'
+    },
+    {
+      ref: 'Joshua 1:9',
+      text: 'Be strong and courageous. Do not be afraid; do not be discouraged, for the Lord your God will be with you wherever you go.',
+      topic: 'Courage'
+    },
+    {
+      ref: 'Isaiah 40:31',
+      text: 'Those who hope in the Lord will renew their strength. They will soar on wings like eagles; they will run and not grow weary, they will walk and not be faint.',
+      topic: 'Perseverance'
+    },
+    {
+      ref: '1 Corinthians 13:4, 7',
+      text: 'Love is patient, love is kind... It always protects, always trusts, always hopes, always perseveres.',
+      topic: 'Love'
+    },
+    {
+      ref: 'Psalm 46:1',
+      text: 'God is our refuge and strength, an ever-present help in trouble.',
+      topic: 'Protection & Refuge'
+    },
+    {
+      ref: 'Romans 15:13',
+      text: 'May the God of hope fill you with all joy and peace as you trust in Him, so that you may overflow with hope by the power of the Holy Spirit.',
+      topic: 'Joy & Peace'
+    }
+  ];
 
-  function toggleBubbleMode() {
-    if (!state.threadId && !state.partner) {
-      toast('Choose a conversation first to open the floating chat bubble.');
+  function openVerseModal() {
+    const modal = $('[data-verse-modal]');
+    if (!modal) return;
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    renderVerseList();
+    const filterInput = $('[data-verse-filter]');
+    if (filterInput) {
+      filterInput.value = '';
+      filterInput.focus();
+    }
+  }
+
+  function closeVerseModal() {
+    const modal = $('[data-verse-modal]');
+    if (modal) {
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+  }
+
+  function renderVerseList(filter = '') {
+    const listEl = $('[data-verse-list]');
+    if (!listEl) return;
+    const term = (filter || '').trim().toLowerCase();
+    const filtered = SCRIPTURE_VERSES.filter(v => {
+      if (!term) return true;
+      return `${v.ref} ${v.text} ${v.topic}`.toLowerCase().includes(term);
+    });
+
+    if (!filtered.length) {
+      listEl.innerHTML = '<p class="text-center text-[12.5px] text-muted p-4">No matching verses found.</p>';
       return;
     }
-    createOrShowBubbleHead();
-    toast('Floating Messenger Bubble active');
-  }
 
-  function createOrShowBubbleHead() {
-    if (!bubbleHeadEl) {
-      bubbleHeadEl = document.createElement('div');
-      bubbleHeadEl.className = 'fi-chat-bubble-launcher';
-      bubbleHeadEl.title = `Chat with ${state.partner?.name || 'Member'}`;
-      document.body.appendChild(bubbleHeadEl);
-
-      bubbleHeadEl.addEventListener('click', () => {
-        if (chatDockEl && !chatDockEl.classList.contains('hidden')) {
-          minimizeDock();
-        } else {
-          openDock();
-        }
-      });
-    }
-
-    bubbleHeadEl.innerHTML = `${avatar(state.partner, 'avatar w-full h-full text-[16px] rounded-full')}
-      <span class="msg-dot !right-0.5 !bottom-0.5"></span>
-      <span class="fi-bubble-badge hidden" data-dock-badge></span>`;
-    bubbleHeadEl.classList.remove('hidden');
-    openDock();
-  }
-
-  function openDock() {
-    if (!chatDockEl) {
-      chatDockEl = document.createElement('div');
-      chatDockEl.className = 'fi-chat-dock';
-      document.body.appendChild(chatDockEl);
-    }
-    chatDockEl.classList.remove('hidden');
-    renderDock();
-    const dockInput = chatDockEl.querySelector('#fi-dock-input');
-    if (dockInput) dockInput.focus();
-  }
-
-  function minimizeDock() {
-    if (chatDockEl) chatDockEl.classList.add('hidden');
-  }
-
-  function closeDock() {
-    if (chatDockEl) {
-      chatDockEl.remove();
-      chatDockEl = null;
-    }
-    if (bubbleHeadEl) {
-      bubbleHeadEl.remove();
-      bubbleHeadEl = null;
-    }
-  }
-
-  function renderDock() {
-    if (!chatDockEl) return;
-    const partner = state.partner || { name: 'Member' };
-    const messages = state.messages.concat(state.pending);
-    const bubblesHtml = messages.length ? messages.slice(-15).map(m => {
-      const mine = !!m.mine;
-      const b = m.body ? esc(m.body) : '';
-      return `<div class="flex items-end gap-1.5 ${mine ? 'justify-end' : ''}">
-        ${mine ? '' : `<span class="shrink-0 mb-1">${avatar(partner, 'avatar w-6 h-6 text-[10px]')}</span>`}
-        <div class="msg-bubble !text-[13px] !py-1.5 !px-3 ${mine ? 'is-mine' : ''}">${b}</div>
-      </div>`;
-    }).join('') : '<p class="text-center text-[12px] text-muted p-4">Say hello and start chatting!</p>';
-
-    chatDockEl.innerHTML = `
-      <header class="h-[52px] shrink-0 px-3 bg-raised/80 border-b border-line flex items-center justify-between gap-2">
-        <div class="flex items-center gap-2 min-w-0">
-          <span class="relative shrink-0">${avatar(partner, 'avatar w-8 h-8 text-[11px]')}<span class="msg-dot"></span></span>
-          <div class="min-w-0">
-            <h4 class="text-[13.5px] font-bold truncate leading-tight">${esc(partner.name || 'Chat')}</h4>
-            <span class="text-[10.5px] text-emerald-600 dark:text-emerald-400">Active now</span>
-          </div>
+    listEl.innerHTML = filtered.map((v, i) => `
+      <div class="msg-verse-item" data-verse-idx="${i}">
+        <div class="flex items-center justify-between gap-2">
+          <span class="font-bold text-[13px] text-ink flex items-center gap-1.5"><i class="fa-solid fa-book-bible text-amber-500 text-[11px]"></i>${esc(v.ref)}</span>
+          <span class="text-[10.5px] font-medium text-muted px-2 py-0.5 rounded-full bg-raised">${esc(v.topic)}</span>
         </div>
-        <div class="flex items-center gap-1 shrink-0">
-          <a class="icon-btn !w-7 !h-7 text-muted hover:text-ink" href="${partner.uid ? `/profile?member=${encodeURIComponent(partner.uid)}` : '/profile'}" title="View Profile"><i class="fa-regular fa-user text-[11px]"></i></a>
-          <button type="button" class="icon-btn !w-7 !h-7" data-dock-minimize title="Minimize to bubble"><i class="fa-solid fa-minus text-[11px]"></i></button>
-          <button type="button" class="icon-btn !w-7 !h-7" data-dock-close title="Close"><i class="fa-solid fa-xmark text-[11px]"></i></button>
-        </div>
-      </header>
-      <div class="flex-1 overflow-y-auto p-3 flex flex-col gap-2 bg-canvas" data-dock-messages>
-        ${bubblesHtml}
+        <p class="text-[12.5px] text-muted mt-1 leading-snug">“${esc(v.text)}”</p>
       </div>
-      <form class="p-2 border-t border-line flex items-center gap-1.5 bg-surface" data-dock-form>
-        <input class="field !py-1.5 !text-[13px] !rounded-full flex-1" id="fi-dock-input" placeholder="Type a message…" autocomplete="off"/>
-        <button class="icon-btn shrink-0 !bg-brand !text-white !w-8 !h-8" type="submit"><i class="fa-solid fa-paper-plane text-[11px]"></i></button>
-      </form>
-    `;
+    `).join('');
 
-    const dockMessages = chatDockEl.querySelector('[data-dock-messages]');
-    if (dockMessages) dockMessages.scrollTop = dockMessages.scrollHeight;
-
-    chatDockEl.querySelector('[data-dock-minimize]')?.addEventListener('click', minimizeDock);
-    chatDockEl.querySelector('[data-dock-close]')?.addEventListener('click', closeDock);
-
-    chatDockEl.querySelector('[data-dock-form]')?.addEventListener('submit', async ev => {
-      ev.preventDefault();
-      const inp = chatDockEl.querySelector('#fi-dock-input');
-      const val = inp?.value.trim();
-      if (!val) return;
-      inp.value = '';
-      input.value = val;
-      await send();
-      renderDock();
+    listEl.querySelectorAll('.msg-verse-item').forEach(item => {
+      item.addEventListener('click', () => {
+        const idx = Number(item.dataset.verseIdx);
+        const verse = filtered[idx];
+        if (verse) insertScriptureVerse(verse);
+      });
     });
+  }
+
+  function insertScriptureVerse(verse) {
+    closeVerseModal();
+    const snippet = `📖 "${verse.text}" — ${verse.ref}`;
+    input.value = input.value ? `${input.value}\n\n${snippet}` : snippet;
+    autoGrow(input);
+    input.focus({ preventScroll: true });
+    toast(`Inserted ${verse.ref}`);
+  }
+
+  /* ── quick emoji picker ────────────────────────────────────────────────── */
+
+  const QUICK_EMOJIS = ['🙏', '✝️', '❤️', '🕊️', '📖', '✨', '👍', '😊', '🙌', '🕯️', '🌿', '🌟', '🤝', '⛪', '🛡️', '🤍', '🔥', '🌈'];
+
+  function initEmojiPicker() {
+    const grid = $('[data-emoji-grid]');
+    if (!grid) return;
+    grid.innerHTML = QUICK_EMOJIS.map(emoji => `<button type="button" class="msg-emoji-btn" data-composer-emoji="${emoji}">${emoji}</button>`).join('');
+    grid.querySelectorAll('[data-composer-emoji]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const emoji = btn.dataset.composerEmoji;
+        input.value += emoji;
+        autoGrow(input);
+        input.focus({ preventScroll: true });
+        toggleEmojiPicker(false);
+      });
+    });
+  }
+
+  function toggleEmojiPicker(force) {
+    const popover = $('[data-emoji-picker]');
+    if (!popover) return;
+    const isClosed = popover.classList.contains('hidden');
+    const nextOpen = typeof force === 'boolean' ? force : isClosed;
+    popover.classList.toggle('hidden', !nextOpen);
+  }
+
+  /* ── image lightbox ────────────────────────────────────────────────────── */
+
+  function openLightbox(src) {
+    const lightbox = $('[data-image-lightbox]');
+    const img = $('[data-lightbox-img]');
+    if (!lightbox || !img || !src) return;
+    img.src = src;
+    lightbox.classList.remove('hidden');
+    lightbox.classList.add('flex');
+  }
+
+  function closeLightbox() {
+    const lightbox = $('[data-image-lightbox]');
+    if (lightbox) {
+      lightbox.classList.add('hidden');
+      lightbox.classList.remove('flex');
+    }
+  }
+
+  /* ── mark as unread ────────────────────────────────────────────────────── */
+
+  async function markAsUnread() {
+    if (!state.threadId) return;
+    const thread = state.threads.find(t => t.id === state.threadId);
+    if (thread) {
+      thread.unread_count = 1;
+    }
+    state.lastReadMarkedFor = '';
+    try {
+      await api.request('cv_social_mark_thread_unread', { thread_id: state.threadId });
+    } catch (_) {}
+    renderInbox();
+    showInboxPane();
+    toast('Conversation marked as unread');
   }
 
   /* ── message bubble ─────────────────────────────────────────────────────── */
 
   function messageBubble(message) {
     const mine = !!message.mine;
+    const isPinned = !!(state.pinned && state.pinned[message.id]);
     const attachment = message.attachment;
     const media = attachment && attachment.type === 'image' && attachment.data_url
-      ? `<img alt="${esc(attachment.name || 'Shared image')}" class="rounded-xl mt-1 max-h-72 w-auto" src="${esc(attachment.data_url)}"/>`
+      ? `<img alt="${esc(attachment.name || 'Shared image')}" class="rounded-xl mt-1 max-h-72 w-auto cursor-zoom-in hover:opacity-95 transition" data-lightbox-trigger src="${esc(attachment.data_url)}"/>`
       : (attachment
         ? `<span class="flex items-center gap-2 mt-1 text-[13px]"><i class="fa-regular fa-file"></i>${esc(attachment.name || 'Attachment')}</span>`
         : '');
@@ -623,6 +768,7 @@
       <div class="msg-bubble-actions">
         <button class="msg-action-btn" data-bubble-action="react" data-msg-id="${esc(message.id)}" title="React" type="button"><i class="fa-regular fa-face-smile"></i></button>
         <button class="msg-action-btn" data-bubble-action="reply" data-msg-id="${esc(message.id)}" title="Reply" type="button"><i class="fa-solid fa-reply"></i></button>
+        <button class="msg-action-btn ${isPinned ? 'text-amber-500' : ''}" data-bubble-action="pin" data-msg-id="${esc(message.id)}" title="${isPinned ? 'Unpin message' : 'Pin message'}" type="button"><i class="fa-${isPinned ? 'solid' : 'regular'} fa-star"></i></button>
         <button class="msg-action-btn" data-bubble-action="copy" data-msg-id="${esc(message.id)}" title="Copy" type="button"><i class="fa-regular fa-copy"></i></button>
         <button class="msg-action-btn" data-bubble-action="delete" data-msg-id="${esc(message.id)}" title="Delete" type="button"><i class="fa-regular fa-trash-can"></i></button>
       </div>
@@ -640,7 +786,7 @@
       ${mine ? '' : `<span class="shrink-0 mb-1">${avatar(state.partner, 'avatar w-7 h-7 text-[11px]')}</span>`}
       <div class="msg-bubble-group">
         <div class="flex flex-col gap-1 ${mine ? 'items-end' : 'items-start'} min-w-0 max-w-full">
-          <div class="msg-bubble${mine ? ' is-mine' : ''}${message.pending ? ' opacity-60' : ''}">
+          <div class="msg-bubble${mine ? ' is-mine' : ''}${message.pending ? ' opacity-60' : ''}${isPinned ? ' is-pinned' : ''}">
             ${replyQuote}${bodyText}${media}${reactionPill}
           </div>
           <span class="text-[10.5px] text-faint px-2 flex items-center gap-1">
@@ -712,6 +858,7 @@
       paintPartner(payload.presence);
       renderMessages();
       paintSharedMedia();
+      renderPinnedList();
       if (wasAtBottom) { scrollToLatest(); state.stickToBottom = true; }
       if (!document.hidden) markRead();
     }, error => {
@@ -756,15 +903,16 @@
     header.hidden = false;
     composer.hidden = false;
     loadReactions();
+    loadPinned();
     applyTheme();
     checkMute();
     clearReplyingTo();
     paintPartner(null);
     renderMessages();
     paintSharedMedia();
+    renderPinnedList();
     renderInbox();
     showConversationPane();
-    if (chatDockEl && !chatDockEl.classList.contains('hidden')) renderDock();
     input.focus({ preventScroll: true });
 
     const url = new URL(location.href);
@@ -921,7 +1069,6 @@
     state.pending.push(optimistic);
     state.stickToBottom = true;
     renderMessages();
-    if (chatDockEl && !chatDockEl.classList.contains('hidden')) renderDock();
     scrollToLatest('smooth');
     clearAttachment();
 
@@ -1059,6 +1206,21 @@
       return;
     }
 
+    const pinBtn = event.target.closest('[data-bubble-action="pin"]');
+    if (pinBtn) {
+      event.stopPropagation();
+      const msgId = pinBtn.dataset.msgId;
+      togglePin(msgId);
+      return;
+    }
+
+    const imgTrigger = event.target.closest('[data-lightbox-trigger]');
+    if (imgTrigger) {
+      event.stopPropagation();
+      openLightbox(imgTrigger.src);
+      return;
+    }
+
     const deleteBtn = event.target.closest('[data-bubble-action="delete"]');
     if (deleteBtn) {
       event.stopPropagation();
@@ -1080,7 +1242,51 @@
   $('[data-chat-search-next]')?.addEventListener('click', () => jumpToMatch(state.currentMatchIdx + 1));
   $('[data-chat-search-close]')?.addEventListener('click', () => toggleChatSearch(false));
 
-  document.querySelectorAll('[data-bubble-toggle]').forEach(b => b.addEventListener('click', toggleBubbleMode));
+  /* ── scripture quick share wiring ── */
+  $('[data-verse-toggle]')?.addEventListener('click', openVerseModal);
+  $('[data-verse-close]')?.addEventListener('click', closeVerseModal);
+  $('[data-verse-filter]')?.addEventListener('input', e => renderVerseList(e.target.value));
+
+  /* ── emoji picker wiring ── */
+  initEmojiPicker();
+  $('[data-emoji-toggle]')?.addEventListener('click', e => {
+    e.stopPropagation();
+    toggleEmojiPicker();
+  });
+  $('[data-emoji-close]')?.addEventListener('click', () => toggleEmojiPicker(false));
+
+  /* ── lightbox wiring ── */
+  $('[data-lightbox-close]')?.addEventListener('click', closeLightbox);
+  $('[data-image-lightbox]')?.addEventListener('click', e => {
+    if (e.target.hasAttribute('data-image-lightbox') || e.target.classList.contains('msg-lightbox')) closeLightbox();
+  });
+  window.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+      closeLightbox();
+      closeVerseModal();
+      toggleEmojiPicker(false);
+    }
+  });
+
+  /* ── mark as unread wiring ── */
+  document.querySelectorAll('[data-mark-unread]').forEach(b => b.addEventListener('click', () => {
+    userMenuDropdown?.classList.add('hidden');
+    markAsUnread();
+  }));
+
+  /* ── info pane click wiring (jump to pinned message, open lightbox) ── */
+  infoPane.addEventListener('click', event => {
+    const jumpBtn = event.target.closest('[data-jump-to-msg]');
+    if (jumpBtn) {
+      jumpToMessage(jumpBtn.dataset.jumpToMsg);
+      return;
+    }
+    const img = event.target.closest('[data-lightbox-trigger]');
+    if (img) {
+      openLightbox(img.src);
+      return;
+    }
+  });
 
   const userMenuBtn = $('[data-user-menu-btn]');
   const userMenuDropdown = $('[data-user-menu-dropdown]');
@@ -1127,6 +1333,9 @@
         userMenuDropdown.classList.add('hidden');
         userMenuDropdown.classList.remove('flex');
       }
+    }
+    if (!event.target.closest('[data-emoji-picker]') && !event.target.closest('[data-emoji-toggle]')) {
+      toggleEmojiPicker(false);
     }
   });
 

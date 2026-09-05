@@ -414,7 +414,7 @@
       const notificationLink = $('a[aria-label^="Notifications"]');
       notificationLink?.querySelector('span')?.classList.add('hidden');
       notificationLink?.setAttribute('aria-label', 'Notifications');
-      syncGlobalChatBubble(0);
+      document.getElementById('fi-global-bubble-launcher')?.remove();
     }
     if (page !== 'profile') {
       $$('a, h1, h2').filter(node => node.textContent.trim() === 'Hun Chet' || node.hasAttribute('data-current-user-name')).forEach(node => {
@@ -473,40 +473,8 @@
       paint($('a[aria-label^="Notifications"] span'), counts.unread_count || 0);
       if (document.body.dataset.page !== 'messaging') {
         paint($('a[aria-label^="Messages"] [data-msg-badge]'), counts.message_unread_count || 0);
-        syncGlobalChatBubble(counts.message_unread_count || 0);
       }
     } catch (_) {}
-  }
-
-  function syncGlobalChatBubble(unreadCount) {
-    if (document.body.dataset.page === 'messaging' || !session) {
-      const existing = document.getElementById('fi-global-bubble-launcher');
-      if (existing) existing.remove();
-      return;
-    }
-    let launcher = document.getElementById('fi-global-bubble-launcher');
-    if (!launcher) {
-      launcher = document.createElement('a');
-      launcher.id = 'fi-global-bubble-launcher';
-      launcher.className = 'fi-chat-bubble-launcher';
-      launcher.href = '/messages';
-      launcher.title = 'Open Messages (Messenger)';
-      launcher.setAttribute('aria-label', 'Open Messages');
-      launcher.innerHTML = `
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12 2C6.477 2 2 6.145 2 11.258c0 2.91 1.455 5.517 3.736 7.197V22l3.414-1.874c.905.251 1.862.387 2.85.387 5.523 0 10-4.145 10-9.258C22 6.145 17.523 2 12 2Z" fill="currentColor"/>
-          <path d="m7 13.5 3.5-3.5 2.5 2.5 4-4-3.5 3.5-2.5-2.5-4 4Z" fill="#0866FF"/>
-        </svg>
-        <span class="fi-bubble-badge hidden" id="fi-global-bubble-badge"></span>
-      `;
-      document.body.appendChild(launcher);
-    }
-    const badge = document.getElementById('fi-global-bubble-badge');
-    if (badge) {
-      const count = Number(unreadCount || 0);
-      badge.textContent = count > 99 ? '99+' : String(count);
-      badge.classList.toggle('hidden', count <= 0);
-    }
   }
 
   function emptyState(label) {

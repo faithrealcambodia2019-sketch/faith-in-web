@@ -15,8 +15,8 @@
 <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/favicon-180x180.png"/>
 <link href="/faithin-app/assets/faithin-fonts.css" rel="stylesheet"/>
 <link href="/faithin-app/assets/faithin-icons.css" rel="stylesheet"/>
-<link href="/faithin-app/assets/faithin-tw.css?v=20260905-bubble" rel="stylesheet"/>
-<link href="/faithin-app/assets/faithin.css?v=20260905-bubble" rel="stylesheet"/>
+<link href="/faithin-app/assets/faithin-tw.css?v=20260905-clean" rel="stylesheet"/>
+<link href="/faithin-app/assets/faithin.css?v=20260905-clean" rel="stylesheet"/>
 </head>
 <body class="font-sans min-h-screen pb-16 lg:pb-0" data-page="messaging" data-search="Search messages">
 <main class="max-w-[1200px] mx-auto px-0 sm:px-4 py-0 sm:py-5" id="main">
@@ -73,9 +73,6 @@
 <button aria-label="Search conversation" class="icon-btn" data-chat-search-toggle title="Search in conversation" type="button">
 <i class="fa-solid fa-magnifying-glass text-[13px]"></i>
 </button>
-<button aria-label="Floating Chat Bubble Mode" class="icon-btn text-blue-600 dark:text-blue-400" data-bubble-toggle title="Floating chat bubble mode" type="button">
-<i class="fa-solid fa-comment-dots text-[14px]"></i>
-</button>
 <span class="w-px h-6 bg-line mx-1"></span>
 <!-- User Functions Dropdown -->
 <div class="relative" data-user-menu-root>
@@ -86,8 +83,8 @@
 <a class="flex items-center gap-2.5 px-3 py-2 rounded-lg row-hover text-[13px] font-medium" data-info-profile href="/profile">
 <i class="fa-regular fa-user text-muted"></i>View Profile
 </a>
-<button class="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg row-hover text-[13px] font-medium text-left" data-bubble-toggle type="button">
-<i class="fa-solid fa-comment-dots text-brand"></i>Floating Bubble Mode
+<button class="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg row-hover text-[13px] font-medium text-left" data-mark-unread type="button">
+<i class="fa-regular fa-envelope text-brand"></i>Mark as Unread
 </button>
 <button class="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg row-hover text-[13px] font-medium text-left" data-chat-search-toggle type="button">
 <i class="fa-solid fa-magnifying-glass text-muted"></i>Search in Chat
@@ -140,16 +137,30 @@
 </div>
 <button class="text-faint hover:text-ink shrink-0" data-composer-reply-cancel type="button"><i class="fa-solid fa-xmark text-[12px]"></i></button>
 </div>
-<form class="msg-composer" data-message-form>
+<form class="msg-composer relative" data-message-form>
 <label class="sr-only" for="msg-input">Write a message</label>
 <textarea class="no-scrollbar" id="msg-input" name="body" placeholder="Write a message…" rows="1"></textarea>
 <input accept="image/png,image/jpeg,image/gif,image/webp" class="hidden" data-attach-input type="file"/>
+<button aria-label="Share Scripture verse" class="icon-btn shrink-0 text-amber-600 dark:text-amber-400 hover:text-amber-500" data-verse-toggle title="Quick Scripture verse" type="button">
+<i class="fa-solid fa-book-bible text-[14px]"></i>
+</button>
+<button aria-label="Insert emoji" class="icon-btn shrink-0 text-amber-500 hover:text-amber-400" data-emoji-toggle title="Insert emoji" type="button">
+<i class="fa-regular fa-face-smile text-[15px]"></i>
+</button>
 <button aria-label="Attach an image" class="icon-btn shrink-0" data-attach title="Attach an image" type="button">
 <i class="fa-regular fa-image"></i>
 </button>
 <button aria-label="Send message" class="icon-btn shrink-0 !bg-brand !text-white dark:!text-[#0b1120]" data-send type="submit">
 <i class="fa-solid fa-paper-plane text-[13px]"></i>
 </button>
+<!-- Quick Emoji Picker Popover -->
+<div class="hidden msg-emoji-picker" data-emoji-picker>
+<div class="flex items-center justify-between pb-1 border-b border-line text-[11px] font-semibold text-muted">
+<span class="flex items-center gap-1.5"><i class="fa-regular fa-face-smile text-amber-500"></i>Quick Emoji</span>
+<button class="text-muted hover:text-ink text-[11px]" data-emoji-close type="button"><i class="fa-solid fa-xmark"></i></button>
+</div>
+<div class="msg-emoji-grid" data-emoji-grid></div>
+</div>
 </form>
 <div class="hidden mt-2 flex items-center gap-2 text-[12px] text-muted" data-attach-preview>
 <i class="fa-regular fa-image text-brand"></i>
@@ -168,7 +179,7 @@
 <p class="text-[12px] text-muted mt-1" data-info-role>Faith In member</p>
 <div class="flex flex-wrap items-center justify-center gap-2 mt-3.5">
 <a class="btn btn-neutral !py-1.5 !px-3 text-[12.5px]" data-info-profile href="/profile"><i class="fa-regular fa-user"></i>Profile</a>
-<button class="btn btn-neutral !py-1.5 !px-3 text-[12.5px]" data-bubble-toggle type="button"><i class="fa-solid fa-comment-dots text-brand"></i>Chat Bubble</button>
+<button class="btn btn-neutral !py-1.5 !px-3 text-[12.5px]" data-mark-unread type="button"><i class="fa-regular fa-envelope text-brand"></i>Unread</button>
 </div>
 </div>
 
@@ -176,11 +187,16 @@
 <div class="p-4 border-b border-line space-y-3">
 <h4 class="text-[11.5px] font-bold uppercase tracking-wider text-faint">User Functions &amp; Chat</h4>
 
-<!-- Floating Bubble Mode -->
-<button class="w-full flex items-center justify-between p-2 rounded-xl row-hover text-[12.5px]" data-bubble-toggle type="button">
-<span class="flex items-center gap-2.5 font-medium"><i class="fa-solid fa-comment-dots text-brand"></i>Floating Bubble Mode</span>
-<i class="fa-solid fa-arrow-up-right-from-square text-[11px] text-faint"></i>
-</button>
+<!-- Pinned Messages -->
+<div class="space-y-2 p-2.5 rounded-xl bg-raised/50 border border-line">
+<div class="flex items-center justify-between text-[12px] font-medium">
+<span class="flex items-center gap-2 text-amber-500 font-semibold"><i class="fa-solid fa-star text-[11px]"></i>Pinned Messages</span>
+<span class="text-[11px] text-muted font-mono" data-pinned-count>0</span>
+</div>
+<div class="space-y-1.5 text-[12px] max-h-40 overflow-y-auto" data-pinned-list>
+<p class="text-[11.5px] text-muted italic">Hover any message and click ★ to pin.</p>
+</div>
+</div>
 
 <!-- Search in Chat -->
 <button class="w-full flex items-center justify-between p-2 rounded-xl row-hover text-[12.5px]" data-chat-search-toggle type="button">
@@ -188,10 +204,10 @@
 <i class="fa-solid fa-chevron-right text-[11px] text-faint"></i>
 </button>
 
-<!-- Customize Bubble Color Theme -->
+<!-- Customize Chat Accent Color -->
 <div class="space-y-1.5 p-2.5 rounded-xl bg-raised/60">
 <div class="flex items-center justify-between text-[12px] font-medium">
-<span class="flex items-center gap-2"><i class="fa-solid fa-palette text-indigo-500"></i>Bubble Theme</span>
+<span class="flex items-center gap-2"><i class="fa-solid fa-palette text-indigo-500"></i>Chat Theme</span>
 <span class="text-[10.5px] text-muted font-mono" data-theme-label>Facebook Blue</span>
 </div>
 <div class="flex items-center justify-between gap-1.5 pt-1" data-theme-selector>
@@ -283,11 +299,33 @@
 </div>
 </div>
 </div>
+<!-- ───── SCRIPTURE VERSE QUICK SHARE MODAL ───── -->
+<div class="hidden msg-verse-modal" data-verse-modal>
+<div class="msg-verse-card">
+<div class="px-4 py-3 border-b border-line flex items-center justify-between">
+<div class="flex items-center gap-2">
+<i class="fa-solid fa-book-bible text-amber-500 text-[16px]"></i>
+<h3 class="font-bold text-[15px]">Share Scripture Verse</h3>
+</div>
+<button class="icon-btn !w-7 !h-7" data-verse-close type="button"><i class="fa-solid fa-xmark"></i></button>
+</div>
+<div class="p-3 border-b border-line">
+<input class="field text-[13px]" data-verse-filter placeholder="Search verse (e.g. peace, love, faith, strength, hope)..." type="search"/>
+</div>
+<div class="overflow-y-auto max-h-[340px] p-2 space-y-1.5" data-verse-list></div>
+</div>
+</div>
 
-<script src="/faithin-app/assets/faithin-runtime.js?v=20260905-bubble"></script>
-<script src="/assets/js/faith-in-backend.js?v=20260905-bubble"></script>
-<script src="/faithin-app/assets/faithin.js?v=20260905-bubble"></script>
-<script src="/faithin-app/assets/faithin-live.js?v=20260905-bubble"></script>
-<script src="/faithin-app/assets/faithin-messaging.js?v=20260905-bubble"></script>
+<!-- ───── IMAGE LIGHTBOX ───── -->
+<div class="hidden msg-lightbox" data-image-lightbox>
+<button aria-label="Close image" class="msg-lightbox-close" data-lightbox-close type="button"><i class="fa-solid fa-xmark"></i></button>
+<img alt="Enlarged photo" data-lightbox-img src=""/>
+</div>
+
+<script src="/faithin-app/assets/faithin-runtime.js?v=20260905-clean"></script>
+<script src="/assets/js/faith-in-backend.js?v=20260905-clean"></script>
+<script src="/faithin-app/assets/faithin.js?v=20260905-clean"></script>
+<script src="/faithin-app/assets/faithin-live.js?v=20260905-clean"></script>
+<script src="/faithin-app/assets/faithin-messaging.js?v=20260905-clean"></script>
 </body>
 </html>
