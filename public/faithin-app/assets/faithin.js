@@ -121,7 +121,7 @@
               <span class="avatar w-8 h-8 text-[12px]" style="background:linear-gradient(135deg,#2f5bea,#1e40af)">HC</span>
               <i class="fa-solid fa-chevron-down text-[10px] text-faint"></i>
             </button>
-            <div class="absolute right-0 mt-2 w-60 card shadow-pop p-1.5 hidden animate-pop-in" data-menu role="menu">
+            <div class="absolute right-0 mt-2 w-60 card shadow-pop p-1.5 hidden animate-pop-in" data-menu data-account-menu role="menu">
               <div class="px-3 py-2.5 flex items-center gap-3 border-b border-line mb-1.5">
                 <span class="avatar w-10 h-10 text-[13px]" style="background:linear-gradient(135deg,#2f5bea,#1e40af)">HC</span>
                 <div class="min-w-0">

@@ -2592,3 +2592,114 @@ html.dark .article-preview-body blockquote {
 @media (prefers-reduced-motion: reduce) {
   .fi-bible-loading span { animation: none; }
 }
+
+/* --- Account menu: Facebook's profile dropdown --------------------------
+   Facebook builds this menu out of one shape repeated: a 44px row with a
+   grey 36px disc holding the icon, 15px medium label, 8px corners and a
+   flat grey hover. The card itself is an 8px white sheet on a deep,
+   soft-edged shadow rather than a hairline border. Scoped to the header
+   account menu only — every other menu, rail and .side-link elsewhere in
+   the app keeps FaithIn's own styling. Icon colours, labels, links and
+   order are untouched. */
+
+[data-account-menu] {
+  --fb-surface: #FFFFFF;
+  --fb-text: #050505;
+  --fb-secondary: #65676B;
+  --fb-hover: #F2F2F2;
+  --fb-press: #E4E6EB;
+  --fb-chip: #E4E6EB;
+  --fb-line: #CED0D4;
+  --fb-tint: #E9EFFE;
+
+  width: 300px;
+  padding: 8px;
+  background: var(--fb-surface);
+  border: 0;
+  border-radius: 8px;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, .2), 0 2px 4px rgba(0, 0, 0, .1);
+}
+html.dark [data-account-menu] {
+  --fb-surface: #242526;
+  --fb-text: #E4E6EB;
+  --fb-secondary: #B0B3B8;
+  --fb-hover: #3A3B3C;
+  --fb-press: #4E4F50;
+  --fb-chip: #3A3B3C;
+  --fb-line: #3E4042;
+  --fb-tint: rgba(122, 155, 255, .18);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, .5), 0 2px 4px rgba(0, 0, 0, .3);
+}
+
+/* Identity block: Facebook sets the name at reading size, the role beneath
+   it in secondary grey, and rules it off from the actions. */
+[data-account-menu] > .border-b {
+  padding: 8px 8px 12px;
+  margin-bottom: 8px;
+  gap: 12px;
+  border-bottom: 1px solid var(--fb-line);
+}
+[data-account-menu] > .border-b p:first-child {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--fb-text);
+}
+[data-account-menu] > .border-b p + p {
+  font-size: 13px;
+  color: var(--fb-secondary);
+}
+
+/* Divider above Sign out */
+[data-account-menu] > .border-t {
+  margin: 8px 0;
+  border-top: 1px solid var(--fb-line);
+}
+
+/* The row */
+[data-account-menu] .side-link {
+  gap: 12px;
+  min-height: 44px;
+  padding: 4px 8px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--fb-text);
+  transition: background .1s ease;
+}
+[data-account-menu] .side-link:hover { background: var(--fb-hover); color: var(--fb-text); }
+[data-account-menu] .side-link:active { background: var(--fb-press); }
+
+/* The grey disc — Facebook's one recurring motif in this menu. FaithIn's
+   icon colours ride inside it unchanged. */
+[data-account-menu] .side-link i {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 9999px;
+  background: var(--fb-chip);
+  font-size: 16px;
+  /* no colour here on purpose: icons without a colour utility inherit the
+     row's ink, and FaithIn's coloured icons keep their own class. */
+}
+
+/* Current page keeps FaithIn's blue highlight, rendered flat like the rest */
+[data-account-menu] .side-link.is-active,
+[data-account-menu] .side-link[aria-current="page"] {
+  background: var(--fb-tint);
+  color: #2F5BEA;
+  font-weight: 600;
+}
+[data-account-menu] .side-link.is-active i,
+[data-account-menu] .side-link[aria-current="page"] i {
+  background: rgba(47, 91, 234, .12);
+  color: #2F5BEA;
+}
+html.dark [data-account-menu] .side-link.is-active,
+html.dark [data-account-menu] .side-link[aria-current="page"] { color: #7A9BFF; }
+html.dark [data-account-menu] .side-link.is-active i,
+html.dark [data-account-menu] .side-link[aria-current="page"] i {
+  background: rgba(122, 155, 255, .16);
+  color: #7A9BFF;
+}
