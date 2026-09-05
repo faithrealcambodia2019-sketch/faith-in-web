@@ -10,7 +10,7 @@
   // new post gets, unless the composer asks for something specific.
   const defaultAudience = () => (window.FILive && window.FILive.user && window.FILive.user.settings
     && window.FILive.user.settings.default_post_audience) || 'public';
-  let loadedPosts = [], feedQuery = '', sortMode = 'Top', followingIds = new Set();
+  let loadedPosts = [], feedQuery = '', sortMode = 'Recent', followingIds = new Set();
 
   // Blocking is enforced here as well as saved: a blocked member's posts and
   // blessings leave the feed on the next render.
@@ -1553,7 +1553,13 @@
   $('[data-add-verse]')?.addEventListener('click', () => { if (ta) { ta.value += `${ta.value ? '\n' : ''}John 3:16 — “For God so loved the world…”`; ta.dispatchEvent(new Event('input')); ta.focus(); } });
   $('[data-add-emoji]')?.addEventListener('click', () => { if (ta) { ta.value += ' 🙏'; ta.dispatchEvent(new Event('input')); ta.focus(); } });
   $$('[data-prayer-category]').forEach(button => button.addEventListener('click', () => { const title = $('#modal-prayer input[type="text"]'); if (title) { title.value = button.textContent.trim(); title.focus(); } }));
-  $$('[data-sort]').forEach(button => button.addEventListener('click', () => { sortMode = button.dataset.sort; $('[data-sort-label]').textContent = sortMode; renderFeed(); }));
+  $$('[data-sort]').forEach(button => button.addEventListener('click', () => {
+    sortMode = button.dataset.sort;
+    const label = $('[data-sort-label]');
+    if (label) label.textContent = sortMode;
+    $$('[data-sort]').forEach(b => b.classList.toggle('bg-raised', b.dataset.sort === sortMode));
+    renderFeed();
+  }));
   document.addEventListener('fi:search', event => { feedQuery = event.detail.query.toLowerCase(); renderFeed(); });
   document.addEventListener('fi:session', event => {
     const user = event.detail.user;
