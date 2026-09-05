@@ -749,6 +749,7 @@ html.dark .chip.is-on{ color:#0b1120; }
    rows. Scoped to this page only; FaithIn's own blue, logo and Khmer type
    are untouched. */
 
+body[data-page="home"],
 body[data-page="notifications"],
 body[data-page="profile"],
 body[data-page="settings"],
@@ -764,6 +765,7 @@ body[data-page="settings-security"] {
   --fb-shadow: 0 1px 2px rgba(0, 0, 0, .2);
   background: var(--fb-canvas);
 }
+html.dark body[data-page="home"],
 html.dark body[data-page="notifications"],
 html.dark body[data-page="profile"],
 html.dark body[data-page="settings"],
@@ -779,6 +781,7 @@ html.dark body[data-page="settings-security"] {
   --fb-shadow: 0 1px 2px rgba(0, 0, 0, .4);
 }
 
+body[data-page="home"] .card,
 body[data-page="notifications"] .card,
 body[data-page="profile"] .card,
 body[data-page="settings"] .card,
@@ -2703,3 +2706,26 @@ html.dark [data-account-menu] .side-link[aria-current="page"] i {
   background: rgba(122, 155, 255, .16);
   color: #7A9BFF;
 }
+
+/* Home, continued: the pieces the shared .card rule doesn't reach. Surface
+   values only — no element moves, nothing is added or removed. */
+
+/* Facebook's composer field is a flat grey pill with no border. */
+body[data-page="home"] [data-modal-open="modal-blessing"].rounded-pill {
+  background: var(--fb-chip);
+  border-color: transparent;
+  color: var(--fb-secondary);
+}
+body[data-page="home"] [data-modal-open="modal-blessing"].rounded-pill:hover {
+  background: #D8DADF;
+}
+html.dark body[data-page="home"] [data-modal-open="modal-blessing"].rounded-pill:hover {
+  background: #4E4F50;
+}
+
+/* Rail rows take Facebook's flat grey hover rather than the raised tint. */
+body[data-page="home"] .side-link:hover { background: var(--fb-hover); }
+
+/* Facebook keeps its dividers hairline-thin and cool grey. */
+body[data-page="home"] .card .border-line { border-color: #CED0D4; }
+html.dark body[data-page="home"] .card .border-line { border-color: #3E4042; }
