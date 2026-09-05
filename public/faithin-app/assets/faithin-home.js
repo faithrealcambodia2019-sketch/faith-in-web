@@ -723,6 +723,8 @@
     fileInput.value = '';
     fileInput.accept = mediaMode === 'video' ? 'video/*,.mp4,.m4v,.mov,.qt,.webm,.ogv' : 'image/*';
     fileInput.multiple = mediaMode !== 'video';
+    const photoTitleEl = $('#t-photo');
+    if (photoTitleEl) photoTitleEl.textContent = mediaMode === 'video' ? 'Add Video' : 'Add Photos';
     if (mediaPickerTitle) mediaPickerTitle.textContent = mediaMode === 'video' ? 'Select a video to share' : 'Select photos to share';
     if (mediaPickerHelp) mediaPickerHelp.textContent = mediaMode === 'video' ? 'Portrait, square, or landscape · maximum 50MB' : 'JPG, PNG, GIF, WebP, or HEIC · up to 10 images';
     if (mediaPickerIcon) mediaPickerIcon.className = mediaMode === 'video' ? 'fa-solid fa-video text-3xl text-rose mb-3' : 'fa-regular fa-images text-3xl text-faint mb-3';
@@ -737,27 +739,135 @@
     const chosen = videoFiles.length ? videoFiles.slice(0, 1) : imageFiles.slice(0, 10);
     const oversize = chosen.find(file => file.size > 50 * 1024 * 1024);
     if (oversize) { toast(`${oversize.name} is larger than the free 50MB limit.`); return; }
-    mediaMode = videoFiles.length ? 'video' : mediaMode;
+    if (chosen.length) {
+      mediaMode = videoFiles.length ? 'video' : 'image';
+      const photoTitleEl = $('#t-photo');
+      if (photoTitleEl) photoTitleEl.textContent = mediaMode === 'video' ? 'Add Video' : 'Add Photos';
+    }
     selectedFiles = chosen;
     clearPreviewUrls();
     preview.innerHTML = '';
-    preview.classList.toggle('hidden', !selectedFiles.length);
-    preview.classList.toggle('grid-cols-4', mediaMode !== 'video');
-    preview.classList.toggle('grid-cols-1', mediaMode === 'video');
-    selectedFiles.forEach(file => {
-      const url = URL.createObjectURL(file); previewUrls.push(url);
-      const element = document.createElement(isVideo(file) ? 'video' : 'img');
-      element.className = isVideo(file) ? 'fi-video-preview rounded-lg border border-line' : 'w-full aspect-square object-cover rounded-lg border border-line';
-      element.src = url;
-      if (isVideo(file)) { element.controls = true; element.playsInline = true; element.preload = 'metadata'; }
-      else element.alt = 'Selected image preview';
-      preview.appendChild(element);
-    });
+
+    if (dropzone) dropzone.classList.toggle('hidden', selectedFiles.length > 0);
+    preview.classList.toggle('hidden', selectedFiles.length === 0);
+
+    const doneBtn = $('#photo-done-btn') || $$('#modal-photo button').find(b => b.textContent.trim() === 'Done');
+    if (doneBtn) doneBtn.disabled = selectedFiles.length === 0;
+
+    if (!selectedFiles.length) {
+      if (fileInput) fileInput.value = '';
+      return;
+    }
+
+    if (mediaMode === 'video') {
+      preview.className = 'w-full';
+      const file = selectedFiles[0];
+      const url = URL.createObjectURL(file);
+      previewUrls.push(url);
+
+      const wrapper = document.createElement('div');
+      wrapper.className = 'relative rounded-xl overflow-hidden bg-black flex flex-col items-center justify-center border border-line shadow-sm';
+
+      const videoEl = document.createElement('video');
+      videoEl.className = 'w-full max-h-[350px] object-contain rounded-t-xl bg-black';
+      videoEl.src = url;
+      videoEl.controls = true;
+      videoEl.playsInline = true;
+      videoEl.preload = 'metadata';
+
+      const infoBar = document.createElement('div');
+      infoBar.className = 'w-full bg-surface/95 px-3.5 py-2.5 text-xs flex items-center justify-between border-t border-line shrink-0';
+
+      const meta = document.createElement('div');
+      meta.className = 'flex items-center gap-2 truncate pr-2';
+      const sizeMB = (file.size / (1024 * 1024)).toFixed(1);
+      meta.innerHTML = `<i class="fa-solid fa-film text-rose text-sm shrink-0"></i><span class="truncate font-semibold text-ink">${esc(file.name)}</span><span class="text-faint text-[11px] shrink-0">(${sizeMB} MB)</span>`;
+
+      const changeBtn = document.createElement('button');
+      changeBtn.type = 'button';
+      changeBtn.className = 'btn btn-ghost !py-1 !px-2.5 !text-xs !text-rose hover:!bg-rose-soft/50 transition shrink-0 flex items-center gap-1.5 font-semibold';
+      changeBtn.innerHTML = '<i class="fa-solid fa-trash-can"></i><span>Change video</span>';
+      changeBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        showFiles([]);
+      });
+
+      infoBar.appendChild(meta);
+      infoBar.appendChild(changeBtn);
+      wrapper.appendChild(videoEl);
+      wrapper.appendChild(infoBar);
+      preview.appendChild(wrapper);
+    } else {
+      preview.className = 'space-y-2';
+      const grid = document.createElement('div');
+      grid.className = 'grid grid-cols-2 sm:grid-cols-3 gap-2.5 max-h-[380px] overflow-y-auto p-1';
+
+      selectedFiles.forEach((file, index) => {
+        const url = URL.createObjectURL(file);
+        previewUrls.push(url);
+
+        const card = document.createElement('div');
+        card.className = 'relative group aspect-square rounded-lg overflow-hidden border border-line bg-raised';
+
+        const img = document.createElement('img');
+        img.className = 'w-full h-full object-cover';
+        img.src = url;
+        img.alt = 'Preview';
+
+        const removeBtn = document.createElement('button');
+        removeBtn.type = 'button';
+        removeBtn.className = 'absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-black/70 hover:bg-black/90 text-white flex items-center justify-center text-xs opacity-90 transition';
+        removeBtn.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+        removeBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          const remaining = selectedFiles.filter((_, i) => i !== index);
+          showFiles(remaining);
+        });
+
+        card.appendChild(img);
+        card.appendChild(removeBtn);
+        grid.appendChild(card);
+      });
+
+      if (selectedFiles.length < 10) {
+        const addMore = document.createElement('label');
+        addMore.className = 'aspect-square rounded-lg border-2 border-dashed border-line bg-raised hover:border-brand hover:bg-brand-soft/30 transition flex flex-col items-center justify-center cursor-pointer text-muted hover:text-brand';
+        addMore.innerHTML = '<i class="fa-solid fa-plus text-lg mb-1"></i><span class="text-xs font-semibold">Add more</span>';
+        const addInput = document.createElement('input');
+        addInput.type = 'file';
+        addInput.accept = 'image/*';
+        addInput.multiple = true;
+        addInput.className = 'hidden';
+        addInput.addEventListener('change', () => {
+          if (addInput.files?.length) {
+            const combined = [...selectedFiles, ...Array.from(addInput.files)].slice(0, 10);
+            showFiles(combined);
+          }
+        });
+        addMore.appendChild(addInput);
+        grid.appendChild(addMore);
+      }
+      preview.appendChild(grid);
+
+      const footerBar = document.createElement('div');
+      footerBar.className = 'flex items-center justify-between text-xs text-muted pt-1 px-1';
+      footerBar.innerHTML = `<span>${selectedFiles.length} of 10 photos selected</span>`;
+      const clearBtn = document.createElement('button');
+      clearBtn.type = 'button';
+      clearBtn.className = 'text-rose hover:underline font-semibold';
+      clearBtn.textContent = 'Clear all';
+      clearBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        showFiles([]);
+      });
+      footerBar.appendChild(clearBtn);
+      preview.appendChild(footerBar);
+    }
   }
   $$('[data-media-mode]').forEach(button => button.addEventListener('click', () => setMediaMode(button.dataset.mediaMode)));
   fileInput?.addEventListener('change', () => showFiles(fileInput.files));
   ['dragover','dragleave','drop'].forEach(type => dropzone?.addEventListener(type, event => { event.preventDefault(); dropzone.classList.toggle('border-brand', type === 'dragover'); if (type === 'drop') showFiles(event.dataTransfer.files); }));
-  const photoDone = $$('#modal-photo button').find(button => button.textContent.trim() === 'Done');
+  const photoDone = $('#photo-done-btn') || $$('#modal-photo button').find(button => button.textContent.trim() === 'Done');
   photoDone?.addEventListener('click', async () => { if (!needUser()) return; if (!selectedFiles.length) return toast(mediaMode === 'video' ? 'Choose a video.' : 'Choose at least one photo.'); busy(photoDone, true, 'Uploading'); try { await api.request('cv_create_post', { type: mediaMode === 'video' ? 'video' : 'post', visibility: defaultAudience() }, { 'post_media[]': selectedFiles }); closeModal(); toast(mediaMode === 'video' ? 'Video shared' : 'Photos shared'); showFiles([]); await loadPosts(); } catch (error) { toast(error.message); } finally { busy(photoDone, false, 'Done'); } });
 
   const prayerButton = $$('#modal-prayer button').find(button => /request prayer/i.test(button.textContent));

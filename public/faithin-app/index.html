@@ -188,15 +188,15 @@
 </aside>
 </main>
 <!-- ══════════════ MODALS ══════════════ -->
-<div class="fixed inset-0 z-[100] hidden items-center justify-center p-4 bg-[#0b1120]/60 backdrop-blur-sm" id="backdrop">
+<div class="fixed inset-0 z-[100] hidden items-center justify-center p-3 sm:p-4 bg-[#0b1120]/60 backdrop-blur-sm overflow-y-auto" id="backdrop">
 <!-- blessing -->
-<div aria-labelledby="t-blessing" aria-modal="true" class="modal hidden w-full max-w-[560px] card shadow-pop animate-pop-in" id="modal-blessing" role="dialog">
-<div class="flex items-center justify-between px-5 py-3.5 border-b border-line">
+<div aria-labelledby="t-blessing" aria-modal="true" class="modal hidden w-full max-w-[560px] card shadow-pop animate-pop-in max-h-[92vh] flex flex-col overflow-hidden my-auto" id="modal-blessing" role="dialog">
+<div class="flex items-center justify-between px-5 py-3.5 border-b border-line shrink-0">
 <h2 class="text-[17px] font-bold" id="t-blessing">Share a Blessing</h2>
 <button aria-label="Close" class="icon-btn" data-close=""><i class="fa-solid fa-xmark"></i></button>
 </div>
-<div class="p-5">
-<div class="flex items-center gap-3 mb-4">
+<div class="p-5 overflow-y-auto flex-1 space-y-3">
+<div class="flex items-center gap-3 mb-2">
 <span class="avatar w-11 h-11 text-[14px]" data-current-user-avatar style="background:linear-gradient(135deg,#2f5bea,#1e40af)">HC</span>
 <div>
 <p class="font-semibold text-[15px] leading-tight">Hun Chet</p>
@@ -205,8 +205,8 @@
 </button>
 </div>
 </div>
-<textarea class="w-full resize-none bg-transparent text-[15.5px] leading-relaxed placeholder:text-faint outline-none" id="blessing-text" maxlength="600" placeholder="What has God done in your life recently? Share your testimony…" rows="5"></textarea>
-<div class="hidden mt-3 relative overflow-hidden rounded-xl border border-line bg-raised" id="blessing-media-preview-wrap">
+<textarea class="w-full resize-none bg-transparent text-[15.5px] leading-relaxed placeholder:text-faint outline-none" id="blessing-text" maxlength="600" placeholder="What has God done in your life recently? Share your testimony…" rows="4"></textarea>
+<div class="hidden mt-2 relative overflow-hidden rounded-xl border border-line bg-black" id="blessing-media-preview-wrap">
 <div class="blessing-media-preview" id="blessing-media-preview"></div>
 <button aria-label="Remove Blessing media" class="icon-btn absolute top-2 right-2 bg-surface/90 shadow-lift" id="blessing-media-remove" type="button"><i class="fa-solid fa-xmark"></i></button>
 </div>
@@ -216,7 +216,7 @@
 <button class="text-[12px] font-medium px-2.5 py-1 rounded-pill bg-raised border border-line text-muted hover:text-ink transition" data-chip="">#answeredprayer</button>
 </div>
 </div>
-<div class="flex items-center justify-between px-5 py-3 border-t border-line">
+<div class="flex items-center justify-between px-5 py-3 border-t border-line shrink-0 bg-surface">
 <div class="flex gap-1 text-muted">
 <label aria-label="Add up to 10 images" class="blessing-media-tool cursor-pointer" title="Add images"><i class="fa-regular fa-images"></i><span>Images</span><input accept="image/*" class="hidden" id="blessing-image-input" multiple="" type="file"/></label>
 <label aria-label="Add a video" class="blessing-media-tool cursor-pointer" title="Add video"><i class="fa-solid fa-video"></i><span>Video</span><input accept="video/*,.mp4,.m4v,.mov,.qt,.webm,.ogv" class="hidden" id="blessing-video-input" type="file"/></label>
@@ -230,33 +230,33 @@
 </div>
 </div>
 <!-- photo -->
-<div aria-labelledby="t-photo" aria-modal="true" class="modal hidden w-full max-w-[560px] card shadow-pop animate-pop-in" id="modal-photo" role="dialog">
-<div class="flex items-center justify-between px-5 py-3.5 border-b border-line">
+<div aria-labelledby="t-photo" aria-modal="true" class="modal hidden w-full max-w-[560px] card shadow-pop animate-pop-in max-h-[92vh] flex flex-col overflow-hidden my-auto" id="modal-photo" role="dialog">
+<div class="flex items-center justify-between px-5 py-3.5 border-b border-line shrink-0">
 <h2 class="text-[17px] font-bold" id="t-photo">Add photos or video</h2>
 <button aria-label="Close" class="icon-btn" data-close=""><i class="fa-solid fa-xmark"></i></button>
 </div>
-<div class="p-5">
-<label class="flex flex-col items-center justify-center h-[240px] rounded-xl border-2 border-dashed border-line bg-raised hover:border-brand hover:bg-brand-soft/40 transition cursor-pointer text-center px-6" id="dropzone">
+<div class="p-5 overflow-y-auto flex-1 space-y-3">
+<label class="flex flex-col items-center justify-center min-h-[220px] rounded-xl border-2 border-dashed border-line bg-raised hover:border-brand hover:bg-brand-soft/40 transition cursor-pointer text-center px-6" id="dropzone">
 <i class="fa-regular fa-images text-3xl text-faint mb-3" id="media-picker-icon"></i>
 <p class="font-semibold text-[15px]" id="media-picker-title">Select photos or a video to share</p>
 <p class="text-[13px] text-muted mt-1" id="media-picker-help">Up to 10 images or one video · maximum 50MB per file on the free plan</p>
 <input accept="image/*,video/*,.mp4,.m4v,.mov,.qt,.webm,.ogv" class="hidden" id="file-input" multiple="" type="file"/>
 </label>
-<div class="grid grid-cols-4 gap-2 mt-3 hidden" id="preview"></div>
+<div class="hidden" id="preview"></div>
 </div>
-<div class="flex justify-end gap-2 px-5 py-3 border-t border-line">
+<div class="flex justify-end gap-2 px-5 py-3 border-t border-line shrink-0 bg-surface">
 <button class="btn btn-ghost" data-close="">Cancel</button>
-<button class="btn btn-primary">Done</button>
+<button class="btn btn-primary" id="photo-done-btn">Done</button>
 </div>
 </div>
 <!-- prayer -->
-<div aria-labelledby="t-prayer" aria-modal="true" class="modal hidden w-full max-w-[560px] card shadow-pop animate-pop-in overflow-hidden" id="modal-prayer" role="dialog">
-<div class="h-1 bg-rose"></div>
-<div class="flex items-center justify-between px-5 py-3.5 border-b border-line">
+<div aria-labelledby="t-prayer" aria-modal="true" class="modal hidden w-full max-w-[560px] card shadow-pop animate-pop-in max-h-[92vh] flex flex-col overflow-hidden my-auto" id="modal-prayer" role="dialog">
+<div class="h-1 bg-rose shrink-0"></div>
+<div class="flex items-center justify-between px-5 py-3.5 border-b border-line shrink-0">
 <h2 class="text-[17px] font-bold flex items-center gap-2" id="t-prayer"><i class="fa-solid fa-hands-praying text-rose"></i>Submit Prayer Request</h2>
 <button aria-label="Close" class="icon-btn" data-close=""><i class="fa-solid fa-xmark"></i></button>
 </div>
-<div class="p-5 space-y-3.5">
+<div class="p-5 space-y-3.5 overflow-y-auto flex-1">
 <input class="field font-semibold" placeholder="Title — e.g. Healing for a family member" type="text"/>
 <textarea class="field resize-none leading-relaxed" placeholder="How can the Faith In community pray for you?" rows="4"></textarea>
 <div class="flex flex-wrap gap-2">
@@ -270,7 +270,7 @@
         Post this request anonymously
       </label>
 </div>
-<div class="flex justify-end px-5 py-3 border-t border-line">
+<div class="flex justify-end px-5 py-3 border-t border-line shrink-0 bg-surface">
 <button class="btn btn-primary">Request Prayer</button>
 </div>
 </div>
