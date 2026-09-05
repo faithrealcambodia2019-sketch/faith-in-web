@@ -872,7 +872,7 @@
 
   const prayerButton = $$('#modal-prayer button').find(button => /request prayer/i.test(button.textContent));
   prayerButton?.removeAttribute('data-toast');
-  prayerButton?.addEventListener('click', async event => { event.stopPropagation(); if (!needUser()) return; const modal = $('#modal-prayer'), title = $('input[type="text"]', modal).value.trim(), body = $('textarea', modal).value.trim(); if (!body) return toast('Write your prayer request first.'); busy(prayerButton, true, 'Sharing'); try { await api.request('cv_create_prayer', { content: title ? `${title}\n${body}` : body }); closeModal(); toast('Prayer request shared 🙏'); $('textarea', modal).value = ''; await loadPrayers(); } catch (error) { toast(error.message); } finally { busy(prayerButton, false, 'Request Prayer'); } });
+  prayerButton?.addEventListener('click', async event => { event.stopPropagation(); if (!needUser()) return; const modal = $('#modal-prayer'), title = $('input[type="text"]', modal).value.trim(), body = $('textarea', modal).value.trim(); if (!body) return toast('Write your prayer request first.'); busy(prayerButton, true, 'Sharing'); try { await api.request('cv_create_prayer', { content: title ? `${title}\n${body}` : body, anonymous: $('[data-prayer-anonymous]', modal)?.checked ? 1 : 0 }); closeModal(); toast('Prayer request shared 🙏'); $('textarea', modal).value = ''; const anon = $('[data-prayer-anonymous]', modal); if (anon) anon.checked = false; await loadPrayers(); } catch (error) { toast(error.message); } finally { busy(prayerButton, false, 'Request Prayer'); } });
 
   // Article composer
   const headlineEl = $('#article-headline');

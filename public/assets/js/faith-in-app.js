@@ -6645,9 +6645,9 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
                 <div class="p-6 rounded-[2rem] shadow-sm border ${bgClass} transition-all hover:shadow-md flex flex-col">
                     <div class="flex justify-between items-start mb-4">
                         <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center font-bold text-sm text-slate-600 dark:text-slate-300">${(p.author||'A').charAt(0)}</div>
+                            <div class="w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center font-bold text-sm text-slate-600 dark:text-slate-300">${escapeHtml((p.author||'A').charAt(0))}</div>
                             <div>
-                                <span class="font-bold text-[15px] block leading-none ${isDark ? 'text-white' : 'text-slate-900'}">${p.author}</span>
+                                <span class="font-bold text-[15px] block leading-none ${isDark ? 'text-white' : 'text-slate-900'}">${escapeHtml(p.author)}</span>
                                 <span class="text-[11px] opacity-60 font-medium">${p.time}</span>
                             </div>
                         </div>

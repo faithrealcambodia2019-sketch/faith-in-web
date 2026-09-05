@@ -22,9 +22,17 @@ service firebase.storage {
         );
     }
 
-    // User-owned media. Community files are visible only to signed-in members.
+    // User-owned media, readable only by its owner.
+    //
+    // This was `allow read: if isSignedIn()`. A Storage list() is authorised by
+    // the read rule at the prefix, so any signed-in member could enumerate
+    // faith-in-uploads/<someone-else's-uid>/ and download everything in it —
+    // and uids are not secret, publicProfiles hands them to every verified
+    // member. Nothing in the app reads from Firebase Storage any more (media
+    // goes to Supabase), so scoping this to the owner closes the hole without
+    // affecting anything that is running.
     match /faith-in-uploads/{userId}/{allPaths=**} {
-      allow read: if isSignedIn();
+      allow read: if isSignedIn() && request.auth.uid == userId;
       allow create, update: if isSignedIn()
         && request.auth.uid == userId
         && isSafeFaithInFile();

@@ -257,9 +257,9 @@
       if (titleEl && title) titleEl.textContent = title;
       if (descEl && desc) {
         if (desc.includes('\n')) {
-          descEl.innerHTML = desc.replace(/\n/g, '<br>');
+          descEl.innerHTML = esc(desc).replace(/\n/g, '<br>');
         } else if (desc.includes('. ')) {
-          descEl.innerHTML = desc.replace(/\.\s+/, '.<br>');
+          descEl.innerHTML = esc(desc).replace(/\.\s+/, '.<br>');
         } else {
           descEl.textContent = desc;
         }
@@ -1917,11 +1917,23 @@
       const cover = $('.media-plate', hero);
       if (cover) {
         if (user.cover_url) {
-          cover.style.backgroundImage = `url("${String(user.cover_url).replace(/["\\]/g, '')}")`;
-          cover.style.backgroundSize = 'cover';
-          cover.style.backgroundPosition = 'center';
-          const label = $('span', cover);
-          if (label) label.remove();
+          // Was a hand-rolled quote strip with no scheme check, which let a
+          // profile force every viewer's browser to fetch an arbitrary host.
+          // Re-serialise through URL() and require https.
+          let coverHref = '';
+          try {
+            const parsed = new URL(String(user.cover_url), window.location.origin);
+            if (parsed.protocol === 'https:') coverHref = parsed.toString();
+          } catch (_) { coverHref = ''; }
+          if (coverHref) {
+            cover.style.backgroundImage = `url("${coverHref.replace(/["\\]/g, '')}")`;
+            cover.style.backgroundSize = 'cover';
+            cover.style.backgroundPosition = 'center';
+            const label = $('span', cover);
+            if (label) label.remove();
+          } else {
+            cover.style.backgroundImage = '';
+          }
         } else {
           cover.style.backgroundImage = '';
         }

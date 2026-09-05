@@ -1811,9 +1811,23 @@
         if (!body) throw new Error('Write your prayer request first.');
         return requireUser(b).then(function (user) {
             return loadProfile(b, user).then(function (profile) {
+                // "Post this request anonymously" was an unwired checkbox: every
+                // prayer shipped the member's real name and avatar. Honour it by
+                // withholding the display name and picture.
+                //
+                // Scope, stated plainly because this is a privacy control on
+                // health and family requests: firestore.rules requires
+                // authorUid == request.auth.uid on every prayer, so the author's
+                // uid is still stored and is readable by any verified member who
+                // queries the collection directly. This hides the name on the
+                // wall; it is not untraceable. The label says "Hide my name from
+                // the prayer wall" for that reason.
+                var anonymous = String(params.anonymous) === '1' || params.anonymous === true;
                 var doc = {
                     authorUid: user.uid,
-                    author: { uid: user.uid, name: profile.name, avatar_url: profile.avatar_url },
+                    author: anonymous
+                        ? { uid: user.uid, name: 'Anonymous', avatar_url: '' }
+                        : { uid: user.uid, name: profile.name, avatar_url: profile.avatar_url },
                     content: body,
                     urgent: String(params.urgent) === '1' || params.urgent === true,
                     prayed: {},
