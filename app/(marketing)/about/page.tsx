@@ -72,29 +72,28 @@ const beliefs = [
 
 export default function AboutPage() {
   return (
-    <div className="min-h-screen bg-white text-blue-950 font-sans selection:bg-blue-100 selection:text-blue-900">
-      
+    <div className="min-h-screen bg-[#F0F2F5] text-[#050505] font-sans selection:bg-[#E9EFFE] selection:text-[#2F5BEA]">
+
       {/* --- HERO SECTION --- */}
-      <section className="relative pt-24 pb-20 lg:pt-32 lg:pb-28 bg-blue-900 border-b border-blue-800 overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:16px_16px] opacity-10"></div>
+      <section className="relative pt-12 pb-10 lg:pt-16 lg:pb-12 bg-white border-b border-[#DADDE1]">
         <div className="max-w-7xl mx-auto px-6 relative z-10">
           <div className="max-w-3xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-800/50 border border-blue-700 text-blue-100 text-xs font-semibold tracking-wide uppercase mb-6">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#E4E6EB] text-[#65676B] text-xs font-semibold tracking-wide uppercase mb-6">
               <Building className="w-3.5 h-3.5" />
               <span>About Faith In</span>
             </div>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-tight">
+            <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-[#050505] leading-tight">
               Building a Digital Sanctuary for the Global Church.
             </h1>
-            <p className="mt-6 text-lg text-blue-100 leading-relaxed max-w-2xl">
+            <p className="mt-4 text-[15px] text-[#65676B] leading-relaxed max-w-2xl">
               Faith In is a premium, bilingual platform engineered to foster deep spiritual growth, reverent Scripture study, and authentic community for Khmer and English speakers worldwide.
             </p>
-            <div className="mt-10 flex flex-wrap items-center gap-4">
-              <Link href={site.appPath} className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg bg-white text-blue-900 font-semibold hover:bg-blue-50 transition-colors shadow-sm">
+            <div className="mt-8 flex flex-wrap items-center gap-3">
+              <Link href={site.appPath} className="inline-flex items-center justify-center gap-2 px-4 h-9 rounded-md bg-[#2F5BEA] text-white text-[15px] font-semibold hover:bg-[#2549C9] transition-colors">
                 <span>View Platform</span>
                 <ArrowRight className="w-4 h-4" />
               </Link>
-              <Link href="/contact" className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg bg-blue-800 border border-blue-700 text-white font-semibold hover:bg-blue-700 transition-colors shadow-sm">
+              <Link href="/contact" className="inline-flex items-center justify-center gap-2 px-4 h-9 rounded-md bg-[#E4E6EB] text-[#050505] text-[15px] font-semibold hover:brightness-95 transition-all">
                 <span>Contact Ministry</span>
               </Link>
             </div>
@@ -103,13 +102,13 @@ export default function AboutPage() {
       </section>
 
       {/* --- METRICS / STATS --- */}
-      <section className="border-b border-blue-800 bg-blue-950">
+      <section className="pt-4">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-blue-800/60 border-x border-blue-800/60">
+          <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-[#CED0D4] bg-white rounded-lg shadow-[0_1px_2px_rgba(0,0,0,0.2)] overflow-hidden">
             {stats.map((stat, idx) => (
-              <div key={idx} className="p-8 text-center">
-                <div className="text-3xl font-bold text-white">{stat.value}</div>
-                <div className="mt-1 text-sm font-medium text-blue-200 uppercase tracking-wide">{stat.label}</div>
+              <div key={idx} className="p-6 text-center">
+                <div className="text-2xl font-bold text-[#050505]">{stat.value}</div>
+                <div className="mt-1 text-[13px] font-medium text-[#65676B] uppercase tracking-wide">{stat.label}</div>
               </div>
             ))}
           </div>
@@ -117,37 +116,36 @@ export default function AboutPage() {
       </section>
 
       {/* --- MISSION / VISION --- */}
-      <section className="py-24 border-b border-blue-100">
+      <section className="py-10">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="grid md:grid-cols-2 gap-16 items-center">
-            <div>
-              <h2 className="text-3xl font-bold tracking-tight text-blue-950">Our Mission</h2>
-              <p className="mt-4 text-blue-900/80 leading-relaxed">
-                In an era dominated by noisy algorithms and commercialized social media, believers lack a dedicated space for quiet reflection and meaningful fellowship. 
+          <div className="grid md:grid-cols-2 gap-8 items-start">
+            <div className="bg-white rounded-lg shadow-[0_1px_2px_rgba(0,0,0,0.2)] p-6">
+              <h2 className="text-xl font-bold tracking-tight text-[#050505]">Our Mission</h2>
+              <p className="mt-3 text-[15px] text-[#65676B] leading-relaxed">
+                In an era dominated by noisy algorithms and commercialized social media, believers lack a dedicated space for quiet reflection and meaningful fellowship.
               </p>
-              <p className="mt-4 text-blue-900/80 leading-relaxed">
+              <p className="mt-3 text-[15px] text-[#65676B] leading-relaxed">
                 Our mission is to provide a meticulously designed, distraction-free environment where the Word of God is central, and community interactions are marked by grace and truth.
               </p>
-              
-              <div className="mt-8 p-6 bg-blue-50/50 rounded-xl border border-blue-200">
-                <h3 className="font-semibold text-blue-950 flex items-center gap-2">
-                  <Globe className="w-4 h-4 text-blue-600" />
+
+              <div className="mt-6 p-4 bg-[#F0F2F5] rounded-lg">
+                <h3 className="text-[15px] font-semibold text-[#050505] flex items-center gap-2">
+                  <Globe className="w-4 h-4 text-[#2F5BEA]" />
                   Bilingual Integration
                 </h3>
-                <p className="mt-2 text-sm text-blue-900/80">
+                <p className="mt-2 text-[13px] text-[#65676B] leading-relaxed">
                   We seamlessly bridge Khmer and English, ensuring that language is never a barrier to accessing high-quality theological resources or connecting with the global body of Christ.
                 </p>
               </div>
             </div>
-            <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-tr from-blue-100 to-blue-50 rounded-3xl transform rotate-3 scale-105 -z-10"></div>
-              <div className="bg-white border border-blue-200 rounded-3xl p-8 shadow-xl">
-                <div className="w-12 h-12 bg-blue-600 text-white rounded-lg flex items-center justify-center font-bold text-xl mb-6">FI</div>
-                <h3 className="text-xl font-bold text-blue-950 mb-2">The Foundation Verse</h3>
-                <blockquote className="text-lg italic text-blue-900 leading-relaxed">
-                  "For God so loved the world, that he gave his only Son, that whoever believes in him should not perish but have eternal life."
+            <div>
+              <div className="bg-white rounded-lg p-6 shadow-[0_1px_2px_rgba(0,0,0,0.2)]">
+                <div className="w-12 h-12 bg-[#2F5BEA] text-white rounded-lg flex items-center justify-center font-bold text-xl mb-5">FI</div>
+                <h3 className="text-lg font-bold text-[#050505] mb-2">The Foundation Verse</h3>
+                <blockquote className="text-[17px] italic text-[#050505] leading-relaxed">
+                  &ldquo;For God so loved the world, that he gave his only Son, that whoever believes in him should not perish but have eternal life.&rdquo;
                 </blockquote>
-                <div className="mt-4 text-sm font-semibold text-blue-600 uppercase tracking-wide">
+                <div className="mt-4 text-[13px] font-semibold text-[#2F5BEA] uppercase tracking-wide">
                   John 3:16 • យ៉ូហាន ៣:១៦
                 </div>
               </div>
@@ -157,25 +155,25 @@ export default function AboutPage() {
       </section>
 
       {/* --- CORE VALUES --- */}
-      <section className="py-24 bg-blue-50/50 border-b border-blue-100">
+      <section className="pb-10">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="mb-16">
-            <h2 className="text-3xl font-bold tracking-tight text-blue-950">Core Principles</h2>
-            <p className="mt-4 text-lg text-blue-900/80 max-w-2xl">
+          <div className="mb-6">
+            <h2 className="text-xl font-bold tracking-tight text-[#050505]">Core Principles</h2>
+            <p className="mt-2 text-[15px] text-[#65676B] max-w-2xl">
               The operational and philosophical guidelines that dictate how we build features and manage our community.
             </p>
           </div>
-          
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
             {values.map((val, idx) => {
               const Icon = val.icon;
               return (
-                <div key={idx} className="bg-white p-6 rounded-2xl border border-blue-200 shadow-sm hover:shadow-md transition-shadow">
-                  <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center mb-4">
-                    <Icon className="w-5 h-5 text-blue-600" />
+                <div key={idx} className="bg-white p-5 rounded-lg shadow-[0_1px_2px_rgba(0,0,0,0.2)]">
+                  <div className="w-10 h-10 rounded-full bg-[#E9EFFE] flex items-center justify-center mb-4">
+                    <Icon className="w-5 h-5 text-[#2F5BEA]" />
                   </div>
-                  <h3 className="text-lg font-bold text-blue-950">{val.title}</h3>
-                  <p className="mt-2 text-sm text-blue-900/80 leading-relaxed">{val.description}</p>
+                  <h3 className="text-[15px] font-bold text-[#050505]">{val.title}</h3>
+                  <p className="mt-2 text-[13px] text-[#65676B] leading-relaxed">{val.description}</p>
                 </div>
               );
             })}
@@ -184,24 +182,24 @@ export default function AboutPage() {
       </section>
 
       {/* --- STATEMENT OF FAITH --- */}
-      <section className="py-24">
+      <section className="pb-10">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="grid md:grid-cols-12 gap-12">
+          <div className="grid md:grid-cols-12 gap-6">
             <div className="md:col-span-4">
-              <h2 className="text-3xl font-bold tracking-tight text-blue-950">Statement of Faith</h2>
-              <p className="mt-4 text-blue-900/80">
+              <h2 className="text-xl font-bold tracking-tight text-[#050505]">Statement of Faith</h2>
+              <p className="mt-2 text-[15px] text-[#65676B]">
                 We stand firmly within the stream of historic Christian orthodoxy, holding to the essential truths of the biblical Gospel.
               </p>
             </div>
             <div className="md:col-span-8">
-              <div className="divide-y divide-blue-100">
+              <div className="bg-white rounded-lg shadow-[0_1px_2px_rgba(0,0,0,0.2)] px-6 divide-y divide-[#CED0D4]">
                 {beliefs.map((belief, idx) => (
-                  <div key={idx} className="py-6 first:pt-0 last:pb-0">
-                    <h3 className="text-lg font-bold text-blue-950 flex items-center gap-3">
-                      <CheckCircle2 className="w-5 h-5 text-blue-600" />
+                  <div key={idx} className="py-5">
+                    <h3 className="text-[15px] font-bold text-[#050505] flex items-center gap-3">
+                      <CheckCircle2 className="w-5 h-5 text-[#2F5BEA]" />
                       {belief.title}
                     </h3>
-                    <p className="mt-2 text-blue-900/80 pl-8">{belief.description}</p>
+                    <p className="mt-2 text-[13px] text-[#65676B] leading-relaxed pl-8">{belief.description}</p>
                   </div>
                 ))}
               </div>
@@ -211,19 +209,21 @@ export default function AboutPage() {
       </section>
 
       {/* --- CTA SECTION --- */}
-      <section className="py-24 bg-blue-950 text-white">
-        <div className="max-w-4xl mx-auto px-6 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold tracking-tight">Partner with our Ministry</h2>
-          <p className="mt-6 text-lg text-blue-200">
-            Whether you are a church leader looking for digital discipleship tools, or a believer seeking a reverent online community, we invite you to join us.
-          </p>
-          <div className="mt-10 flex justify-center gap-4">
-            <Link href="/contact" className="inline-flex items-center justify-center px-6 py-3 rounded-lg bg-white text-blue-950 font-semibold hover:bg-blue-100 transition-colors">
-              Contact Us
-            </Link>
-            <Link href={site.appPath} className="inline-flex items-center justify-center px-6 py-3 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-500 transition-colors">
-              Open App
-            </Link>
+      <section className="pb-12">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="bg-white rounded-lg shadow-[0_1px_2px_rgba(0,0,0,0.2)] px-6 py-10 text-center">
+            <h2 className="text-xl md:text-2xl font-bold tracking-tight text-[#050505]">Partner with our Ministry</h2>
+            <p className="mt-3 text-[15px] text-[#65676B] max-w-2xl mx-auto">
+              Whether you are a church leader looking for digital discipleship tools, or a believer seeking a reverent online community, we invite you to join us.
+            </p>
+            <div className="mt-6 flex justify-center gap-3">
+              <Link href="/contact" className="inline-flex items-center justify-center px-4 h-9 rounded-md bg-[#E4E6EB] text-[#050505] text-[15px] font-semibold hover:brightness-95 transition-all">
+                Contact Us
+              </Link>
+              <Link href={site.appPath} className="inline-flex items-center justify-center px-4 h-9 rounded-md bg-[#2F5BEA] text-white text-[15px] font-semibold hover:bg-[#2549C9] transition-colors">
+                Open App
+              </Link>
+            </div>
           </div>
         </div>
       </section>
