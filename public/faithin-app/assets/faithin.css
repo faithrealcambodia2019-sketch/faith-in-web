@@ -750,6 +750,7 @@ html.dark .chip.is-on{ color:#0b1120; }
    are untouched. */
 
 body[data-page="home"],
+body[data-page="jobs"],
 body[data-page="network"],
 body[data-page="notifications"],
 body[data-page="profile"],
@@ -767,6 +768,7 @@ body[data-page="settings-security"] {
   background: var(--fb-canvas);
 }
 html.dark body[data-page="home"],
+html.dark body[data-page="jobs"],
 html.dark body[data-page="network"],
 html.dark body[data-page="notifications"],
 html.dark body[data-page="profile"],
@@ -784,6 +786,7 @@ html.dark body[data-page="settings-security"] {
 }
 
 body[data-page="home"] .card,
+body[data-page="jobs"] .card,
 body[data-page="network"] .card,
 body[data-page="notifications"] .card,
 body[data-page="profile"] .card,
@@ -866,6 +869,7 @@ body[data-page="notifications"] .fi-notif-row .fi-notif-dot {
 }
 
 /* Filter pills, Facebook's flavour: grey by default, tinted blue when on */
+body[data-page="jobs"] .chip,
 body[data-page="notifications"] .chip {
   border: 0;
   padding: 8px 14px;
@@ -874,11 +878,14 @@ body[data-page="notifications"] .chip {
   color: var(--fb-text);
   background: var(--fb-chip);
 }
+body[data-page="jobs"] .chip:hover,
 body[data-page="notifications"] .chip:hover { filter: brightness(.95); }
+body[data-page="jobs"] .chip.is-on,
 body[data-page="notifications"] .chip.is-on {
   background: var(--fb-tint);
   color: #2F5BEA;
 }
+html.dark body[data-page="jobs"] .chip.is-on,
 html.dark body[data-page="notifications"] .chip.is-on { color: #7A9BFF; }
 
 /* Rails and headings pick up the same type colours */
@@ -2907,3 +2914,26 @@ body[data-page="network"] [data-message]:hover { filter: brightness(.95); }
 
 body[data-page="network"] [data-message] { margin-top: 8px; }
 body[data-page="network"] .side-link:hover { background: var(--fb-hover); }
+
+/* Jobs, continued: the list rows and the search fields. Surface values only —
+   the form, the filters, the row contents and the order are unchanged. */
+
+/* Facebook hovers a list row flat grey rather than tinting it. */
+body[data-page="jobs"] .row-hover:hover { background: var(--fb-hover); }
+
+/* Its dividers are a cool hairline. */
+body[data-page="jobs"] .divide-y > :not([hidden]) ~ :not([hidden]) { border-color: #CED0D4; }
+html.dark body[data-page="jobs"] .divide-y > :not([hidden]) ~ :not([hidden]) { border-color: #3E4042; }
+
+/* And its search inputs are filled grey with no border. */
+body[data-page="jobs"] .field {
+  background: var(--fb-chip);
+  border-color: transparent;
+  border-radius: 8px;
+}
+body[data-page="jobs"] .field:focus {
+  background: var(--fb-surface);
+  border-color: rgb(var(--brand));
+}
+
+body[data-page="jobs"] .side-link:hover { background: var(--fb-hover); }
