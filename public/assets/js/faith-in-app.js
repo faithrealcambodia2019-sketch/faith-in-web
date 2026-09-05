@@ -995,7 +995,7 @@ function renderUnifiedAuthCard() {
                             <div class="cv-auth-social-list" style="display:flex;flex-direction:column;gap:8px;margin-top:10px;">
                                 <button type="button" class="cv-faith-google-btn cv-faith-facebook-btn" onclick="return startFirebaseFacebookSignIn(event)" ${buttonDisabled} style="border-color:#1877F2;color:#1877F2;">
                                     <span class="cv-faith-google-btn__icon" aria-hidden="true">
-                                        <svg viewBox="0 0 24 24" fill="#1877F2" width="20" height="20"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                                        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;"><circle cx="12" cy="12" r="12" fill="#1877F2"/><path d="M15.12 12.07l.42-2.72h-2.61V7.58c0-.74.36-1.47 1.53-1.47h1.18V3.79c-.71-.1-1.43-.15-2.15-.14-2.19 0-3.62 1.33-3.62 3.73v1.97H9.46v2.72h2.41v6.58c.49.08.98.12 1.48.12s.99-.04 1.48-.12v-6.58h2.29z" fill="#FFFFFF"/></svg>
                                     </span>
                                     <span>Sign up with Facebook</span>
                                 </button>
@@ -1032,7 +1032,7 @@ function renderUnifiedAuthCard() {
                             <div class="cv-auth-social-list" style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px;">
                                 <button type="button" class="cv-faith-google-btn cv-faith-facebook-btn" onclick="return startFirebaseFacebookSignIn(event)" ${buttonDisabled} style="border-color:#1877F2;color:#1877F2;">
                                     <span class="cv-faith-google-btn__icon" aria-hidden="true">
-                                        <svg viewBox="0 0 24 24" fill="#1877F2" width="20" height="20"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                                        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;"><circle cx="12" cy="12" r="12" fill="#1877F2"/><path d="M15.12 12.07l.42-2.72h-2.61V7.58c0-.74.36-1.47 1.53-1.47h1.18V3.79c-.71-.1-1.43-.15-2.15-.14-2.19 0-3.62 1.33-3.62 3.73v1.97H9.46v2.72h2.41v6.58c.49.08.98.12 1.48.12s.99-.04 1.48-.12v-6.58h2.29z" fill="#FFFFFF"/></svg>
                                     </span>
                                     <span>Continue with Facebook</span>
                                 </button>
