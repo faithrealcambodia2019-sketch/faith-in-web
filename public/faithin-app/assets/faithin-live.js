@@ -2674,29 +2674,78 @@
     });
   }
 
+  /**
+   * Latest comments. This panel shipped with a fabricated comment attributed
+   * to a real, named Christian author, complete with an invented quote — on a
+   * dashboard where every other number is the member's own, that reads as
+   * something they actually received. It now shows real comments on their own
+   * posts, and an empty state when there are none.
+   */
+  async function loadLatestComments() {
+    const holder = $('[data-latest-comments]');
+    if (!holder) return;
+    const empty = (message) => {
+      holder.innerHTML = `<p class="text-[12.5px] text-muted py-2">${esc(message)}</p>`;
+    };
+    try {
+      const mine = window.FILive?.user?.uid;
+      const result = await api.request('cv_get_posts');
+      const posts = (result.items || [])
+        .filter(post => (!mine || post.author?.uid === mine) && Number(post.comment_count || 0) > 0)
+        .slice(0, 3);
+      if (!posts.length) return empty('No comments on your posts yet.');
+
+      const batches = await Promise.all(posts.map(post =>
+        api.request('cv_get_post_comments', { post_id: post.id })
+          .then(res => (res.items || []).map(comment => ({ comment, post })))
+          .catch(() => [])
+      ));
+      const rows = batches.flat()
+        .sort((a, b) => Number(b.comment.created_ms || 0) - Number(a.comment.created_ms || 0))
+        .slice(0, 4);
+      if (!rows.length) return empty('No comments on your posts yet.');
+
+      holder.innerHTML = rows.map(({ comment, post }) => {
+        const name = comment.author?.name || 'A Faith In member';
+        const title = post.title || post.article_title || (post.content || 'your post').slice(0, 48);
+        return `<div class="flex gap-3 items-start">`
+          + avatarMarkup(comment.author || { name }, 'avatar w-8 h-8 text-[11px] shrink-0 object-cover')
+          + `<div class="min-w-0">`
+          + `<p class="text-[13px] text-ink leading-snug"><span class="font-semibold">${esc(name)}</span> commented on `
+          + `<a href="/home?post=${encodeURIComponent(post.id)}" class="text-brand hover:underline">${esc(title)}</a></p>`
+          + `<p class="text-[12px] text-muted mt-1 italic border-l-2 border-line pl-2 line-clamp-2">${esc(comment.content || '')}</p>`
+          + `</div></div>`;
+      }).join('');
+    } catch (_) {
+      empty('Could not load comments just now.');
+    }
+  }
+
   async function loadStudio(user) {
     if (!user) return;
     
+    // These used to default to 1,042 followers, 12.4K impressions and a
+    // fortnight of invented chart data, so a failed request showed numbers
+    // that looked like the member's own. An empty studio now reads as empty.
     let data = {
-      followers: 1042,
-      followers_growth: '+12',
-      impressions: '12.4K',
-      impressions_growth: '+15%',
-      engagement: 843,
-      engagement_growth: '-2%',
-      analytics: {
-        labels: ['Aug 12', 'Aug 13', 'Aug 14', 'Aug 15', 'Aug 16', 'Aug 17', 'Aug 18', 'Aug 19', 'Aug 20', 'Aug 21', 'Aug 22', 'Aug 23', 'Aug 24', 'Aug 25'],
-        impressions: [320, 450, 410, 890, 1200, 850, 600, 450, 2100, 1800, 1500, 900, 1100, 850],
-        engagements: [24, 38, 30, 65, 92, 58, 41, 32, 142, 118, 95, 62, 78, 68],
-        followers: [1, 2, 0, 3, 4, 2, 1, 0, 5, 4, 3, 2, 3, 2]
-      },
+      followers: 0,
+      followers_growth: '',
+      impressions: 0,
+      impressions_growth: '',
+      engagement: 0,
+      engagement_growth: '',
+      analytics: { labels: [], impressions: [], engagements: [], followers: [] },
       recent_content: []
     };
 
+    let dashboardFailed = false;
     try {
       const res = await api.request('cv_get_studio_dashboard');
       if (res) data = Object.assign(data, res);
-    } catch (_) {}
+    } catch (_) { dashboardFailed = true; }
+    if (dashboardFailed) toast('Could not load your studio figures just now.');
+
+    loadLatestComments();
 
     // Populate Top Metrics
     const followersEl = $('[data-metric-followers]');
