@@ -35,6 +35,26 @@
         <section class="fi-auth__card">
           <button class="fi-auth__close" data-auth-close aria-label="Close sign in"><i class="fa-solid fa-xmark"></i></button>
 
+          <!-- Loading overlay: "Going to Faith In..." -->
+          <div class="fi-auth__loading-overlay hidden" data-auth-loading>
+            <div class="fi-auth__loading-box">
+              <div class="fi-auth__loading-spinner-ring"></div>
+              <div class="fi-auth__loading-brand-row">
+                <span class="fi-auth__loading-brand-name">FaithIn</span>
+                <span class="fi-auth__loading-pulse-dot"></span>
+              </div>
+              <h3 class="fi-auth__loading-title" data-auth-loading-title>Connecting to Google…</h3>
+              <p class="fi-auth__loading-desc" data-auth-loading-desc>Please complete your sign-in in the Google window. Preparing your Faith In experience…</p>
+              <div class="fi-auth__loading-progress-track">
+                <div class="fi-auth__loading-progress-bar" data-auth-loading-bar></div>
+              </div>
+              <div class="fi-auth__loading-status-tag">
+                <i class="fa-solid fa-arrow-right-to-bracket text-blue-600" data-auth-loading-icon></i>
+                <span data-auth-loading-status>Going to Faith In…</span>
+              </div>
+            </div>
+          </div>
+
           <div data-auth-view="signin">
             <h2 id="fi-auth-title">Sign in</h2>
             <p class="fi-auth__subtitle">Stay updated on your professional world.</p>
@@ -53,12 +73,14 @@
                   <circle cx="12" cy="12" r="12" fill="#1877F2"/>
                   <path d="M15.12 12.07l.42-2.72h-2.61V7.58c0-.74.36-1.47 1.53-1.47h1.18V3.79c-.71-.1-1.43-.15-2.15-.14-2.19 0-3.62 1.33-3.62 3.73v1.97H9.46v2.72h2.41v6.58c.49.08.98.12 1.48.12s.99-.04 1.48-.12v-6.58h2.29z" fill="#FFFFFF"/>
                 </svg>
+                <i class="fi-auth__spinner" aria-hidden="true"></i>
                 <span>Continue with Facebook</span>
               </button>
               <button class="fi-auth__social fi-auth__social--phone" data-auth-show="phone" type="button">
                 <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#059669" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;">
                   <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
                 </svg>
+                <i class="fi-auth__spinner" aria-hidden="true"></i>
                 <span>Continue with Phone</span>
               </button>
               <button class="fi-auth__social" data-auth-google type="button">
@@ -68,6 +90,7 @@
                   <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
                   <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
                 </svg>
+                <i class="fi-auth__spinner" aria-hidden="true"></i>
                 <span>Continue with Google</span>
               </button>
             </div>
@@ -93,12 +116,14 @@
                   <circle cx="12" cy="12" r="12" fill="#1877F2"/>
                   <path d="M15.12 12.07l.42-2.72h-2.61V7.58c0-.74.36-1.47 1.53-1.47h1.18V3.79c-.71-.1-1.43-.15-2.15-.14-2.19 0-3.62 1.33-3.62 3.73v1.97H9.46v2.72h2.41v6.58c.49.08.98.12 1.48.12s.99-.04 1.48-.12v-6.58h2.29z" fill="#FFFFFF"/>
                 </svg>
+                <i class="fi-auth__spinner" aria-hidden="true"></i>
                 <span>Sign up with Facebook</span>
               </button>
               <button class="fi-auth__social fi-auth__social--phone" data-auth-show="phone" type="button">
                 <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#059669" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;">
                   <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
                 </svg>
+                <i class="fi-auth__spinner" aria-hidden="true"></i>
                 <span>Sign up with Phone</span>
               </button>
               <button class="fi-auth__social" data-auth-google type="button">
@@ -108,6 +133,7 @@
                   <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
                   <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
                 </svg>
+                <i class="fi-auth__spinner" aria-hidden="true"></i>
                 <span>Continue with Google</span>
               </button>
             </div>
@@ -152,6 +178,7 @@
                 <circle cx="12" cy="12" r="12" fill="#1877F2"/>
                 <path d="M15.12 12.07l.42-2.72h-2.61V7.58c0-.74.36-1.47 1.53-1.47h1.18V3.79c-.71-.1-1.43-.15-2.15-.14-2.19 0-3.62 1.33-3.62 3.73v1.97H9.46v2.72h2.41v6.58c.49.08.98.12 1.48.12s.99-.04 1.48-.12v-6.58h2.29z" fill="#FFFFFF"/>
               </svg>
+              <i class="fi-auth__spinner" aria-hidden="true"></i>
               <span>Continue with Facebook</span>
             </button>
             <p class="fi-auth__switch">Prefer email? <button data-auth-show="signup">Sign up with email</button></p>
@@ -204,6 +231,7 @@
     let currentPhoneVerificationId = '';
     const close = () => {
       if (host.dataset.locked === 'true') return;
+      hideLoading();
       host.classList.add('hidden');
     };
     const setBusy = (button, busy) => {
@@ -211,13 +239,39 @@
       button.disabled = busy;
       button.classList.toggle('is-busy', busy);
     };
+    const showLoading = (title, desc, statusText, isDone = false) => {
+      const overlay = $('[data-auth-loading]', host);
+      const titleEl = $('[data-auth-loading-title]', host);
+      const descEl = $('[data-auth-loading-desc]', host);
+      const statusEl = $('[data-auth-loading-status]', host);
+      const bar = $('[data-auth-loading-bar]', host);
+      const icon = $('[data-auth-loading-icon]', host);
+      if (titleEl && title) titleEl.textContent = title;
+      if (descEl && desc) descEl.textContent = desc;
+      if (statusEl && statusText) statusEl.textContent = statusText;
+      if (bar) bar.classList.toggle('is-complete', !!isDone);
+      if (icon && isDone) {
+        icon.className = 'fa-solid fa-check text-emerald-600';
+      } else if (icon) {
+        icon.className = 'fa-solid fa-arrow-right-to-bracket text-blue-600';
+      }
+      if (overlay) overlay.classList.remove('hidden');
+    };
+    const hideLoading = () => {
+      const overlay = $('[data-auth-loading]', host);
+      if (overlay) overlay.classList.add('hidden');
+      const bar = $('[data-auth-loading-bar]', host);
+      if (bar) bar.classList.remove('is-complete');
+    };
     const showView = name => {
+      hideLoading();
       $$('[data-auth-view]', host).forEach(view => { view.hidden = view.dataset.authView !== name; });
       $$('[data-auth-error], [data-auth-success]', host).forEach(message => { message.hidden = true; message.textContent = ''; });
       const input = $(`[data-auth-view="${name}"] input`, host);
       window.setTimeout(() => input?.focus(), 0);
     };
     const showAuthError = (scope, error) => {
+      hideLoading();
       const el = $('[data-auth-error]', scope) || $('[data-auth-error]', host);
       el.textContent = error.message || 'Sign-in failed. Please try again.';
       el.hidden = false;
@@ -238,13 +292,37 @@
       const facebook = event.target.closest('[data-auth-facebook]');
       if (facebook) {
         setBusy(facebook, true);
+        const label = facebook.querySelector('span');
+        const originalText = label?.textContent || 'Continue with Facebook';
+        if (label) label.textContent = 'Connecting to Facebook…';
+        showLoading(
+          'Connecting to Facebook…',
+          'Please complete sign-in in the Facebook window. Setting up your Faith In experience…',
+          'Going to Faith In…'
+        );
         try {
           const res = await api.request('cv_facebook_sign_in');
-          if (res?.redirected) return;
+          if (res?.redirected) {
+            showLoading(
+              'Redirecting to Facebook…',
+              'Please wait while we redirect you to secure sign in…',
+              'Going to Faith In…'
+            );
+            return;
+          }
           session = res;
+          showLoading(
+            'Welcome to Faith In!',
+            `Signed in as ${session.name || session.displayName || 'Member'}. Taking you to Faith In now…`,
+            'Entering Faith In ✓',
+            true
+          );
           applySession(session);
+          await new Promise(r => setTimeout(r, 450));
           window.location.reload();
         } catch (error) {
+          hideLoading();
+          if (label) label.textContent = originalText;
           showAuthError(facebook.closest('[data-auth-view]'), error);
         } finally {
           setBusy(facebook, false);
@@ -254,13 +332,37 @@
       const google = event.target.closest('[data-auth-google]');
       if (google) {
         setBusy(google, true);
+        const label = google.querySelector('span');
+        const originalText = label?.textContent || 'Continue with Google';
+        if (label) label.textContent = 'Connecting to Google…';
+        showLoading(
+          'Connecting to Google…',
+          'Please complete sign-in in the Google window. Setting up your Faith In experience…',
+          'Going to Faith In…'
+        );
         try {
           const res = await api.request('cv_google_sign_in');
-          if (res?.redirected) return;
+          if (res?.redirected) {
+            showLoading(
+              'Redirecting to Google…',
+              'Please wait while we redirect you to secure sign in…',
+              'Going to Faith In…'
+            );
+            return;
+          }
           session = res;
+          showLoading(
+            'Welcome to Faith In!',
+            `Signed in as ${session.name || session.displayName || 'Member'}. Taking you to Faith In now…`,
+            'Entering Faith In ✓',
+            true
+          );
           applySession(session);
+          await new Promise(r => setTimeout(r, 450));
           window.location.reload();
         } catch (error) {
+          hideLoading();
+          if (label) label.textContent = originalText;
           showAuthError(google.closest('[data-auth-view]'), error);
         } finally {
           setBusy(google, false);
@@ -323,6 +425,7 @@
           return;
         }
         if (mode === 'phone-verify') {
+          showLoading('Verifying SMS Code…', 'Confirming your mobile security code…', 'Entering Faith In…');
           const code = data.get('code');
           const res = await api.request('cv_phone_verify_code', {
             verification_id: currentPhoneVerificationId,
@@ -330,24 +433,47 @@
             display_name: lastPhoneDisplayName
           });
           session = res;
+          showLoading(
+            'Welcome to Faith In!',
+            `Signed in as ${session.name || session.displayName || 'Member'}. Taking you to Faith In now…`,
+            'Entering Faith In ✓',
+            true
+          );
           applySession(session);
+          await new Promise(r => setTimeout(r, 450));
           window.location.reload();
           return;
         }
         const action = mode === 'signup' ? 'cv_email_sign_up' : 'cv_email_sign_in';
+        showLoading(
+          mode === 'signup' ? 'Creating Account…' : 'Signing in to Faith In…',
+          'Verifying your credentials and setting up your session…',
+          'Going to Faith In…'
+        );
         const values = { email: data.get('email'), password: data.get('password'), remember: data.get('remember') === 'on' };
         if (mode === 'signup') values.display_name = `${data.get('first_name') || ''} ${data.get('last_name') || ''}`.trim();
         const result = await api.request(action, values);
         if (result?.verification_required) {
+          hideLoading();
           verificationEmail = result.email || String(data.get('email') || '');
           $('[data-auth-email]', host).textContent = verificationEmail;
           showView('verify');
           return;
         }
         session = result;
+        showLoading(
+          'Welcome to Faith In!',
+          `Signed in as ${session.name || session.displayName || 'Member'}. Taking you to Faith In now…`,
+          'Entering Faith In ✓',
+          true
+        );
         applySession(session);
+        await new Promise(r => setTimeout(r, 450));
         window.location.reload();
-      } catch (error) { showAuthError(form, error); }
+      } catch (error) {
+        hideLoading();
+        showAuthError(form, error);
+      }
       finally { setBusy(submitter, false); }
     }));
     window.FI.openAuth = options => {

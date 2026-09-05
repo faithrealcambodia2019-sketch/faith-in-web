@@ -2389,6 +2389,7 @@ body.fi-logged-out [data-modal]{
   position:relative; width:100%; max-width:640px; padding:52px;
   border:1px solid rgba(17,24,39,.05); border-radius:18px; background:#fff;
   box-shadow:0 10px 28px rgba(15,23,42,.10),0 2px 5px rgba(15,23,42,.04);
+  overflow:hidden;
 }
 .fi-auth__card h2{ font-size:31px; line-height:1.2; font-weight:800; letter-spacing:-.025em; }
 .fi-auth__subtitle{ margin-top:9px; color:#6b7280; font-size:18px; line-height:1.5; }
@@ -2429,6 +2430,21 @@ body.fi-logged-out [data-modal]{
   border-top-color:#fff; border-radius:999px; animation:fi-auth-spin .7s linear infinite;
 }
 .is-busy .fi-auth__spinner{ display:block; }
+.fi-auth__social .fi-auth__spinner{
+  border:2.5px solid rgba(100, 116, 139, 0.25);
+  border-top-color:#1e293b;
+  width:20px; height:20px;
+}
+.fi-auth__social--facebook .fi-auth__spinner{
+  border-color:rgba(24, 119, 242, 0.25);
+  border-top-color:#1877F2;
+}
+.fi-auth__social--phone .fi-auth__spinner{
+  border-color:rgba(5, 150, 105, 0.25);
+  border-top-color:#059669;
+}
+.fi-auth__social.is-busy svg{ display:none !important; }
+.fi-auth__social.is-busy .fi-auth__spinner{ display:block !important; }
 @keyframes fi-auth-spin{ to{ transform:rotate(360deg); } }
 .fi-auth__divider{ margin:31px 0; display:flex; align-items:center; gap:18px; color:#667085; font-size:16px; }
 .fi-auth__social-group{ display:flex; flex-direction:column; gap:10px; width:100%; }
@@ -2438,8 +2454,100 @@ body.fi-logged-out [data-modal]{
 .fi-auth__social--facebook{ border-color:#1877F2; color:#1877F2; }
 .fi-auth__social--facebook:hover{ border-color:#166fe5; background:#f0f6ff; color:#166fe5; }
 .fi-auth__social--phone{ border-color:#059669; color:#059669; }
-.fi-auth__social--phone:hover{ border-color:#047857; background:#ecfdf5; color:#047857; }
+.fi-auth__social--phone:hover{ border-color:#047857; background:#ecfdf5; color:#059669; }
 .fi-auth__google{ width:24px; height:24px; display:grid; place-items:center; color:#4285f4; font-weight:900; font-family:Arial,sans-serif; }
+
+/* ── Auth Loading Overlay ("Going to Faith In") ── */
+.fi-auth__loading-overlay{
+  position:absolute; inset:0; z-index:40;
+  background:rgba(255, 255, 255, 0.95);
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+  display:flex; align-items:center; justify-content:center;
+  padding:32px 24px;
+  animation:fi-auth-fade-in .2s ease-out;
+  border-radius:18px;
+}
+.dark .fi-auth__loading-overlay{
+  background:rgba(30, 41, 59, 0.96);
+}
+.fi-auth__loading-overlay.hidden{
+  display:none !important;
+}
+.fi-auth__loading-box{
+  width:100%; max-width:400px;
+  display:flex; flex-direction:column; align-items:center; text-align:center;
+  gap:16px;
+}
+.fi-auth__loading-spinner-ring{
+  width:64px; height:64px; border-radius:999px;
+  border:4px solid rgba(47, 91, 234, 0.15);
+  border-top-color:#2f5bea;
+  border-right-color:#059669;
+  animation:fi-auth-spin .85s cubic-bezier(0.5, 0.1, 0.5, 0.9) infinite;
+  box-shadow:0 6px 20px rgba(47, 91, 234, 0.22);
+}
+.fi-auth__loading-brand-row{
+  display:flex; align-items:center; gap:8px;
+}
+.fi-auth__loading-brand-name{
+  font-size:26px; font-weight:800; color:#2f5bea; letter-spacing:-0.03em;
+}
+.fi-auth__loading-pulse-dot{
+  width:9px; height:9px; border-radius:999px; background:#059669;
+  box-shadow:0 0 0 0 rgba(5, 150, 105, 0.7);
+  animation:fi-dot-pulse 1.4s infinite;
+}
+@keyframes fi-dot-pulse{
+  0% { box-shadow:0 0 0 0 rgba(5, 150, 105, 0.7); transform:scale(0.95); }
+  70% { box-shadow:0 0 0 10px rgba(5, 150, 105, 0); transform:scale(1.15); }
+  100% { box-shadow:0 0 0 0 rgba(5, 150, 105, 0); transform:scale(0.95); }
+}
+.fi-auth__loading-title{
+  font-size:22px; font-weight:800; color:#111827; letter-spacing:-0.02em;
+  line-height:1.25; margin:0;
+}
+.dark .fi-auth__loading-title{ color:#f8fafc; }
+.fi-auth__loading-desc{
+  font-size:15px; line-height:1.55; color:#4b5563; margin:0;
+}
+.dark .fi-auth__loading-desc{ color:#94a3b8; }
+.fi-auth__loading-progress-track{
+  width:100%; height:6px; background:#e2e8f0; border-radius:999px;
+  overflow:hidden; position:relative; margin-top:6px;
+}
+.dark .fi-auth__loading-progress-track{ background:#334155; }
+.fi-auth__loading-progress-bar{
+  position:absolute; top:0; bottom:0; left:0; width:45%;
+  background:linear-gradient(90deg, #2f5bea, #059669);
+  border-radius:999px;
+  animation:fi-progress-indeterminate 1.4s ease-in-out infinite;
+}
+@keyframes fi-progress-indeterminate{
+  0% { left:-45%; width:45%; }
+  50% { left:30%; width:50%; }
+  100% { left:100%; width:45%; }
+}
+.fi-auth__loading-progress-bar.is-complete{
+  animation:none !important;
+  left:0 !important; width:100% !important;
+  background:#059669 !important;
+  transition:width .25s ease-out;
+}
+.fi-auth__loading-status-tag{
+  display:inline-flex; align-items:center; gap:8px;
+  font-size:14px; font-weight:700; color:#2f5bea;
+  background:#eff6ff; border:1px solid #bfdbfe;
+  padding:7px 16px; border-radius:999px; margin-top:4px;
+}
+.dark .fi-auth__loading-status-tag{
+  background:rgba(47, 91, 234, 0.15); border-color:rgba(47, 91, 234, 0.35); color:#93c5fd;
+}
+@keyframes fi-auth-fade-in{
+  from { opacity:0; transform:scale(0.98); }
+  to { opacity:1; transform:scale(1); }
+}
+
 .fi-auth__switch{ margin-top:35px; text-align:center; color:#475467; font-size:17px; }
 .fi-auth__names{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
 .fi-auth__terms{ color:#667085; font-size:13px; line-height:1.5; text-align:center; }
