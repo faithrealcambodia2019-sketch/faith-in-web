@@ -751,6 +751,7 @@ html.dark .chip.is-on{ color:#0b1120; }
 
 body[data-page="home"],
 body[data-page="jobs"],
+body[data-page="messaging"],
 body[data-page="network"],
 body[data-page="notifications"],
 body[data-page="profile"],
@@ -769,6 +770,7 @@ body[data-page="settings-security"] {
 }
 html.dark body[data-page="home"],
 html.dark body[data-page="jobs"],
+html.dark body[data-page="messaging"],
 html.dark body[data-page="network"],
 html.dark body[data-page="notifications"],
 html.dark body[data-page="profile"],
@@ -787,6 +789,7 @@ html.dark body[data-page="settings-security"] {
 
 body[data-page="home"] .card,
 body[data-page="jobs"] .card,
+body[data-page="messaging"] .card,
 body[data-page="network"] .card,
 body[data-page="notifications"] .card,
 body[data-page="profile"] .card,
@@ -1118,8 +1121,8 @@ html.dark .media-plate{ background: linear-gradient(135deg,#1c2a4e,#0f1930); col
   border-left: none; transition: background .12s ease;
 }
 .msg-thread:hover{ background: rgb(var(--raised)); }
-.msg-thread.is-active{ background: rgba(8, 102, 255, 0.1); }
-html.dark .msg-thread.is-active{ background: rgba(8, 102, 255, 0.2); }
+.msg-thread.is-active{ background: rgba(47, 91, 234, 0.1); }
+html.dark .msg-thread.is-active{ background: rgba(47, 91, 234, 0.2); }
 .msg-thread.is-unread .msg-thread__name,
 .msg-thread.is-unread .msg-thread__preview{ color: rgb(var(--ink)); font-weight:700; }
 
@@ -1132,7 +1135,7 @@ html.dark .msg-thread.is-active{ background: rgba(8, 102, 255, 0.2); }
 
 /* Facebook Messenger message bubbles */
 :root {
-  --msg-mine-bg: #0866FF;
+  --msg-mine-bg: #2F5BEA;
 }
 .msg-bubble{
   position: relative;
@@ -1146,7 +1149,7 @@ html.dark .msg-bubble{
   background: #3A3B3C; color: #E4E6EB;
 }
 .msg-bubble.is-mine{
-  background: var(--msg-mine-bg, #0866FF); color:#fff !important;
+  background: var(--msg-mine-bg, #2F5BEA); color:#fff !important;
   border-bottom-left-radius:18px; border-bottom-right-radius:4px;
 }
 html.dark .msg-bubble.is-mine{ color:#fff !important; }
@@ -1315,7 +1318,7 @@ html.dark .msg-reaction-pill{
   padding: 0 2px;
 }
 .msg-bubble.is-search-active{
-  outline: 2px solid #0866FF;
+  outline: 2px solid #2F5BEA;
   outline-offset: 2px;
 }
 
@@ -1500,9 +1503,9 @@ html.dark .msg-composer{
   background: #3A3B3C;
 }
 .msg-composer:focus-within{
-  border-color: #0866FF;
+  border-color: #2F5BEA;
   background: rgb(var(--surface));
-  box-shadow: 0 0 0 2px rgba(8, 102, 255, 0.15);
+  box-shadow: 0 0 0 2px rgba(47, 91, 234, 0.15);
 }
 .msg-composer textarea{
   flex: 1;
@@ -1525,9 +1528,9 @@ html.dark .msg-composer textarea::placeholder{
 }
 
 @keyframes fb-call-pulse {
-  0% { box-shadow: 0 0 0 0 rgba(8, 102, 255, 0.5); }
-  70% { box-shadow: 0 0 0 22px rgba(8, 102, 255, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(8, 102, 255, 0); }
+  0% { box-shadow: 0 0 0 0 rgba(47, 91, 234, 0.5); }
+  70% { box-shadow: 0 0 0 22px rgba(47, 91, 234, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(47, 91, 234, 0); }
 }
 .fb-call-pulsing{
   animation: fb-call-pulse 2s infinite;
@@ -2525,88 +2528,89 @@ body.fi-logged-out [data-modal]{
 /* ── Auth Loading Overlay ("Going to Faith In") ── */
 .fi-auth__loading-overlay{
   position:absolute; inset:0; z-index:40;
-  background:rgba(255, 255, 255, 0.95);
-  backdrop-filter:blur(10px);
-  -webkit-backdrop-filter:blur(10px);
+  background:#ffffff;
   display:flex; align-items:center; justify-content:center;
-  padding:32px 24px;
+  padding:44px 32px;
   animation:fi-auth-fade-in .2s ease-out;
   border-radius:18px;
 }
 .dark .fi-auth__loading-overlay{
-  background:rgba(30, 41, 59, 0.96);
+  background:#1e293b;
 }
 .fi-auth__loading-overlay.hidden{
   display:none !important;
 }
 .fi-auth__loading-box{
-  width:100%; max-width:400px;
+  width:100%; max-width:440px;
   display:flex; flex-direction:column; align-items:center; text-align:center;
-  gap:16px;
+  gap:12px;
 }
 .fi-auth__loading-spinner-ring{
-  width:64px; height:64px; border-radius:999px;
-  border:4px solid rgba(47, 91, 234, 0.15);
-  border-top-color:#2f5bea;
-  border-right-color:#059669;
-  animation:fi-auth-spin .85s cubic-bezier(0.5, 0.1, 0.5, 0.9) infinite;
-  box-shadow:0 6px 20px rgba(47, 91, 234, 0.22);
+  width:48px; height:48px; border-radius:999px;
+  border:3.5px solid #ebedf0;
+  border-top-color:#1877f2;
+  border-right-color:#1877f2;
+  animation:fi-auth-spin .85s linear infinite;
+  margin-bottom:4px;
+}
+.dark .fi-auth__loading-spinner-ring{
+  border-color:#334155;
+  border-top-color:#3b82f6;
+  border-right-color:#3b82f6;
 }
 .fi-auth__loading-brand-row{
-  display:flex; align-items:center; gap:8px;
+  display:flex; align-items:center; justify-content:center; gap:8px;
 }
 .fi-auth__loading-brand-name{
-  font-size:26px; font-weight:800; color:#2f5bea; letter-spacing:-0.03em;
+  font-size:32px; font-weight:800; color:#1877f2; letter-spacing:-0.02em; line-height:1;
 }
-.fi-auth__loading-pulse-dot{
-  width:9px; height:9px; border-radius:999px; background:#059669;
-  box-shadow:0 0 0 0 rgba(5, 150, 105, 0.7);
-  animation:fi-dot-pulse 1.4s infinite;
-}
-@keyframes fi-dot-pulse{
-  0% { box-shadow:0 0 0 0 rgba(5, 150, 105, 0.7); transform:scale(0.95); }
-  70% { box-shadow:0 0 0 10px rgba(5, 150, 105, 0); transform:scale(1.15); }
-  100% { box-shadow:0 0 0 0 rgba(5, 150, 105, 0); transform:scale(0.95); }
+.fi-auth__loading-brand-globe{
+  width:28px; height:28px; flex-shrink:0;
 }
 .fi-auth__loading-title{
-  font-size:22px; font-weight:800; color:#111827; letter-spacing:-0.02em;
-  line-height:1.25; margin:0;
+  font-size:22px; font-weight:800; color:#050505; letter-spacing:-0.02em;
+  line-height:1.25; margin:4px 0 0;
 }
 .dark .fi-auth__loading-title{ color:#f8fafc; }
 .fi-auth__loading-desc{
-  font-size:15px; line-height:1.55; color:#4b5563; margin:0;
+  font-size:14.5px; line-height:1.45; color:#65676b; margin:0; max-width:340px;
 }
 .dark .fi-auth__loading-desc{ color:#94a3b8; }
 .fi-auth__loading-progress-track{
-  width:100%; height:6px; background:#e2e8f0; border-radius:999px;
-  overflow:hidden; position:relative; margin-top:6px;
+  width:100%; max-width:340px; height:5px; background:#e4e6eb; border-radius:999px;
+  overflow:hidden; position:relative; margin:8px 0 4px;
 }
 .dark .fi-auth__loading-progress-track{ background:#334155; }
 .fi-auth__loading-progress-bar{
-  position:absolute; top:0; bottom:0; left:0; width:45%;
-  background:linear-gradient(90deg, #2f5bea, #059669);
+  position:absolute; top:0; bottom:0; left:0; width:58%;
+  background:#1877f2;
   border-radius:999px;
   animation:fi-progress-indeterminate 1.4s ease-in-out infinite;
 }
 @keyframes fi-progress-indeterminate{
   0% { left:-45%; width:45%; }
-  50% { left:30%; width:50%; }
+  50% { left:25%; width:55%; }
   100% { left:100%; width:45%; }
 }
 .fi-auth__loading-progress-bar.is-complete{
   animation:none !important;
   left:0 !important; width:100% !important;
-  background:#059669 !important;
+  background:#1877f2 !important;
   transition:width .25s ease-out;
 }
-.fi-auth__loading-status-tag{
-  display:inline-flex; align-items:center; gap:8px;
-  font-size:14px; font-weight:700; color:#2f5bea;
-  background:#eff6ff; border:1px solid #bfdbfe;
-  padding:7px 16px; border-radius:999px; margin-top:4px;
+.fi-auth__loading-status-btn{
+  display:inline-flex; align-items:center; justify-content:center; gap:10px;
+  font-size:15px; font-weight:600; color:#ffffff;
+  background:#1877f2;
+  padding:11px 24px; border-radius:8px; margin-top:8px;
+  box-shadow:0 2px 6px rgba(24, 119, 242, 0.25);
+  user-select:none; cursor:default;
 }
-.dark .fi-auth__loading-status-tag{
-  background:rgba(47, 91, 234, 0.15); border-color:rgba(47, 91, 234, 0.35); color:#93c5fd;
+.dark .fi-auth__loading-status-btn{
+  background:#1877f2; color:#ffffff;
+}
+.fi-auth__loading-status-icon{
+  flex-shrink:0;
 }
 @keyframes fi-auth-fade-in{
   from { opacity:0; transform:scale(0.98); }
@@ -3595,3 +3599,28 @@ html.dark .fi-share-link input { background: #3A3B3C; }
 html.dark .fi-share-native { background: #3A3B3C; }
 
 @media (prefers-reduced-motion: reduce) { .fi-share { transition: none; } }
+
+/* Messenger, on the same surface as the rest of the app. The shell is a full
+   -height pane rather than a stack of cards, so it takes Facebook's chrome
+   from the outside in: hairline shadow, 8px corners, cool dividers. */
+body[data-page="messaging"] .msg-shell {
+  border-radius: 8px;
+}
+body[data-page="messaging"] .border-line { border-color: #CED0D4; }
+html.dark body[data-page="messaging"] .border-line { border-color: #3E4042; }
+
+/* Conversation rows: Facebook's flat grey hover, brand tint when open. */
+body[data-page="messaging"] .msg-thread:hover { background: var(--fb-hover); }
+html.dark body[data-page="messaging"] .msg-thread:hover { background: #3A3B3C; }
+
+/* The composer and the two search fields are its filled grey inputs. */
+body[data-page="messaging"] .field {
+  background: var(--fb-chip);
+  border-color: transparent;
+}
+body[data-page="messaging"] .field:focus {
+  background: var(--fb-surface);
+  border-color: rgb(var(--brand));
+}
+
+body[data-page="messaging"] .side-link:hover { background: var(--fb-hover); }

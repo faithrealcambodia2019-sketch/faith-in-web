@@ -15,8 +15,8 @@
 <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/favicon-180x180.png"/>
 <link href="/faithin-app/assets/faithin-fonts.css" rel="stylesheet"/>
 <link href="/faithin-app/assets/faithin-icons.css" rel="stylesheet"/>
-<link href="/faithin-app/assets/faithin-tw.css?v=20260905-real-data" rel="stylesheet"/>
-<link href="/faithin-app/assets/faithin.css?v=20260905-real-data" rel="stylesheet"/>
+<link href="/faithin-app/assets/faithin-tw.css?v=20260905-messenger" rel="stylesheet"/>
+<link href="/faithin-app/assets/faithin.css?v=20260905-messenger" rel="stylesheet"/>
 </head>
 <body class="font-sans min-h-screen pb-16 lg:pb-0" data-page="messaging" data-search="Search messages">
 <main class="max-w-[1200px] mx-auto px-0 sm:px-4 py-0 sm:py-5" id="main">
@@ -64,16 +64,16 @@
 </div>
 </div>
 <div class="flex items-center gap-1 shrink-0">
-<button aria-label="Start a voice call" class="icon-btn !w-9 !h-9 !rounded-full text-[#0866FF] hover:bg-[#f0f2f5] dark:hover:bg-[#3a3b3c] transition" data-voice-call title="Start a voice call" type="button">
+<button aria-label="Start a voice call" class="icon-btn !w-9 !h-9 !rounded-full text-[#2F5BEA] hover:bg-[#f0f2f5] dark:hover:bg-[#3a3b3c] transition" data-voice-call title="Start a voice call" type="button">
 <i class="fa-solid fa-phone text-[14px]"></i>
 </button>
-<button aria-label="Start a video call" class="icon-btn !w-9 !h-9 !rounded-full text-[#0866FF] hover:bg-[#f0f2f5] dark:hover:bg-[#3a3b3c] transition" data-video-call title="Start a video call" type="button">
+<button aria-label="Start a video call" class="icon-btn !w-9 !h-9 !rounded-full text-[#2F5BEA] hover:bg-[#f0f2f5] dark:hover:bg-[#3a3b3c] transition" data-video-call title="Start a video call" type="button">
 <i class="fa-solid fa-video text-[14px]"></i>
 </button>
-<button aria-label="Search conversation" class="icon-btn !w-9 !h-9 !rounded-full text-[#0866FF] hover:bg-[#f0f2f5] dark:hover:bg-[#3a3b3c] transition" data-chat-search-toggle title="Search in conversation" type="button">
+<button aria-label="Search conversation" class="icon-btn !w-9 !h-9 !rounded-full text-[#2F5BEA] hover:bg-[#f0f2f5] dark:hover:bg-[#3a3b3c] transition" data-chat-search-toggle title="Search in conversation" type="button">
 <i class="fa-solid fa-magnifying-glass text-[14px]"></i>
 </button>
-<button aria-expanded="false" aria-label="Conversation details" class="icon-btn !w-9 !h-9 !rounded-full text-[#0866FF] hover:bg-[#f0f2f5] dark:hover:bg-[#3a3b3c] transition" data-info-toggle title="Conversation info" type="button">
+<button aria-expanded="false" aria-label="Conversation details" class="icon-btn !w-9 !h-9 !rounded-full text-[#2F5BEA] hover:bg-[#f0f2f5] dark:hover:bg-[#3a3b3c] transition" data-info-toggle title="Conversation info" type="button">
 <i class="fa-solid fa-circle-info text-[16px]"></i>
 </button>
 <!-- User Functions Dropdown -->
@@ -86,7 +86,7 @@
 <i class="fa-regular fa-user text-muted"></i>View Profile
 </a>
 <button class="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg row-hover text-[13px] font-medium text-left" data-mark-unread type="button">
-<i class="fa-regular fa-envelope text-[#0866FF]"></i>Mark as Unread
+<i class="fa-regular fa-envelope text-[#2F5BEA]"></i>Mark as Unread
 </button>
 <button class="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg row-hover text-[13px] font-medium text-left" data-chat-search-toggle type="button">
 <i class="fa-solid fa-magnifying-glass text-muted"></i>Search in Chat
@@ -138,7 +138,7 @@
 </div>
 <div class="flex items-center gap-1.5 relative">
 <input accept="image/png,image/jpeg,image/gif,image/webp" class="hidden" data-attach-input type="file"/>
-<button aria-label="Attach photo" class="icon-btn !w-9 !h-9 !rounded-full text-[#0866FF] hover:bg-[#f0f2f5] dark:hover:bg-[#3a3b3c] transition shrink-0" data-attach title="Attach a photo" type="button">
+<button aria-label="Attach photo" class="icon-btn !w-9 !h-9 !rounded-full text-[#2F5BEA] hover:bg-[#f0f2f5] dark:hover:bg-[#3a3b3c] transition shrink-0" data-attach title="Attach a photo" type="button">
 <i class="fa-solid fa-image text-[16px]"></i>
 </button>
 <button aria-label="Share Scripture verse" class="icon-btn !w-9 !h-9 !rounded-full text-amber-500 hover:bg-[#f0f2f5] dark:hover:bg-[#3a3b3c] transition shrink-0" data-verse-toggle title="Quick Scripture verse" type="button">
@@ -147,7 +147,7 @@
 <form class="msg-composer flex-1 flex items-center relative" data-message-form>
 <label class="sr-only" for="msg-input">Write a message</label>
 <textarea class="no-scrollbar flex-1" id="msg-input" name="body" placeholder="Aa" rows="1"></textarea>
-<button aria-label="Insert emoji" class="icon-btn !w-7 !h-7 !rounded-full text-[#0866FF] hover:opacity-80 shrink-0 ml-1" data-emoji-toggle title="Insert emoji" type="button">
+<button aria-label="Insert emoji" class="icon-btn !w-7 !h-7 !rounded-full text-[#2F5BEA] hover:opacity-80 shrink-0 ml-1" data-emoji-toggle title="Insert emoji" type="button">
 <i class="fa-solid fa-face-smile text-[18px]"></i>
 </button>
 <!-- Quick Emoji Picker Popover -->
@@ -159,12 +159,12 @@
 <div class="msg-emoji-grid" data-emoji-grid></div>
 </div>
 </form>
-<button aria-label="Send" class="icon-btn !w-10 !h-10 !rounded-full text-[#0866FF] hover:bg-raised shrink-0 flex items-center justify-center transition-transform active:scale-90" data-send title="Send a Like (👍)" type="button">
+<button aria-label="Send" class="icon-btn !w-10 !h-10 !rounded-full text-[#2F5BEA] hover:bg-raised shrink-0 flex items-center justify-center transition-transform active:scale-90" data-send title="Send a Like (👍)" type="button">
 <i class="fa-solid fa-thumbs-up text-[22px] transition-transform duration-150" data-send-icon></i>
 </button>
 </div>
 <div class="hidden mt-2 flex items-center gap-2 text-[12px] text-muted" data-attach-preview>
-<i class="fa-regular fa-image text-[#0866FF]"></i>
+<i class="fa-regular fa-image text-[#2F5BEA]"></i>
 <span class="truncate max-w-[220px]" data-attach-name></span>
 <button class="text-rose font-semibold text-[11.5px]" data-attach-clear type="button">Remove</button>
 </div>
@@ -192,7 +192,7 @@
 <span class="text-[11px] text-muted font-medium">Mute</span>
 </div>
 <div class="flex flex-col items-center gap-1">
-<button class="w-9 h-9 rounded-full bg-[#f0f2f5] dark:bg-[#3a3b3c] flex items-center justify-center text-[#0866FF] hover:opacity-80 transition text-[13px]" data-chat-search-toggle type="button" title="Search in Chat">
+<button class="w-9 h-9 rounded-full bg-[#f0f2f5] dark:bg-[#3a3b3c] flex items-center justify-center text-[#2F5BEA] hover:opacity-80 transition text-[13px]" data-chat-search-toggle type="button" title="Search in Chat">
 <i class="fa-solid fa-magnifying-glass"></i>
 </button>
 <span class="text-[11px] text-muted font-medium">Search</span>
@@ -204,7 +204,7 @@
 <!-- Customize Chat Accordion -->
 <details class="group rounded-xl p-2 hover:bg-raised/40 transition" open>
 <summary class="flex items-center justify-between cursor-pointer list-none text-[13px] font-semibold text-ink select-none">
-<span class="flex items-center gap-2"><i class="fa-solid fa-palette text-[#0866FF]"></i>Customize Chat</span>
+<span class="flex items-center gap-2"><i class="fa-solid fa-palette text-[#2F5BEA]"></i>Customize Chat</span>
 <i class="fa-solid fa-chevron-down text-[11px] text-muted group-open:rotate-180 transition-transform"></i>
 </summary>
 <div class="pt-3 pb-1 px-1 space-y-2">
@@ -213,7 +213,7 @@
 <span class="font-mono text-[10.5px]" data-theme-label>Facebook Blue</span>
 </div>
 <div class="flex items-center justify-between gap-1.5 pt-1" data-theme-selector>
-<button type="button" class="w-6 h-6 rounded-full bg-[#0866FF] ring-2 ring-offset-1 ring-[#0866FF] transition hover:scale-110" data-theme-color="#0866FF" title="Facebook Blue"></button>
+<button type="button" class="w-6 h-6 rounded-full bg-[#2F5BEA] ring-2 ring-offset-1 ring-[#2F5BEA] transition hover:scale-110" data-theme-color="#2F5BEA" title="Facebook Blue"></button>
 <button type="button" class="w-6 h-6 rounded-full bg-[#2F5BEA] transition hover:scale-110" data-theme-color="#2F5BEA" title="Faith In Blue"></button>
 <button type="button" class="w-6 h-6 rounded-full bg-[#059669] transition hover:scale-110" data-theme-color="#059669" title="Emerald"></button>
 <button type="button" class="w-6 h-6 rounded-full bg-[#7C3AED] transition hover:scale-110" data-theme-color="#7C3AED" title="Royal Violet"></button>
@@ -240,7 +240,7 @@
 <!-- Media and Files Accordion -->
 <details class="group rounded-xl p-2 hover:bg-raised/40 transition" open>
 <summary class="flex items-center justify-between cursor-pointer list-none text-[13px] font-semibold text-ink select-none">
-<span class="flex items-center gap-2"><i class="fa-solid fa-images text-[#0866FF]"></i>Media &amp; Files</span>
+<span class="flex items-center gap-2"><i class="fa-solid fa-images text-[#2F5BEA]"></i>Media &amp; Files</span>
 <i class="fa-solid fa-chevron-down text-[11px] text-muted group-open:rotate-180 transition-transform"></i>
 </summary>
 <div class="pt-2.5 pb-1 px-1">
@@ -261,7 +261,7 @@
 <span class="flex items-center gap-2.5 font-medium"><i class="fa-regular fa-bell-slash text-amber-500"></i>Mute Notifications</span>
 <label class="relative inline-flex items-center cursor-pointer">
 <input type="checkbox" class="sr-only peer" data-mute-toggle>
-<div class="w-8 h-4 bg-gray-300 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-[#0866FF]"></div>
+<div class="w-8 h-4 bg-gray-300 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-[#2F5BEA]"></div>
 </label>
 </div>
 <button class="w-full flex items-center justify-between p-2 rounded-lg hover:bg-raised/60 text-[12.5px] text-muted hover:text-ink text-left" data-clear-chat type="button">
@@ -373,10 +373,10 @@
 <img alt="Enlarged photo" class="hidden" data-lightbox-img/>
 </div>
 
-<script src="/faithin-app/assets/faithin-runtime.js?v=20260905-real-data"></script>
-<script src="/assets/js/faith-in-backend.js?v=20260905-real-data"></script>
-<script src="/faithin-app/assets/faithin.js?v=20260905-real-data"></script>
-<script src="/faithin-app/assets/faithin-live.js?v=20260905-real-data"></script>
-<script src="/faithin-app/assets/faithin-messaging.js?v=20260905-real-data"></script>
+<script src="/faithin-app/assets/faithin-runtime.js?v=20260905-messenger"></script>
+<script src="/assets/js/faith-in-backend.js?v=20260905-messenger"></script>
+<script src="/faithin-app/assets/faithin.js?v=20260905-messenger"></script>
+<script src="/faithin-app/assets/faithin-live.js?v=20260905-messenger"></script>
+<script src="/faithin-app/assets/faithin-messaging.js?v=20260905-messenger"></script>
 </body>
 </html>

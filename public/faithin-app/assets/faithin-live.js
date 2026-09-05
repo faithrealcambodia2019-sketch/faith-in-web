@@ -41,16 +41,24 @@
               <div class="fi-auth__loading-spinner-ring"></div>
               <div class="fi-auth__loading-brand-row">
                 <span class="fi-auth__loading-brand-name">FaithIn</span>
-                <span class="fi-auth__loading-pulse-dot"></span>
+                <svg class="fi-auth__loading-brand-globe" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#1877F2" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="2" y1="12" x2="22" y2="12"></line>
+                  <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                </svg>
               </div>
-              <h3 class="fi-auth__loading-title" data-auth-loading-title>Connecting to Google…</h3>
-              <p class="fi-auth__loading-desc" data-auth-loading-desc>Please complete your sign-in in the Google window. Preparing your Faith In experience…</p>
+              <h3 class="fi-auth__loading-title" data-auth-loading-title>Connecting to Google...</h3>
+              <p class="fi-auth__loading-desc" data-auth-loading-desc>Please complete sign-in in the Google window.<br>Setting up your Faith In experience...</p>
               <div class="fi-auth__loading-progress-track">
                 <div class="fi-auth__loading-progress-bar" data-auth-loading-bar></div>
               </div>
-              <div class="fi-auth__loading-status-tag">
-                <i class="fa-solid fa-arrow-right-to-bracket text-blue-600" data-auth-loading-icon></i>
-                <span data-auth-loading-status>Going to Faith In…</span>
+              <div class="fi-auth__loading-status-btn">
+                <svg class="fi-auth__loading-status-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" data-auth-loading-icon>
+                  <path d="M9 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h4"></path>
+                  <polyline points="16 17 21 12 16 7"></polyline>
+                  <line x1="21" y1="12" x2="9" y2="12"></line>
+                </svg>
+                <span data-auth-loading-status>Going to Faith In...</span>
               </div>
             </div>
           </div>
@@ -247,13 +255,23 @@
       const bar = $('[data-auth-loading-bar]', host);
       const icon = $('[data-auth-loading-icon]', host);
       if (titleEl && title) titleEl.textContent = title;
-      if (descEl && desc) descEl.textContent = desc;
+      if (descEl && desc) {
+        if (desc.includes('\n')) {
+          descEl.innerHTML = desc.replace(/\n/g, '<br>');
+        } else if (desc.includes('. ')) {
+          descEl.innerHTML = desc.replace(/\.\s+/, '.<br>');
+        } else {
+          descEl.textContent = desc;
+        }
+      }
       if (statusEl && statusText) statusEl.textContent = statusText;
       if (bar) bar.classList.toggle('is-complete', !!isDone);
-      if (icon && isDone) {
-        icon.className = 'fa-solid fa-check text-emerald-600';
-      } else if (icon) {
-        icon.className = 'fa-solid fa-arrow-right-to-bracket text-blue-600';
+      if (icon) {
+        if (isDone) {
+          icon.innerHTML = '<polyline points="20 6 9 17 4 12"></polyline>';
+        } else {
+          icon.innerHTML = '<path d="M9 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line>';
+        }
       }
       if (overlay) overlay.classList.remove('hidden');
     };

@@ -390,7 +390,7 @@
   /* ── chat theme ─────────────────────────────────────────────────────────── */
 
   const THEMES = {
-    '#0866FF': 'Facebook Blue',
+    '#2F5BEA': 'Facebook Blue',
     '#2F5BEA': 'Faith In Blue',
     '#059669': 'Emerald',
     '#7C3AED': 'Royal Violet',
@@ -399,7 +399,7 @@
   };
 
   function applyTheme(color) {
-    const chosen = color || (state.threadId && localStorage.getItem(`fi_theme_${state.threadId}`)) || localStorage.getItem('fi_bubble_theme') || '#0866FF';
+    const chosen = color || (state.threadId && localStorage.getItem(`fi_theme_${state.threadId}`)) || localStorage.getItem('fi_bubble_theme') || '#2F5BEA';
     document.documentElement.style.setProperty('--msg-mine-bg', chosen);
     const label = $('[data-theme-label]');
     if (label) label.textContent = THEMES[chosen] || 'Facebook Blue';
@@ -845,7 +845,7 @@
             </div>
             <span class="text-[10px] text-faint px-1 flex items-center gap-1">
               ${esc(message.pending ? 'Sending…' : clockTime(message.created_at))}
-              ${mine && !message.pending ? `<i class="fa-solid fa-check${state.seen ? '-double text-[#0866FF]' : ''}"></i>` : ''}
+              ${mine && !message.pending ? `<i class="fa-solid fa-check${state.seen ? '-double text-[#2F5BEA]' : ''}"></i>` : ''}
             </span>
           </div>
           ${message.pending ? '' : actions}
@@ -862,7 +862,7 @@
           </div>
           <span class="text-[10.5px] text-faint px-2 flex items-center gap-1">
             ${esc(message.pending ? 'Sending…' : clockTime(message.created_at))}
-            ${mine && !message.pending ? `<i class="fa-solid fa-check${state.seen ? '-double text-[#0866FF]' : ''}"></i>` : ''}
+            ${mine && !message.pending ? `<i class="fa-solid fa-check${state.seen ? '-double text-[#2F5BEA]' : ''}"></i>` : ''}
           </span>
         </div>
         ${message.pending ? '' : actions}
@@ -1119,10 +1119,10 @@
     if (!icon) return;
     const hasContent = !!input.value.trim() || !!state.attachment;
     if (hasContent) {
-      icon.className = 'fa-solid fa-paper-plane text-[18px] text-[#0866FF] transition-transform duration-150';
+      icon.className = 'fa-solid fa-paper-plane text-[18px] text-[#2F5BEA] transition-transform duration-150';
       if (btn) btn.title = 'Send (Enter)';
     } else {
-      icon.className = 'fa-solid fa-thumbs-up text-[22px] text-[#0866FF] transition-transform duration-150';
+      icon.className = 'fa-solid fa-thumbs-up text-[22px] text-[#2F5BEA] transition-transform duration-150';
       if (btn) btn.title = 'Send a Like (👍)';
     }
   }
