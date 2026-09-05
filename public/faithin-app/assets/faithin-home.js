@@ -787,7 +787,8 @@
   postBtn?.addEventListener('click', async () => { if (!needUser()) return; busy(postBtn, true, blessingMediaFiles.length ? 'Uploading' : 'Posting'); try { const files = blessingMediaFiles.length ? { 'post_media[]': blessingMediaFiles } : {}; await api.request('cv_create_post', { content: ta.value.trim(), type: 'blessing', visibility: defaultAudience() }, files); ta.value = ''; clearBlessingMedia(); closeModal(); toast('Your blessing is live 🕊️'); await loadPosts(); } catch (error) { toast(error.message); } finally { busy(postBtn, false, 'Post'); ta.dispatchEvent(new Event('input')); } });
 
   const fileInput = $('#file-input'), preview = $('#preview'), dropzone = $('#dropzone');
-  const mediaPickerTitle = $('#media-picker-title'), mediaPickerHelp = $('#media-picker-help'), mediaPickerIcon = $('#media-picker-icon');
+  const mediaPickerTitle = $('#media-picker-title'), mediaPickerHelp = $('#media-picker-help');
+  const mediaPickerPhotoIcon = $('#media-picker-photo-icon'), mediaPickerVideoIcon = $('#media-picker-video-icon');
   let selectedFiles = [], mediaMode = 'image', previewUrls = [];
   function isVideo(file) { return /^video\//i.test(file?.type || '') || /\.(mp4|m4v|mov|qt|webm|ogv)$/i.test(file?.name || ''); }
   function clearPreviewUrls() { previewUrls.forEach(url => URL.revokeObjectURL(url)); previewUrls = []; }
@@ -799,9 +800,12 @@
     fileInput.multiple = mediaMode !== 'video';
     const photoTitleEl = $('#t-photo');
     if (photoTitleEl) photoTitleEl.textContent = mediaMode === 'video' ? 'Add Video' : 'Add Photos';
-    if (mediaPickerTitle) mediaPickerTitle.textContent = mediaMode === 'video' ? 'Select a video to share' : 'Select photos to share';
-    if (mediaPickerHelp) mediaPickerHelp.textContent = mediaMode === 'video' ? 'Portrait, square, or landscape · maximum 50MB' : 'JPG, PNG, GIF, WebP, or HEIC · up to 10 images';
-    if (mediaPickerIcon) mediaPickerIcon.className = mediaMode === 'video' ? 'fa-solid fa-video text-3xl text-rose mb-3' : 'fa-regular fa-images text-3xl text-faint mb-3';
+    if (mediaPickerTitle) mediaPickerTitle.textContent = mediaMode === 'video' ? 'Select video to share' : 'Select photos to share';
+    if (mediaPickerHelp) mediaPickerHelp.textContent = mediaMode === 'video' ? 'MP4, MOV, WebM, or HEVC · up to 50MB' : 'JPG, PNG, GIF, WebP, or HEIC · up to 10 images';
+    if (mediaPickerPhotoIcon && mediaPickerVideoIcon) {
+      mediaPickerPhotoIcon.classList.toggle('hidden', mediaMode === 'video');
+      mediaPickerVideoIcon.classList.toggle('hidden', mediaMode !== 'video');
+    }
     showFiles([]);
   }
   function showFiles(files) {
@@ -817,6 +821,10 @@
       mediaMode = videoFiles.length ? 'video' : 'image';
       const photoTitleEl = $('#t-photo');
       if (photoTitleEl) photoTitleEl.textContent = mediaMode === 'video' ? 'Add Video' : 'Add Photos';
+      if (mediaPickerPhotoIcon && mediaPickerVideoIcon) {
+        mediaPickerPhotoIcon.classList.toggle('hidden', mediaMode === 'video');
+        mediaPickerVideoIcon.classList.toggle('hidden', mediaMode !== 'video');
+      }
     }
     selectedFiles = chosen;
     clearPreviewUrls();
@@ -826,7 +834,14 @@
     preview.classList.toggle('hidden', selectedFiles.length === 0);
 
     const doneBtn = $('#photo-done-btn') || $$('#modal-photo button').find(b => b.textContent.trim() === 'Done');
-    if (doneBtn) doneBtn.disabled = selectedFiles.length === 0;
+    if (doneBtn) {
+      doneBtn.disabled = selectedFiles.length === 0;
+      if (selectedFiles.length > 0) {
+        doneBtn.className = 'min-w-[96px] h-[38px] px-5 rounded-full font-bold text-[14px] flex items-center justify-center transition-all cursor-pointer bg-[#2554D7] text-white hover:bg-[#1d44b8] shadow-sm';
+      } else {
+        doneBtn.className = 'min-w-[96px] h-[38px] px-5 rounded-full font-bold text-[14px] flex items-center justify-center transition-all cursor-not-allowed bg-[#ebedf0] text-[#8d949e] dark:bg-slate-800 dark:text-slate-500';
+      }
+    }
 
     if (!selectedFiles.length) {
       if (fileInput) fileInput.value = '';
@@ -942,7 +957,28 @@
   fileInput?.addEventListener('change', () => showFiles(fileInput.files));
   ['dragover','dragleave','drop'].forEach(type => dropzone?.addEventListener(type, event => { event.preventDefault(); dropzone.classList.toggle('border-brand', type === 'dragover'); if (type === 'drop') showFiles(event.dataTransfer.files); }));
   const photoDone = $('#photo-done-btn') || $$('#modal-photo button').find(button => button.textContent.trim() === 'Done');
-  photoDone?.addEventListener('click', async () => { if (!needUser()) return; if (!selectedFiles.length) return toast(mediaMode === 'video' ? 'Choose a video.' : 'Choose at least one photo.'); busy(photoDone, true, 'Uploading'); try { await api.request('cv_create_post', { type: mediaMode === 'video' ? 'video' : 'post', visibility: defaultAudience() }, { 'post_media[]': selectedFiles }); closeModal(); toast(mediaMode === 'video' ? 'Video shared' : 'Photos shared'); showFiles([]); await loadPosts(); } catch (error) { toast(error.message); } finally { busy(photoDone, false, 'Done'); } });
+  photoDone?.addEventListener('click', async () => {
+    if (!needUser()) return;
+    if (!selectedFiles.length) return toast(mediaMode === 'video' ? 'Choose a video.' : 'Choose at least one photo.');
+    busy(photoDone, true, 'Uploading');
+    try {
+      await api.request('cv_create_post', { type: mediaMode === 'video' ? 'video' : 'post', visibility: defaultAudience() }, { 'post_media[]': selectedFiles });
+      closeModal();
+      toast(mediaMode === 'video' ? 'Video shared' : 'Photos shared');
+      showFiles([]);
+      await loadPosts();
+    } catch (error) {
+      toast(error.message);
+    } finally {
+      busy(photoDone, false, 'Done');
+      if (photoDone) {
+        photoDone.className = selectedFiles.length > 0
+          ? 'min-w-[96px] h-[38px] px-5 rounded-full font-bold text-[14px] flex items-center justify-center transition-all cursor-pointer bg-[#2554D7] text-white hover:bg-[#1d44b8] shadow-sm'
+          : 'min-w-[96px] h-[38px] px-5 rounded-full font-bold text-[14px] flex items-center justify-center transition-all cursor-not-allowed bg-[#ebedf0] text-[#8d949e] dark:bg-slate-800 dark:text-slate-500';
+      }
+    }
+  });
+  $$('#modal-photo [data-close]').forEach(btn => btn.addEventListener('click', () => showFiles([])));
 
   const prayerButton = $$('#modal-prayer button').find(button => /request prayer/i.test(button.textContent));
   prayerButton?.removeAttribute('data-toast');
