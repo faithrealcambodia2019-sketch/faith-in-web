@@ -903,6 +903,147 @@
   // the list behind a "Loading your community…" spinner, loses scroll position
   // and re-requests every image and video in the feed, so we never do that for
   // an action whose response already tells us the new state.
+  // ── share sheet ──────────────────────────────────────────────────────────
+  // Share used to copy a link and stop there, and the link it copied had no
+  // preview data on it, so pasting into Facebook produced the generic site
+  // card rather than the post. Now it offers the usual destinations and
+  // hands each one a permalink carrying the post's own picture.
+  //
+  // Brand glyphs are inline SVG: the stylesheet names Font Awesome's brand
+  // icons but the brands webfont is not bundled, so `fa-brands` renders as
+  // empty boxes. Four paths beat shipping a font for four glyphs.
+  const SHARE_MARKS = {
+    facebook: 'M22 12.06C22 6.5 17.52 2 12 2S2 6.5 2 12.06c0 5 3.66 9.15 8.44 9.94v-7.03H7.9v-2.9h2.54V9.85c0-2.52 1.5-3.91 3.77-3.91 1.09 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.78-1.63 1.57v1.89h2.78l-.45 2.9h-2.33V22c4.78-.79 8.44-4.93 8.44-9.94z',
+    x: 'M18.24 2.25h3.31l-7.23 8.26 8.5 11.24h-6.66l-5.21-6.82-5.97 6.82H1.66l7.73-8.84L1.24 2.25h6.83l4.71 6.23 5.46-6.23zm-1.16 17.52h1.83L7.01 4.13H5.05l12.03 15.64z',
+    telegram: 'M21.94 4.6 18.6 20.3c-.25 1.1-.9 1.38-1.83.86l-5.05-3.72-2.44 2.35c-.27.27-.5.5-1.02.5l.36-5.14 9.36-8.46c.4-.36-.09-.56-.63-.2L5.78 13.2.8 11.65c-1.08-.34-1.1-1.08.23-1.6L20.54 3.02c.9-.33 1.69.2 1.4 1.58z',
+    whatsapp: 'M17.47 14.38c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.65.07-.3-.15-1.26-.46-2.4-1.48-.89-.79-1.49-1.77-1.66-2.07-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.08-.15-.67-1.61-.92-2.21-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.79.37-.27.3-1.04 1.02-1.04 2.48s1.07 2.88 1.22 3.08c.15.2 2.1 3.2 5.08 4.49.71.3 1.26.49 1.69.63.71.22 1.36.19 1.87.12.57-.09 1.76-.72 2.01-1.41.25-.7.25-1.29.17-1.41-.07-.12-.27-.2-.57-.35zM12.05 21.5a9.4 9.4 0 0 1-4.8-1.31l-.34-.2-3.56.93.95-3.47-.22-.36a9.38 9.38 0 0 1-1.44-5.01c0-5.18 4.22-9.4 9.41-9.4a9.34 9.34 0 0 1 6.65 2.76 9.32 9.32 0 0 1 2.75 6.65c0 5.18-4.22 9.4-9.4 9.4zM20.52 3.45A11.28 11.28 0 0 0 12.05 0C5.86 0 .83 5.03.83 11.21c0 1.98.52 3.9 1.5 5.6L.74 24l7.34-1.92a11.2 11.2 0 0 0 3.96.72c6.19 0 11.22-5.03 11.22-11.21 0-3-1.17-5.81-3.29-7.93z'
+  };
+
+  const SHARE_TARGETS = [
+    { key: 'facebook', label: 'Facebook', tone: '#1877F2',
+      href: (url) => `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}` },
+    { key: 'x', label: 'X', tone: '#000000',
+      href: (url, text) => `https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}` },
+    { key: 'telegram', label: 'Telegram', tone: '#229ED9',
+      href: (url, text) => `https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}` },
+    { key: 'whatsapp', label: 'WhatsApp', tone: '#25D366',
+      href: (url, text) => `https://api.whatsapp.com/send?text=${encodeURIComponent(text ? `${text}\n${url}` : url)}` }
+  ];
+
+  // The permalink carries the post's own media and text, because the crawler
+  // that builds the preview cannot read the post itself — Firestore wants a
+  // verified member and the server holds no service account. /post/[id]
+  // only honours media hosted on FaithIn's own storage.
+  function permalinkFor(post) {
+    const base = `${location.origin}/post/${encodeURIComponent(post.id)}`;
+    const params = new URLSearchParams();
+    const media = Array.isArray(post.media_items) ? post.media_items : [];
+    const item = media[0] || (post.cover_image_url ? { type: 'image', url: post.cover_image_url } : null);
+    if (item) {
+      const url = mediaUrl(item.url || item.preview_url || item.local_url || '');
+      const poster = mediaUrl(item.thumbnail_url || item.poster_url || '');
+      if (url && item.type === 'video') {
+        params.set('v', url);
+        if (poster) params.set('i', poster);
+      } else if (url && item.type !== 'audio') {
+        params.set('i', url);
+      }
+    }
+    const text = String(post.content || '').trim();
+    if (text) params.set('t', text.slice(0, 300));
+    const author = String((post.author && post.author.name) || '').trim();
+    if (author) params.set('a', author.slice(0, 60));
+    const query = params.toString();
+    return query ? `${base}?${query}` : base;
+  }
+
+  function countShare(post) {
+    api.request('cv_share_post', { post_id: post.id }).then(result => {
+      const count = Number(result?.share_count ?? 0);
+      patchPost(post.id, { share_count: count });
+      const article = $(`[data-post-id="${CSS.escape(String(post.id))}"]`);
+      const label = article && $('[data-sharecount]', article);
+      if (label) label.textContent = `${count} shares`;
+    }).catch(() => {});
+  }
+
+  function openShareSheet(post) {
+    const url = permalinkFor(post);
+    const text = String(post.content || '').trim().slice(0, 160);
+    // A followers-only or private post must not get one-click buttons to the
+    // open internet. The link still copies, for sending to someone directly.
+    const isPublic = String(post.visibility || 'public').toLowerCase() === 'public';
+
+    const sheet = document.createElement('div');
+    sheet.className = 'fi-share';
+    sheet.setAttribute('role', 'dialog');
+    sheet.setAttribute('aria-modal', 'true');
+    sheet.setAttribute('aria-label', 'Share this post');
+    sheet.innerHTML =
+        '<div class="fi-share-card">'
+      +   '<div class="fi-share-head"><h2>Share this post</h2>'
+      +     '<button type="button" class="fi-share-close" data-share-close aria-label="Close"><i class="fa-solid fa-xmark"></i></button></div>'
+      +   (isPublic
+            ? '<div class="fi-share-grid">' + SHARE_TARGETS.map(target =>
+                `<button type="button" class="fi-share-target" data-share-to="${target.key}">`
+                + `<span class="fi-share-mark" style="background:${target.tone}">`
+                + `<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="${SHARE_MARKS[target.key]}"></path></svg>`
+                + `</span><span>${esc(target.label)}</span></button>`).join('') + '</div>'
+            : '<p class="fi-share-note"><i class="fa-solid fa-lock"></i>This post is not public, so it has no buttons to the open internet. The link still works for anyone who can already see it.</p>')
+      +   '<div class="fi-share-link"><input type="text" readonly value="' + esc(url) + '" data-share-url aria-label="Post link">'
+      +     '<button type="button" class="fi-share-copy" data-share-copy>Copy</button></div>'
+      +   (navigator.share ? '<button type="button" class="fi-share-native" data-share-native><i class="fa-solid fa-share-nodes"></i>More…</button>' : '')
+      + '</div>';
+
+    const scrollLock = document.body.style.overflow;
+    function close() {
+      document.removeEventListener('keydown', onKey);
+      document.body.style.overflow = scrollLock;
+      sheet.remove();
+    }
+    function onKey(event) { if (event.key === 'Escape') close(); }
+
+    sheet.addEventListener('click', async event => {
+      if (event.target === sheet || event.target.closest('[data-share-close]')) return close();
+
+      const target = event.target.closest('[data-share-to]');
+      if (target) {
+        const spec = SHARE_TARGETS.find(entry => entry.key === target.dataset.shareTo);
+        if (spec) {
+          window.open(spec.href(url, text), '_blank', 'noopener,width=640,height=640');
+          countShare(post);
+          close();
+        }
+        return;
+      }
+
+      if (event.target.closest('[data-share-copy]')) {
+        try {
+          await navigator.clipboard.writeText(url);
+          toast('Post link copied');
+        } catch (_) {
+          $('[data-share-url]', sheet)?.select();
+          toast('Press Ctrl+C to copy the link');
+        }
+        countShare(post);
+        return;
+      }
+
+      if (event.target.closest('[data-share-native]')) {
+        try {
+          await navigator.share({ title: 'Faith In', text, url });
+          countShare(post);
+          close();
+        } catch (_) {}
+      }
+    });
+
+    document.addEventListener('keydown', onKey);
+    document.body.style.overflow = 'hidden';
+    document.body.appendChild(sheet);
+    requestAnimationFrame(() => sheet.classList.add('is-open'));
+  }
+
   function patchPost(id, changes) {
     const post = loadedPosts.find(item => String(item.id) === String(id));
     if (post) Object.assign(post, changes);
@@ -990,15 +1131,8 @@
     if (event.target.closest('[data-comment-toggle]')) { event.preventDefault(); const box = $('[data-comments]', article); box.classList.toggle('hidden'); if (!box.classList.contains('hidden')) { $('input', box).focus(); try { const result = await api.request('cv_get_post_comments', { post_id: id }); $('[data-comment-list]', box).innerHTML = (result.items || []).map(comment => `<div class="rounded-xl bg-raised p-2.5 flex items-start gap-2.5"><a href="/profile?uid=${encodeURIComponent(comment.author?.uid || comment.author_uid || '')}" class="shrink-0 block mt-0.5">${window.FILive.avatarMarkup(comment.author || { name: comment.author_name || 'Member' }, 'avatar w-7 h-7 text-[10px] object-cover')}</a><div class="min-w-0 flex-1"><a href="/profile?uid=${encodeURIComponent(comment.author?.uid || comment.author_uid || '')}" class="text-[12.5px] font-semibold hover:text-brand">${esc(comment.author?.name || comment.author_name || 'Member')}</a><p class="text-[13px] mt-0.5 text-ink/90">${esc(comment.content)}</p></div></div>`).join(''); } catch (_) {} } return; }
     if (event.target.closest('[data-live-share]')) {
       if (!needUser()) return;
-      try {
-        const result = await api.request('cv_share_post', { post_id: id });
-        const count = Number(result?.share_count ?? 0);
-        patchPost(id, { share_count: count });
-        const label = $('[data-sharecount]', article);
-        if (label) label.textContent = `${count} shares`;
-        try { await navigator.clipboard.writeText(`${location.origin}/?post=${id}`); } catch (_) {}
-        toast('Post link copied');
-      } catch (error) { toast(error.message); }
+      // Count the share when one actually happens, not when the sheet opens.
+      openShareSheet(loadedPosts.find(item => String(item.id) === String(id)) || { id });
       return;
     }
     if (event.target.closest('[data-live-save]')) {

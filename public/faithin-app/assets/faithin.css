@@ -2937,3 +2937,158 @@ body[data-page="jobs"] .field:focus {
 }
 
 body[data-page="jobs"] .side-link:hover { background: var(--fb-hover); }
+
+/* ── share sheet ───────────────────────────────────────────────────────────
+   Facebook's shape: a dim backdrop, a white 8px card, the destinations as a
+   row of round brand marks, and the raw link underneath for anyone who would
+   rather paste it themselves. */
+.fi-share {
+  position: fixed;
+  inset: 0;
+  z-index: 320;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: rgb(0 0 0 / .55);
+  opacity: 0;
+  transition: opacity .15s ease;
+}
+.fi-share.is-open { opacity: 1; }
+
+.fi-share-card {
+  width: 100%;
+  max-width: 420px;
+  background: var(--fb-surface, #fff);
+  color: var(--fb-text, #050505);
+  border-radius: 8px;
+  box-shadow: 0 12px 28px rgb(0 0 0 / .2), 0 2px 4px rgb(0 0 0 / .1);
+  overflow: hidden;
+}
+html.dark .fi-share-card { background: #242526; color: #E4E6EB; }
+
+.fi-share-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px;
+  border-bottom: 1px solid #CED0D4;
+}
+html.dark .fi-share-head { border-color: #3E4042; }
+.fi-share-head h2 { font-size: 17px; font-weight: 700; margin: 0; }
+
+.fi-share-close {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 9999px;
+  cursor: pointer;
+  background: #E4E6EB;
+  color: inherit;
+  font-size: 15px;
+}
+.fi-share-close:hover { filter: brightness(.95); }
+html.dark .fi-share-close { background: #3A3B3C; }
+
+.fi-share-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  padding: 16px;
+}
+.fi-share-target {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 4px;
+  border: 0;
+  border-radius: 8px;
+  cursor: pointer;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+}
+.fi-share-target:hover { background: var(--fb-hover, #F2F2F2); }
+html.dark .fi-share-target:hover { background: #3A3B3C; }
+.fi-share-mark {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border-radius: 9999px;
+  color: #fff;
+}
+.fi-share-mark svg { width: 21px; height: 21px; display: block; }
+
+.fi-share-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 0;
+  padding: 16px;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--fb-secondary, #65676B);
+}
+.fi-share-note i { margin-top: 2px; }
+
+.fi-share-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 16px 16px;
+}
+.fi-share-link input {
+  flex: 1;
+  min-width: 0;
+  height: 38px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 8px;
+  background: #E4E6EB;
+  color: inherit;
+  font: inherit;
+  font-size: 13.5px;
+  text-overflow: ellipsis;
+}
+html.dark .fi-share-link input { background: #3A3B3C; }
+.fi-share-copy {
+  height: 38px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 6px;
+  cursor: pointer;
+  background: rgb(var(--brand));
+  color: #fff;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 600;
+}
+.fi-share-copy:hover { background: rgb(var(--brand-strong)); }
+
+.fi-share-native {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: calc(100% - 32px);
+  height: 38px;
+  margin: 0 16px 16px;
+  border: 0;
+  border-radius: 6px;
+  cursor: pointer;
+  background: #E4E6EB;
+  color: inherit;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 600;
+}
+.fi-share-native:hover { filter: brightness(.95); }
+html.dark .fi-share-native { background: #3A3B3C; }
+
+@media (prefers-reduced-motion: reduce) { .fi-share { transition: none; } }
