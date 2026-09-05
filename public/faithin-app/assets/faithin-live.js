@@ -356,8 +356,22 @@
       host.classList.remove('hidden');
       host.classList.toggle('is-locked', locked);
       document.body.classList.toggle('fi-auth-locked', locked);
+      document.body.classList.toggle('fi-logged-out', locked);
       const main = $('#main');
-      if (main) { main.inert = locked; main.setAttribute('aria-hidden', String(locked)); }
+      if (main) {
+        if (locked) {
+          main.style.display = 'none';
+        } else {
+          main.style.display = '';
+        }
+        main.inert = locked;
+        main.setAttribute('aria-hidden', String(locked));
+      }
+      const header = document.querySelector('body > header');
+      if (header) header.style.display = locked ? 'none' : '';
+      const tabBar = document.querySelector('.fi-tab-bar, nav[aria-label="Mobile navigation"]');
+      if (tabBar) tabBar.style.display = locked ? 'none' : '';
+
       showView(options?.verificationRequired ? 'verify' : 'signin');
       if (options?.email) { verificationEmail = options.email; $('[data-auth-email]', host).textContent = verificationEmail; }
       if (options?.verificationRequired) showView('verify');
@@ -366,6 +380,21 @@
 
   function applySession(user) {
     session = user && user.logged_in ? user : null;
+    if (session) {
+      document.body.classList.remove('fi-auth-locked', 'fi-logged-out');
+      const main = $('#main');
+      if (main) {
+        main.style.display = '';
+        main.inert = false;
+        main.removeAttribute('aria-hidden');
+      }
+      const header = document.querySelector('body > header');
+      if (header) header.style.display = '';
+      const tabBar = document.querySelector('.fi-tab-bar, nav[aria-label="Mobile navigation"]');
+      if (tabBar) tabBar.style.display = '';
+    } else {
+      document.body.classList.add('fi-auth-locked', 'fi-logged-out');
+    }
     if (session?.settings?.theme) setTheme(session.settings.theme);
     document.documentElement.style.fontSize = session?.settings?.larger_text ? '112.5%' : '';
     const name = session?.name || 'Sign in';
@@ -2674,11 +2703,16 @@
   }
 
   document.addEventListener('click', async event => {
-    const signout = event.target.closest('[data-menu-root] a');
-    if (signout && /sign out|sign in/i.test(signout.textContent)) {
+    const signout = event.target.closest('[data-menu-root] a, [data-action="logout"], a[href*="logout"], .cv-logout-btn-ok');
+    if (signout && (/sign out|sign in|logout/i.test(signout.textContent) || signout.matches('[data-action="logout"], a[href*="logout"], .cv-logout-btn-ok'))) {
       event.preventDefault();
-      if (!session) return window.FI.openAuth();
-      await api.request('cv_logout'); applySession(null); toast('Signed out');
+      if (!session) return window.FI.openAuth({ locked: true });
+      try { await api.request('cv_logout'); } catch (_) {}
+      applySession(null);
+      signedOutState();
+      toast('Signed out');
+      window.FI.openAuth({ locked: true });
+      return;
     }
     const protectedAction = event.target.closest('[data-live-auth]');
     if (protectedAction && !requireUser()) event.preventDefault();
@@ -2807,6 +2841,17 @@
     });
   }
   function signedOutState() {
+    document.body.classList.add('fi-auth-locked', 'fi-logged-out');
+    const main = $('#main');
+    if (main) {
+      main.style.display = 'none';
+      main.inert = true;
+      main.setAttribute('aria-hidden', 'true');
+    }
+    const header = document.querySelector('body > header');
+    if (header) header.style.display = 'none';
+    const tabBar = document.querySelector('.fi-tab-bar, nav[aria-label="Mobile navigation"]');
+    if (tabBar) tabBar.style.display = 'none';
     const targets = {
       jobs: $$('#main h2').find(node => /recommended for you/i.test(node.textContent))?.closest('section')?.querySelector('.divide-y'),
       library: $('#shelf'),
@@ -2821,7 +2866,7 @@
       if (content) content.innerHTML = `<section class="card p-10 text-center"><i class="fa-solid fa-lock text-3xl text-faint"></i><h1 class="text-[21px] font-bold mt-4">Sign in to view your ${esc(page)}</h1><p class="text-[13.5px] text-muted mt-2">Your saved account information will appear here. No sample profile data is shown.</p><button class="btn btn-primary mt-4" data-open-auth>Sign in</button></section>`;
     }
   }
-  document.addEventListener('click', event => { if (event.target.closest('[data-open-auth]')) window.FI.openAuth(); });
+  document.addEventListener('click', event => { if (event.target.closest('[data-open-auth]')) window.FI.openAuth({ locked: true }); });
   markActiveSideLink();
   loadVerseOfTheDay();
   document.addEventListener('fi:session', () => { if (page === 'home') loadPrayerWall(); });
@@ -2833,10 +2878,7 @@
     } else if (session && !updated?.logged_in) {
       applySession(null);
       signedOutState();
-      const requiresAuth = (page === 'profile' || page === 'settings' || page === 'settings-security' || page === 'messaging');
-      if (requiresAuth) {
-        window.FI.openAuth({ locked: true });
-      }
+      window.FI.openAuth({ locked: true });
     }
   });
   wireArticleComposer();
@@ -2845,14 +2887,11 @@
     applySession(user);
     if (!user?.logged_in) {
       signedOutState();
-      const requiresAuth = (page === 'profile' || page === 'settings' || page === 'settings-security' || page === 'messaging' || page === 'studio' || page === 'dashboard');
-      if (requiresAuth || user?.verification_required) {
-        window.FI.openAuth({
-          locked: requiresAuth,
-          verificationRequired: !!user?.verification_required,
-          email: user?.email || ''
-        });
-      }
+      window.FI.openAuth({
+        locked: true,
+        verificationRequired: !!user?.verification_required,
+        email: user?.email || ''
+      });
       return;
     }
     refreshNotifications();
@@ -2867,9 +2906,6 @@
   }).catch(() => {
     applySession(null);
     signedOutState();
-    const requiresAuth = (page === 'profile' || page === 'settings' || page === 'settings-security' || page === 'messaging' || page === 'studio' || page === 'dashboard');
-    if (requiresAuth) {
-      window.FI.openAuth({ locked: true });
-    }
+    window.FI.openAuth({ locked: true });
   });
 })();

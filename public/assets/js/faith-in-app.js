@@ -8317,6 +8317,12 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
                 el.style.setProperty('border', '0', 'important');
                 el.style.setProperty('overflow', 'hidden', 'important');
             });
+
+            if (cvIsSignedOut()) {
+                document.querySelectorAll('#cv-react-global-nav, .cv-nav-shell, .cv-mobile-bottom-nav, .cv-nav-mobile-row, .cv-nav-mobile-wrap, .cv-react-mobile-top').forEach(function(el) {
+                    el.style.setProperty('display', 'none', 'important');
+                });
+            }
         } catch (error) {
             if (window.console && console.warn) console.warn('Faith In top header fix failed', error);
         }
@@ -8364,14 +8370,37 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
         if(!root) return;
         const cvFocusedField = captureCvFocusedField(root);
 
+        if (state.authRestoring) {
+            root.innerHTML = renderSessionLoading();
+            cvMountAppAtBodyTop();
+            return;
+        }
+
+        if (cvIsSignedOut()) {
+            document.documentElement.classList.add('cv-logged-out-mode');
+            document.body.classList.add('cv-logged-out-mode');
+            const isDark = state.settings && state.settings.theme === 'dark';
+            root.innerHTML = `
+                <div class="cv-logged-out-screen min-h-screen w-full flex items-center justify-center p-4 sm:p-6" style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:${isDark ? '#0f172a' : '#f0f2f5'};">
+                    <div class="w-full max-w-4xl mx-auto py-8">
+                        ${renderUnifiedAuthCard()}
+                    </div>
+                </div>
+                ${renderModal()}
+            `;
+            cvMountAppAtBodyTop();
+            document.body.style.overflow = (state.modal && state.modal.isOpen) ? 'hidden' : 'auto';
+            if (window.lucide) window.lucide.createIcons();
+            return;
+        }
+
+        document.documentElement.classList.remove('cv-logged-out-mode');
+        document.body.classList.remove('cv-logged-out-mode');
+
         let html = renderNav();
         html += `<main class="flex-1 w-full flex flex-col relative">`;
 
-        if (state.authRestoring) {
-            html += renderSessionLoading();
-        } else if (cvIsSignedOut() && state.tab !== 'profile') {
-            html += renderMembersOnlyGate();
-        } else if (state.selectedResource) {
+        if (state.selectedResource) {
             html += renderResourceDetail();
         } else {
             switch (state.tab) {

@@ -2036,12 +2036,38 @@ html.dark .fb-format-pill.is-zip   { background: rgba(71, 85, 105, .3); color: #
   border:1px solid rgb(var(--line)); background:rgb(var(--raised));
 }
 
-/* --- secure authentication --------------------------------------------- */
-body.fi-auth-locked{ overflow:hidden; }
+body.fi-auth-locked, body.fi-logged-out{ overflow:hidden !important; background:#f0f2f5 !important; }
+body.fi-auth-locked > header,
+body.fi-auth-locked > #main,
+body.fi-auth-locked > nav,
+body.fi-auth-locked > aside,
+body.fi-auth-locked > .fi-tab-bar,
+body.fi-auth-locked > [data-menu-root],
+body.fi-auth-locked > #story-canvas,
+body.fi-auth-locked [data-modal],
+body.fi-logged-out > header,
+body.fi-logged-out > #main,
+body.fi-logged-out > nav,
+body.fi-logged-out > aside,
+body.fi-logged-out > .fi-tab-bar,
+body.fi-logged-out > [data-menu-root],
+body.fi-logged-out > #story-canvas,
+body.fi-logged-out [data-modal]{
+  display:none !important;
+}
 .fi-auth{
   position:fixed; inset:0; z-index:500; overflow:auto;
-  color:#111827; background:#f3f2ef;
+  color:#111827; background:#f0f2f5;
 }
+.fi-auth.is-locked{
+  position:fixed !important; inset:0 !important; z-index:99999 !important;
+  background:#f0f2f5 !important;
+}
+.fi-auth.is-locked .fi-auth__close{ display:none !important; }
+.dark body.fi-auth-locked, .dark body.fi-logged-out, .dark .fi-auth.is-locked{ background:#0f172a !important; color:#f8fafc !important; }
+.dark .fi-auth.is-locked .fi-auth__card{ background:#1e293b !important; border-color:#334155 !important; color:#f8fafc !important; }
+.dark .fi-auth.is-locked .fi-auth__intro h1{ color:#f8fafc !important; }
+.dark .fi-auth.is-locked .fi-auth__intro p{ color:#94a3b8 !important; }
 .fi-auth.hidden{ display:none; }
 .fi-auth__page{ min-height:100dvh; display:flex; flex-direction:column; }
 .fi-auth__brand{
