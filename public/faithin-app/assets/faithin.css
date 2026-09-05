@@ -1055,7 +1055,8 @@ html.dark .media-plate{ background: linear-gradient(135deg,#1c2a4e,#0f1930); col
 /* component classes set `display`, so Tailwind's .hidden needs to win back */
 .side-link.hidden, .nav-item.hidden, .count-link.hidden,
 .chip.hidden, .btn.hidden, .action-btn.hidden, .top-link.hidden,
-.icon-btn.hidden, .avatar.hidden{ display:none; }
+.icon-btn.hidden, .avatar.hidden,
+.msg-verse-modal.hidden, .msg-lightbox.hidden, .msg-emoji-picker.hidden{ display:none !important; }
 
 /* The same applies to the responsive variants. `.icon-btn` and `.md\:hidden`
    have equal specificity and this file loads last, so without these an
@@ -1320,6 +1321,9 @@ html.dark .msg-bubble.is-mine{ color:#fff !important; }
   gap: 8px;
   animation: msg-pop .18s ease-out;
 }
+.msg-emoji-picker.hidden{
+  display: none !important;
+}
 .msg-emoji-grid{
   display: grid;
   grid-template-columns: repeat(6, 1fr);
@@ -1356,6 +1360,9 @@ html.dark .msg-bubble.is-mine{ color:#fff !important; }
   padding: 16px;
   animation: msg-pop .2s ease-out;
 }
+.msg-verse-modal.hidden{
+  display: none !important;
+}
 .msg-verse-card{
   width: 100%;
   max-width: 480px;
@@ -1391,6 +1398,9 @@ html.dark .msg-bubble.is-mine{ color:#fff !important; }
   justify-content: center;
   padding: 24px;
   cursor: zoom-out;
+}
+.msg-lightbox.hidden{
+  display: none !important;
 }
 .msg-lightbox img{
   max-width: 90vw;

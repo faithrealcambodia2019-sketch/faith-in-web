@@ -2538,7 +2538,7 @@
             <h3 class="text-[18px] font-bold">Active Sessions</h3>
             <button type="button" class="icon-btn" data-modal-close><i class="fa-solid fa-xmark"></i></button>
           </div>
-          <p class="text-[13px] text-muted">You are currently signed in on this browser. You can sign out other devices at any time.</p>
+          <p class="text-[13px] text-muted">This is the device you are signed in on now. To end sessions on your other devices, change your password — that signs all of them out.</p>
           <div class="p-3.5 rounded-xl bg-raised border border-line flex items-center gap-3">
             <div class="w-8 h-8 rounded-lg bg-brand-soft text-brand flex items-center justify-center shrink-0">
               <i class="fa-solid fa-desktop text-[13px]"></i>
@@ -2556,9 +2556,15 @@
       `;
       document.body.appendChild(modal);
       $$('[data-modal-close]', modal).forEach(btn => btn.onclick = () => modal.remove());
+      // Firebase's client SDK cannot revoke another device's session — that
+      // needs the Admin SDK, and this deployment holds no service account by
+      // design. Changing the password does end every other session, so the
+      // button now goes there instead of claiming something untrue.
       $('[data-signout-others]', modal).onclick = () => {
-        toast('Signed out of all other sessions.');
         modal.remove();
+        toast('Changing your password signs out every other device.');
+        const passwordRow = $('[data-security-password-row]');
+        if (passwordRow) passwordRow.click();
       };
     });
 
@@ -2581,7 +2587,7 @@
                 <p class="text-[12px] text-muted mt-0.5">Stay signed in on this trusted browser</p>
               </div>
               <label class="switch">
-                <input type="checkbox" checked data-remember-toggle>
+                <input type="checkbox" ${security.remember_devices === false ? '' : 'checked'} data-remember-toggle>
                 <span></span>
               </label>
             </div>
@@ -2590,8 +2596,18 @@
         `;
         document.body.appendChild(modal);
         $$('[data-modal-close]', modal).forEach(btn => btn.onclick = () => modal.remove());
+        // This used to toast and forget. It now saves the choice and applies
+        // Firebase's session persistence to this browser for real.
         $('[data-remember-toggle]', modal)?.addEventListener('change', async (e) => {
-          toast(e.target.checked ? 'Login session will be remembered.' : 'Session will clear upon browser close.');
+          const val = e.target.checked;
+          try {
+            await api.request('cv_update_user_settings', { remember_devices: val });
+            security.remember_devices = val;
+            toast(val ? 'You will stay signed in on this browser.' : 'You will be signed out when this browser closes.');
+          } catch (err) {
+            e.target.checked = !val;
+            toast(err.message);
+          }
         });
       };
     }
@@ -2612,7 +2628,7 @@
             <div class="space-y-2.5">
               <div class="p-3 rounded-xl bg-raised border border-line flex items-center justify-between">
                 <div class="flex items-center gap-2.5">
-                  <i class="fa-brands fa-google text-brand text-[18px]"></i>
+                  <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="#4285F4" d="M23.5 12.27c0-.79-.07-1.54-.2-2.27H12v4.51h6.47a5.53 5.53 0 0 1-2.4 3.62v3h3.87c2.26-2.09 3.56-5.17 3.56-8.86z"/><path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.94-2.91l-3.87-3c-1.08.72-2.45 1.16-4.07 1.16-3.13 0-5.78-2.11-6.73-4.96H1.29v3.09A12 12 0 0 0 12 24z"/><path fill="#FBBC05" d="M5.27 14.29a7.2 7.2 0 0 1 0-4.58V6.62H1.29a12 12 0 0 0 0 10.76l3.98-3.09z"/><path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.43-3.43C17.95 1.19 15.24 0 12 0A12 12 0 0 0 1.29 6.62l3.98 3.09C6.22 6.86 8.87 4.75 12 4.75z"/></svg>
                   <div>
                     <p class="text-[13.5px] font-semibold">Google Identity & Firebase</p>
                     <p class="text-[11.5px] text-muted">Authentication & Realtime Firestore</p>

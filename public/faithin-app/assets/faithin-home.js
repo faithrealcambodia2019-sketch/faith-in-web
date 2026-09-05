@@ -12,6 +12,20 @@
     && window.FILive.user.settings.default_post_audience) || 'public';
   let loadedPosts = [], feedQuery = '', sortMode = 'Top', followingIds = new Set();
 
+  // Blocking is enforced here as well as saved: a blocked member's posts and
+  // blessings leave the feed on the next render.
+  const blockedUids = () => new Set(
+    (window.FILive?.user?.settings?.blocked_uids) || []
+  );
+  function withoutBlocked(items) {
+    const blocked = blockedUids();
+    if (!blocked.size) return items;
+    return items.filter(item => {
+      const uid = item?.author?.uid || item?.authorUid || item?.uid;
+      return !uid || !blocked.has(uid);
+    });
+  }
+
   const LEGACY_MEDIA_BASE = 'https://nckvrhdyrikrbpgjlqlw.supabase.co/storage/v1/object/public/faithin-media/migrated/';
   const LEGACY_MEDIA_FILES = [
     [/2026[-_]?08[-_]?15.*19[._-]?51[._-]?25/i, '2026-08-15_19.51.25.jpg'],
@@ -445,7 +459,7 @@
     // Instant display from session cache if available (0ms load time)
     const cached = getCachedFeed();
     if (cached && cached.length && !loadedPosts.length) {
-      loadedPosts = cached;
+      loadedPosts = withoutBlocked(cached);
       renderFeed();
       renderBlessings(loadedPosts);
     } else if (!loadedPosts.length) {
@@ -474,7 +488,7 @@
           if (item.id) followingIds.add(String(item.id));
         });
       }
-      loadedPosts = result.items || [];
+      loadedPosts = withoutBlocked(result.items || []);
       setCachedFeed(loadedPosts);
       renderFeed();
       renderBlessings(loadedPosts);
@@ -782,6 +796,40 @@
     coverInput?.click();
   });
 
+  // "Saved to draft" used to be a timer that flipped the label and stored
+  // nothing — the worst kind of lie for a composer, because people leave the
+  // page trusting it. It now writes the draft and restores it on reopen.
+  const DRAFT_KEY = 'faithin:article-draft';
+
+  function readDraft() {
+    try { return JSON.parse(localStorage.getItem(DRAFT_KEY) || 'null'); } catch (_) { return null; }
+  }
+  function writeDraft() {
+    const draft = {
+      headline: headlineEl ? headlineEl.innerHTML : '',
+      body: bodyEl ? bodyEl.innerHTML : '',
+      at: Date.now()
+    };
+    const empty = !String(draft.headline).replace(/<[^>]*>/g, '').trim()
+      && !String(draft.body).replace(/<[^>]*>/g, '').trim();
+    try {
+      if (empty) localStorage.removeItem(DRAFT_KEY);
+      else localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+      return true;
+    } catch (_) { return false; }
+  }
+  function clearDraft() {
+    try { localStorage.removeItem(DRAFT_KEY); } catch (_) {}
+  }
+  function restoreDraft() {
+    const draft = readDraft();
+    if (!draft) return;
+    if (headlineEl && draft.headline) headlineEl.innerHTML = draft.headline;
+    if (bodyEl && draft.body) bodyEl.innerHTML = draft.body;
+    if (saveStatus) saveStatus.textContent = 'Draft restored';
+  }
+  restoreDraft();
+
   let saveTimeout;
   const triggerSaveStatus = () => {
     if (!saveStatus || !saveIcon) return;
@@ -789,8 +837,11 @@
     saveIcon.className = 'fa-solid fa-spinner fa-spin text-muted';
     clearTimeout(saveTimeout);
     saveTimeout = setTimeout(() => {
-      saveStatus.textContent = 'Saved to draft';
-      saveIcon.className = 'fa-solid fa-cloud text-emerald-500';
+      const stored = writeDraft();
+      saveStatus.textContent = stored ? 'Saved to draft' : 'Could not save draft';
+      saveIcon.className = stored
+        ? 'fa-solid fa-cloud text-emerald-500'
+        : 'fa-solid fa-cloud-exclamation text-rose';
       setTimeout(() => {
         if (saveIcon) saveIcon.className = 'fa-solid fa-cloud text-muted';
       }, 2000);

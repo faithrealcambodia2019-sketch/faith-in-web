@@ -522,10 +522,26 @@
     if (modal) { modal.classList.add('hidden'); modal.classList.remove('flex'); }
   }
 
-  function confirmBlock() {
-    closeBlockModal();
-    state.blocked = true;
-    toast(`${state.partner?.name || 'Member'} has been blocked.`);
+  // This used to set an in-memory flag, announce the member had been blocked,
+  // and forget it on reload — worse than no button, because someone may be
+  // relying on it. The list is now saved to the account and enforced: their
+  // posts leave your feed, their notifications stop, and this conversation
+  // closes. It cannot stop them writing to you — that needs server-side
+  // enforcement this deployment has no service account for — so the wording
+  // says what it does rather than implying more.
+  async function confirmBlock() {
+    const uid = state.partner?.uid;
+    if (!uid) { closeBlockModal(); return toast('Open the conversation first.'); }
+    try {
+      await api.request('cv_block_user', { uid });
+      state.blocked = true;
+      closeBlockModal();
+      toast(`You will no longer see ${state.partner?.name || 'this member'} in your feed or notifications.`);
+      setTimeout(() => { location.href = '/messages'; }, 900);
+    } catch (error) {
+      closeBlockModal();
+      toast(error.message);
+    }
   }
 
   function openClearModal() {
@@ -538,12 +554,15 @@
     if (modal) { modal.classList.add('hidden'); modal.classList.remove('flex'); }
   }
 
+  // Deliberately local: there is no endpoint that deletes a thread's history
+  // for both people, and quietly clearing only your own copy while saying
+  // "conversation cleared" reads as if it deleted theirs too.
   function confirmClearChat() {
     closeClearModal();
     state.messages = [];
     state.pending = [];
     renderMessages();
-    toast('Conversation cleared');
+    toast('Cleared from this view. Reopening the chat restores it.');
   }
 
   /* ── scripture verse quick share ───────────────────────────────────────── */
@@ -708,12 +727,18 @@
     const img = $('[data-lightbox-img]');
     if (!lightbox || !img || !src) return;
     img.src = src;
+    img.classList.remove('hidden');
     lightbox.classList.remove('hidden');
     lightbox.classList.add('flex');
   }
 
   function closeLightbox() {
     const lightbox = $('[data-image-lightbox]');
+    const img = $('[data-lightbox-img]');
+    if (img) {
+      img.removeAttribute('src');
+      img.classList.add('hidden');
+    }
     if (lightbox) {
       lightbox.classList.add('hidden');
       lightbox.classList.remove('flex');
@@ -1245,6 +1270,9 @@
   /* ── scripture quick share wiring ── */
   $('[data-verse-toggle]')?.addEventListener('click', openVerseModal);
   $('[data-verse-close]')?.addEventListener('click', closeVerseModal);
+  $('[data-verse-modal]')?.addEventListener('click', e => {
+    if (e.target.hasAttribute('data-verse-modal') || e.target.classList.contains('msg-verse-modal')) closeVerseModal();
+  });
   $('[data-verse-filter]')?.addEventListener('input', e => renderVerseList(e.target.value));
 
   /* ── emoji picker wiring ── */

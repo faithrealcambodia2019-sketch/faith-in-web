@@ -2901,6 +2901,62 @@
         });
     };
 
+    /**
+     * Block and unblock. The Messages screen has had a "Block member" button
+     * since launch that set an in-memory flag, told the person they had been
+     * blocked, and forgot it on reload — worse than having no button at all,
+     * because someone may be relying on it.
+     *
+     * The list lives in the caller's own settings document. firestore.rules
+     * already permits updating `settings` on your own user record, so this
+     * needs no rules change. Enforcement is client-side: blocked authors are
+     * filtered out of the feed and notifications and their conversation is
+     * closed. That stops you seeing them; it does not stop them writing, and
+     * the interface says so rather than implying otherwise.
+     */
+    function writeBlockList(b, mutate) {
+        return requireUser(b).then(function (user) {
+            var ref = b.dbMod.doc(b.db, 'users', user.uid);
+            return b.dbMod.getDoc(ref).then(function (snapshot) {
+                var current = snapshot.exists() ? (snapshot.data().settings || {}) : {};
+                var settings = Object.assign({}, current);
+                var list = Array.isArray(settings.blocked_uids) ? settings.blocked_uids.slice() : [];
+                settings.blocked_uids = mutate(list).filter(Boolean).slice(0, 500);
+                return b.dbMod.updateDoc(ref, {
+                    settings: settings,
+                    updatedAt: b.dbMod.serverTimestamp()
+                }).then(function () {
+                    return { saved: true, blocked_uids: settings.blocked_uids };
+                });
+            });
+        });
+    }
+
+    actions.cv_block_user = function (b, params) {
+        var uid = text(params.uid, 128);
+        if (!uid) throw new Error('Which member do you want to block?');
+        return writeBlockList(b, function (list) {
+            return list.indexOf(uid) === -1 ? list.concat([uid]) : list;
+        });
+    };
+
+    actions.cv_unblock_user = function (b, params) {
+        var uid = text(params.uid, 128);
+        if (!uid) throw new Error('Which member do you want to unblock?');
+        return writeBlockList(b, function (list) {
+            return list.filter(function (entry) { return entry !== uid; });
+        });
+    };
+
+    actions.cv_get_blocked_users = function (b) {
+        return requireUser(b).then(function (user) {
+            return b.dbMod.getDoc(b.dbMod.doc(b.db, 'users', user.uid)).then(function (snapshot) {
+                var settings = snapshot.exists() ? (snapshot.data().settings || {}) : {};
+                return { items: Array.isArray(settings.blocked_uids) ? settings.blocked_uids : [] };
+            });
+        });
+    };
+
     actions.cv_update_user_settings = function (b, params) {
         return requireUser(b).then(function (user) {
             var ref = b.dbMod.doc(b.db, 'users', user.uid);
@@ -2939,6 +2995,12 @@
                     settings: settings,
                     updatedAt: b.dbMod.serverTimestamp()
                 };
+                // "Keep me signed in" used to be a toast and nothing else.
+                // setAuthPersistence has been sitting in this file unused;
+                // apply it to this browser now, alongside saving the choice.
+                if (params.remember_devices !== undefined) {
+                    setAuthPersistence(b, settings.remember_devices);
+                }
                 if (params.phone !== undefined) updates.phone = text(params.phone, 40);
                 return b.dbMod.updateDoc(ref, updates).then(function () {
                     if (params.phone !== undefined) {
