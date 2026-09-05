@@ -226,6 +226,15 @@
       });
       $$('p').filter(node => /Faith In member\s*·\s*Phnom Penh/i.test(node.textContent)).forEach(node => { node.textContent = session ? ['Faith In member', session.location].filter(Boolean).join(' · ') : 'Sign in to join the community'; });
       $$('.avatar').filter(node => node.textContent.trim() === 'HC' || node.textContent.trim() === 'FI').forEach(node => { if (!node.closest('[data-post-id],[data-user-uid]')) node.textContent = api.initials(displayName); });
+      // The rail profile card shipped with a painted-on gradient, so everyone's
+      // card looked the same regardless of the cover they had actually
+      // uploaded. Paint the real one; the gradient class stays underneath as
+      // the fallback for members who have not set one.
+      $$('[data-current-user-cover]').forEach(el => {
+        const cover = session && (session.cover_url || session.cover);
+        if (!cover) { el.style.backgroundImage = ''; return; }
+        el.style.backgroundImage = `url("${String(cover).replace(/["\\]/g, '')}")`;
+      });
       $$('[data-current-user-avatar]').forEach(el => {
         const holder = document.createElement('span');
         holder.innerHTML = avatarMarkup(session || { name: displayName }, `${el.className} object-cover`);
