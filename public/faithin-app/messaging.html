@@ -64,10 +64,10 @@
 </div>
 </div>
 <div class="flex items-center gap-1 shrink-0">
-<button aria-label="Voice call" class="icon-btn text-brand" data-voice-call title="Voice call" type="button">
+<button aria-label="Voice call (coming soon)" class="icon-btn opacity-40 cursor-not-allowed" disabled title="Voice calling (coming soon)" type="button">
 <i class="fa-solid fa-phone text-[13px]"></i>
 </button>
-<button aria-label="Video call" class="icon-btn text-brand" data-video-call title="Video call" type="button">
+<button aria-label="Video call (coming soon)" class="icon-btn opacity-40 cursor-not-allowed" disabled title="Video calling (coming soon)" type="button">
 <i class="fa-solid fa-video text-[13px]"></i>
 </button>
 <button aria-label="Search conversation" class="icon-btn" data-chat-search-toggle title="Search in conversation" type="button">
@@ -166,10 +166,9 @@
 <span class="relative" data-info-avatar></span>
 <h3 class="font-bold text-[16px] mt-3.5 leading-tight" data-info-name>Faith In Member</h3>
 <p class="text-[12px] text-muted mt-1" data-info-role>Faith In member</p>
-<div class="flex flex-wrap items-center justify-center gap-1.5 mt-3.5">
-<a class="btn btn-neutral !py-1 !px-2.5 text-[12px]" data-info-profile href="/profile"><i class="fa-regular fa-user"></i>Profile</a>
-<button class="btn btn-neutral !py-1 !px-2.5 text-[12px]" data-voice-call type="button"><i class="fa-solid fa-phone text-brand"></i>Call</button>
-<button class="btn btn-neutral !py-1 !px-2.5 text-[12px]" data-video-call type="button"><i class="fa-solid fa-video text-brand"></i>Video</button>
+<div class="flex flex-wrap items-center justify-center gap-2 mt-3.5">
+<a class="btn btn-neutral !py-1.5 !px-3 text-[12.5px]" data-info-profile href="/profile"><i class="fa-regular fa-user"></i>Profile</a>
+<button class="btn btn-neutral !py-1.5 !px-3 text-[12.5px]" data-bubble-toggle type="button"><i class="fa-solid fa-comment-dots text-brand"></i>Chat Bubble</button>
 </div>
 </div>
 
@@ -253,48 +252,6 @@
 <p class="p-6 text-center text-[13px] text-muted">Type a name to find someone to message.</p>
 </div>
 </section>
-</div>
-
-<!-- ───── VOICE CALL MODAL ───── -->
-<div class="hidden fi-call-modal" data-voice-call-modal>
-<div class="fi-call-card">
-<div class="fi-call-avatar-pulse">
-<span class="avatar w-24 h-24 text-[26px] ring-4 ring-brand" data-call-avatar></span>
-</div>
-<h3 class="text-[20px] font-bold text-white leading-tight" data-call-name>Faith In Member</h3>
-<p class="text-[13px] text-slate-300 mt-1" data-call-status>Calling…</p>
-<p class="text-[12px] text-emerald-400 font-mono mt-2 hidden" data-call-timer>00:00</p>
-<div class="fi-call-actions">
-<button class="fi-call-btn btn-tool" data-call-mute title="Mute Microphone" type="button"><i class="fa-solid fa-microphone"></i></button>
-<button class="fi-call-btn btn-tool" data-call-speaker title="Speaker" type="button"><i class="fa-solid fa-volume-high"></i></button>
-<button class="fi-call-btn btn-hangup" data-call-hangup title="End Call" type="button"><i class="fa-solid fa-phone-slash"></i></button>
-</div>
-</div>
-</div>
-
-<!-- ───── VIDEO CALL MODAL ───── -->
-<div class="hidden fi-call-modal" data-video-call-modal>
-<div class="fi-call-card !max-w-[500px] !p-6 relative">
-<div class="w-full aspect-[4/3] rounded-2xl bg-slate-900 border border-slate-700 relative overflow-hidden flex items-center justify-center">
-<div class="flex flex-col items-center text-center p-4">
-<span class="avatar w-20 h-20 text-[22px] ring-4 ring-brand mb-3" data-video-avatar></span>
-<h3 class="text-[17px] font-bold text-white" data-video-name>Faith In Member</h3>
-<p class="text-[12px] text-slate-300 mt-1" data-video-status>Connecting video…</p>
-<p class="text-[12px] text-emerald-400 font-mono mt-1 hidden" data-video-timer>00:00</p>
-</div>
-<!-- Picture-in-picture local preview -->
-<div class="absolute right-3 top-3 w-24 h-32 rounded-xl bg-slate-800 border-2 border-slate-600 flex flex-col items-center justify-center shadow-lg">
-<span class="avatar w-10 h-10 text-[12px] mb-1" data-local-avatar>You</span>
-<span class="text-[10px] text-slate-300 font-medium">Your camera</span>
-</div>
-</div>
-<div class="fi-call-actions !mt-6">
-<button class="fi-call-btn btn-tool" data-video-toggle-cam title="Camera On/Off" type="button"><i class="fa-solid fa-video"></i></button>
-<button class="fi-call-btn btn-tool" data-video-mute title="Mute Microphone" type="button"><i class="fa-solid fa-microphone"></i></button>
-<button class="fi-call-btn btn-tool" data-video-flip title="Flip Camera" type="button"><i class="fa-solid fa-camera-rotate"></i></button>
-<button class="fi-call-btn btn-hangup" data-video-hangup title="End Video Call" type="button"><i class="fa-solid fa-phone-slash"></i></button>
-</div>
-</div>
 </div>
 
 <!-- ───── BLOCK MEMBER CONFIRMATION MODAL ───── -->

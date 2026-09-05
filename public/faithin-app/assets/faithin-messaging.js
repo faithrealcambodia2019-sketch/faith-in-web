@@ -408,83 +408,12 @@
 
   /* ── calling modals ─────────────────────────────────────────────────────── */
 
-  let callTimer = null;
-  let callSeconds = 0;
-
-  function formatDuration(sec) {
-    const m = Math.floor(sec / 60);
-    const s = sec % 60;
-    return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-  }
-
   function startVoiceCall() {
-    if (!state.partner) return;
-    const modal = $('[data-voice-call-modal]');
-    $('[data-call-avatar]').innerHTML = avatar(state.partner, 'avatar w-24 h-24 text-[26px]');
-    $('[data-call-name]').textContent = state.partner.name || 'Faith In Member';
-    const status = $('[data-call-status]');
-    const timerEl = $('[data-call-timer]');
-    status.textContent = 'Calling…';
-    timerEl.classList.add('hidden');
-    callSeconds = 0;
-    modal.classList.remove('hidden');
-
-    clearInterval(callTimer);
-    setTimeout(() => {
-      if (modal.classList.contains('hidden')) return;
-      status.textContent = 'Ringing…';
-      setTimeout(() => {
-        if (modal.classList.contains('hidden')) return;
-        status.textContent = 'Connected';
-        timerEl.classList.remove('hidden');
-        timerEl.textContent = '00:00';
-        callTimer = setInterval(() => {
-          callSeconds++;
-          timerEl.textContent = formatDuration(callSeconds);
-        }, 1000);
-      }, 2000);
-    }, 1500);
-  }
-
-  function endVoiceCall() {
-    const modal = $('[data-voice-call-modal]');
-    modal.classList.add('hidden');
-    clearInterval(callTimer);
-    if (callSeconds > 0) toast(`Voice call ended (${formatDuration(callSeconds)})`);
-    else toast('Call ended');
+    toast('Voice calling will be available in an upcoming update.');
   }
 
   function startVideoCall() {
-    if (!state.partner) return;
-    const modal = $('[data-video-call-modal]');
-    $('[data-video-avatar]').innerHTML = avatar(state.partner, 'avatar w-20 h-20 text-[22px]');
-    $('[data-video-name]').textContent = state.partner.name || 'Faith In Member';
-    const status = $('[data-video-status]');
-    const timerEl = $('[data-video-timer]');
-    status.textContent = 'Connecting video…';
-    timerEl.classList.add('hidden');
-    callSeconds = 0;
-    modal.classList.remove('hidden');
-
-    clearInterval(callTimer);
-    setTimeout(() => {
-      if (modal.classList.contains('hidden')) return;
-      status.textContent = 'Connected';
-      timerEl.classList.remove('hidden');
-      timerEl.textContent = '00:00';
-      callTimer = setInterval(() => {
-        callSeconds++;
-        timerEl.textContent = formatDuration(callSeconds);
-      }, 1000);
-    }, 2200);
-  }
-
-  function endVideoCall() {
-    const modal = $('[data-video-call-modal]');
-    modal.classList.add('hidden');
-    clearInterval(callTimer);
-    if (callSeconds > 0) toast(`Video call ended (${formatDuration(callSeconds)})`);
-    else toast('Video call ended');
+    toast('Video calling will be available in an upcoming update.');
   }
 
   /* ── mute notifications ─────────────────────────────────────────────────── */
@@ -632,8 +561,7 @@
           </div>
         </div>
         <div class="flex items-center gap-1 shrink-0">
-          <button type="button" class="icon-btn !w-7 !h-7" data-dock-call title="Voice call"><i class="fa-solid fa-phone text-[11px] text-brand"></i></button>
-          <button type="button" class="icon-btn !w-7 !h-7" data-dock-video title="Video call"><i class="fa-solid fa-video text-[11px] text-brand"></i></button>
+          <a class="icon-btn !w-7 !h-7 text-muted hover:text-ink" href="${partner.uid ? `/profile?member=${encodeURIComponent(partner.uid)}` : '/profile'}" title="View Profile"><i class="fa-regular fa-user text-[11px]"></i></a>
           <button type="button" class="icon-btn !w-7 !h-7" data-dock-minimize title="Minimize to bubble"><i class="fa-solid fa-minus text-[11px]"></i></button>
           <button type="button" class="icon-btn !w-7 !h-7" data-dock-close title="Close"><i class="fa-solid fa-xmark text-[11px]"></i></button>
         </div>
@@ -652,8 +580,6 @@
 
     chatDockEl.querySelector('[data-dock-minimize]')?.addEventListener('click', minimizeDock);
     chatDockEl.querySelector('[data-dock-close]')?.addEventListener('click', closeDock);
-    chatDockEl.querySelector('[data-dock-call]')?.addEventListener('click', startVoiceCall);
-    chatDockEl.querySelector('[data-dock-video]')?.addEventListener('click', startVideoCall);
 
     chatDockEl.querySelector('[data-dock-form]')?.addEventListener('submit', async ev => {
       ev.preventDefault();
@@ -1147,13 +1073,6 @@
   /* ── user functions wiring ── */
   document.querySelectorAll('[data-voice-call]').forEach(b => b.addEventListener('click', startVoiceCall));
   document.querySelectorAll('[data-video-call]').forEach(b => b.addEventListener('click', startVideoCall));
-  $('[data-call-hangup]')?.addEventListener('click', endVoiceCall);
-  $('[data-video-hangup]')?.addEventListener('click', endVideoCall);
-  $('[data-call-mute]')?.addEventListener('click', e => e.currentTarget.classList.toggle('is-active'));
-  $('[data-call-speaker]')?.addEventListener('click', e => e.currentTarget.classList.toggle('is-active'));
-  $('[data-video-mute]')?.addEventListener('click', e => e.currentTarget.classList.toggle('is-active'));
-  $('[data-video-toggle-cam]')?.addEventListener('click', e => e.currentTarget.classList.toggle('is-active'));
-  $('[data-video-flip]')?.addEventListener('click', () => toast('Camera flipped'));
 
   document.querySelectorAll('[data-chat-search-toggle]').forEach(b => b.addEventListener('click', () => toggleChatSearch()));
   $('[data-chat-search-input]')?.addEventListener('input', e => handleChatSearch(e.target.value));
