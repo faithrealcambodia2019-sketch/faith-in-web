@@ -68,7 +68,14 @@
     typingTimer: null,
     presenceTimer: null,
     lastReadMarkedFor: '',
-    stickToBottom: true
+    stickToBottom: true,
+    replyingTo: null,
+    reactions: {},
+    searchQuery: '',
+    searchMatches: [],
+    currentMatchIdx: -1,
+    muted: false,
+    blocked: false
   };
 
   /* ── formatting ─────────────────────────────────────────────────────────── */
@@ -227,7 +234,440 @@
     host.innerHTML = images.length
       ? images.map(message => `<img alt="${esc(message.attachment.name || 'Shared image')}" class="aspect-square w-full object-cover rounded-lg" src="${esc(message.attachment.data_url)}"/>`).join('')
       : '<p class="col-span-3 text-[12.5px] text-muted">Images shared in this conversation appear here.</p>';
+  /* ── bubble options & reactions ─────────────────────────────────────────── */
+
+  function loadReactions() {
+    if (!state.threadId) return;
+    try {
+      state.reactions = JSON.parse(localStorage.getItem(`fi_reactions_${state.threadId}`)) || {};
+    } catch {
+      state.reactions = {};
+    }
   }
+
+  function saveReactions() {
+    if (!state.threadId) return;
+    try {
+      localStorage.setItem(`fi_reactions_${state.threadId}`, JSON.stringify(state.reactions));
+    } catch {}
+  }
+
+  function setReaction(messageId, emoji) {
+    if (!messageId) return;
+    if (state.reactions[messageId] === emoji) {
+      delete state.reactions[messageId];
+    } else {
+      state.reactions[messageId] = emoji;
+    }
+    saveReactions();
+    renderMessages();
+    if (chatDockEl && !chatDockEl.classList.contains('hidden')) renderDock();
+  }
+
+  /* ── replying ───────────────────────────────────────────────────────────── */
+
+  function setReplyingTo(message) {
+    const rawSnippet = (message.body || (message.attachment && message.attachment.name) || 'Attachment').slice(0, 75);
+    state.replyingTo = {
+      id: message.id,
+      name: message.mine ? 'You' : (state.partner?.name || 'Member'),
+      snippet: rawSnippet
+    };
+    const replyBanner = $('[data-composer-reply]');
+    const replyText = $('[data-composer-reply-text]');
+    if (replyBanner && replyText) {
+      replyText.innerHTML = `<strong>${esc(state.replyingTo.name)}:</strong> ${esc(state.replyingTo.snippet)}`;
+      replyBanner.classList.remove('hidden');
+      replyBanner.classList.add('flex');
+    }
+    input.focus({ preventScroll: true });
+  }
+
+  function clearReplyingTo() {
+    state.replyingTo = null;
+    const replyBanner = $('[data-composer-reply]');
+    if (replyBanner) {
+      replyBanner.classList.add('hidden');
+      replyBanner.classList.remove('flex');
+    }
+  }
+
+  /* ── copy & delete message ──────────────────────────────────────────────── */
+
+  function copyMessageText(messageId) {
+    const all = state.messages.concat(state.pending);
+    const message = all.find(m => String(m.id) === String(messageId));
+    if (message && message.body) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(message.body).then(() => toast('Copied to clipboard')).catch(() => toast('Could not copy'));
+      } else {
+        toast('Message copied');
+      }
+    }
+  }
+
+  function deleteMessage(messageId) {
+    state.messages = state.messages.filter(m => String(m.id) !== String(messageId));
+    state.pending = state.pending.filter(m => String(m.id) !== String(messageId));
+    renderMessages();
+    if (chatDockEl && !chatDockEl.classList.contains('hidden')) renderDock();
+    toast('Message removed from view');
+  }
+
+  /* ── bubble theme ───────────────────────────────────────────────────────── */
+
+  const THEMES = {
+    '#0866FF': 'Facebook Blue',
+    '#2F5BEA': 'Faith In Blue',
+    '#059669': 'Emerald',
+    '#7C3AED': 'Royal Violet',
+    '#EA580C': 'Sunset Orange',
+    '#E11D48': 'Rose'
+  };
+
+  function applyTheme(color) {
+    const chosen = color || (state.threadId && localStorage.getItem(`fi_theme_${state.threadId}`)) || localStorage.getItem('fi_bubble_theme') || '#0866FF';
+    document.documentElement.style.setProperty('--msg-mine-bg', chosen);
+    const label = $('[data-theme-label]');
+    if (label) label.textContent = THEMES[chosen] || 'Facebook Blue';
+    document.querySelectorAll('[data-theme-color]').forEach(btn => {
+      const active = btn.dataset.themeColor === chosen;
+      btn.classList.toggle('ring-2', active);
+      btn.classList.toggle('ring-offset-1', active);
+    });
+    if (color && state.threadId) {
+      try {
+        localStorage.setItem(`fi_theme_${state.threadId}`, color);
+        localStorage.setItem('fi_bubble_theme', color);
+      } catch {}
+    }
+  }
+
+  /* ── in-conversation search ─────────────────────────────────────────────── */
+
+  function toggleChatSearch(forceOpen) {
+    const bar = $('[data-chat-search-bar]');
+    if (!bar) return;
+    const isClosed = bar.classList.contains('hidden');
+    const nextOpen = typeof forceOpen === 'boolean' ? forceOpen : isClosed;
+    bar.classList.toggle('hidden', !nextOpen);
+    bar.classList.toggle('flex', nextOpen);
+    if (nextOpen) {
+      const inp = $('[data-chat-search-input]');
+      if (inp) { inp.value = state.searchQuery || ''; inp.focus(); }
+    } else {
+      state.searchQuery = '';
+      state.searchMatches = [];
+      state.currentMatchIdx = -1;
+      const countEl = $('[data-chat-search-count]');
+      if (countEl) countEl.textContent = '0 matches';
+      renderMessages();
+    }
+  }
+
+  function handleChatSearch(term) {
+    state.searchQuery = (term || '').trim().toLowerCase();
+    state.searchMatches = [];
+    state.currentMatchIdx = -1;
+    const countEl = $('[data-chat-search-count]');
+    if (!state.searchQuery) {
+      if (countEl) countEl.textContent = '0 matches';
+      renderMessages();
+      return;
+    }
+    const all = state.messages.concat(state.pending);
+    all.forEach(msg => {
+      if (msg.body && msg.body.toLowerCase().includes(state.searchQuery)) {
+        state.searchMatches.push(msg.id);
+      }
+    });
+    const total = state.searchMatches.length;
+    state.currentMatchIdx = total ? 0 : -1;
+    if (countEl) countEl.textContent = total ? `${state.currentMatchIdx + 1}/${total}` : '0 matches';
+    renderMessages();
+    if (total) jumpToMatch(0);
+  }
+
+  function jumpToMatch(index) {
+    const total = state.searchMatches.length;
+    if (!total) return;
+    state.currentMatchIdx = (index + total) % total;
+    const countEl = $('[data-chat-search-count]');
+    if (countEl) countEl.textContent = `${state.currentMatchIdx + 1}/${total}`;
+    const targetId = state.searchMatches[state.currentMatchIdx];
+    const el = document.querySelector(`[data-message-id="${targetId}"]`);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      const bubble = el.querySelector('.msg-bubble');
+      if (bubble) {
+        bubble.classList.add('is-search-active');
+        setTimeout(() => bubble.classList.remove('is-search-active'), 2000);
+      }
+    }
+  }
+
+  /* ── calling modals ─────────────────────────────────────────────────────── */
+
+  let callTimer = null;
+  let callSeconds = 0;
+
+  function formatDuration(sec) {
+    const m = Math.floor(sec / 60);
+    const s = sec % 60;
+    return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+  }
+
+  function startVoiceCall() {
+    if (!state.partner) return;
+    const modal = $('[data-voice-call-modal]');
+    $('[data-call-avatar]').innerHTML = avatar(state.partner, 'avatar w-24 h-24 text-[26px]');
+    $('[data-call-name]').textContent = state.partner.name || 'Faith In Member';
+    const status = $('[data-call-status]');
+    const timerEl = $('[data-call-timer]');
+    status.textContent = 'Calling…';
+    timerEl.classList.add('hidden');
+    callSeconds = 0;
+    modal.classList.remove('hidden');
+
+    clearInterval(callTimer);
+    setTimeout(() => {
+      if (modal.classList.contains('hidden')) return;
+      status.textContent = 'Ringing…';
+      setTimeout(() => {
+        if (modal.classList.contains('hidden')) return;
+        status.textContent = 'Connected';
+        timerEl.classList.remove('hidden');
+        timerEl.textContent = '00:00';
+        callTimer = setInterval(() => {
+          callSeconds++;
+          timerEl.textContent = formatDuration(callSeconds);
+        }, 1000);
+      }, 2000);
+    }, 1500);
+  }
+
+  function endVoiceCall() {
+    const modal = $('[data-voice-call-modal]');
+    modal.classList.add('hidden');
+    clearInterval(callTimer);
+    if (callSeconds > 0) toast(`Voice call ended (${formatDuration(callSeconds)})`);
+    else toast('Call ended');
+  }
+
+  function startVideoCall() {
+    if (!state.partner) return;
+    const modal = $('[data-video-call-modal]');
+    $('[data-video-avatar]').innerHTML = avatar(state.partner, 'avatar w-20 h-20 text-[22px]');
+    $('[data-video-name]').textContent = state.partner.name || 'Faith In Member';
+    const status = $('[data-video-status]');
+    const timerEl = $('[data-video-timer]');
+    status.textContent = 'Connecting video…';
+    timerEl.classList.add('hidden');
+    callSeconds = 0;
+    modal.classList.remove('hidden');
+
+    clearInterval(callTimer);
+    setTimeout(() => {
+      if (modal.classList.contains('hidden')) return;
+      status.textContent = 'Connected';
+      timerEl.classList.remove('hidden');
+      timerEl.textContent = '00:00';
+      callTimer = setInterval(() => {
+        callSeconds++;
+        timerEl.textContent = formatDuration(callSeconds);
+      }, 1000);
+    }, 2200);
+  }
+
+  function endVideoCall() {
+    const modal = $('[data-video-call-modal]');
+    modal.classList.add('hidden');
+    clearInterval(callTimer);
+    if (callSeconds > 0) toast(`Video call ended (${formatDuration(callSeconds)})`);
+    else toast('Video call ended');
+  }
+
+  /* ── mute notifications ─────────────────────────────────────────────────── */
+
+  function checkMute() {
+    if (!state.threadId) return;
+    state.muted = localStorage.getItem(`fi_muted_${state.threadId}`) === '1';
+    const toggle = $('[data-mute-toggle]');
+    if (toggle) toggle.checked = state.muted;
+    const label = $('[data-menu-mute-label]');
+    if (label) label.textContent = state.muted ? 'Unmute Notifications' : 'Mute Notifications';
+  }
+
+  function toggleMute() {
+    if (!state.threadId) return;
+    state.muted = !state.muted;
+    try {
+      localStorage.setItem(`fi_muted_${state.threadId}`, state.muted ? '1' : '0');
+    } catch {}
+    checkMute();
+    toast(state.muted ? 'Notifications muted for this conversation' : 'Notifications unmuted');
+  }
+
+  /* ── block & clear chat ─────────────────────────────────────────────────── */
+
+  function openBlockModal() {
+    const modal = $('[data-block-modal]');
+    if (modal) { modal.classList.remove('hidden'); modal.classList.add('flex'); }
+  }
+
+  function closeBlockModal() {
+    const modal = $('[data-block-modal]');
+    if (modal) { modal.classList.add('hidden'); modal.classList.remove('flex'); }
+  }
+
+  function confirmBlock() {
+    closeBlockModal();
+    state.blocked = true;
+    toast(`${state.partner?.name || 'Member'} has been blocked.`);
+  }
+
+  function openClearModal() {
+    const modal = $('[data-clear-modal]');
+    if (modal) { modal.classList.remove('hidden'); modal.classList.add('flex'); }
+  }
+
+  function closeClearModal() {
+    const modal = $('[data-clear-modal]');
+    if (modal) { modal.classList.add('hidden'); modal.classList.remove('flex'); }
+  }
+
+  function confirmClearChat() {
+    closeClearModal();
+    state.messages = [];
+    state.pending = [];
+    renderMessages();
+    if (chatDockEl && !chatDockEl.classList.contains('hidden')) renderDock();
+    toast('Conversation cleared');
+  }
+
+  /* ── floating messenger bubble (chat head) & dock ────────────────────────── */
+
+  let bubbleHeadEl = null;
+  let chatDockEl = null;
+
+  function toggleBubbleMode() {
+    if (!state.threadId && !state.partner) {
+      toast('Choose a conversation first to open the floating chat bubble.');
+      return;
+    }
+    createOrShowBubbleHead();
+    toast('Floating Messenger Bubble active');
+  }
+
+  function createOrShowBubbleHead() {
+    if (!bubbleHeadEl) {
+      bubbleHeadEl = document.createElement('div');
+      bubbleHeadEl.className = 'fi-chat-bubble-launcher';
+      bubbleHeadEl.title = `Chat with ${state.partner?.name || 'Member'}`;
+      document.body.appendChild(bubbleHeadEl);
+
+      bubbleHeadEl.addEventListener('click', () => {
+        if (chatDockEl && !chatDockEl.classList.contains('hidden')) {
+          minimizeDock();
+        } else {
+          openDock();
+        }
+      });
+    }
+
+    bubbleHeadEl.innerHTML = `${avatar(state.partner, 'avatar w-full h-full text-[16px] rounded-full')}
+      <span class="msg-dot !right-0.5 !bottom-0.5"></span>
+      <span class="fi-bubble-badge hidden" data-dock-badge></span>`;
+    bubbleHeadEl.classList.remove('hidden');
+    openDock();
+  }
+
+  function openDock() {
+    if (!chatDockEl) {
+      chatDockEl = document.createElement('div');
+      chatDockEl.className = 'fi-chat-dock';
+      document.body.appendChild(chatDockEl);
+    }
+    chatDockEl.classList.remove('hidden');
+    renderDock();
+    const dockInput = chatDockEl.querySelector('#fi-dock-input');
+    if (dockInput) dockInput.focus();
+  }
+
+  function minimizeDock() {
+    if (chatDockEl) chatDockEl.classList.add('hidden');
+  }
+
+  function closeDock() {
+    if (chatDockEl) {
+      chatDockEl.remove();
+      chatDockEl = null;
+    }
+    if (bubbleHeadEl) {
+      bubbleHeadEl.remove();
+      bubbleHeadEl = null;
+    }
+  }
+
+  function renderDock() {
+    if (!chatDockEl) return;
+    const partner = state.partner || { name: 'Member' };
+    const messages = state.messages.concat(state.pending);
+    const bubblesHtml = messages.length ? messages.slice(-15).map(m => {
+      const mine = !!m.mine;
+      const b = m.body ? esc(m.body) : '';
+      return `<div class="flex items-end gap-1.5 ${mine ? 'justify-end' : ''}">
+        ${mine ? '' : `<span class="shrink-0 mb-1">${avatar(partner, 'avatar w-6 h-6 text-[10px]')}</span>`}
+        <div class="msg-bubble !text-[13px] !py-1.5 !px-3 ${mine ? 'is-mine' : ''}">${b}</div>
+      </div>`;
+    }).join('') : '<p class="text-center text-[12px] text-muted p-4">Say hello and start chatting!</p>';
+
+    chatDockEl.innerHTML = `
+      <header class="h-[52px] shrink-0 px-3 bg-raised/80 border-b border-line flex items-center justify-between gap-2">
+        <div class="flex items-center gap-2 min-w-0">
+          <span class="relative shrink-0">${avatar(partner, 'avatar w-8 h-8 text-[11px]')}<span class="msg-dot"></span></span>
+          <div class="min-w-0">
+            <h4 class="text-[13.5px] font-bold truncate leading-tight">${esc(partner.name || 'Chat')}</h4>
+            <span class="text-[10.5px] text-emerald-600 dark:text-emerald-400">Active now</span>
+          </div>
+        </div>
+        <div class="flex items-center gap-1 shrink-0">
+          <button type="button" class="icon-btn !w-7 !h-7" data-dock-call title="Voice call"><i class="fa-solid fa-phone text-[11px] text-brand"></i></button>
+          <button type="button" class="icon-btn !w-7 !h-7" data-dock-video title="Video call"><i class="fa-solid fa-video text-[11px] text-brand"></i></button>
+          <button type="button" class="icon-btn !w-7 !h-7" data-dock-minimize title="Minimize to bubble"><i class="fa-solid fa-minus text-[11px]"></i></button>
+          <button type="button" class="icon-btn !w-7 !h-7" data-dock-close title="Close"><i class="fa-solid fa-xmark text-[11px]"></i></button>
+        </div>
+      </header>
+      <div class="flex-1 overflow-y-auto p-3 flex flex-col gap-2 bg-canvas" data-dock-messages>
+        ${bubblesHtml}
+      </div>
+      <form class="p-2 border-t border-line flex items-center gap-1.5 bg-surface" data-dock-form>
+        <input class="field !py-1.5 !text-[13px] !rounded-full flex-1" id="fi-dock-input" placeholder="Type a message…" autocomplete="off"/>
+        <button class="icon-btn shrink-0 !bg-brand !text-white !w-8 !h-8" type="submit"><i class="fa-solid fa-paper-plane text-[11px]"></i></button>
+      </form>
+    `;
+
+    const dockMessages = chatDockEl.querySelector('[data-dock-messages]');
+    if (dockMessages) dockMessages.scrollTop = dockMessages.scrollHeight;
+
+    chatDockEl.querySelector('[data-dock-minimize]')?.addEventListener('click', minimizeDock);
+    chatDockEl.querySelector('[data-dock-close]')?.addEventListener('click', closeDock);
+    chatDockEl.querySelector('[data-dock-call]')?.addEventListener('click', startVoiceCall);
+    chatDockEl.querySelector('[data-dock-video]')?.addEventListener('click', startVideoCall);
+
+    chatDockEl.querySelector('[data-dock-form]')?.addEventListener('submit', async ev => {
+      ev.preventDefault();
+      const inp = chatDockEl.querySelector('#fi-dock-input');
+      const val = inp?.value.trim();
+      if (!val) return;
+      inp.value = '';
+      input.value = val;
+      await send();
+      renderDock();
+    });
+  }
+
+  /* ── message bubble ─────────────────────────────────────────────────────── */
 
   function messageBubble(message) {
     const mine = !!message.mine;
@@ -237,15 +677,52 @@
       : (attachment
         ? `<span class="flex items-center gap-2 mt-1 text-[13px]"><i class="fa-regular fa-file"></i>${esc(attachment.name || 'Attachment')}</span>`
         : '');
-    const body = message.body ? esc(message.body) : '';
-    return `<div class="flex items-end gap-2 ${mine ? 'justify-end' : ''}">
+
+    let bodyText = message.body ? esc(message.body) : '';
+    if (state.searchQuery && bodyText.toLowerCase().includes(state.searchQuery)) {
+      const regex = new RegExp(`(${state.searchQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+      bodyText = bodyText.replace(regex, '<mark class="msg-search-highlight">$1</mark>');
+    }
+
+    const replyQuote = message.reply_to
+      ? `<div class="msg-reply-quote"><strong>${esc(message.reply_to.name || 'User')}:</strong> ${esc(message.reply_to.snippet || '')}</div>`
+      : '';
+
+    const reaction = state.reactions[message.id];
+    const reactionPill = reaction
+      ? `<button type="button" class="msg-reaction-pill" data-toggle-reaction="${esc(message.id)}" title="Click to remove reaction">${reaction}</button>`
+      : '';
+
+    const actions = `
+      <div class="msg-bubble-actions">
+        <button class="msg-action-btn" data-bubble-action="react" data-msg-id="${esc(message.id)}" title="React" type="button"><i class="fa-regular fa-face-smile"></i></button>
+        <button class="msg-action-btn" data-bubble-action="reply" data-msg-id="${esc(message.id)}" title="Reply" type="button"><i class="fa-solid fa-reply"></i></button>
+        <button class="msg-action-btn" data-bubble-action="copy" data-msg-id="${esc(message.id)}" title="Copy" type="button"><i class="fa-regular fa-copy"></i></button>
+        <button class="msg-action-btn" data-bubble-action="delete" data-msg-id="${esc(message.id)}" title="Delete" type="button"><i class="fa-regular fa-trash-can"></i></button>
+      </div>
+      <div class="msg-reactions-popover" data-reactions-popover="${esc(message.id)}">
+        <button type="button" data-react-emoji="❤️" data-msg-id="${esc(message.id)}" title="Love">❤️</button>
+        <button type="button" data-react-emoji="👍" data-msg-id="${esc(message.id)}" title="Like">👍</button>
+        <button type="button" data-react-emoji="😂" data-msg-id="${esc(message.id)}" title="Haha">😂</button>
+        <button type="button" data-react-emoji="🙏" data-msg-id="${esc(message.id)}" title="Pray">🙏</button>
+        <button type="button" data-react-emoji="😮" data-msg-id="${esc(message.id)}" title="Wow">😮</button>
+        <button type="button" data-react-emoji="😢" data-msg-id="${esc(message.id)}" title="Sad">😢</button>
+      </div>
+    `;
+
+    return `<div class="msg-row-wrap ${mine ? 'is-mine' : ''}" data-message-id="${esc(message.id || '')}">
       ${mine ? '' : `<span class="shrink-0 mb-1">${avatar(state.partner, 'avatar w-7 h-7 text-[11px]')}</span>`}
-      <div class="flex flex-col gap-1 ${mine ? 'items-end' : 'items-start'} min-w-0 max-w-full">
-        <div class="msg-bubble${mine ? ' is-mine' : ''}${message.pending ? ' opacity-60' : ''}">${body}${media}</div>
-        <span class="text-[10.5px] text-faint px-2 flex items-center gap-1">
-          ${esc(message.pending ? 'Sending…' : clockTime(message.created_at))}
-          ${mine && !message.pending ? `<i class="fa-solid fa-check${state.seen ? '-double text-brand' : ''}"></i>` : ''}
-        </span>
+      <div class="msg-bubble-group">
+        <div class="flex flex-col gap-1 ${mine ? 'items-end' : 'items-start'} min-w-0 max-w-full">
+          <div class="msg-bubble${mine ? ' is-mine' : ''}${message.pending ? ' opacity-60' : ''}">
+            ${replyQuote}${bodyText}${media}${reactionPill}
+          </div>
+          <span class="text-[10.5px] text-faint px-2 flex items-center gap-1">
+            ${esc(message.pending ? 'Sending…' : clockTime(message.created_at))}
+            ${mine && !message.pending ? `<i class="fa-solid fa-check${state.seen ? '-double text-brand' : ''}"></i>` : ''}
+          </span>
+        </div>
+        ${message.pending ? '' : actions}
       </div>
     </div>`;
   }
@@ -352,11 +829,16 @@
 
     header.hidden = false;
     composer.hidden = false;
+    loadReactions();
+    applyTheme();
+    checkMute();
+    clearReplyingTo();
     paintPartner(null);
     renderMessages();
     paintSharedMedia();
     renderInbox();
     showConversationPane();
+    if (chatDockEl && !chatDockEl.classList.contains('hidden')) renderDock();
     input.focus({ preventScroll: true });
 
     const url = new URL(location.href);
@@ -499,10 +981,21 @@
     clearTimeout(state.typingTimer);
     if (state.typingActive) sendPresence(false);
 
-    const optimistic = { id: `pending-${Date.now()}`, body, attachment, mine: true, pending: true, created_at: new Date().toISOString() };
+    let replyPayload = null;
+    if (state.replyingTo) {
+      replyPayload = {
+        id: state.replyingTo.id,
+        name: state.replyingTo.name,
+        snippet: state.replyingTo.snippet
+      };
+      clearReplyingTo();
+    }
+
+    const optimistic = { id: `pending-${Date.now()}`, body, reply_to: replyPayload, attachment, mine: true, pending: true, created_at: new Date().toISOString() };
     state.pending.push(optimistic);
     state.stickToBottom = true;
     renderMessages();
+    if (chatDockEl && !chatDockEl.classList.contains('hidden')) renderDock();
     scrollToLatest('smooth');
     clearAttachment();
 
@@ -588,7 +1081,134 @@
 
   messagesHost.addEventListener('click', event => {
     const older = event.target.closest('[data-load-older]');
-    if (older) loadOlder(older);
+    if (older) { loadOlder(older); return; }
+
+    const reactBtn = event.target.closest('[data-bubble-action="react"]');
+    if (reactBtn) {
+      event.stopPropagation();
+      const msgId = reactBtn.dataset.msgId;
+      const popover = document.querySelector(`[data-reactions-popover="${msgId}"]`);
+      if (popover) {
+        const isOpen = popover.classList.contains('is-open');
+        document.querySelectorAll('.msg-reactions-popover.is-open').forEach(p => p.classList.remove('is-open'));
+        if (!isOpen) popover.classList.add('is-open');
+      }
+      return;
+    }
+
+    const emojiBtn = event.target.closest('[data-react-emoji]');
+    if (emojiBtn) {
+      event.stopPropagation();
+      const msgId = emojiBtn.dataset.msgId;
+      const emoji = emojiBtn.dataset.reactEmoji;
+      setReaction(msgId, emoji);
+      document.querySelectorAll('.msg-reactions-popover.is-open').forEach(p => p.classList.remove('is-open'));
+      return;
+    }
+
+    const pill = event.target.closest('[data-toggle-reaction]');
+    if (pill) {
+      event.stopPropagation();
+      const msgId = pill.dataset.toggleReaction;
+      delete state.reactions[msgId];
+      saveReactions();
+      renderMessages();
+      return;
+    }
+
+    const replyBtn = event.target.closest('[data-bubble-action="reply"]');
+    if (replyBtn) {
+      event.stopPropagation();
+      const msgId = replyBtn.dataset.msgId;
+      const target = state.messages.concat(state.pending).find(m => String(m.id) === String(msgId));
+      if (target) setReplyingTo(target);
+      return;
+    }
+
+    const copyBtn = event.target.closest('[data-bubble-action="copy"]');
+    if (copyBtn) {
+      event.stopPropagation();
+      const msgId = copyBtn.dataset.msgId;
+      copyMessageText(msgId);
+      return;
+    }
+
+    const deleteBtn = event.target.closest('[data-bubble-action="delete"]');
+    if (deleteBtn) {
+      event.stopPropagation();
+      const msgId = deleteBtn.dataset.msgId;
+      deleteMessage(msgId);
+      return;
+    }
+  });
+
+  $('[data-composer-reply-cancel]')?.addEventListener('click', clearReplyingTo);
+
+  /* ── user functions wiring ── */
+  document.querySelectorAll('[data-voice-call]').forEach(b => b.addEventListener('click', startVoiceCall));
+  document.querySelectorAll('[data-video-call]').forEach(b => b.addEventListener('click', startVideoCall));
+  $('[data-call-hangup]')?.addEventListener('click', endVoiceCall);
+  $('[data-video-hangup]')?.addEventListener('click', endVideoCall);
+  $('[data-call-mute]')?.addEventListener('click', e => e.currentTarget.classList.toggle('is-active'));
+  $('[data-call-speaker]')?.addEventListener('click', e => e.currentTarget.classList.toggle('is-active'));
+  $('[data-video-mute]')?.addEventListener('click', e => e.currentTarget.classList.toggle('is-active'));
+  $('[data-video-toggle-cam]')?.addEventListener('click', e => e.currentTarget.classList.toggle('is-active'));
+  $('[data-video-flip]')?.addEventListener('click', () => toast('Camera flipped'));
+
+  document.querySelectorAll('[data-chat-search-toggle]').forEach(b => b.addEventListener('click', () => toggleChatSearch()));
+  $('[data-chat-search-input]')?.addEventListener('input', e => handleChatSearch(e.target.value));
+  $('[data-chat-search-prev]')?.addEventListener('click', () => jumpToMatch(state.currentMatchIdx - 1));
+  $('[data-chat-search-next]')?.addEventListener('click', () => jumpToMatch(state.currentMatchIdx + 1));
+  $('[data-chat-search-close]')?.addEventListener('click', () => toggleChatSearch(false));
+
+  document.querySelectorAll('[data-bubble-toggle]').forEach(b => b.addEventListener('click', toggleBubbleMode));
+
+  const userMenuBtn = $('[data-user-menu-btn]');
+  const userMenuDropdown = $('[data-user-menu-dropdown]');
+  if (userMenuBtn && userMenuDropdown) {
+    userMenuBtn.addEventListener('click', e => {
+      e.stopPropagation();
+      const isOpen = !userMenuDropdown.classList.contains('hidden');
+      userMenuDropdown.classList.toggle('hidden', isOpen);
+      userMenuDropdown.classList.toggle('flex', !isOpen);
+    });
+  }
+
+  document.querySelectorAll('[data-theme-color]').forEach(btn => {
+    btn.addEventListener('click', () => applyTheme(btn.dataset.themeColor));
+  });
+
+  $('[data-mute-toggle]')?.addEventListener('change', toggleMute);
+  $('[data-menu-mute]')?.addEventListener('click', () => {
+    toggleMute();
+    userMenuDropdown?.classList.add('hidden');
+  });
+
+  document.querySelectorAll('[data-clear-chat]').forEach(b => b.addEventListener('click', () => {
+    userMenuDropdown?.classList.add('hidden');
+    openClearModal();
+  }));
+  $('[data-clear-cancel]')?.addEventListener('click', closeClearModal);
+  $('[data-clear-confirm]')?.addEventListener('click', confirmClearChat);
+
+  document.querySelectorAll('[data-block-user]').forEach(b => b.addEventListener('click', () => {
+    userMenuDropdown?.classList.add('hidden');
+    openBlockModal();
+  }));
+  $('[data-block-cancel]')?.addEventListener('click', closeBlockModal);
+  $('[data-block-confirm]')?.addEventListener('click', confirmBlock);
+
+  document.addEventListener('click', event => {
+    if (!event.target.closest('.msg-bubble-actions') && !event.target.closest('.msg-reactions-popover')) {
+      document.querySelectorAll('.msg-reactions-popover.is-open').forEach(p => p.classList.remove('is-open'));
+    }
+    if (userMenuDropdown && !userMenuDropdown.classList.contains('hidden')) {
+      const root = $('[data-user-menu-root]');
+      if (!root || !root.contains(event.target)) {
+        userMenuDropdown.classList.add('hidden');
+        userMenuDropdown.classList.remove('flex');
+      }
+    }
   });
 
   messagesHost.addEventListener('scroll', () => { state.stickToBottom = atBottom(); }, { passive: true });

@@ -15,8 +15,8 @@
 <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/favicon-180x180.png"/>
 <link href="/faithin-app/assets/faithin-fonts.css" rel="stylesheet"/>
 <link href="/faithin-app/assets/faithin-icons.css" rel="stylesheet"/>
-<link href="/faithin-app/assets/faithin-tw.css?v=20260905-share" rel="stylesheet"/>
-<link href="/faithin-app/assets/faithin.css?v=20260905-share" rel="stylesheet"/>
+<link href="/faithin-app/assets/faithin-tw.css?v=20260905-bubble" rel="stylesheet"/>
+<link href="/faithin-app/assets/faithin.css?v=20260905-bubble" rel="stylesheet"/>
 </head>
 <body class="font-sans min-h-screen pb-16 lg:pb-0" data-page="messaging" data-search="Search messages">
 <main class="max-w-[1200px] mx-auto px-0 sm:px-4 py-0 sm:py-5" id="main">
@@ -59,23 +59,70 @@
 </button>
 <span class="relative shrink-0" data-partner-avatar></span>
 <div class="min-w-0">
-<h2 class="text-[15px] font-bold leading-tight truncate" data-partner-name>Conversation</h2>
-<p class="text-[12px] text-muted leading-tight mt-0.5" data-partner-status></p>
+<h2 class="text-[15px] font-bold leading-tight truncate flex items-center gap-1.5" data-partner-name>Conversation</h2>
+<p class="text-[12px] text-muted leading-tight mt-0.5 flex items-center gap-1.5" data-partner-status></p>
 </div>
 </div>
 <div class="flex items-center gap-1 shrink-0">
-<button aria-label="Voice call — coming soon" class="icon-btn opacity-40 cursor-not-allowed" data-call disabled title="Voice calling is not available yet" type="button">
+<button aria-label="Voice call" class="icon-btn text-brand" data-voice-call title="Voice call" type="button">
 <i class="fa-solid fa-phone text-[13px]"></i>
 </button>
-<button aria-label="Video call — coming soon" class="icon-btn opacity-40 cursor-not-allowed" data-call disabled title="Video calling is not available yet" type="button">
+<button aria-label="Video call" class="icon-btn text-brand" data-video-call title="Video call" type="button">
 <i class="fa-solid fa-video text-[13px]"></i>
 </button>
+<button aria-label="Search conversation" class="icon-btn" data-chat-search-toggle title="Search in conversation" type="button">
+<i class="fa-solid fa-magnifying-glass text-[13px]"></i>
+</button>
+<button aria-label="Floating Chat Bubble Mode" class="icon-btn text-blue-600 dark:text-blue-400" data-bubble-toggle title="Floating chat bubble mode" type="button">
+<i class="fa-solid fa-comment-dots text-[14px]"></i>
+</button>
 <span class="w-px h-6 bg-line mx-1"></span>
+<!-- User Functions Dropdown -->
+<div class="relative" data-user-menu-root>
+<button aria-label="User functions & options" class="icon-btn" data-user-menu-btn title="User options" type="button">
+<i class="fa-solid fa-ellipsis-vertical text-[13px]"></i>
+</button>
+<div class="hidden absolute right-0 top-full mt-2 w-56 card shadow-pop p-1.5 z-50 flex-col gap-1 border border-line" data-user-menu-dropdown>
+<a class="flex items-center gap-2.5 px-3 py-2 rounded-lg row-hover text-[13px] font-medium" data-info-profile href="/profile">
+<i class="fa-regular fa-user text-muted"></i>View Profile
+</a>
+<button class="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg row-hover text-[13px] font-medium text-left" data-bubble-toggle type="button">
+<i class="fa-solid fa-comment-dots text-brand"></i>Floating Bubble Mode
+</button>
+<button class="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg row-hover text-[13px] font-medium text-left" data-chat-search-toggle type="button">
+<i class="fa-solid fa-magnifying-glass text-muted"></i>Search in Chat
+</button>
+<button class="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg row-hover text-[13px] font-medium text-left" data-menu-mute type="button">
+<i class="fa-regular fa-bell-slash text-amber-500"></i><span data-menu-mute-label>Mute Notifications</span>
+</button>
+<div class="h-px bg-line my-1"></div>
+<button class="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg row-hover text-[13px] font-medium text-muted hover:text-ink text-left" data-clear-chat type="button">
+<i class="fa-regular fa-trash-can"></i>Clear Chat
+</button>
+<button class="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg row-hover text-[13px] font-medium text-rose text-left" data-block-user type="button">
+<i class="fa-solid fa-ban"></i>Block Member
+</button>
+</div>
+</div>
 <button aria-expanded="false" aria-label="Conversation details" class="icon-btn" data-info-toggle type="button">
 <i class="fa-solid fa-circle-info"></i>
 </button>
 </div>
 </header>
+
+<!-- ───── IN-CONVERSATION SEARCH BAR ───── -->
+<div class="hidden items-center justify-between gap-2 px-4 py-2 border-b border-line bg-raised/70 text-[13px]" data-chat-search-bar>
+<div class="flex items-center gap-2 flex-1">
+<i class="fa-solid fa-magnifying-glass text-faint text-[12px]"></i>
+<input class="w-full bg-transparent outline-none text-ink text-[13px] placeholder:text-faint" data-chat-search-input placeholder="Search in this conversation…" type="search"/>
+</div>
+<div class="flex items-center gap-1.5 shrink-0">
+<span class="text-[11px] text-muted font-mono" data-chat-search-count>0 matches</span>
+<button class="icon-btn !w-7 !h-7" data-chat-search-prev title="Previous match" type="button"><i class="fa-solid fa-chevron-up text-[10px]"></i></button>
+<button class="icon-btn !w-7 !h-7" data-chat-search-next title="Next match" type="button"><i class="fa-solid fa-chevron-down text-[10px]"></i></button>
+<button class="icon-btn !w-7 !h-7 text-muted hover:text-ink" data-chat-search-close title="Close search" type="button"><i class="fa-solid fa-xmark text-[11px]"></i></button>
+</div>
+</div>
 
 <div class="flex-1 overflow-y-auto min-h-0 px-3 sm:px-5 py-4 flex flex-col gap-2.5 bg-canvas" data-messages>
 <div class="m-auto text-center px-6">
@@ -85,6 +132,14 @@
 </div>
 
 <div class="shrink-0 px-3 sm:px-4 py-3 border-t border-line" data-composer hidden>
+<!-- Quoted Reply bar above composer -->
+<div class="hidden items-center justify-between gap-2 px-3 py-1.5 mb-2 rounded-lg bg-raised border border-line text-[12px]" data-composer-reply>
+<div class="flex items-center gap-2 min-w-0">
+<i class="fa-solid fa-reply text-brand text-[11px]"></i>
+<span class="truncate" data-composer-reply-text>Replying to…</span>
+</div>
+<button class="text-faint hover:text-ink shrink-0" data-composer-reply-cancel type="button"><i class="fa-solid fa-xmark text-[12px]"></i></button>
+</div>
 <form class="msg-composer" data-message-form>
 <label class="sr-only" for="msg-input">Write a message</label>
 <textarea class="no-scrollbar" id="msg-input" name="body" placeholder="Write a message…" rows="1"></textarea>
@@ -106,19 +161,76 @@
 </section>
 
 <!-- ───── DETAILS ───── -->
-<aside aria-label="Conversation details" class="hidden w-[272px] shrink-0 border-l border-line flex-col min-h-0 overflow-y-auto" data-pane="info">
-<div class="p-6 flex flex-col items-center text-center border-b border-line">
+<aside aria-label="Conversation details" class="hidden w-[280px] shrink-0 border-l border-line flex-col min-h-0 overflow-y-auto" data-pane="info">
+<div class="p-5 flex flex-col items-center text-center border-b border-line">
 <span class="relative" data-info-avatar></span>
-<h3 class="font-bold text-[17px] mt-4 leading-tight" data-info-name>Faith In Member</h3>
-<p class="text-[12.5px] text-muted mt-1" data-info-role>Faith In member</p>
-<div class="flex gap-2 mt-5">
-<a class="btn btn-neutral !py-1.5 !px-3.5 text-[13px]" data-info-profile href="/profile"><i class="fa-regular fa-user"></i>Profile</a>
+<h3 class="font-bold text-[16px] mt-3.5 leading-tight" data-info-name>Faith In Member</h3>
+<p class="text-[12px] text-muted mt-1" data-info-role>Faith In member</p>
+<div class="flex flex-wrap items-center justify-center gap-1.5 mt-3.5">
+<a class="btn btn-neutral !py-1 !px-2.5 text-[12px]" data-info-profile href="/profile"><i class="fa-regular fa-user"></i>Profile</a>
+<button class="btn btn-neutral !py-1 !px-2.5 text-[12px]" data-voice-call type="button"><i class="fa-solid fa-phone text-brand"></i>Call</button>
+<button class="btn btn-neutral !py-1 !px-2.5 text-[12px]" data-video-call type="button"><i class="fa-solid fa-video text-brand"></i>Video</button>
 </div>
 </div>
+
+<!-- User Functions Section -->
+<div class="p-4 border-b border-line space-y-3">
+<h4 class="text-[11.5px] font-bold uppercase tracking-wider text-faint">User Functions &amp; Chat</h4>
+
+<!-- Floating Bubble Mode -->
+<button class="w-full flex items-center justify-between p-2 rounded-xl row-hover text-[12.5px]" data-bubble-toggle type="button">
+<span class="flex items-center gap-2.5 font-medium"><i class="fa-solid fa-comment-dots text-brand"></i>Floating Bubble Mode</span>
+<i class="fa-solid fa-arrow-up-right-from-square text-[11px] text-faint"></i>
+</button>
+
+<!-- Search in Chat -->
+<button class="w-full flex items-center justify-between p-2 rounded-xl row-hover text-[12.5px]" data-chat-search-toggle type="button">
+<span class="flex items-center gap-2.5 font-medium"><i class="fa-solid fa-magnifying-glass text-muted"></i>Search in Chat</span>
+<i class="fa-solid fa-chevron-right text-[11px] text-faint"></i>
+</button>
+
+<!-- Customize Bubble Color Theme -->
+<div class="space-y-1.5 p-2.5 rounded-xl bg-raised/60">
+<div class="flex items-center justify-between text-[12px] font-medium">
+<span class="flex items-center gap-2"><i class="fa-solid fa-palette text-indigo-500"></i>Bubble Theme</span>
+<span class="text-[10.5px] text-muted font-mono" data-theme-label>Facebook Blue</span>
+</div>
+<div class="flex items-center justify-between gap-1.5 pt-1" data-theme-selector>
+<button type="button" class="w-6 h-6 rounded-full bg-[#0866FF] ring-2 ring-offset-1 ring-[#0866FF] transition hover:scale-110" data-theme-color="#0866FF" title="Facebook Blue"></button>
+<button type="button" class="w-6 h-6 rounded-full bg-[#2F5BEA] transition hover:scale-110" data-theme-color="#2F5BEA" title="Faith In Blue"></button>
+<button type="button" class="w-6 h-6 rounded-full bg-[#059669] transition hover:scale-110" data-theme-color="#059669" title="Emerald"></button>
+<button type="button" class="w-6 h-6 rounded-full bg-[#7C3AED] transition hover:scale-110" data-theme-color="#7C3AED" title="Royal Violet"></button>
+<button type="button" class="w-6 h-6 rounded-full bg-[#EA580C] transition hover:scale-110" data-theme-color="#EA580C" title="Sunset Orange"></button>
+<button type="button" class="w-6 h-6 rounded-full bg-[#E11D48] transition hover:scale-110" data-theme-color="#E11D48" title="Rose"></button>
+</div>
+</div>
+
+<!-- Mute Notifications -->
+<div class="flex items-center justify-between p-2 rounded-xl row-hover text-[12.5px]">
+<span class="flex items-center gap-2.5 font-medium"><i class="fa-regular fa-bell-slash text-amber-500"></i>Mute Notifications</span>
+<label class="relative inline-flex items-center cursor-pointer">
+<input type="checkbox" class="sr-only peer" data-mute-toggle>
+<div class="w-8 h-4 bg-gray-300 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-brand"></div>
+</label>
+</div>
+
+<!-- Clear Chat -->
+<button class="w-full flex items-center justify-between p-2 rounded-xl row-hover text-[12.5px] text-muted hover:text-ink" data-clear-chat type="button">
+<span class="flex items-center gap-2.5 font-medium"><i class="fa-regular fa-trash-can"></i>Clear Chat</span>
+<i class="fa-solid fa-chevron-right text-[11px] text-faint"></i>
+</button>
+
+<!-- Block Member -->
+<button class="w-full flex items-center justify-between p-2 rounded-xl row-hover text-[12.5px] text-rose font-medium" data-block-user type="button">
+<span class="flex items-center gap-2.5"><i class="fa-solid fa-ban"></i>Block Member</span>
+<i class="fa-solid fa-chevron-right text-[11px] text-rose/60"></i>
+</button>
+</div>
+
 <div class="p-5">
-<h4 class="text-[13.5px] font-bold">Shared images</h4>
+<h4 class="text-[13px] font-bold">Shared images</h4>
 <div class="grid grid-cols-3 gap-2 mt-3" data-info-media>
-<p class="col-span-3 text-[12.5px] text-muted">Images shared in this conversation appear here.</p>
+<p class="col-span-3 text-[12px] text-muted">Images shared in this conversation appear here.</p>
 </div>
 </div>
 </aside>
@@ -126,7 +238,7 @@
 </div>
 </main>
 
-<!-- ───── NEW MESSAGE ───── -->
+<!-- ───── NEW MESSAGE MODAL ───── -->
 <div class="hidden fixed inset-0 z-[240] bg-[#0b1120]/70 p-4 items-center justify-center" data-new-modal>
 <section aria-labelledby="msg-new-title" aria-modal="true" class="card w-full max-w-md shadow-pop flex flex-col max-h-[560px]" role="dialog">
 <header class="px-5 py-4 border-b border-line flex items-center justify-between">
@@ -143,10 +255,82 @@
 </section>
 </div>
 
-<script src="/faithin-app/assets/faithin-runtime.js?v=20260905-share"></script>
-<script src="/assets/js/faith-in-backend.js?v=20260905-share"></script>
-<script src="/faithin-app/assets/faithin.js?v=20260905-share"></script>
-<script src="/faithin-app/assets/faithin-live.js?v=20260905-share"></script>
-<script src="/faithin-app/assets/faithin-messaging.js?v=20260905-share"></script>
+<!-- ───── VOICE CALL MODAL ───── -->
+<div class="hidden fi-call-modal" data-voice-call-modal>
+<div class="fi-call-card">
+<div class="fi-call-avatar-pulse">
+<span class="avatar w-24 h-24 text-[26px] ring-4 ring-brand" data-call-avatar></span>
+</div>
+<h3 class="text-[20px] font-bold text-white leading-tight" data-call-name>Faith In Member</h3>
+<p class="text-[13px] text-slate-300 mt-1" data-call-status>Calling…</p>
+<p class="text-[12px] text-emerald-400 font-mono mt-2 hidden" data-call-timer>00:00</p>
+<div class="fi-call-actions">
+<button class="fi-call-btn btn-tool" data-call-mute title="Mute Microphone" type="button"><i class="fa-solid fa-microphone"></i></button>
+<button class="fi-call-btn btn-tool" data-call-speaker title="Speaker" type="button"><i class="fa-solid fa-volume-high"></i></button>
+<button class="fi-call-btn btn-hangup" data-call-hangup title="End Call" type="button"><i class="fa-solid fa-phone-slash"></i></button>
+</div>
+</div>
+</div>
+
+<!-- ───── VIDEO CALL MODAL ───── -->
+<div class="hidden fi-call-modal" data-video-call-modal>
+<div class="fi-call-card !max-w-[500px] !p-6 relative">
+<div class="w-full aspect-[4/3] rounded-2xl bg-slate-900 border border-slate-700 relative overflow-hidden flex items-center justify-center">
+<div class="flex flex-col items-center text-center p-4">
+<span class="avatar w-20 h-20 text-[22px] ring-4 ring-brand mb-3" data-video-avatar></span>
+<h3 class="text-[17px] font-bold text-white" data-video-name>Faith In Member</h3>
+<p class="text-[12px] text-slate-300 mt-1" data-video-status>Connecting video…</p>
+<p class="text-[12px] text-emerald-400 font-mono mt-1 hidden" data-video-timer>00:00</p>
+</div>
+<!-- Picture-in-picture local preview -->
+<div class="absolute right-3 top-3 w-24 h-32 rounded-xl bg-slate-800 border-2 border-slate-600 flex flex-col items-center justify-center shadow-lg">
+<span class="avatar w-10 h-10 text-[12px] mb-1" data-local-avatar>You</span>
+<span class="text-[10px] text-slate-300 font-medium">Your camera</span>
+</div>
+</div>
+<div class="fi-call-actions !mt-6">
+<button class="fi-call-btn btn-tool" data-video-toggle-cam title="Camera On/Off" type="button"><i class="fa-solid fa-video"></i></button>
+<button class="fi-call-btn btn-tool" data-video-mute title="Mute Microphone" type="button"><i class="fa-solid fa-microphone"></i></button>
+<button class="fi-call-btn btn-tool" data-video-flip title="Flip Camera" type="button"><i class="fa-solid fa-camera-rotate"></i></button>
+<button class="fi-call-btn btn-hangup" data-video-hangup title="End Video Call" type="button"><i class="fa-solid fa-phone-slash"></i></button>
+</div>
+</div>
+</div>
+
+<!-- ───── BLOCK MEMBER CONFIRMATION MODAL ───── -->
+<div class="hidden fixed inset-0 z-[250] bg-[#0b1120]/70 p-4 items-center justify-center" data-block-modal>
+<div class="card w-full max-w-sm shadow-pop p-5 text-center space-y-3">
+<div class="w-12 h-12 rounded-full bg-rose/10 text-rose flex items-center justify-center mx-auto text-xl">
+<i class="fa-solid fa-ban"></i>
+</div>
+<h3 class="text-[17px] font-bold text-ink">Block Member?</h3>
+<p class="text-[13px] text-muted">They will no longer be able to message you or view your active status in Faith In.</p>
+<div class="flex gap-2 pt-2">
+<button class="btn btn-neutral flex-1" data-block-cancel type="button">Cancel</button>
+<button class="btn !bg-rose !text-white flex-1 font-semibold" data-block-confirm type="button">Block</button>
+</div>
+</div>
+</div>
+
+<!-- ───── CLEAR CHAT CONFIRMATION MODAL ───── -->
+<div class="hidden fixed inset-0 z-[250] bg-[#0b1120]/70 p-4 items-center justify-center" data-clear-modal>
+<div class="card w-full max-w-sm shadow-pop p-5 text-center space-y-3">
+<div class="w-12 h-12 rounded-full bg-amber-500/10 text-amber-600 flex items-center justify-center mx-auto text-xl">
+<i class="fa-regular fa-trash-can"></i>
+</div>
+<h3 class="text-[17px] font-bold text-ink">Clear Conversation?</h3>
+<p class="text-[13px] text-muted">This will remove message history from your screen for this conversation.</p>
+<div class="flex gap-2 pt-2">
+<button class="btn btn-neutral flex-1" data-clear-cancel type="button">Cancel</button>
+<button class="btn !bg-amber-600 !text-white flex-1 font-semibold" data-clear-confirm type="button">Clear</button>
+</div>
+</div>
+</div>
+
+<script src="/faithin-app/assets/faithin-runtime.js?v=20260905-bubble"></script>
+<script src="/assets/js/faith-in-backend.js?v=20260905-bubble"></script>
+<script src="/faithin-app/assets/faithin.js?v=20260905-bubble"></script>
+<script src="/faithin-app/assets/faithin-live.js?v=20260905-bubble"></script>
+<script src="/faithin-app/assets/faithin-messaging.js?v=20260905-bubble"></script>
 </body>
 </html>
