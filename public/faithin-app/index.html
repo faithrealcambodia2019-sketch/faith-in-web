@@ -17,8 +17,8 @@
 <link rel="dns-prefetch" href="https://bible-api.com">
 <link href="/faithin-app/assets/faithin-fonts.css" rel="stylesheet"/>
 <link href="/faithin-app/assets/faithin-icons.css" rel="stylesheet"/>
-<link href="/faithin-app/assets/faithin-tw.css?v=20260905-share" rel="stylesheet"/>
-<link href="/faithin-app/assets/faithin.css?v=20260905-share" rel="stylesheet"/>
+<link href="/faithin-app/assets/faithin-tw.css?v=20260905-fixes" rel="stylesheet"/>
+<link href="/faithin-app/assets/faithin.css?v=20260905-fixes" rel="stylesheet"/>
 </head>
 <body class="font-sans min-h-screen pb-16 lg:pb-0" data-page="home" data-search="Search Faith In">
 <main class="max-w-[1200px] mx-auto px-3 sm:px-4 py-5 grid gap-5 lg:grid-cols-[232px_minmax(0,1fr)] xl:grid-cols-[232px_minmax(0,600px)_312px] items-start" id="main">
@@ -145,7 +145,7 @@
 <h2 class="font-bold text-[18px] text-ink tracking-tight">Contacts</h2>
 <div class="flex items-center space-x-1.5 text-muted">
 <button aria-label="Search contacts" class="icon-btn w-8 h-8 hover:text-ink transition" data-search-contacts><i class="fa-solid fa-magnifying-glass text-[13px]"></i></button>
-<button aria-label="Contact options" class="icon-btn w-8 h-8 hover:text-ink transition"><i class="fa-solid fa-ellipsis text-[14px]"></i></button>
+<div class="relative" data-contact-options><button aria-label="Contact options" class="icon-btn w-8 h-8 hover:text-ink transition" data-contact-options-toggle aria-haspopup="true" aria-expanded="false"><i class="fa-solid fa-ellipsis text-[14px]"></i></button><div class="absolute right-0 mt-2 w-56 card shadow-pop p-1.5 hidden z-40" data-contact-options-menu role="menu"><a class="side-link" href="/network" role="menuitem"><i class="fa-solid fa-user-group"></i>Find users</a><a class="side-link" href="/settings#notifications" role="menuitem"><i class="fa-solid fa-bell"></i>Notification settings</a></div></div>
 </div>
 </div>
 <div class="hidden mb-3" id="contacts-search-wrap">
@@ -489,11 +489,11 @@
 </div>
 </div>
 </div>
-<script src="/faithin-app/assets/faithin-runtime.js?v=20260905-share"></script>
-<script src="/faithin-app/assets/faithin-blob-upload.js?v=20260905-share"></script>
-<script src="/assets/js/faith-in-backend.js?v=20260905-share"></script>
-<script src="/faithin-app/assets/faithin.js?v=20260905-share"></script>
-<script src="/faithin-app/assets/faithin-live.js?v=20260905-share"></script>
-<script src="/faithin-app/assets/faithin-home.js?v=20260905-share"></script>
+<script src="/faithin-app/assets/faithin-runtime.js?v=20260905-fixes"></script>
+<script src="/faithin-app/assets/faithin-blob-upload.js?v=20260905-fixes"></script>
+<script src="/assets/js/faith-in-backend.js?v=20260905-fixes"></script>
+<script src="/faithin-app/assets/faithin.js?v=20260905-fixes"></script>
+<script src="/faithin-app/assets/faithin-live.js?v=20260905-fixes"></script>
+<script src="/faithin-app/assets/faithin-home.js?v=20260905-fixes"></script>
 </body>
 </html>

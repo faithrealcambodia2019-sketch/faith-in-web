@@ -1399,6 +1399,16 @@
 
   // Five identical "reacted to your post" rows are noise. Consecutive
   // notifications of the same kind about the same thing collapse into one.
+  // A blocked member should stop reaching you here as well as in the feed.
+  function fiWithoutBlocked(items) {
+    const blocked = new Set((window.FILive?.user?.settings?.blocked_uids) || []);
+    if (!blocked.size) return items;
+    return items.filter(item => {
+      const uid = item?.actor?.uid || item?.actorUid || item?.from_uid;
+      return !uid || !blocked.has(uid);
+    });
+  }
+
   function fiGroupNotifications(items) {
     const grouped = [];
     for (const item of items) {
@@ -1453,7 +1463,7 @@
     const render = () => {
       const types = groups[active] || null;
       const filtered = allItems.filter(item => (!types || types.includes(item.type)) && (!searchQuery || `${item.actor?.name || ''} ${labels[item.type] || ''}`.toLowerCase().includes(searchQuery)));
-      const groupedAll = fiGroupNotifications(filtered);
+      const groupedAll = fiGroupNotifications(fiWithoutBlocked(filtered));
       const groupsToShow = groupedAll.slice(0, shown);
 
       if (!groupsToShow.length) {

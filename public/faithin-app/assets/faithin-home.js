@@ -304,6 +304,41 @@
     openMediaViewer(items, at, cell);
   }
 
+  // The contacts "..." control had no wiring of any kind.
+  document.addEventListener('click', event => {
+    const wrap = event.target.closest('[data-contact-options]');
+    const menu = document.querySelector('[data-contact-options-menu]');
+    if (!menu) return;
+    const toggle = event.target.closest('[data-contact-options-toggle]');
+    if (toggle) {
+      const open = menu.classList.toggle('hidden');
+      toggle.setAttribute('aria-expanded', String(!open));
+      return;
+    }
+    if (!wrap) {
+      menu.classList.add('hidden');
+      document.querySelector('[data-contact-options-toggle]')?.setAttribute('aria-expanded', 'false');
+    }
+  });
+
+  // Every blessing card in the rail rendered with a data-blessing-post id
+  // that nothing queried, so the whole rail was decorative. Clicking one now
+  // takes you to that post.
+  document.addEventListener('click', event => {
+    const card = event.target.closest('[data-blessing-post]');
+    if (!card) return;
+    const postId = card.dataset.blessingPost;
+    if (!postId) return;
+    const article = document.querySelector(`[data-post-id="${CSS.escape(postId)}"]`);
+    if (article) {
+      article.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      article.classList.add('animate-pop-in');
+      setTimeout(() => article.classList.remove('animate-pop-in'), 600);
+    } else {
+      location.href = `/home?post=${encodeURIComponent(postId)}`;
+    }
+  });
+
   feed?.addEventListener('click', event => {
     const trigger = event.target.closest('[data-media-open]');
     if (!trigger || !feed.contains(trigger)) return;
@@ -932,6 +967,7 @@
       toast('Article published ✨');
       if (headlineEl) headlineEl.innerText = '';
       if (bodyEl) bodyEl.innerHTML = '';
+      clearDraft();
       if (coverPreview) { coverPreview.src = ''; coverPreview.classList.add('hidden'); }
       if (coverPrompt) coverPrompt.classList.remove('hidden');
       pendingArticleCoverFile = null;
