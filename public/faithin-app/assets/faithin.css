@@ -3624,3 +3624,8 @@ body[data-page="messaging"] .field:focus {
 }
 
 body[data-page="messaging"] .side-link:hover { background: var(--fb-hover); }
+
+/* The message stream carries bg-canvas, which on this skin is the page grey —
+   so the conversation read as a hole in the pane. Messenger's thread area is
+   white (and #242526 in dark), which is what --fb-surface already resolves to. */
+body[data-page="messaging"] [data-messages] { background: var(--fb-surface); }
