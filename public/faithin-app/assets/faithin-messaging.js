@@ -481,12 +481,37 @@
 
   /* ── calling modals ─────────────────────────────────────────────────────── */
 
+  function openCallModal(type = 'voice') {
+    const modal = $('[data-call-modal]');
+    if (!modal) return;
+    if (!state.partner) return toast('Open a conversation first to start a call.');
+    const avatarEl = $('[data-call-avatar]');
+    const nameEl = $('[data-call-name]');
+    const statusEl = $('[data-call-status]');
+    const iconEl = $('[data-call-type-icon]');
+
+    if (avatarEl) avatarEl.innerHTML = avatar(state.partner, 'avatar w-20 h-20 text-[24px] fb-call-pulsing');
+    if (nameEl) nameEl.textContent = state.partner.name || 'Faith In Member';
+    if (statusEl) statusEl.textContent = type === 'video' ? 'Connecting video call…' : 'Calling on Messenger…';
+    if (iconEl) iconEl.className = type === 'video' ? 'fa-solid fa-video' : 'fa-solid fa-phone';
+
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+  }
+
+  function closeCallModal() {
+    const modal = $('[data-call-modal]');
+    if (!modal) return;
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+  }
+
   function startVoiceCall() {
-    toast('Voice calling will be available in an upcoming update.');
+    openCallModal('voice');
   }
 
   function startVideoCall() {
-    toast('Video calling will be available in an upcoming update.');
+    openCallModal('video');
   }
 
   /* ── mute notifications ─────────────────────────────────────────────────── */
@@ -795,17 +820,38 @@
         <button class="msg-action-btn" data-bubble-action="reply" data-msg-id="${esc(message.id)}" title="Reply" type="button"><i class="fa-solid fa-reply"></i></button>
         <button class="msg-action-btn ${isPinned ? 'text-amber-500' : ''}" data-bubble-action="pin" data-msg-id="${esc(message.id)}" title="${isPinned ? 'Unpin message' : 'Pin message'}" type="button"><i class="fa-${isPinned ? 'solid' : 'regular'} fa-star"></i></button>
         <button class="msg-action-btn" data-bubble-action="copy" data-msg-id="${esc(message.id)}" title="Copy" type="button"><i class="fa-regular fa-copy"></i></button>
-        <button class="msg-action-btn" data-bubble-action="delete" data-msg-id="${esc(message.id)}" title="Delete" type="button"><i class="fa-regular fa-trash-can"></i></button>
+        <button class="msg-action-btn text-rose hover:text-rose" data-bubble-action="delete" data-msg-id="${esc(message.id)}" title="Delete" type="button"><i class="fa-regular fa-trash-can"></i></button>
       </div>
       <div class="msg-reactions-popover" data-reactions-popover="${esc(message.id)}">
         <button type="button" data-react-emoji="❤️" data-msg-id="${esc(message.id)}" title="Love">❤️</button>
-        <button type="button" data-react-emoji="👍" data-msg-id="${esc(message.id)}" title="Like">👍</button>
-        <button type="button" data-react-emoji="😂" data-msg-id="${esc(message.id)}" title="Haha">😂</button>
-        <button type="button" data-react-emoji="🙏" data-msg-id="${esc(message.id)}" title="Pray">🙏</button>
+        <button type="button" data-react-emoji="😆" data-msg-id="${esc(message.id)}" title="Haha">😆</button>
         <button type="button" data-react-emoji="😮" data-msg-id="${esc(message.id)}" title="Wow">😮</button>
         <button type="button" data-react-emoji="😢" data-msg-id="${esc(message.id)}" title="Sad">😢</button>
+        <button type="button" data-react-emoji="😡" data-msg-id="${esc(message.id)}" title="Angry">😡</button>
+        <button type="button" data-react-emoji="👍" data-msg-id="${esc(message.id)}" title="Like">👍</button>
+        <button type="button" data-react-emoji="🙏" data-msg-id="${esc(message.id)}" title="Pray">🙏</button>
       </div>
     `;
+
+    const isThumbsUpOnly = message.body && message.body.trim() === '👍' && !attachment && !replyQuote;
+
+    if (isThumbsUpOnly) {
+      return `<div class="msg-row-wrap ${mine ? 'is-mine' : ''}" data-message-id="${esc(message.id || '')}">
+        ${mine ? '' : `<span class="shrink-0 mb-1">${avatar(state.partner, 'avatar w-7 h-7 text-[11px]')}</span>`}
+        <div class="msg-bubble-group">
+          <div class="flex flex-col gap-0.5 ${mine ? 'items-end' : 'items-start'} min-w-0 max-w-full">
+            <div class="text-[38px] leading-none py-1 px-1 cursor-default hover:scale-110 transition-transform ${message.pending ? 'opacity-60' : ''}" title="${mine ? 'You sent a Like' : 'Sent a Like'}">
+              👍${reactionPill}
+            </div>
+            <span class="text-[10px] text-faint px-1 flex items-center gap-1">
+              ${esc(message.pending ? 'Sending…' : clockTime(message.created_at))}
+              ${mine && !message.pending ? `<i class="fa-solid fa-check${state.seen ? '-double text-[#0866FF]' : ''}"></i>` : ''}
+            </span>
+          </div>
+          ${message.pending ? '' : actions}
+        </div>
+      </div>`;
+    }
 
     return `<div class="msg-row-wrap ${mine ? 'is-mine' : ''}" data-message-id="${esc(message.id || '')}">
       ${mine ? '' : `<span class="shrink-0 mb-1">${avatar(state.partner, 'avatar w-7 h-7 text-[11px]')}</span>`}
@@ -816,7 +862,7 @@
           </div>
           <span class="text-[10.5px] text-faint px-2 flex items-center gap-1">
             ${esc(message.pending ? 'Sending…' : clockTime(message.created_at))}
-            ${mine && !message.pending ? `<i class="fa-solid fa-check${state.seen ? '-double text-brand' : ''}"></i>` : ''}
+            ${mine && !message.pending ? `<i class="fa-solid fa-check${state.seen ? '-double text-[#0866FF]' : ''}"></i>` : ''}
           </span>
         </div>
         ${message.pending ? '' : actions}
@@ -1019,6 +1065,7 @@
     preview.classList.add('hidden');
     preview.classList.remove('flex');
     $('[data-attach-input]').value = '';
+    updateSendButton();
   }
 
   function showAttachment(attachment) {
@@ -1027,6 +1074,7 @@
     $('[data-attach-name]').textContent = attachment.name;
     preview.classList.remove('hidden');
     preview.classList.add('flex');
+    updateSendButton();
   }
 
   /**
@@ -1065,18 +1113,35 @@
     });
   }
 
+  function updateSendButton() {
+    const icon = $('[data-send-icon]');
+    const btn = $('[data-send]');
+    if (!icon) return;
+    const hasContent = !!input.value.trim() || !!state.attachment;
+    if (hasContent) {
+      icon.className = 'fa-solid fa-paper-plane text-[18px] text-[#0866FF] transition-transform duration-150';
+      if (btn) btn.title = 'Send (Enter)';
+    } else {
+      icon.className = 'fa-solid fa-thumbs-up text-[22px] text-[#0866FF] transition-transform duration-150';
+      if (btn) btn.title = 'Send a Like (👍)';
+    }
+  }
+
   /* ── sending ────────────────────────────────────────────────────────────── */
 
-  async function send() {
-    const body = input.value.trim();
+  async function send(explicitBody) {
+    let body = typeof explicitBody === 'string' ? explicitBody : input.value.trim();
     const attachment = state.attachment;
-    if (!body && !attachment) return;
+    if (!body && !attachment) {
+      body = '👍';
+    }
     if (!state.threadId) return;
 
     const sendButton = $('[data-send]');
-    sendButton.disabled = true;
+    if (sendButton) sendButton.disabled = true;
     input.value = '';
     input.style.height = 'auto';
+    updateSendButton();
     clearTimeout(state.typingTimer);
     if (state.typingActive) sendPresence(false);
 
@@ -1115,7 +1180,8 @@
       if (attachment) showAttachment(attachment);
       toast(error.message);
     } finally {
-      sendButton.disabled = false;
+      if (sendButton) sendButton.disabled = false;
+      updateSendButton();
       input.focus({ preventScroll: true });
     }
   }
@@ -1293,7 +1359,26 @@
       closeLightbox();
       closeVerseModal();
       toggleEmojiPicker(false);
+      closeCallModal();
     }
+  });
+
+  /* ── call modal wiring ── */
+  $('[data-call-end]')?.addEventListener('click', () => {
+    closeCallModal();
+    toast('Call ended');
+  });
+  $('[data-call-mute]')?.addEventListener('click', e => {
+    const btn = e.currentTarget;
+    const icon = btn.querySelector('i');
+    if (icon) {
+      const isMuted = icon.classList.contains('fa-microphone-slash');
+      icon.className = isMuted ? 'fa-solid fa-microphone' : 'fa-solid fa-microphone-slash text-rose';
+      toast(isMuted ? 'Microphone unmuted' : 'Microphone muted');
+    }
+  });
+  $('[data-call-modal]')?.addEventListener('click', e => {
+    if (e.target.hasAttribute('data-call-modal')) closeCallModal();
   });
 
   /* ── mark as unread wiring ── */
@@ -1387,13 +1472,17 @@
     infoPane.classList.toggle('flex', open);
     event.currentTarget.setAttribute('aria-expanded', String(open));
   });
+  $('[data-partner-info-trigger]')?.addEventListener('click', () => $('[data-info-toggle]')?.click());
+  $('[data-partner-avatar]')?.addEventListener('click', () => $('[data-info-toggle]')?.click());
 
   form.addEventListener('submit', event => { event.preventDefault(); send(); });
+  $('[data-send]')?.addEventListener('click', () => send());
 
   input.addEventListener('input', () => {
     input.style.height = 'auto';
     input.style.height = `${Math.min(input.scrollHeight, 140)}px`;
     noteTyping();
+    updateSendButton();
   });
 
   input.addEventListener('keydown', event => {

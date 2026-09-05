@@ -1113,34 +1113,46 @@ html.dark .media-plate{ background: linear-gradient(135deg,#1c2a4e,#0f1930); col
 
 /* conversation row in the inbox */
 .msg-thread{
-  display:flex; gap:12px; width:100%; text-align:left; padding:12px 14px;
-  border-left:3px solid transparent; transition: background .15s ease;
+  display:flex; gap:12px; width:calc(100% - 16px); text-align:left; padding:10px 12px;
+  margin: 2px 8px; border-radius: 12px;
+  border-left: none; transition: background .12s ease;
 }
 .msg-thread:hover{ background: rgb(var(--raised)); }
-.msg-thread.is-active{ background: rgb(var(--brand-soft) / .55); border-left-color: rgb(var(--brand)); }
+.msg-thread.is-active{ background: rgba(8, 102, 255, 0.1); }
+html.dark .msg-thread.is-active{ background: rgba(8, 102, 255, 0.2); }
 .msg-thread.is-unread .msg-thread__name,
-.msg-thread.is-unread .msg-thread__preview{ color: rgb(var(--ink)); font-weight:600; }
+.msg-thread.is-unread .msg-thread__preview{ color: rgb(var(--ink)); font-weight:700; }
 
-/* message bubbles */
+/* Facebook online presence indicator */
+.msg-dot{
+  position: absolute; bottom: 1px; right: 1px;
+  width: 13px; height: 13px; border-radius: 999px;
+  background: #31A24C; border: 2.5px solid rgb(var(--surface));
+}
+
+/* Facebook Messenger message bubbles */
 :root {
   --msg-mine-bg: #0866FF;
 }
 .msg-bubble{
   position: relative;
-  max-width: min(78%, 34rem); padding:10px 14px; border-radius:18px;
-  font-size:14.5px; line-height:1.5; overflow-wrap:anywhere; white-space:pre-wrap;
-  background: rgb(var(--raised)); color: rgb(var(--ink));
-  border:1px solid rgb(var(--line)); border-bottom-left-radius:5px;
+  max-width: min(78%, 34rem); padding:9px 14px; border-radius:18px;
+  font-size:14.5px; line-height:1.45; overflow-wrap:anywhere; white-space:pre-wrap;
+  background: #F0F2F5; color: #050505;
+  border: none; border-bottom-left-radius:4px;
   transition: background .15s ease, color .15s ease;
 }
+html.dark .msg-bubble{
+  background: #3A3B3C; color: #E4E6EB;
+}
 .msg-bubble.is-mine{
-  background: var(--msg-mine-bg, rgb(var(--brand))); color:#fff !important; border-color: transparent;
-  border-bottom-left-radius:18px; border-bottom-right-radius:5px;
+  background: var(--msg-mine-bg, #0866FF); color:#fff !important;
+  border-bottom-left-radius:18px; border-bottom-right-radius:4px;
 }
 html.dark .msg-bubble.is-mine{ color:#fff !important; }
 .msg-bubble a{ text-decoration: underline; }
 
-/* Message row with action bar on hover/touch */
+/* Message row with Facebook action bar on hover/touch */
 .msg-row-wrap{
   position: relative;
   display: flex;
@@ -1168,7 +1180,7 @@ html.dark .msg-bubble.is-mine{ color:#fff !important; }
   border-radius: 999px;
   background: rgb(var(--surface));
   border: 1px solid rgb(var(--line));
-  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
   transition: opacity .15s ease, transform .15s ease;
   transform: scale(0.92);
 }
@@ -1200,12 +1212,12 @@ html.dark .msg-bubble.is-mine{ color:#fff !important; }
   transform: scale(1.1);
 }
 
-/* Reaction Popover */
+/* Facebook Reaction Popover */
 .msg-reactions-popover{
   display: none;
   position: absolute;
-  bottom: 100%;
-  margin-bottom: 8px;
+  bottom: calc(100% + 6px);
+  margin-bottom: 0;
   padding: 4px 8px;
   border-radius: 999px;
   background: rgb(var(--surface));
@@ -1224,7 +1236,7 @@ html.dark .msg-bubble.is-mine{ color:#fff !important; }
   border-radius: 999px;
   border: 0;
   background: transparent;
-  font-size: 18px;
+  font-size: 19px;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -1238,14 +1250,15 @@ html.dark .msg-bubble.is-mine{ color:#fff !important; }
   to{ opacity: 1; transform: scale(1) translateY(0); }
 }
 
-/* Attached Reaction Pill on Bubble */
+/* Facebook Attached Reaction Pill on Bubble */
 .msg-reaction-pill{
   position: absolute;
   bottom: -9px;
-  right: 12px;
-  background: rgb(var(--surface));
-  border: 1px solid rgb(var(--line));
-  box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+  right: 10px;
+  background: #ffffff;
+  color: #050505;
+  border: 1px solid rgba(0,0,0,0.08);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.15);
   border-radius: 999px;
   padding: 1px 6px;
   font-size: 12px;
@@ -1258,7 +1271,12 @@ html.dark .msg-bubble.is-mine{ color:#fff !important; }
   user-select: none;
   z-index: 10;
 }
-.msg-row-wrap.is-mine .msg-reaction-pill{ right: auto; left: 12px; }
+html.dark .msg-reaction-pill{
+  background: #242526;
+  color: #e4e6eb;
+  border-color: rgba(255,255,255,0.12);
+}
+.msg-row-wrap.is-mine .msg-reaction-pill{ right: auto; left: 10px; }
 .msg-reaction-pill:hover{ transform: scale(1.15); }
 
 /* Quoted Reply inside Message Bubble */
@@ -1465,19 +1483,56 @@ html.dark .msg-bubble.is-mine{ color:#fff !important; }
 .msg-typing span:nth-child(3){ animation-delay:.32s; }
 @keyframes msg-typing{ 0%,80%,100%{ transform:scale(.5); opacity:.5 } 40%{ transform:scale(1); opacity:1 } }
 
-/* composer */
+/* Facebook Messenger composer */
 .msg-composer{
-  display:flex; align-items:flex-end; gap:8px; width:100%;
-  background: rgb(var(--surface)); border:1px solid rgb(var(--line));
-  border-radius:24px; padding:6px 6px 6px 10px;
-  transition: border-color .15s ease, box-shadow .15s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  background: #F0F2F5;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  padding: 4px 8px 4px 14px;
+  min-height: 40px;
+  transition: background .15s ease, border-color .15s ease, box-shadow .15s ease;
 }
-.msg-composer:focus-within{ border-color: rgb(var(--brand)); box-shadow: 0 0 0 3px rgb(var(--brand) / .14); }
+html.dark .msg-composer{
+  background: #3A3B3C;
+}
+.msg-composer:focus-within{
+  border-color: #0866FF;
+  background: rgb(var(--surface));
+  box-shadow: 0 0 0 2px rgba(8, 102, 255, 0.15);
+}
 .msg-composer textarea{
-  flex:1; min-height:24px; max-height:140px; resize:none; background:transparent;
-  border:none; outline:none; color: rgb(var(--ink)); font-size:14.5px; line-height:1.5; padding:7px 2px;
+  flex: 1;
+  min-height: 22px;
+  max-height: 120px;
+  resize: none;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: rgb(var(--ink));
+  font-size: 15px;
+  line-height: 1.4;
+  padding: 4px 0;
 }
-.msg-composer textarea::placeholder{ color: rgb(var(--faint)); }
+.msg-composer textarea::placeholder{
+  color: #65676B;
+}
+html.dark .msg-composer textarea::placeholder{
+  color: #B0B3B8;
+}
+
+@keyframes fb-call-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(8, 102, 255, 0.5); }
+  70% { box-shadow: 0 0 0 22px rgba(8, 102, 255, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(8, 102, 255, 0); }
+}
+.fb-call-pulsing{
+  animation: fb-call-pulse 2s infinite;
+  border-radius: 999px;
+}
 
 .msg-shell .msg-thread.hidden{ display:none; }
 
