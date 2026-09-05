@@ -991,6 +991,21 @@ function renderUnifiedAuthCard() {
                                 <p class="cv-auth-dream__terms">By clicking Sign Up, you agree to our <a href="/terms">Terms</a> and <a href="/privacy">Privacy Policy</a>. You may receive notifications from us and can opt out at any time.</p>
                                 <button type="submit" class="cv-auth-dream__submit cv-auth-dream__submit--square" ${buttonDisabled}>${submitText}</button>
                             </form>
+                            <div class="cv-auth-dream__divider"><span>Or sign up with</span></div>
+                            <div class="cv-auth-social-list" style="display:flex;flex-direction:column;gap:8px;margin-top:10px;">
+                                <button type="button" class="cv-faith-google-btn cv-faith-facebook-btn" onclick="return startFirebaseFacebookSignIn(event)" ${buttonDisabled} style="border-color:#1877F2;color:#1877F2;">
+                                    <span class="cv-faith-google-btn__icon" aria-hidden="true">
+                                        <svg viewBox="0 0 24 24" fill="#1877F2" width="20" height="20"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                                    </span>
+                                    <span>Sign up with Facebook</span>
+                                </button>
+                                <button type="button" class="cv-faith-google-btn cv-faith-phone-btn" onclick="return cvOpenPhoneAuthModal(event)" ${buttonDisabled} style="border-color:#059669;color:#059669;">
+                                    <span class="cv-faith-google-btn__icon" aria-hidden="true">
+                                        <svg viewBox="0 0 24 24" fill="#059669" width="18" height="18"><path d="M6.62 10.79a15.053 15.053 0 006.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+                                    </span>
+                                    <span>Sign up with Phone</span>
+                                </button>
+                            </div>
                             <div class="cv-auth-dream__switch-center cv-auth-dream__switch-center--signup-only">
                                 <a href="#" role="button" class="cv-auth-dream__text-link" onclick="return cvSwitchAuthMode('signin', event)">Already have an account?</a>
                             </div>
@@ -1014,6 +1029,20 @@ function renderUnifiedAuthCard() {
                             </form>
                             <div class="cv-auth-dream__forgot"><a href="#" role="button" class="cv-auth-dream__text-link" onclick="return sendFirebasePasswordReset(event)">Forgotten password?</a></div>
                             <div class="cv-auth-dream__divider"><span>Or sign in with</span></div>
+                            <div class="cv-auth-social-list" style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px;">
+                                <button type="button" class="cv-faith-google-btn cv-faith-facebook-btn" onclick="return startFirebaseFacebookSignIn(event)" ${buttonDisabled} style="border-color:#1877F2;color:#1877F2;">
+                                    <span class="cv-faith-google-btn__icon" aria-hidden="true">
+                                        <svg viewBox="0 0 24 24" fill="#1877F2" width="20" height="20"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                                    </span>
+                                    <span>Continue with Facebook</span>
+                                </button>
+                                <button type="button" class="cv-faith-google-btn cv-faith-phone-btn" onclick="return cvOpenPhoneAuthModal(event)" ${buttonDisabled} style="border-color:#059669;color:#059669;">
+                                    <span class="cv-faith-google-btn__icon" aria-hidden="true">
+                                        <svg viewBox="0 0 24 24" fill="#059669" width="18" height="18"><path d="M6.62 10.79a15.053 15.053 0 006.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+                                    </span>
+                                    <span>Continue with Phone</span>
+                                </button>
+                            </div>
                             <div id="cv-google-signin" class="cv-google-signin cv-auth-dream__google cv-auth-dream__google--login"></div>
                             ${cvGithubEnabled() ? `<button type="button" class="cv-faith-google-btn cv-faith-github-btn" onclick="return startFirebaseGithubSignIn(event)" ${buttonDisabled}><span class="cv-faith-google-btn__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .8a11.4 11.4 0 0 0-3.6 22.2c.6.1.8-.3.8-.6v-2.2c-3.3.7-4-1.4-4-1.4-.5-1.4-1.3-1.7-1.3-1.7-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.8-1.6-2.7-.3-5.5-1.3-5.5-6a4.7 4.7 0 0 1 1.2-3.2c-.1-.3-.5-1.6.1-3.2 0 0 1-.3 3.3 1.2a11.4 11.4 0 0 1 6 0C17 4.3 18 4.6 18 4.6c.6 1.6.2 2.9.1 3.2a4.7 4.7 0 0 1 1.2 3.2c0 4.7-2.8 5.7-5.5 6 .4.4.8 1.1.8 2.2v3.2c0 .3.2.7.8.6A11.4 11.4 0 0 0 12 .8Z"/></svg></span><span>${loading ? 'Opening GitHub...' : 'Continue with GitHub'}</span></button>` : ''}
                             <div class="cv-auth-dream__rule"></div>
@@ -1753,6 +1782,156 @@ window.startFirebaseGithubSignIn = (event) => {
         .finally(function() {
             setState({ authLoading: false });
         });
+    return false;
+};
+
+window.startFirebaseFacebookSignIn = (event) => {
+    if (event && event.preventDefault) event.preventDefault();
+    if (state.authLoading) return false;
+    setState({ authLoading: true, authErrors: {} });
+    cvGetFirebaseAuthBundle()
+        .then(function(bundle) {
+            const provider = new bundle.authModule.FacebookAuthProvider();
+            provider.addScope('email');
+            provider.addScope('public_profile');
+            return bundle.authModule.signInWithPopup(bundle.auth, provider)
+                .then(function(result) { return { bundle: bundle, result: result }; });
+        })
+        .then(function(payload) {
+            const info = payload.bundle.authModule.getAdditionalUserInfo
+                ? payload.bundle.authModule.getAdditionalUserInfo(payload.result)
+                : null;
+            return cvCreateOrUpdateFirestoreUser(payload.bundle, payload.result.user, {
+                provider: 'facebook',
+                isNew: !!(info && info.isNewUser)
+            }).catch(function(error) {
+                console.warn('Faith In Firestore user sync failed', error);
+            }).then(function() {
+                return cvFirebaseServerLogin(payload.result.user, 'facebook');
+            });
+        })
+        .then(function(profile) {
+            cvCompleteAuth(profile || {}, {
+                name: profile && profile.name ? profile.name : '',
+                avatar_url: profile && profile.avatar_url ? profile.avatar_url : ''
+            });
+            window.showToast('Signed in with Facebook.', 'success');
+        })
+        .catch(function(error) {
+            const code = error && error.code ? String(error.code) : '';
+            if (code === 'auth/popup-closed-by-user' || code === 'auth/cancelled-popup-request') return;
+            if (code === 'auth/popup-blocked' || code === 'auth/operation-not-supported-in-this-environment') {
+                return cvGetFirebaseAuthBundle().then(function(bundle) {
+                    const provider = new bundle.authModule.FacebookAuthProvider();
+                    provider.addScope('email');
+                    provider.addScope('public_profile');
+                    return bundle.authModule.signInWithRedirect(bundle.auth, provider);
+                });
+            }
+            window.showToast(cvFirebaseErrorMessage(error), 'error');
+        })
+        .finally(function() {
+            setState({ authLoading: false });
+        });
+    return false;
+};
+
+window.cvOpenPhoneAuthModal = (event) => {
+    if (event && event.preventDefault) event.preventDefault();
+    const liveModal = document.querySelector('[data-auth-modal]');
+    if (liveModal) {
+        liveModal.hidden = false;
+        document.body.classList.add('has-auth-modal');
+        const phoneViewBtn = liveModal.querySelector('[data-auth-show="phone"]');
+        if (phoneViewBtn) {
+            phoneViewBtn.click();
+            return false;
+        }
+    }
+    setState({
+        modal: {
+            isOpen: true,
+            type: 'phoneAuth',
+            data: { step: 'phone', country_code: '+855', phone: '', code: '' }
+        }
+    });
+    return false;
+};
+
+window.submitPhoneAuthSendCode = (event) => {
+    if (event && event.preventDefault) event.preventDefault();
+    const countryCode = (document.getElementById('cv-phone-auth-cc')?.value || '+855').trim();
+    const rawPhone = (document.getElementById('cv-phone-auth-num')?.value || '').trim();
+    if (!rawPhone) {
+        window.showToast('Please enter your mobile phone number.', 'info');
+        return false;
+    }
+    const sendBtn = document.getElementById('cv-phone-auth-send-btn');
+    if (sendBtn) {
+        sendBtn.disabled = true;
+        sendBtn.innerText = 'Sending SMS...';
+    }
+    ajaxRequest('cv_phone_send_code', {
+        phone: rawPhone,
+        country_code: countryCode
+    }).done(function(res) {
+        const payload = (res && res.data) ? res.data : res;
+        const formattedPhone = (payload && payload.phone) ? payload.phone : (countryCode + ' ' + rawPhone);
+        setState({
+            modal: {
+                isOpen: true,
+                type: 'phoneAuth',
+                data: {
+                    step: 'verify',
+                    country_code: countryCode,
+                    phone: rawPhone,
+                    formattedPhone: formattedPhone,
+                    verification_id: (payload && payload.verification_id) ? payload.verification_id : ''
+                }
+            }
+        });
+        window.showToast('SMS verification code sent.', 'success');
+    }).fail(function(xhr) {
+        if (sendBtn) {
+            sendBtn.disabled = false;
+            sendBtn.innerText = 'Send Verification Code';
+        }
+        const errMsg = (xhr.responseJSON && xhr.responseJSON.data) ? xhr.responseJSON.data : (xhr.responseText || 'Failed to send SMS code.');
+        window.showToast(errMsg, 'error');
+    });
+    return false;
+};
+
+window.submitPhoneAuthVerifyCode = (event) => {
+    if (event && event.preventDefault) event.preventDefault();
+    const code = (document.getElementById('cv-phone-auth-code')?.value || '').trim();
+    if (!code || code.length < 4) {
+        window.showToast('Please enter the verification code received via SMS.', 'info');
+        return false;
+    }
+    const currentData = (state.modal && state.modal.type === 'phoneAuth' && state.modal.data) ? state.modal.data : {};
+    const verifyBtn = document.getElementById('cv-phone-auth-verify-btn');
+    if (verifyBtn) {
+        verifyBtn.disabled = true;
+        verifyBtn.innerText = 'Verifying...';
+    }
+    ajaxRequest('cv_phone_verify_code', {
+        verification_id: currentData.verification_id || '',
+        code: code,
+        display_name: 'Faith Member'
+    }).done(function(res) {
+        const profile = (res && res.data) ? res.data : res;
+        closeModal();
+        cvCompleteAuth(profile || {});
+        window.showToast('Successfully verified phone and signed in!', 'success');
+    }).fail(function(xhr) {
+        if (verifyBtn) {
+            verifyBtn.disabled = false;
+            verifyBtn.innerText = 'Confirm & Sign In';
+        }
+        const errMsg = (xhr.responseJSON && xhr.responseJSON.data) ? xhr.responseJSON.data : (xhr.responseText || 'Invalid verification code.');
+        window.showToast(errMsg, 'error');
+    });
     return false;
 };
 
@@ -7288,9 +7467,87 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
                 ${m.data.article_excerpt ? `<p class="text-base opacity-80 mb-6 leading-relaxed ${hasKhmerText(m.data.article_excerpt || '') ? 'cv-article-body cv-article-khmer' : ''}">${renderLocalizedText(m.data.article_excerpt)}</p>` : ''}
                 <div class="leading-8 whitespace-pre-line text-[1.06rem] cv-article-content ${hasKhmerText(m.data.article_body || '') ? 'cv-article-body cv-article-khmer' : ''}">${renderLocalizedText(m.data.article_body || '')}</div>
             `;
+        } else if (m.type === 'phoneAuth') {
+            const data = m.data || {};
+            const isVerify = data.step === 'verify';
+            const countryCode = data.country_code || '+855';
+            const phone = data.phone || '';
+            const formatted = data.formattedPhone || `${countryCode} ${phone}`;
+
+            if (!isVerify) {
+                content = `
+                    <div class="cv-phone-auth-modal">
+                        <div class="mb-5 text-center">
+                            <div class="w-14 h-14 mx-auto mb-3 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center dark:bg-emerald-950/40 dark:text-emerald-400">
+                                <i data-lucide="phone" class="w-7 h-7"></i>
+                            </div>
+                            <h3 class="text-2xl font-extrabold tracking-tight">Sign in with Phone</h3>
+                            <p class="text-sm opacity-70 mt-1">We'll send a 6-digit SMS code to verify your phone.</p>
+                        </div>
+                        <form onsubmit="return submitPhoneAuthSendCode(event)" class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-black uppercase tracking-wider opacity-60 mb-2">Mobile Phone Number</label>
+                                <div class="flex gap-2">
+                                    <select id="cv-phone-auth-cc" class="px-3 py-3 rounded-xl border-2 font-bold ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-slate-50 border-slate-200 text-slate-900'}">
+                                        <option value="+855" ${countryCode === '+855' ? 'selected' : ''}>🇰🇭 +855 (KH)</option>
+                                        <option value="+1" ${countryCode === '+1' ? 'selected' : ''}>🇺🇸 +1 (US/CA)</option>
+                                        <option value="+44" ${countryCode === '+44' ? 'selected' : ''}>🇬🇧 +44 (UK)</option>
+                                        <option value="+33" ${countryCode === '+33' ? 'selected' : ''}>🇫🇷 +33 (FR)</option>
+                                        <option value="+61" ${countryCode === '+61' ? 'selected' : ''}>🇦🇺 +61 (AU)</option>
+                                        <option value="+66" ${countryCode === '+66' ? 'selected' : ''}>🇹🇭 +66 (TH)</option>
+                                        <option value="+84" ${countryCode === '+84' ? 'selected' : ''}>🇻🇳 +84 (VN)</option>
+                                        <option value="+81" ${countryCode === '+81' ? 'selected' : ''}>🇯🇵 +81 (JP)</option>
+                                        <option value="+82" ${countryCode === '+82' ? 'selected' : ''}>🇰🇷 +82 (KR)</option>
+                                        <option value="+65" ${countryCode === '+65' ? 'selected' : ''}>🇸🇬 +65 (SG)</option>
+                                        <option value="+60" ${countryCode === '+60' ? 'selected' : ''}>🇲🇾 +60 (MY)</option>
+                                        <option value="+63" ${countryCode === '+63' ? 'selected' : ''}>🇵🇭 +63 (PH)</option>
+                                        <option value="+62" ${countryCode === '+62' ? 'selected' : ''}>🇮🇩 +62 (ID)</option>
+                                    </select>
+                                    <input id="cv-phone-auth-num" type="tel" value="${escapeAttr(phone)}" placeholder="12 345 678" required class="flex-1 px-4 py-3 rounded-xl border-2 font-medium ${isDark ? 'bg-slate-800 border-slate-700 text-white placeholder-slate-500' : 'bg-white border-slate-200 text-slate-900 placeholder-slate-400'} focus:border-emerald-500 outline-none" />
+                                </div>
+                            </div>
+                            <div id="fi-recaptcha-container"></div>
+                            <button id="cv-phone-auth-send-btn" type="submit" class="w-full py-3.5 rounded-xl font-extrabold text-white bg-emerald-600 hover:bg-emerald-700 transition shadow-lg shadow-emerald-600/20 flex items-center justify-center gap-2">
+                                <i data-lucide="message-square-text" class="w-5 h-5"></i>
+                                <span>Send Verification Code</span>
+                            </button>
+                        </form>
+                    </div>
+                `;
+            } else {
+                content = `
+                    <div class="cv-phone-auth-modal">
+                        <button type="button" onclick="setState({ modal: { isOpen: true, type: 'phoneAuth', data: { step: 'phone', country_code: '${countryCode}', phone: '${escapeAttr(phone)}' } } })" class="mb-4 text-xs font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5 hover:underline">
+                            <i data-lucide="arrow-left" class="w-4 h-4"></i> Change phone number
+                        </button>
+                        <div class="mb-5 text-center">
+                            <div class="w-14 h-14 mx-auto mb-3 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center dark:bg-emerald-950/40 dark:text-emerald-400">
+                                <i data-lucide="shield-check" class="w-7 h-7"></i>
+                            </div>
+                            <h3 class="text-2xl font-extrabold tracking-tight">Enter 6-digit code</h3>
+                            <p class="text-sm opacity-70 mt-1">We sent an SMS code to <strong>${escapeHtml(formatted)}</strong></p>
+                        </div>
+                        <form onsubmit="return submitPhoneAuthVerifyCode(event)" class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-black uppercase tracking-wider opacity-60 mb-2">SMS Code</label>
+                                <input id="cv-phone-auth-code" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="6" placeholder="123456" required autofocus class="w-full text-center tracking-[0.4em] text-2xl font-mono px-4 py-3 rounded-xl border-2 font-bold ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-slate-200 text-slate-900'} focus:border-emerald-500 outline-none" />
+                            </div>
+                            <button id="cv-phone-auth-verify-btn" type="submit" class="w-full py-3.5 rounded-xl font-extrabold text-white bg-emerald-600 hover:bg-emerald-700 transition shadow-lg shadow-emerald-600/20 flex items-center justify-center gap-2">
+                                <i data-lucide="check-circle" class="w-5 h-5"></i>
+                                <span>Confirm & Sign In</span>
+                            </button>
+                            <div class="text-center pt-2">
+                                <button type="button" onclick="submitPhoneAuthSendCode(event)" class="text-xs font-bold opacity-70 hover:opacity-100 hover:underline">
+                                    Resend SMS verification code
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                `;
+            }
         }
 
-        const modalShellClass = (m.type === 'article' || m.type === 'editPost' || m.type === 'verification')
+        const modalShellClass = (m.type === 'article' || m.type === 'editPost' || m.type === 'verification' || m.type === 'phoneAuth')
             ? 'items-start overflow-y-auto py-2 sm:py-4'
             : 'items-center';
         const panelClass = m.type === 'article'
@@ -7299,7 +7556,7 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
                 ? `max-w-6xl rounded-[2rem] p-3 sm:p-6 shadow-2xl animate-slide-up ${isDark ? 'bg-slate-900/95 border border-slate-700 text-white' : 'bg-white/95 text-brand-dark'} z-10 overflow-hidden`
                 : (m.type === 'socialFollowList'
                     ? `max-w-2xl rounded-lg p-0 shadow-sm animate-slide-up ${isDark ? 'bg-slate-900 border border-slate-700 text-white' : 'bg-white border border-gray-200 text-brand-dark'} z-10 overflow-hidden`
-                    : `max-w-${m.type === 'confirmDelete' ? 'xl' : (m.type === 'verification' ? '4xl' : '3xl')} rounded-[2rem] ${m.type === 'verification' ? 'p-4 sm:p-5 cv-verification-panel' : 'p-8'} shadow-2xl animate-slide-up ${isDark ? 'bg-slate-900 border border-slate-700 text-white' : 'bg-white text-brand-dark'} z-10`));
+                    : `max-w-${m.type === 'confirmDelete' ? 'xl' : (m.type === 'verification' ? '4xl' : (m.type === 'phoneAuth' ? 'md' : '3xl'))} rounded-[2rem] ${m.type === 'verification' ? 'p-4 sm:p-5 cv-verification-panel' : 'p-8'} shadow-2xl animate-slide-up ${isDark ? 'bg-slate-900 border border-slate-700 text-white' : 'bg-white text-brand-dark'} z-10`));
         const closeButtonClass = m.type === 'article'
             ? 'absolute top-5 right-5 p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors z-20'
             : (m.type === 'editPost'
@@ -7310,7 +7567,7 @@ const previewUser = { ...(state.currentUser || {}), name: state.profileName || (
                         ? 'absolute top-3 right-3 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors z-20 text-black/60 hover:text-black/90'
                         : 'absolute top-6 right-6 p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors')));
 
-        const modalLabel = m.type === 'confirmDelete' ? 'Delete confirmation' : 'Faith In dialog';
+        const modalLabel = m.type === 'confirmDelete' ? 'Delete confirmation' : (m.type === 'phoneAuth' ? 'Phone authentication' : 'Faith In dialog');
 
         return `
             <div class="fixed inset-0 z-[100] flex justify-center animate-fade-in p-4 ${modalShellClass}" role="dialog" aria-modal="true" aria-label="${modalLabel}">

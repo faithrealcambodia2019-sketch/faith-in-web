@@ -2106,9 +2106,13 @@ body.fi-auth-locked{ overflow:hidden; }
 .is-busy .fi-auth__spinner{ display:block; }
 @keyframes fi-auth-spin{ to{ transform:rotate(360deg); } }
 .fi-auth__divider{ margin:31px 0; display:flex; align-items:center; gap:18px; color:#667085; font-size:16px; }
-.fi-auth__divider::before,.fi-auth__divider::after{ content:""; height:1px; flex:1; background:#d0d5dd; }
-.fi-auth__social{ border:1px solid #667085; color:#475467; background:#fff; }
-.fi-auth__social:hover{ color:#111827; border-color:#344054; background:#f9fafb; }
+.fi-auth__social-group{ display:flex; flex-direction:column; gap:10px; width:100%; }
+.fi-auth__social{ border:1px solid #d0d5dd; color:#344054; background:#fff; cursor:pointer; }
+.fi-auth__social:hover{ color:#111827; border-color:#98a2b3; background:#f9fafb; }
+.fi-auth__social--facebook{ border-color:#d0d5dd; }
+.fi-auth__social--facebook:hover{ border-color:#1877F2; background:#f0f6ff; color:#1877F2; }
+.fi-auth__social--phone{ border-color:#d0d5dd; }
+.fi-auth__social--phone:hover{ border-color:#059669; background:#ecfdf5; color:#059669; }
 .fi-auth__google{ width:24px; height:24px; display:grid; place-items:center; color:#4285f4; font-weight:900; font-family:Arial,sans-serif; }
 .fi-auth__switch{ margin-top:35px; text-align:center; color:#475467; font-size:17px; }
 .fi-auth__names{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }

@@ -1,4 +1,5 @@
 import NextAuth from "next-auth"
+import Facebook from "next-auth/providers/facebook"
 import { DrizzleAdapter } from "@auth/drizzle-adapter"
 import { db } from "./lib/db"
 import { accounts, sessions, users, verificationTokens } from "./lib/db/schema"
@@ -11,7 +12,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     verificationTokensTable: verificationTokens,
   }),
   providers: [
-    // Add providers here, e.g. Google
+    Facebook,
   ],
   callbacks: {
     session({ session, user }) {

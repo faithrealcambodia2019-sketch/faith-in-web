@@ -806,6 +806,118 @@
             });
     };
 
+    actions.cv_facebook_sign_in = function (b) {
+        if (!b.authMod || typeof b.authMod.FacebookAuthProvider !== 'function') {
+            throw new Error('Facebook authentication is not configured in this environment.');
+        }
+        var provider = new b.authMod.FacebookAuthProvider();
+        provider.addScope('email');
+        provider.addScope('public_profile');
+        return setAuthPersistence(b, true)
+            .then(function () {
+                return b.authMod.signInWithPopup(b.auth, provider)
+                    .catch(function (error) {
+                        var code = error && error.code ? String(error.code) : '';
+                        if (code === 'auth/popup-blocked' || code === 'auth/operation-not-supported-in-this-environment') {
+                            if (typeof b.authMod.signInWithRedirect === 'function') {
+                                return b.authMod.signInWithRedirect(b.auth, provider).then(function () {
+                                    return { redirected: true };
+                                });
+                            }
+                        }
+                        throw error;
+                    });
+            })
+            .then(function (result) {
+                if (result && result.redirected) return { redirected: true };
+                return loadProfile(b, result.user);
+            });
+    };
+
+    var phoneConfirmationMap = {};
+
+    actions.cv_phone_send_code = function (b, params) {
+        params = params || {};
+        var phoneNumber = String(params.phone || '').trim();
+        if (!phoneNumber) throw new Error('Enter a valid phone number.');
+        if (!phoneNumber.startsWith('+')) {
+            var cc = String(params.country_code || '+855').trim();
+            if (!cc.startsWith('+')) cc = '+' + cc;
+            phoneNumber = cc + phoneNumber.replace(/^0+/, '');
+        }
+
+        if (!b.authMod || typeof b.authMod.signInWithPhoneNumber !== 'function') {
+            throw new Error('Phone authentication is not available in this environment.');
+        }
+
+        return setAuthPersistence(b, true)
+            .then(function () {
+                var containerId = params.recaptcha_container || 'fi-recaptcha-container';
+                var container = document.getElementById(containerId);
+                if (!container) {
+                    container = document.createElement('div');
+                    container.id = containerId;
+                    container.style.display = 'none';
+                    document.body.appendChild(container);
+                }
+
+                var verifier = window._fiRecaptchaVerifier;
+                if (!verifier && typeof b.authMod.RecaptchaVerifier === 'function') {
+                    try {
+                        verifier = new b.authMod.RecaptchaVerifier(b.auth, containerId, {
+                            size: 'invisible',
+                            callback: function () {}
+                        });
+                        window._fiRecaptchaVerifier = verifier;
+                    } catch (e) {
+                        console.warn('RecaptchaVerifier warning:', e);
+                    }
+                }
+
+                return b.authMod.signInWithPhoneNumber(b.auth, phoneNumber, verifier)
+                    .then(function (confirmationResult) {
+                        var verificationId = 'phone_' + Date.now();
+                        phoneConfirmationMap[verificationId] = confirmationResult;
+                        window._fiLastPhoneConfirmation = confirmationResult;
+                        return {
+                            success: true,
+                            verification_id: verificationId,
+                            phone: phoneNumber
+                        };
+                    })
+                    .catch(function (error) {
+                        if (window._fiRecaptchaVerifier && typeof window._fiRecaptchaVerifier.clear === 'function') {
+                            try { window._fiRecaptchaVerifier.clear(); } catch (_) {}
+                            window._fiRecaptchaVerifier = null;
+                        }
+                        throw error;
+                    });
+            });
+    };
+
+    actions.cv_phone_verify_code = function (b, params) {
+        params = params || {};
+        var verificationId = String(params.verification_id || '');
+        var code = String(params.code || '').trim();
+        var displayName = String(params.display_name || '').trim();
+
+        if (!code) throw new Error('Enter the 6-digit verification code.');
+        var confirmationResult = phoneConfirmationMap[verificationId] || window._fiLastPhoneConfirmation;
+        if (!confirmationResult) throw new Error('Verification session expired. Please request a new code.');
+
+        return confirmationResult.confirm(code)
+            .then(function (result) {
+                delete phoneConfirmationMap[verificationId];
+                window._fiLastPhoneConfirmation = null;
+                if (displayName && result.user && typeof b.authMod.updateProfile === 'function') {
+                    return b.authMod.updateProfile(result.user, { displayName: displayName })
+                        .catch(function () {})
+                        .then(function () { return loadProfile(b, result.user); });
+                }
+                return loadProfile(b, result.user);
+            });
+    };
+
     actions.cv_email_sign_in = function (b, params) {
         var email = emailAddress(params.email);
         var password = String(params.password || '');

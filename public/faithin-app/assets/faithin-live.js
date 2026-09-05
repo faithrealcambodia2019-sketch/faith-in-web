@@ -47,7 +47,20 @@
               <button class="fi-auth__primary" name="intent" value="signin"><span>Sign in</span><i class="fi-auth__spinner" aria-hidden="true"></i></button>
             </form>
             <div class="fi-auth__divider"><span>or</span></div>
-            <button class="fi-auth__social" data-auth-google><span class="fi-auth__google" aria-hidden="true">G</span>Continue with Google</button>
+            <div class="fi-auth__social-group">
+              <button class="fi-auth__social fi-auth__social--facebook" data-auth-facebook type="button">
+                <i class="fa-brands fa-facebook" style="color:#1877F2;font-size:20px;"></i>
+                <span>Continue with Facebook</span>
+              </button>
+              <button class="fi-auth__social fi-auth__social--phone" data-auth-show="phone" type="button">
+                <i class="fa-solid fa-phone" style="color:#059669;font-size:18px;"></i>
+                <span>Continue with Phone</span>
+              </button>
+              <button class="fi-auth__social" data-auth-google type="button">
+                <span class="fi-auth__google" aria-hidden="true">G</span>
+                <span>Continue with Google</span>
+              </button>
+            </div>
             <p class="fi-auth__switch">New to Faith In? <button data-auth-show="signup">Join now</button></p>
           </div>
 
@@ -63,9 +76,76 @@
               <p class="fi-auth__error" data-auth-error hidden role="alert"></p>
               <button class="fi-auth__primary" name="intent" value="signup"><span>Agree &amp; Join</span><i class="fi-auth__spinner" aria-hidden="true"></i></button>
             </form>
-            <div class="fi-auth__divider"><span>or</span></div>
-            <button class="fi-auth__social" data-auth-google><span class="fi-auth__google" aria-hidden="true">G</span>Continue with Google</button>
+            <div class="fi-auth__divider"><span>or sign up with</span></div>
+            <div class="fi-auth__social-group">
+              <button class="fi-auth__social fi-auth__social--facebook" data-auth-facebook type="button">
+                <i class="fa-brands fa-facebook" style="color:#1877F2;font-size:20px;"></i>
+                <span>Sign up with Facebook</span>
+              </button>
+              <button class="fi-auth__social fi-auth__social--phone" data-auth-show="phone" type="button">
+                <i class="fa-solid fa-phone" style="color:#059669;font-size:18px;"></i>
+                <span>Sign up with Phone</span>
+              </button>
+              <button class="fi-auth__social" data-auth-google type="button">
+                <span class="fi-auth__google" aria-hidden="true">G</span>
+                <span>Continue with Google</span>
+              </button>
+            </div>
             <p class="fi-auth__switch">Already on Faith In? <button data-auth-show="signin">Sign in</button></p>
+          </div>
+
+          <div data-auth-view="phone" hidden>
+            <button class="fi-auth__back" data-auth-show="signup" type="button"><i class="fa-solid fa-arrow-left"></i> Back</button>
+            <h2>Sign up with Phone</h2>
+            <p class="fi-auth__subtitle">Enter your mobile number to receive an SMS verification code.</p>
+            <form data-auth-form="phone-send" class="fi-auth__form">
+              <div class="fi-auth__names">
+                <label><span class="sr-only">First name</span><input name="first_name" autocomplete="given-name" placeholder="First name (optional)" maxlength="60"></label>
+                <label><span class="sr-only">Last name</span><input name="last_name" autocomplete="family-name" placeholder="Last name (optional)" maxlength="60"></label>
+              </div>
+              <div style="display:flex;gap:8px;margin-top:10px;">
+                <select name="country_code" style="width:120px;height:56px;border-radius:12px;border:1px solid #d0d5dd;padding:0 8px;font-size:15px;font-weight:600;background:#fff;color:#344054;">
+                  <option value="+855" selected>🇰🇭 +855</option>
+                  <option value="+1">🇺🇸 +1</option>
+                  <option value="+44">🇬🇧 +44</option>
+                  <option value="+66">🇹🇭 +66</option>
+                  <option value="+84">🇻🇳 +84</option>
+                  <option value="+65">🇸🇬 +65</option>
+                  <option value="+61">🇦🇺 +61</option>
+                  <option value="+33">🇫🇷 +33</option>
+                  <option value="+49">🇩🇪 +49</option>
+                  <option value="+81">🇯🇵 +81</option>
+                  <option value="+82">🇰🇷 +82</option>
+                  <option value="+1">🇨🇦 +1</option>
+                </select>
+                <input name="phone" type="tel" inputmode="tel" autocomplete="tel-national" placeholder="Phone number (e.g. 12 345 678)" required style="flex:1;">
+              </div>
+              <div id="fi-recaptcha-container"></div>
+              <p class="fi-auth__terms">By continuing, you agree to receive SMS security verification codes from Faith In.</p>
+              <p class="fi-auth__error" data-auth-error hidden role="alert"></p>
+              <p class="fi-auth__success" data-auth-success hidden role="status"></p>
+              <button class="fi-auth__primary" type="submit"><span>Send SMS Code</span><i class="fi-auth__spinner" aria-hidden="true"></i></button>
+            </form>
+            <div class="fi-auth__divider"><span>or</span></div>
+            <button class="fi-auth__social fi-auth__social--facebook" data-auth-facebook type="button">
+              <i class="fa-brands fa-facebook" style="color:#1877F2;font-size:20px;"></i>
+              <span>Continue with Facebook</span>
+            </button>
+            <p class="fi-auth__switch">Prefer email? <button data-auth-show="signup">Sign up with email</button></p>
+          </div>
+
+          <div data-auth-view="phone-verify" hidden>
+            <button class="fi-auth__back" data-auth-show="phone" type="button"><i class="fa-solid fa-arrow-left"></i> Change phone number</button>
+            <div class="fi-auth__verify-icon" style="color:#059669;background:#ecfdf5;"><i class="fa-solid fa-mobile-screen-button"></i></div>
+            <h2>Enter 6-digit Code</h2>
+            <p class="fi-auth__subtitle">We sent an SMS code to <strong data-auth-phone></strong>.</p>
+            <form data-auth-form="phone-verify" class="fi-auth__form">
+              <input name="code" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="one-time-code" placeholder="• • • • • •" required style="letter-spacing:0.4em;text-align:center;font-size:24px;font-weight:700;">
+              <p class="fi-auth__error" data-auth-error hidden role="alert"></p>
+              <p class="fi-auth__success" data-auth-success hidden role="status"></p>
+              <button class="fi-auth__primary" type="submit"><span>Verify &amp; Enter Faith In</span><i class="fi-auth__spinner" aria-hidden="true"></i></button>
+              <button class="fi-auth__text-button" type="button" data-auth-resend-phone>Resend SMS verification code</button>
+            </form>
           </div>
 
           <div data-auth-view="forgot" hidden>
@@ -95,6 +175,10 @@
     </div>`;
     document.body.appendChild(host);
     let verificationEmail = '';
+    let lastPhoneSent = '';
+    let lastCountryCode = '+855';
+    let lastPhoneDisplayName = '';
+    let currentPhoneVerificationId = '';
     const close = () => {
       if (host.dataset.locked === 'true') return;
       host.classList.add('hidden');
@@ -128,6 +212,22 @@
         toggle.innerHTML = `<i class="fa-regular fa-eye${reveal ? '-slash' : ''}"></i>`;
         return;
       }
+      const facebook = event.target.closest('[data-auth-facebook]');
+      if (facebook) {
+        setBusy(facebook, true);
+        try {
+          const res = await api.request('cv_facebook_sign_in');
+          if (res?.redirected) return;
+          session = res;
+          applySession(session);
+          window.location.reload();
+        } catch (error) {
+          showAuthError(facebook.closest('[data-auth-view]'), error);
+        } finally {
+          setBusy(facebook, false);
+        }
+        return;
+      }
       const google = event.target.closest('[data-auth-google]');
       if (google) {
         setBusy(google, true);
@@ -141,6 +241,20 @@
           showAuthError(google.closest('[data-auth-view]'), error);
         } finally {
           setBusy(google, false);
+        }
+        return;
+      }
+      const resendPhone = event.target.closest('[data-auth-resend-phone]');
+      if (resendPhone) {
+        setBusy(resendPhone, true);
+        const status = $('[data-auth-success]', resendPhone.closest('[data-auth-view]'));
+        try {
+          await api.request('cv_phone_send_code', { phone: lastPhoneSent, country_code: lastCountryCode });
+          if (status) { status.textContent = 'A new SMS verification code was sent to your phone.'; status.hidden = false; }
+        } catch (error) {
+          showAuthError(resendPhone.closest('[data-auth-view]'), error);
+        } finally {
+          setBusy(resendPhone, false);
         }
         return;
       }
@@ -166,6 +280,35 @@
           success.textContent = 'If an account uses that email, a reset link is on the way.';
           success.hidden = false;
           $('[data-auth-error]', form).hidden = true;
+          return;
+        }
+        if (mode === 'phone-send') {
+          const phone = data.get('phone');
+          const countryCode = data.get('country_code');
+          lastPhoneSent = phone;
+          lastCountryCode = countryCode;
+          lastPhoneDisplayName = `${data.get('first_name') || ''} ${data.get('last_name') || ''}`.trim();
+          const res = await api.request('cv_phone_send_code', {
+            phone: phone,
+            country_code: countryCode,
+            recaptcha_container: 'fi-recaptcha-container'
+          });
+          currentPhoneVerificationId = res.verification_id;
+          const phoneLabel = $('[data-auth-phone]', host);
+          if (phoneLabel) phoneLabel.textContent = res.phone || `${countryCode} ${phone}`;
+          showView('phone-verify');
+          return;
+        }
+        if (mode === 'phone-verify') {
+          const code = data.get('code');
+          const res = await api.request('cv_phone_verify_code', {
+            verification_id: currentPhoneVerificationId,
+            code: code,
+            display_name: lastPhoneDisplayName
+          });
+          session = res;
+          applySession(session);
+          window.location.reload();
           return;
         }
         const action = mode === 'signup' ? 'cv_email_sign_up' : 'cv_email_sign_in';
