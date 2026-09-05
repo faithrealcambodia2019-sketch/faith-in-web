@@ -2405,16 +2405,28 @@
         if (allowed.indexOf(type) === -1) return Promise.resolve();
         var objectId = text(input.objectId, 500);
         var notificationId = [type, objectId || 'activity', actor.uid].join('__');
-        return b.dbMod.setDoc(b.dbMod.doc(b.db, 'notifications', notificationId), {
+        // A repeat action refreshes the existing notification rather than
+        // rewriting it whole. The previous setDoc always wrote isRead:false,
+        // which meant acting again dragged an already-read notification back
+        // to unread — and the rules had to permit that to let this through.
+        var ref = b.dbMod.doc(b.db, 'notifications', notificationId);
+        var core = {
             recipientUid: recipientUid,
             actorUid: actor.uid,
             actor: actor,
             type: type,
             objectId: objectId,
             objectType: text(input.objectType || '', 40),
-            isRead: false,
-            createdAt: b.dbMod.serverTimestamp(),
-            readAt: null
+            createdAt: b.dbMod.serverTimestamp()
+        };
+        return b.dbMod.getDoc(ref).then(function (snapshot) {
+            if (!snapshot.exists()) {
+                core.isRead = false;
+                core.readAt = null;
+                return b.dbMod.setDoc(ref, core);
+            }
+            // Leaves isRead and readAt exactly as the recipient left them.
+            return b.dbMod.updateDoc(ref, core);
         });
     }
 

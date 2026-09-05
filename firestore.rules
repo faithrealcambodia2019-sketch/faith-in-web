@@ -519,9 +519,14 @@ service cloud.firestore {
           && request.resource.data.type == resource.data.type
           && request.resource.data.objectId == resource.data.objectId
           && request.resource.data.objectType == resource.data.objectType
-          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['actor', 'isRead', 'createdAt', 'readAt'])
-          && request.resource.data.isRead == false
-          && request.resource.data.readAt == null
+          // The actor may refresh their own notification when they act again,
+          // but the read state belongs to the recipient. This used to allow
+          // 'isRead' and require it to be false, so an actor could reset an
+          // already-read notification to unread in someone's tray as often as
+          // they liked.
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['actor', 'createdAt'])
+          && request.resource.data.isRead == resource.data.isRead
+          && request.resource.data.readAt == resource.data.readAt
         );
       allow delete: if false;
     }
