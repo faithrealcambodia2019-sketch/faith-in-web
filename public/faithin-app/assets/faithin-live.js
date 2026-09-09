@@ -777,6 +777,7 @@
       + `<div class="fb-card-footer">`
       + `<div class="flex items-center gap-1.5">`
       + (format === 'pdf' ? `<button type="button" class="fb-read-btn" data-resource-read title="Read / Preview book"><i class="fa-solid fa-book-open text-[11px]"></i><span>Read</span></button>` : '')
+      + (format === 'video' ? `<button type="button" class="fb-read-btn !bg-red-600 hover:!bg-red-700" data-resource-play title="Watch video"><i class="fa-solid fa-play text-[11px]"></i><span>Watch</span></button>` : '')
       + `<button type="button" class="fb-download-btn" data-resource-download title="Download resource">`
       + `<i class="fa-solid fa-download"></i>`
       + `<span>${downloadCount}</span>`
@@ -823,13 +824,31 @@
     backdrop.setAttribute('aria-label', isAudio ? 'Audio player' : 'Video player');
 
     if (!isAudio) {
+      const mediaUrl = fiMediaUrl(resource);
+      const ytMatch = mediaUrl.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([\w-]{11})/i);
+      const ytId = ytMatch ? ytMatch[1] : (resource.youtube_id || '');
+
+      let mediaHtml = '';
+      if (ytId) {
+        mediaHtml = `<div class="relative w-full aspect-video bg-black overflow-hidden rounded-t-2xl"><iframe class="fi-player-video !h-full !max-h-none" src="https://www.youtube.com/embed/${esc(ytId)}?autoplay=1&rel=0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen style="border:0;width:100%;height:100%;aspect-ratio:16/9;"></iframe></div>`;
+      } else {
+        mediaHtml = `<video class="fi-player-video" controls autoplay playsinline preload="metadata" controlsList="nodownload" src="${esc(mediaUrl)}"${resource.thumbnail_url ? ` poster="${esc(resource.thumbnail_url)}"` : ''}></video>`;
+      }
+
+      const authorName = (typeof resource.author === 'object' && resource.author?.name)
+        ? resource.author.name
+        : (resource.contributor_name || resource.author || 'Faith In member');
+
       backdrop.innerHTML = `<div class="fi-player-shell">`
-        + `<video class="fi-player-video" controls autoplay playsinline preload="metadata" controlsList="nodownload" src="${esc(fiMediaUrl(resource))}"${resource.thumbnail_url ? ` poster="${esc(resource.thumbnail_url)}"` : ''}></video>`
+        + mediaHtml
         + `<div class="fi-player-head"><div class="min-w-0">`
         + `<h2 class="text-[15px] font-bold leading-tight">${esc(resource.title)}</h2>`
-        + `<p class="text-[12.5px] text-muted mt-0.5">By ${esc(resource.author || 'Faith In member')}</p>`
-        + `</div><button type="button" class="icon-btn shrink-0" data-player-close aria-label="Close player"><i class="fa-solid fa-xmark"></i></button>`
-        + `</div></div>`;
+        + `<p class="text-[12.5px] text-muted mt-0.5">By ${esc(authorName)}</p>`
+        + `</div>`
+        + `<div class="flex items-center gap-1.5 shrink-0">`
+        + (ytId ? `<a href="${esc(mediaUrl)}" target="_blank" rel="noopener noreferrer" class="icon-btn" title="Watch on YouTube"><i class="fa-brands fa-youtube text-red-600 text-[15px]"></i></a>` : '')
+        + `<button type="button" class="icon-btn shrink-0" data-player-close aria-label="Close player"><i class="fa-solid fa-xmark"></i></button>`
+        + `</div></div></div>`;
     } else {
       backdrop.innerHTML = `<div class="fi-player-shell is-audio">`
         + `<div class="relative"><span data-player-art></span>`
@@ -851,6 +870,8 @@
     function close() {
       const media = backdrop.querySelector('video, audio');
       if (media) { try { media.pause(); media.removeAttribute('src'); media.load(); } catch (_) {} }
+      const iframe = backdrop.querySelector('iframe');
+      if (iframe) { iframe.src = ''; }
       document.removeEventListener('keydown', onKey);
       backdrop.remove();
     }
@@ -1365,6 +1386,246 @@
           thumbnail_url: '/library/matthew-henry-cover.jpg',
           download_count: 6,
           view_count: 41,
+          allow_download: true,
+          can_delete: false
+        },
+        {
+          id: 'tf-video-01-love-can-change-everything',
+          title: 'Love Can Change Everything (ក្តីស្រលាញ់អាចផ្លាស់ប្តូរគ្រប់យ៉ាង)',
+          description: 'ក្តីស្រលាញ់អាចផ្លាស់ប្តូរគ្រប់យ៉ាង — From True Friend Cambodia (53K views). Teaching on how God\'s love transforms hearts, lives, and relationships.',
+          category: 'Christian Living',
+          format: 'video',
+          type: 'video',
+          author: 'True Friend Cambodia',
+          contributor_name: 'Hun Chet',
+          translated_by: 'True Friend Cambodia',
+          language: 'Khmer (ភាសាខ្មែរ)',
+          file_url: 'https://www.youtube.com/watch?v=QKGfNNyFu4A',
+          download_url: 'https://www.youtube.com/watch?v=QKGfNNyFu4A',
+          open_url: 'https://www.youtube.com/watch?v=QKGfNNyFu4A',
+          youtube_id: 'QKGfNNyFu4A',
+          filename: 'love-can-change-everything.mp4',
+          thumbnail_url: 'https://i.ytimg.com/vi/QKGfNNyFu4A/maxresdefault.jpg',
+          cover_image_url: 'https://i.ytimg.com/vi/QKGfNNyFu4A/maxresdefault.jpg',
+          image_url: 'https://i.ytimg.com/vi/QKGfNNyFu4A/maxresdefault.jpg',
+          download_count: 142,
+          view_count: 53000,
+          allow_download: true,
+          can_delete: false
+        },
+        {
+          id: 'tf-video-02-fighting-demons',
+          title: 'Fighting Demons (បណ្តេញវិញ្ញាណអាក្រក់)',
+          description: 'បណ្តេញវិញ្ញាណអាក្រក់ — Biblical teaching from True Friend Cambodia on spiritual warfare, freedom in Christ, and authority over evil spirits (14K views).',
+          category: 'Spiritual Warfare',
+          format: 'video',
+          type: 'video',
+          author: 'True Friend Cambodia',
+          contributor_name: 'Hun Chet',
+          translated_by: 'True Friend Cambodia',
+          language: 'Khmer (ភាសាខ្មែរ)',
+          file_url: 'https://www.youtube.com/watch?v=yE8qZi-jeE8',
+          download_url: 'https://www.youtube.com/watch?v=yE8qZi-jeE8',
+          open_url: 'https://www.youtube.com/watch?v=yE8qZi-jeE8',
+          youtube_id: 'yE8qZi-jeE8',
+          filename: 'fighting-demons.mp4',
+          thumbnail_url: 'https://i.ytimg.com/vi/yE8qZi-jeE8/maxresdefault.jpg',
+          cover_image_url: 'https://i.ytimg.com/vi/yE8qZi-jeE8/maxresdefault.jpg',
+          image_url: 'https://i.ytimg.com/vi/yE8qZi-jeE8/maxresdefault.jpg',
+          download_count: 88,
+          view_count: 14000,
+          allow_download: true,
+          can_delete: false
+        },
+        {
+          id: 'tf-video-03-unwanted',
+          title: 'Unwanted (អ្វីដែលអ្នកមិនចង់បាន)',
+          description: 'អ្វីដែលអ្នកមិនចង់បាន — Encouragement and biblical perspective from True Friend Cambodia on finding peace and God\'s purpose through unexpected trials (9.7K views).',
+          category: 'Daily Devotionals',
+          format: 'video',
+          type: 'video',
+          author: 'True Friend Cambodia',
+          contributor_name: 'Hun Chet',
+          translated_by: 'True Friend Cambodia',
+          language: 'Khmer (ភាសាខ្មែរ)',
+          file_url: 'https://www.youtube.com/watch?v=b9OI_jdd3ro',
+          download_url: 'https://www.youtube.com/watch?v=b9OI_jdd3ro',
+          open_url: 'https://www.youtube.com/watch?v=b9OI_jdd3ro',
+          youtube_id: 'b9OI_jdd3ro',
+          filename: 'unwanted.mp4',
+          thumbnail_url: 'https://i.ytimg.com/vi/b9OI_jdd3ro/maxresdefault.jpg',
+          cover_image_url: 'https://i.ytimg.com/vi/b9OI_jdd3ro/maxresdefault.jpg',
+          image_url: 'https://i.ytimg.com/vi/b9OI_jdd3ro/maxresdefault.jpg',
+          download_count: 65,
+          view_count: 9700,
+          allow_download: true,
+          can_delete: false
+        },
+        {
+          id: 'tf-video-04-words-that-hurt',
+          title: 'Words That Hurt (ពាក្យសម្តីឈឺចាប់)',
+          description: 'ពាក្យសម្តីឈឺចាប់ — Teaching on the power of speech, guarding our tongue, and biblical healing from hurtful words from True Friend Cambodia (6.2K views).',
+          category: 'Christian Living',
+          format: 'video',
+          type: 'video',
+          author: 'True Friend Cambodia',
+          contributor_name: 'Hun Chet',
+          translated_by: 'True Friend Cambodia',
+          language: 'Khmer (ភាសាខ្មែរ)',
+          file_url: 'https://www.youtube.com/watch?v=K_QZE8S-uic',
+          download_url: 'https://www.youtube.com/watch?v=K_QZE8S-uic',
+          open_url: 'https://www.youtube.com/watch?v=K_QZE8S-uic',
+          youtube_id: 'K_QZE8S-uic',
+          filename: 'words-that-hurt.mp4',
+          thumbnail_url: 'https://i.ytimg.com/vi/K_QZE8S-uic/maxresdefault.jpg',
+          cover_image_url: 'https://i.ytimg.com/vi/K_QZE8S-uic/maxresdefault.jpg',
+          image_url: 'https://i.ytimg.com/vi/K_QZE8S-uic/maxresdefault.jpg',
+          download_count: 49,
+          view_count: 6200,
+          allow_download: true,
+          can_delete: false
+        },
+        {
+          id: 'tf-video-05-the-apple',
+          title: 'The Apple — Salvation Given Freely (ផ្លែប៉ោម)',
+          description: 'ផ្លែប៉ោម — An illustration and Gospel message explaining how salvation is a gift received freely through Jesus Christ from True Friend Cambodia (3.2K views).',
+          category: 'Theology',
+          format: 'video',
+          type: 'video',
+          author: 'True Friend Cambodia',
+          contributor_name: 'Hun Chet',
+          translated_by: 'True Friend Cambodia',
+          language: 'Khmer (ភាសាខ្មែរ)',
+          file_url: 'https://www.youtube.com/watch?v=8PE-ijDQZcE',
+          download_url: 'https://www.youtube.com/watch?v=8PE-ijDQZcE',
+          open_url: 'https://www.youtube.com/watch?v=8PE-ijDQZcE',
+          youtube_id: '8PE-ijDQZcE',
+          filename: 'the-apple-salvation.mp4',
+          thumbnail_url: 'https://i.ytimg.com/vi/8PE-ijDQZcE/maxresdefault.jpg',
+          cover_image_url: 'https://i.ytimg.com/vi/8PE-ijDQZcE/maxresdefault.jpg',
+          image_url: 'https://i.ytimg.com/vi/8PE-ijDQZcE/maxresdefault.jpg',
+          download_count: 36,
+          view_count: 3200,
+          allow_download: true,
+          can_delete: false
+        },
+        {
+          id: 'tf-video-06-unwanted-sweet-love',
+          title: 'Unwanted — When Sweet Love Turns Bitter (ក្តីស្រលាញ់ផ្អែមល្ហែមបានតែដំបូង)',
+          description: 'ក្តីស្រលាញ់ផ្អែមល្ហែមបានតែដំបូង — Real-life reflection and biblical guidance on relationships, heartbreak, and finding unconditional love in God (2.2K views).',
+          category: 'Marriage and Family',
+          format: 'video',
+          type: 'video',
+          author: 'True Friend Cambodia',
+          contributor_name: 'Hun Chet',
+          translated_by: 'True Friend Cambodia',
+          language: 'Khmer (ភាសាខ្មែរ)',
+          file_url: 'https://www.youtube.com/watch?v=ina9O-Rp0Vc',
+          download_url: 'https://www.youtube.com/watch?v=ina9O-Rp0Vc',
+          open_url: 'https://www.youtube.com/watch?v=ina9O-Rp0Vc',
+          youtube_id: 'ina9O-Rp0Vc',
+          filename: 'when-sweet-love-turns-bitter.mp4',
+          thumbnail_url: 'https://i.ytimg.com/vi/ina9O-Rp0Vc/maxresdefault.jpg',
+          cover_image_url: 'https://i.ytimg.com/vi/ina9O-Rp0Vc/maxresdefault.jpg',
+          image_url: 'https://i.ytimg.com/vi/ina9O-Rp0Vc/maxresdefault.jpg',
+          download_count: 28,
+          view_count: 2200,
+          allow_download: true,
+          can_delete: false
+        },
+        {
+          id: 'tf-video-07-does-god-exist',
+          title: 'Does God Exist? (តើមានព្រះដែរឬទេ?)',
+          description: 'តើមានព្រះដែរឬទេ? — Apologetics and thoughtful biblical evidence examining the existence of God from True Friend Cambodia (1K views).',
+          category: 'Apologetics',
+          format: 'video',
+          type: 'video',
+          author: 'True Friend Cambodia',
+          contributor_name: 'Hun Chet',
+          translated_by: 'True Friend Cambodia',
+          language: 'Khmer (ភាសាខ្មែរ)',
+          file_url: 'https://www.youtube.com/watch?v=fpGqOFFvFhs',
+          download_url: 'https://www.youtube.com/watch?v=fpGqOFFvFhs',
+          open_url: 'https://www.youtube.com/watch?v=fpGqOFFvFhs',
+          youtube_id: 'fpGqOFFvFhs',
+          filename: 'does-god-exist.mp4',
+          thumbnail_url: 'https://i.ytimg.com/vi/fpGqOFFvFhs/maxresdefault.jpg',
+          cover_image_url: 'https://i.ytimg.com/vi/fpGqOFFvFhs/maxresdefault.jpg',
+          image_url: 'https://i.ytimg.com/vi/fpGqOFFvFhs/maxresdefault.jpg',
+          download_count: 22,
+          view_count: 1000,
+          allow_download: true,
+          can_delete: false
+        },
+        {
+          id: 'tf-video-08-freedom-beauty-of-life',
+          title: 'Freedom Is the True Beauty of Life (សេរីភាពជាភាពស្រស់ស្អាតនៃជីវិតដ៏ពិត)',
+          description: 'សេរីភាពជាភាពស្រស់ស្អាតនៃជីវិតដ៏ពិត — Inspirational reflection on true spiritual freedom and inner peace through Jesus Christ (716 views).',
+          category: 'Daily Devotionals',
+          format: 'video',
+          type: 'video',
+          author: 'True Friend Cambodia',
+          contributor_name: 'Hun Chet',
+          translated_by: 'True Friend Cambodia',
+          language: 'Khmer (ភាសាខ្មែរ)',
+          file_url: 'https://www.youtube.com/watch?v=f0v5U7FlS7E',
+          download_url: 'https://www.youtube.com/watch?v=f0v5U7FlS7E',
+          open_url: 'https://www.youtube.com/watch?v=f0v5U7FlS7E',
+          youtube_id: 'f0v5U7FlS7E',
+          filename: 'freedom-true-beauty-of-life.mp4',
+          thumbnail_url: 'https://i.ytimg.com/vi/f0v5U7FlS7E/maxresdefault.jpg',
+          cover_image_url: 'https://i.ytimg.com/vi/f0v5U7FlS7E/maxresdefault.jpg',
+          image_url: 'https://i.ytimg.com/vi/f0v5U7FlS7E/maxresdefault.jpg',
+          download_count: 18,
+          view_count: 716,
+          allow_download: true,
+          can_delete: false
+        },
+        {
+          id: 'tf-video-09-why-am-i-poor',
+          title: 'Why Am I Poor? (ហេតុអ្វីខ្ញុំក្រ)',
+          description: 'ហេតុអ្វីខ្ញុំក្រ — Deep, compassionate teaching on poverty, hardship, contentment, and the true eternal wealth found in Christ (489 views).',
+          category: 'Christian Living',
+          format: 'video',
+          type: 'video',
+          author: 'True Friend Cambodia',
+          contributor_name: 'Hun Chet',
+          translated_by: 'True Friend Cambodia',
+          language: 'Khmer (ភាសាខ្មែរ)',
+          file_url: 'https://www.youtube.com/watch?v=9bTPJS_s3tQ',
+          download_url: 'https://www.youtube.com/watch?v=9bTPJS_s3tQ',
+          open_url: 'https://www.youtube.com/watch?v=9bTPJS_s3tQ',
+          youtube_id: '9bTPJS_s3tQ',
+          filename: 'why-am-i-poor.mp4',
+          thumbnail_url: 'https://i.ytimg.com/vi/9bTPJS_s3tQ/maxresdefault.jpg',
+          cover_image_url: 'https://i.ytimg.com/vi/9bTPJS_s3tQ/maxresdefault.jpg',
+          image_url: 'https://i.ytimg.com/vi/9bTPJS_s3tQ/maxresdefault.jpg',
+          download_count: 15,
+          view_count: 489,
+          allow_download: true,
+          can_delete: false
+        },
+        {
+          id: 'tf-video-10-tired-of-everything',
+          title: 'I\'m Tired of Everything (ខ្ញុំហត់នឿយហើយ)',
+          description: 'ខ្ញុំហត់នឿយហើយ — A heartfelt message of comfort for when you feel exhausted and overwhelmed, pointing to Jesus\' invitation: "Come to me, all who are weary" (335 views).',
+          category: 'Daily Devotionals',
+          format: 'video',
+          type: 'video',
+          author: 'True Friend Cambodia',
+          contributor_name: 'Hun Chet',
+          translated_by: 'True Friend Cambodia',
+          language: 'Khmer (ភាសាខ្មែរ)',
+          file_url: 'https://www.youtube.com/watch?v=8wuuc6P_-XQ',
+          download_url: 'https://www.youtube.com/watch?v=8wuuc6P_-XQ',
+          open_url: 'https://www.youtube.com/watch?v=8wuuc6P_-XQ',
+          youtube_id: '8wuuc6P_-XQ',
+          filename: 'tired-of-everything.mp4',
+          thumbnail_url: 'https://i.ytimg.com/vi/8wuuc6P_-XQ/maxresdefault.jpg',
+          cover_image_url: 'https://i.ytimg.com/vi/8wuuc6P_-XQ/maxresdefault.jpg',
+          image_url: 'https://i.ytimg.com/vi/8wuuc6P_-XQ/maxresdefault.jpg',
+          download_count: 12,
+          view_count: 335,
           allow_download: true,
           can_delete: false
         }
