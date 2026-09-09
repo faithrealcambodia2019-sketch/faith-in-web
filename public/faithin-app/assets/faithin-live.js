@@ -1186,8 +1186,13 @@
 
     const originalUrl = resource.url || resource.open_url || resource.file_url || 'https://hunchet.blog/articles';
 
+    const isDark = document.documentElement.classList.contains('dark') ||
+      document.body.classList.contains('dark') ||
+      (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    const initialTheme = isDark ? 'dark' : 'light';
+
     backdrop.innerHTML = `
-      <div class="fi-reader-shell theme-light" id="reader-shell">
+      <div class="fi-reader-shell is-article-reader theme-${initialTheme}" id="reader-shell">
         <header class="fi-reader-header">
           <div class="flex items-center gap-3 min-w-0">
             <button type="button" class="icon-btn" data-reader-close aria-label="Back to library">
@@ -1206,9 +1211,9 @@
             </div>
 
             <div class="fi-reader-theme-group" role="group" aria-label="Reading theme">
-              <button type="button" class="fi-reader-theme-btn is-active" data-theme="light" title="Light reading mode"><i class="fa-solid fa-sun"></i></button>
-              <button type="button" class="fi-reader-theme-btn" data-theme="sepia" title="Sepia book mode"><i class="fa-solid fa-book"></i></button>
-              <button type="button" class="fi-reader-theme-btn" data-theme="dark" title="Night mode"><i class="fa-solid fa-moon"></i></button>
+              <button type="button" class="fi-reader-theme-btn ${initialTheme === 'light' ? 'is-active' : ''}" data-theme="light" title="Light reading mode"><i class="fa-solid fa-sun"></i></button>
+              <button type="button" class="fi-reader-theme-btn ${initialTheme === 'sepia' ? 'is-active' : ''}" data-theme="sepia" title="Sepia book mode"><i class="fa-solid fa-book"></i></button>
+              <button type="button" class="fi-reader-theme-btn ${initialTheme === 'dark' ? 'is-active' : ''}" data-theme="dark" title="Night mode"><i class="fa-solid fa-moon"></i></button>
             </div>
 
             <a href="${esc(originalUrl)}" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline flex items-center gap-1.5" title="View original on hunchet.blog">
@@ -1275,7 +1280,7 @@
         backdrop.querySelectorAll('[data-theme]').forEach(b => b.classList.remove('is-active'));
         btn.classList.add('is-active');
         const theme = btn.dataset.theme;
-        shell.className = `fi-reader-shell theme-${theme}`;
+        shell.className = `fi-reader-shell is-article-reader theme-${theme}`;
       };
     });
 
@@ -1304,13 +1309,13 @@
         const wrapperIdx = html.indexOf('<div class="fyi-article-wrapper">');
         if (wrapperIdx !== -1) html = html.slice(wrapperIdx);
         bodyView.innerHTML = `
-          <div class="mb-6 pb-6 border-b border-line">
+          <div class="mb-6 pb-6 border-b article-meta-border">
             <div class="flex items-center gap-2 mb-3">
               <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[12px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300">${esc(articleData.category || resource.category || 'Article')}</span>
-              <span class="text-[12px] text-muted"><i class="fa-regular fa-calendar mr-1"></i>${articleData.date ? new Date(articleData.date).toLocaleDateString('km-KH', { year: 'numeric', month: 'long', day: 'numeric' }) : 'Hun Chet Blog'}</span>
+              <span class="text-[12px] opacity-75"><i class="fa-regular fa-calendar mr-1"></i>${articleData.date ? new Date(articleData.date).toLocaleDateString('km-KH', { year: 'numeric', month: 'long', day: 'numeric' }) : 'Hun Chet Blog'}</span>
             </div>
             <h1 class="text-2xl sm:text-3xl font-bold font-serif leading-tight mb-3">${esc(articleData.title || resource.title)}</h1>
-            <div class="flex items-center gap-2 text-[13px] text-muted">
+            <div class="flex items-center gap-2 text-[13px] opacity-80">
               <span>ដោយ <strong>${esc(articleData.author || authorName)}</strong></span>
             </div>
           </div>
