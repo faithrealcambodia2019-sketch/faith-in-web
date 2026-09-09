@@ -1029,6 +1029,7 @@
 
     backdrop.innerHTML = `
       <div class="fi-reader-shell theme-light" id="reader-shell">
+        <div class="fi-book-progress-track"><div class="fi-book-progress-bar" style="width: 100%"></div></div>
         <header class="fi-reader-header">
           <div class="fi-reader-meta">
             ${resource.thumbnail_url ? `<img src="${esc(resource.thumbnail_url)}" class="fi-reader-cover-thumb" alt="">` : '<div class="fi-reader-cover-placeholder"><i class="fa-solid fa-book"></i></div>'}
@@ -1058,6 +1059,10 @@
             <button type="button" class="fi-reader-download-btn" data-reader-download title="Download full book PDF">
               <i class="fa-solid fa-download mr-1.5"></i>
               <span>Download Book</span>
+            </button>
+
+            <button type="button" class="icon-btn" id="reader-book-fullscreen" title="Toggle Fullscreen Zen Mode">
+              <i class="fa-solid fa-expand text-[14px]"></i>
             </button>
 
             <a href="${esc(fileUrl)}" target="_blank" rel="noopener noreferrer" class="icon-btn" title="Open PDF in new tab">
@@ -1163,6 +1168,20 @@
     }
 
     const shell = backdrop.querySelector('#reader-shell');
+    const bookFsBtn = backdrop.querySelector('#reader-book-fullscreen');
+    if (bookFsBtn) {
+      bookFsBtn.onclick = () => {
+        shell.classList.toggle('is-zen-fullscreen');
+        const isZen = shell.classList.contains('is-zen-fullscreen');
+        bookFsBtn.querySelector('i').className = isZen ? 'fa-solid fa-compress text-[14px]' : 'fa-solid fa-expand text-[14px]';
+        if (isZen && document.fullscreenEnabled && !document.fullscreenElement) {
+          backdrop.requestFullscreen?.().catch(() => {});
+        } else if (!isZen && document.fullscreenElement) {
+          document.exitFullscreen?.().catch(() => {});
+        }
+      };
+    }
+
     backdrop.querySelectorAll('[data-theme]').forEach(btn => {
       btn.onclick = () => {
         backdrop.querySelectorAll('[data-theme]').forEach(b => b.classList.remove('is-active'));
@@ -1191,34 +1210,85 @@
       (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
     const initialTheme = isDark ? 'dark' : 'light';
 
+    // Ensure articles cache is loaded early
+    if (!window._hunchetArticlesCache) {
+      try {
+        const res = await fetch('/assets/data/hunchet-articles.json');
+        if (res.ok) window._hunchetArticlesCache = await res.json();
+      } catch (e) {
+        console.warn('Failed to fetch hunchet-articles.json', e);
+      }
+    }
+
+    let articleData = null;
+    if (resource.content_html) {
+      articleData = resource;
+    } else if (window._hunchetArticlesCache) {
+      articleData = window._hunchetArticlesCache[resource.id] ||
+        Object.values(window._hunchetArticlesCache).find(a => a.id === resource.id || a.title === resource.title);
+    }
+
+    const allArticles = window._hunchetArticlesCache ? Object.values(window._hunchetArticlesCache) : [];
+    const currentId = (articleData && articleData.id) || resource.id;
+    const currentIdx = allArticles.findIndex(a => a.id === currentId || a.title === resource.title);
+    const prevArticle = currentIdx > 0 ? allArticles[currentIdx - 1] : null;
+    const nextArticle = (currentIdx !== -1 && currentIdx < allArticles.length - 1) ? allArticles[currentIdx + 1] : null;
+
+    // Word count & read time estimate
+    const rawContent = (articleData && articleData.content_html) ? articleData.content_html.replace(/<[^>]+>/g, ' ') : '';
+    const readMinutes = Math.max(3, Math.ceil(rawContent.length / 550));
+
     backdrop.innerHTML = `
       <div class="fi-reader-shell is-article-reader theme-${initialTheme}" id="reader-shell">
+        <!-- Pinned Reading Progress Bar -->
+        <div class="fi-book-progress-track">
+          <div class="fi-book-progress-bar" id="reader-progress-bar" style="width: 0%"></div>
+        </div>
+
         <header class="fi-reader-header">
-          <div class="flex items-center gap-3 min-w-0">
-            <button type="button" class="icon-btn" data-reader-close aria-label="Back to library">
-              <i class="fa-solid fa-arrow-left text-[16px]"></i>
+          <div class="flex items-center gap-2.5 min-w-0">
+            <button type="button" class="icon-btn" data-reader-close aria-label="Back to library" title="Back to Library (Esc)">
+              <i class="fa-solid fa-arrow-left text-[15px]"></i>
             </button>
             <div class="fi-reader-meta min-w-0">
-              <h1 class="fi-reader-title truncate text-[15px] font-bold" title="${esc(resource.title)}">${esc(resource.title)}</h1>
-              <p class="fi-reader-author truncate text-[12px] opacity-75">By ${esc(authorName)} · <span class="text-emerald-500 font-semibold">${esc(resource.category || 'Devotional')}</span></p>
+              <h1 class="fi-reader-title truncate text-[14.5px] font-bold" title="${esc(resource.title)}">${esc(resource.title)}</h1>
+              <p class="fi-reader-author truncate text-[11.5px] opacity-75">By ${esc(authorName)} · <span class="text-emerald-500 font-semibold">${esc(resource.category || 'Devotional')}</span> · <span>⏱ ${readMinutes} min read</span></p>
             </div>
           </div>
 
-          <div class="fi-reader-controls flex items-center gap-2">
+          <div class="fi-reader-controls flex items-center gap-1.5 sm:gap-2">
+            <!-- Table of Contents / Section Jump -->
+            <select class="fi-book-toc-select hidden md:inline-block" id="reader-toc-select" title="Jump to Chapter or Section" aria-label="Table of contents">
+              <option value="">📑 មាតិកា / Contents</option>
+            </select>
+
+            <!-- Font Style Toggle: Book Serif vs Clean Sans -->
+            <button type="button" class="fi-reader-viewer-btn" id="reader-font-toggle" title="Switch Font Style (Book Serif / Clean Sans)">
+              <span class="font-serif font-bold text-[12px]" id="reader-font-mode-label">Serif</span>
+            </button>
+
+            <!-- Font Size Scaler -->
             <div class="fi-reader-theme-group" role="group" aria-label="Font size">
-              <button type="button" class="fi-reader-theme-btn" id="reader-font-dec" title="Smaller font size"><i class="fa-solid fa-font text-[10px]"></i>-</button>
-              <button type="button" class="fi-reader-theme-btn" id="reader-font-inc" title="Larger font size"><i class="fa-solid fa-font text-[13px]"></i>+</button>
+              <button type="button" class="fi-reader-theme-btn" id="reader-font-dec" title="Smaller font (A-)"><i class="fa-solid fa-minus text-[9px]"></i></button>
+              <span class="text-[11px] font-bold px-1 select-none" id="reader-font-px-label">18px</span>
+              <button type="button" class="fi-reader-theme-btn" id="reader-font-inc" title="Larger font (A+)"><i class="fa-solid fa-plus text-[9px]"></i></button>
             </div>
 
+            <!-- Reading Theme Modes -->
             <div class="fi-reader-theme-group" role="group" aria-label="Reading theme">
               <button type="button" class="fi-reader-theme-btn ${initialTheme === 'light' ? 'is-active' : ''}" data-theme="light" title="Light reading mode"><i class="fa-solid fa-sun"></i></button>
-              <button type="button" class="fi-reader-theme-btn ${initialTheme === 'sepia' ? 'is-active' : ''}" data-theme="sepia" title="Sepia book mode"><i class="fa-solid fa-book"></i></button>
-              <button type="button" class="fi-reader-theme-btn ${initialTheme === 'dark' ? 'is-active' : ''}" data-theme="dark" title="Night mode"><i class="fa-solid fa-moon"></i></button>
+              <button type="button" class="fi-reader-theme-btn ${initialTheme === 'sepia' ? 'is-active' : ''}" data-theme="sepia" title="Sepia book parchment"><i class="fa-solid fa-book"></i></button>
+              <button type="button" class="fi-reader-theme-btn ${initialTheme === 'dark' ? 'is-active' : ''}" data-theme="dark" title="Night OLED mode"><i class="fa-solid fa-moon"></i></button>
             </div>
 
-            <a href="${esc(originalUrl)}" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline flex items-center gap-1.5" title="View original on hunchet.blog">
-              <i class="fa-solid fa-arrow-up-right-from-square text-[12px]"></i>
-              <span class="hidden sm:inline">hunchet.blog</span>
+            <!-- Zen Fullscreen Reading Mode -->
+            <button type="button" class="icon-btn hidden sm:inline-flex" id="reader-zen-btn" title="Toggle Fullscreen Zen Reading (F)">
+              <i class="fa-solid fa-expand text-[14px]"></i>
+            </button>
+
+            <a href="${esc(originalUrl)}" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline hidden lg:inline-flex items-center gap-1.5" title="View original on hunchet.blog">
+              <i class="fa-solid fa-arrow-up-right-from-square text-[11px]"></i>
+              <span>hunchet.blog</span>
             </a>
 
             <button type="button" class="icon-btn" data-reader-close aria-label="Close reader">
@@ -1227,23 +1297,49 @@
           </div>
         </header>
 
+        <!-- Ambient Reading Desk with Centered Book Paper -->
         <div class="fi-reader-stage">
           <div class="fi-reader-article-scroll" id="article-scroll-view">
-            <div class="fi-reader-article-container" id="article-body-view">
-              <div class="p-8 text-center text-muted"><i class="fa-solid fa-spinner fa-spin text-2xl mb-2 text-emerald-500"></i><p>Loading article…</p></div>
-            </div>
+            <article class="fi-book-paper font-serif-mode" id="article-book-paper">
+              <!-- Running Book Header -->
+              <div class="fi-book-running-head">
+                <span><i class="fa-solid fa-book-open mr-1.5 opacity-75"></i>${esc(resource.category || 'Devotional')}</span>
+                <span class="truncate max-w-[320px] font-semibold">${esc(resource.title)}</span>
+                <span><i class="fa-regular fa-clock mr-1"></i>~${readMinutes} min</span>
+              </div>
+
+              <!-- Article Body -->
+              <div class="fi-reader-article-container" id="article-body-view">
+                <div class="p-8 text-center text-muted"><i class="fa-solid fa-spinner fa-spin text-2xl mb-2 text-emerald-500"></i><p>Loading book page…</p></div>
+              </div>
+
+              <!-- Chapter / Article Turn Pagination -->
+              <div class="fi-book-chapter-nav" id="book-chapter-nav" style="display: none;"></div>
+
+              <!-- Running Book Footer -->
+              <div class="fi-book-running-foot">
+                <span id="book-foot-pct">0% read</span>
+                <span class="fi-foot-ornament">❦ ❖ ❦</span>
+                <span id="book-foot-page">Page 1</span>
+              </div>
+            </article>
           </div>
         </div>
 
         <footer class="fi-reader-footer">
           <div class="flex items-center gap-3">
-            <span class="text-[12.5px] opacity-80"><i class="fa-solid fa-newspaper mr-1 text-emerald-500"></i>${esc(resource.category || 'Article')}</span>
+            <span class="text-[12.5px] opacity-80"><i class="fa-solid fa-book-bookmark mr-1 text-emerald-500"></i>${esc(resource.category || 'Article')}</span>
             <span class="opacity-50">·</span>
             <span class="text-[12.5px] opacity-80">By <strong>${esc(authorName)}</strong></span>
+            <span class="opacity-50 hidden sm:inline">·</span>
+            <span class="text-[12px] opacity-70 hidden sm:inline"><kbd class="px-1.5 py-0.5 rounded bg-black/10 dark:bg-white/10 text-[10px]">Space</kbd> / <kbd class="px-1.5 py-0.5 rounded bg-black/10 dark:bg-white/10 text-[10px]">PgDn</kbd> to turn page</span>
           </div>
           <div class="flex items-center gap-2">
+            <button type="button" class="btn btn-sm btn-outline flex items-center gap-1.5" id="reader-zen-foot-btn">
+              <i class="fa-solid fa-expand text-[11px]"></i><span class="hidden sm:inline">Zen Mode</span>
+            </button>
             <a href="${esc(originalUrl)}" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline flex items-center gap-1.5">
-              <i class="fa-solid fa-arrow-up-right-from-square text-[12px]"></i><span>Read on hunchet.blog</span>
+              <i class="fa-solid fa-arrow-up-right-from-square text-[12px]"></i><span>hunchet.blog</span>
             </a>
             <button type="button" class="btn btn-sm btn-secondary" data-reader-close>Close</button>
           </div>
@@ -1253,7 +1349,26 @@
 
     document.body.appendChild(backdrop);
 
-    const onKey = event => { if (event.key === 'Escape') close(); };
+    const onKey = event => {
+      if (event.key === 'Escape') {
+        close();
+      } else if (event.key === 'f' || event.key === 'F') {
+        if (!['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement?.tagName)) {
+          toggleZen();
+        }
+      } else if (event.key === ' ' || event.key === 'PageDown') {
+        if (!['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement?.tagName)) {
+          event.preventDefault();
+          scrollView.scrollBy({ top: scrollView.clientHeight * 0.85, behavior: 'smooth' });
+        }
+      } else if (event.key === 'PageUp') {
+        if (!['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement?.tagName)) {
+          event.preventDefault();
+          scrollView.scrollBy({ top: -scrollView.clientHeight * 0.85, behavior: 'smooth' });
+        }
+      }
+    };
+
     function close() {
       document.removeEventListener('keydown', onKey);
       backdrop.remove();
@@ -1262,11 +1377,74 @@
     backdrop.addEventListener('click', event => { if (event.target === backdrop) close(); });
     backdrop.querySelectorAll('[data-reader-close]').forEach(b => { b.onclick = close; });
 
+    const shell = backdrop.querySelector('#reader-shell');
+    const scrollView = backdrop.querySelector('#article-scroll-view');
+    const progressBar = backdrop.querySelector('#reader-progress-bar');
+    const footPct = backdrop.querySelector('#book-foot-pct');
+    const footPage = backdrop.querySelector('#book-foot-page');
+    const bookPaper = backdrop.querySelector('#article-book-paper');
+
+    // Real-Time Reading Progress Tracking
+    const updateReadingProgress = () => {
+      if (!scrollView) return;
+      const st = scrollView.scrollTop;
+      const maxScroll = scrollView.scrollHeight - scrollView.clientHeight;
+      const pct = maxScroll > 0 ? Math.min(100, Math.max(0, Math.round((st / maxScroll) * 100))) : 0;
+      if (progressBar) progressBar.style.width = pct + '%';
+      if (footPct) footPct.textContent = `${pct}% read`;
+      const totalPages = Math.max(1, Math.ceil(scrollView.scrollHeight / scrollView.clientHeight));
+      const currPage = Math.min(totalPages, Math.max(1, Math.ceil((st + 20) / scrollView.clientHeight) + 1));
+      if (footPage) footPage.textContent = `Page ${currPage} of ${totalPages}`;
+    };
+    scrollView.addEventListener('scroll', updateReadingProgress, { passive: true });
+
+    // Zen Fullscreen Mode
+    const zenBtns = backdrop.querySelectorAll('#reader-zen-btn, #reader-zen-foot-btn');
+    const toggleZen = () => {
+      shell.classList.toggle('is-zen-fullscreen');
+      const isZen = shell.classList.contains('is-zen-fullscreen');
+      zenBtns.forEach(btn => {
+        const icon = btn.querySelector('i');
+        if (icon) {
+          icon.className = isZen ? 'fa-solid fa-compress text-[14px]' : 'fa-solid fa-expand text-[14px]';
+        }
+      });
+      if (isZen && document.fullscreenEnabled && !document.fullscreenElement) {
+        backdrop.requestFullscreen?.().catch(() => {});
+      } else if (!isZen && document.fullscreenElement) {
+        document.exitFullscreen?.().catch(() => {});
+      }
+    };
+    zenBtns.forEach(btn => { btn.onclick = toggleZen; });
+
+    // Font Serif / Sans Toggle
+    const fontToggle = backdrop.querySelector('#reader-font-toggle');
+    const fontModeLabel = backdrop.querySelector('#reader-font-mode-label');
+    let isSerif = true;
+    if (fontToggle) {
+      fontToggle.onclick = () => {
+        isSerif = !isSerif;
+        if (isSerif) {
+          bookPaper.classList.remove('font-sans-mode');
+          bookPaper.classList.add('font-serif-mode');
+          if (fontModeLabel) fontModeLabel.textContent = 'Serif';
+          toast('Book Serif typography active');
+        } else {
+          bookPaper.classList.remove('font-serif-mode');
+          bookPaper.classList.add('font-sans-mode');
+          if (fontModeLabel) fontModeLabel.textContent = 'Sans';
+          toast('Clean Sans typography active');
+        }
+      };
+    }
+
     // Font size controls
-    let fontSizePx = 17.5;
+    let fontSizePx = 18;
     const bodyView = backdrop.querySelector('#article-body-view');
+    const fontPxLabel = backdrop.querySelector('#reader-font-px-label');
     const updateFontSize = () => {
       if (bodyView) bodyView.style.setProperty('--article-font-size', `${fontSizePx}px`);
+      if (fontPxLabel) fontPxLabel.textContent = `${fontSizePx}px`;
     };
     const fontDec = backdrop.querySelector('#reader-font-dec');
     const fontInc = backdrop.querySelector('#reader-font-inc');
@@ -1274,57 +1452,104 @@
     if (fontInc) fontInc.onclick = () => { fontSizePx = Math.min(26, fontSizePx + 1.5); updateFontSize(); };
 
     // Theme controls
-    const shell = backdrop.querySelector('#reader-shell');
     backdrop.querySelectorAll('[data-theme]').forEach(btn => {
       btn.onclick = () => {
         backdrop.querySelectorAll('[data-theme]').forEach(b => b.classList.remove('is-active'));
         btn.classList.add('is-active');
         const theme = btn.dataset.theme;
-        shell.className = `fi-reader-shell is-article-reader theme-${theme}`;
+        shell.className = `fi-reader-shell is-article-reader theme-${theme}${shell.classList.contains('is-zen-fullscreen') ? ' is-zen-fullscreen' : ''}`;
       };
     });
-
-    // Load article HTML
-    let articleData = null;
-    if (resource.content_html) {
-      articleData = resource;
-    } else {
-      if (!window._hunchetArticlesCache) {
-        try {
-          const res = await fetch('/assets/data/hunchet-articles.json');
-          if (res.ok) window._hunchetArticlesCache = await res.json();
-        } catch (e) {
-          console.warn('Failed to fetch hunchet-articles.json', e);
-        }
-      }
-      if (window._hunchetArticlesCache) {
-        articleData = window._hunchetArticlesCache[resource.id] ||
-          Object.values(window._hunchetArticlesCache).find(a => a.id === resource.id || a.title === resource.title);
-      }
-    }
 
     if (bodyView) {
       if (articleData && articleData.content_html) {
         let html = articleData.content_html;
         const wrapperIdx = html.indexOf('<div class="fyi-article-wrapper">');
         if (wrapperIdx !== -1) html = html.slice(wrapperIdx);
+
         bodyView.innerHTML = `
-          <div class="mb-6 pb-6 border-b article-meta-border">
+          <div class="mb-8 pb-6 border-b article-meta-border">
             <div class="flex items-center gap-2 mb-3">
-              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[12px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300">${esc(articleData.category || resource.category || 'Article')}</span>
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[12px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300">
+                <i class="fa-solid fa-feather mr-1.5 text-[10px]"></i>${esc(articleData.category || resource.category || 'Devotional')}
+              </span>
               <span class="text-[12px] opacity-75"><i class="fa-regular fa-calendar mr-1"></i>${articleData.date ? new Date(articleData.date).toLocaleDateString('km-KH', { year: 'numeric', month: 'long', day: 'numeric' }) : 'Hun Chet Blog'}</span>
+              <span class="opacity-40">·</span>
+              <span class="text-[12px] opacity-75"><i class="fa-regular fa-clock mr-1"></i>${readMinutes} min read</span>
             </div>
-            <h1 class="text-2xl sm:text-3xl font-bold font-serif leading-tight mb-3">${esc(articleData.title || resource.title)}</h1>
+            <h1 class="text-2xl sm:text-3xl font-extrabold leading-tight mb-4 tracking-tight">${esc(articleData.title || resource.title)}</h1>
             <div class="flex items-center gap-2 text-[13px] opacity-80">
-              <span>ដោយ <strong>${esc(articleData.author || authorName)}</strong></span>
+              <span>និពន្ធដោយ <strong>${esc(articleData.author || authorName)}</strong></span>
             </div>
           </div>
           ${html}
         `;
+
+        // Table of Contents generation
+        const tocSelect = backdrop.querySelector('#reader-toc-select');
+        if (tocSelect) {
+          const headings = bodyView.querySelectorAll('h2, h3');
+          if (headings.length > 0) {
+            tocSelect.innerHTML = '<option value="">📑 មាតិកា / Contents</option><option value="top">📖 ដើមអត្ថបទ (Top)</option>';
+            headings.forEach((h, idx) => {
+              const secId = `book-sec-${idx}`;
+              h.id = secId;
+              const opt = document.createElement('option');
+              opt.value = secId;
+              opt.textContent = (h.tagName === 'H3' ? '   • ' : '') + h.textContent.trim().slice(0, 42);
+              tocSelect.appendChild(opt);
+            });
+            tocSelect.onchange = (e) => {
+              const val = e.target.value;
+              if (val === 'top') {
+                scrollView.scrollTo({ top: 0, behavior: 'smooth' });
+              } else if (val) {
+                const targetEl = bodyView.querySelector('#' + val);
+                if (targetEl) targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              }
+              tocSelect.value = '';
+            };
+          } else {
+            tocSelect.style.display = 'none';
+          }
+        }
+
+        // Chapter / Article Turn Pagination
+        const chapterNav = backdrop.querySelector('#book-chapter-nav');
+        if (chapterNav && (prevArticle || nextArticle)) {
+          chapterNav.style.display = 'flex';
+          chapterNav.innerHTML = `
+            <div>
+              ${prevArticle ? `
+                <button type="button" class="fi-book-chapter-btn" data-turn-id="${esc(prevArticle.id)}" title="${esc(prevArticle.title)}">
+                  <i class="fa-solid fa-arrow-left text-[11px]"></i>
+                  <span class="truncate">ជំពូកមុន៖ ${esc(prevArticle.title)}</span>
+                </button>
+              ` : ''}
+            </div>
+            <div>
+              ${nextArticle ? `
+                <button type="button" class="fi-book-chapter-btn" data-turn-id="${esc(nextArticle.id)}" title="${esc(nextArticle.title)}">
+                  <span class="truncate">ជំពូកបន្ទាប់៖ ${esc(nextArticle.title)}</span>
+                  <i class="fa-solid fa-arrow-right text-[11px]"></i>
+                </button>
+              ` : ''}
+            </div>
+          `;
+          chapterNav.querySelectorAll('[data-turn-id]').forEach(btn => {
+            btn.onclick = () => {
+              const targetRes = allArticles.find(a => a.id === btn.dataset.turnId);
+              if (targetRes) {
+                close();
+                openArticleReader(targetRes);
+              }
+            };
+          });
+        }
       } else {
         bodyView.innerHTML = `
           <div class="p-8 text-center">
-            <i class="fa-solid fa-newspaper text-3xl text-emerald-500 mb-3"></i>
+            <i class="fa-solid fa-book-open text-4xl text-emerald-500 mb-3"></i>
             <h2 class="text-xl font-bold mb-2">${esc(resource.title)}</h2>
             <p class="text-muted mb-6">${esc(resource.description || 'Read the full devotional and biblical study on Hun Chet\'s blog.')}</p>
             <a href="${esc(originalUrl)}" target="_blank" rel="noopener noreferrer" class="btn btn-primary">
