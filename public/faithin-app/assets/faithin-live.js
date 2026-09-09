@@ -709,11 +709,12 @@
   }
 
   const FI_FORMAT_META = {
-    pdf:   { label: 'PDF',   icon: 'fa-file-lines',  cls: '' },
-    video: { label: 'Video', icon: 'fa-video',       cls: 'is-video' },
-    audio: { label: 'Audio', icon: 'fa-headphones',  cls: 'is-audio' },
-    image: { label: 'Image', icon: 'fa-image',       cls: 'is-image' },
-    zip:   { label: 'ZIP',   icon: 'fa-file-zipper', cls: 'is-zip' },
+    pdf:     { label: 'PDF',     icon: 'fa-file-lines',  cls: '' },
+    article: { label: 'Article', icon: 'fa-newspaper',   cls: 'is-article' },
+    video:   { label: 'Video',   icon: 'fa-video',       cls: 'is-video' },
+    audio:   { label: 'Audio',   icon: 'fa-headphones',  cls: 'is-audio' },
+    image:   { label: 'Image',   icon: 'fa-image',       cls: 'is-image' },
+    zip:     { label: 'ZIP',     icon: 'fa-file-zipper', cls: 'is-zip' },
   };
 
   function fiResourceCardHtml(resource, savedIds) {
@@ -725,21 +726,35 @@
     const canEdit = Boolean(resource.can_edit || resource.can_delete);
     const authorName = (typeof resource.author === 'object' && resource.author?.name) ? resource.author.name : (resource.contributor_name || resource.author || 'Faith In member');
     const downloadCount = Number(resource.download_count || 0);
-    const isMedia = format === 'video' || format === 'audio';
+    const isMedia = format === 'video' || format === 'audio' || format === 'article';
 
-    // Sermons and audio carry their own artwork, so they fill the top of the
+    // Articles, videos, and audio carry their own artwork, so they fill the top of the
     // card at their natural ratio instead of sitting inside a book shelf box.
     let coverBox = '';
     if (isMedia) {
-      const badge = format === 'video' ? 'Inspiration' : 'Audio';
-      const fallbackIcon = format === 'video' ? 'fa-video' : 'fa-headphones';
+      let badge = 'Media';
+      let fallbackIcon = 'fa-file';
+      if (format === 'video') {
+        badge = 'Inspiration';
+        fallbackIcon = 'fa-video';
+      } else if (format === 'audio') {
+        badge = 'Audio';
+        fallbackIcon = 'fa-headphones';
+      } else if (format === 'article') {
+        badge = 'Article';
+        fallbackIcon = 'fa-newspaper';
+      }
+      const isArticle = format === 'article';
+      const actionAttr = isArticle ? 'data-resource-read' : 'data-resource-play';
+      const actionLabel = isArticle ? 'Read' : 'Play';
+      const playIcon = isArticle ? 'fa-book-open' : 'fa-play';
       coverBox = `<div class="fb-library-cover-box is-media is-${format}">`
-        + `<button type="button" class="fi-cover-media" data-resource-play aria-label="Play ${esc(resource.title)}">`
+        + `<button type="button" class="fi-cover-media" ${actionAttr} aria-label="${actionLabel} ${esc(resource.title)}">`
         + (resource.thumbnail_url
             ? `<img src="${esc(resource.thumbnail_url)}" alt="" loading="lazy">`
             : `<span class="fi-cover-fallback"><i class="fa-solid ${fallbackIcon} text-xl"></i><span class="fi-cover-fallback-title">${esc(resource.title)}</span></span>`)
-        + `<span class="fi-media-play"><span><i class="fa-solid fa-play text-sm"></i></span></span>`
-        + `<span class="fi-media-badge">${badge}</span>`
+        + `<span class="fi-media-play"${isArticle ? ' style="background: rgba(5, 150, 105, 0.9);"' : ''}><span><i class="fa-solid ${playIcon} text-sm"></i></span></span>`
+        + `<span class="fi-media-badge"${isArticle ? ' style="background: #059669;"' : ''}>${badge}</span>`
         + `</button></div>`;
     } else if (resource.thumbnail_url) {
       coverBox = `<div class="fb-library-cover-box">`
@@ -777,9 +792,10 @@
       + `<div class="fb-card-footer">`
       + `<div class="flex items-center gap-1.5">`
       + (format === 'pdf' ? `<button type="button" class="fb-read-btn" data-resource-read title="Read / Preview book"><i class="fa-solid fa-book-open text-[11px]"></i><span>Read</span></button>` : '')
+      + (format === 'article' ? `<button type="button" class="fb-read-btn !bg-emerald-600 hover:!bg-emerald-700" data-resource-read title="Read article"><i class="fa-solid fa-book-open text-[11px]"></i><span>Read</span></button>` : '')
       + (format === 'video' ? `<button type="button" class="fb-read-btn !bg-red-600 hover:!bg-red-700" data-resource-play title="Watch video"><i class="fa-solid fa-play text-[11px]"></i><span>Watch</span></button>` : '')
-      + `<button type="button" class="fb-download-btn" data-resource-download title="Download resource">`
-      + `<i class="fa-solid fa-download"></i>`
+      + `<button type="button" class="fb-download-btn" data-resource-download title="${format === 'article' ? 'Read on hunchet.blog' : 'Download resource'}">`
+      + `<i class="fa-solid ${format === 'article' ? 'fa-arrow-up-right-from-square' : 'fa-download'}"></i>`
       + `<span>${downloadCount}</span>`
       + `</button>`
       + `</div>`
@@ -1157,10 +1173,169 @@
     });
   }
 
+  async function openArticleReader(resource) {
+    const backdrop = document.createElement('div');
+    backdrop.className = 'fi-reader-backdrop';
+    backdrop.setAttribute('role', 'dialog');
+    backdrop.setAttribute('aria-modal', 'true');
+    backdrop.setAttribute('aria-label', `Reading ${resource.title}`);
+
+    const authorName = (typeof resource.author === 'object' && resource.author?.name)
+      ? resource.author.name
+      : (resource.contributor_name || resource.author || 'Hun Chet');
+
+    const originalUrl = resource.url || resource.open_url || resource.file_url || 'https://hunchet.blog/articles';
+
+    backdrop.innerHTML = `
+      <div class="fi-reader-shell theme-light" id="reader-shell">
+        <header class="fi-reader-header">
+          <div class="flex items-center gap-3 min-w-0">
+            <button type="button" class="icon-btn" data-reader-close aria-label="Back to library">
+              <i class="fa-solid fa-arrow-left text-[16px]"></i>
+            </button>
+            <div class="fi-reader-meta min-w-0">
+              <h1 class="fi-reader-title truncate text-[15px] font-bold" title="${esc(resource.title)}">${esc(resource.title)}</h1>
+              <p class="fi-reader-author truncate text-[12px] opacity-75">By ${esc(authorName)} · <span class="text-emerald-500 font-semibold">${esc(resource.category || 'Devotional')}</span></p>
+            </div>
+          </div>
+
+          <div class="fi-reader-controls flex items-center gap-2">
+            <div class="fi-reader-theme-group" role="group" aria-label="Font size">
+              <button type="button" class="fi-reader-theme-btn" id="reader-font-dec" title="Smaller font size"><i class="fa-solid fa-font text-[10px]"></i>-</button>
+              <button type="button" class="fi-reader-theme-btn" id="reader-font-inc" title="Larger font size"><i class="fa-solid fa-font text-[13px]"></i>+</button>
+            </div>
+
+            <div class="fi-reader-theme-group" role="group" aria-label="Reading theme">
+              <button type="button" class="fi-reader-theme-btn is-active" data-theme="light" title="Light reading mode"><i class="fa-solid fa-sun"></i></button>
+              <button type="button" class="fi-reader-theme-btn" data-theme="sepia" title="Sepia book mode"><i class="fa-solid fa-book"></i></button>
+              <button type="button" class="fi-reader-theme-btn" data-theme="dark" title="Night mode"><i class="fa-solid fa-moon"></i></button>
+            </div>
+
+            <a href="${esc(originalUrl)}" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline flex items-center gap-1.5" title="View original on hunchet.blog">
+              <i class="fa-solid fa-arrow-up-right-from-square text-[12px]"></i>
+              <span class="hidden sm:inline">hunchet.blog</span>
+            </a>
+
+            <button type="button" class="icon-btn" data-reader-close aria-label="Close reader">
+              <i class="fa-solid fa-xmark text-[16px]"></i>
+            </button>
+          </div>
+        </header>
+
+        <div class="fi-reader-stage">
+          <div class="fi-reader-article-scroll" id="article-scroll-view">
+            <div class="fi-reader-article-container" id="article-body-view">
+              <div class="p-8 text-center text-muted"><i class="fa-solid fa-spinner fa-spin text-2xl mb-2 text-emerald-500"></i><p>Loading article…</p></div>
+            </div>
+          </div>
+        </div>
+
+        <footer class="fi-reader-footer">
+          <div class="flex items-center gap-3">
+            <span class="text-[12.5px] opacity-80"><i class="fa-solid fa-newspaper mr-1 text-emerald-500"></i>${esc(resource.category || 'Article')}</span>
+            <span class="opacity-50">·</span>
+            <span class="text-[12.5px] opacity-80">By <strong>${esc(authorName)}</strong></span>
+          </div>
+          <div class="flex items-center gap-2">
+            <a href="${esc(originalUrl)}" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline flex items-center gap-1.5">
+              <i class="fa-solid fa-arrow-up-right-from-square text-[12px]"></i><span>Read on hunchet.blog</span>
+            </a>
+            <button type="button" class="btn btn-sm btn-secondary" data-reader-close>Close</button>
+          </div>
+        </footer>
+      </div>
+    `;
+
+    document.body.appendChild(backdrop);
+
+    const onKey = event => { if (event.key === 'Escape') close(); };
+    function close() {
+      document.removeEventListener('keydown', onKey);
+      backdrop.remove();
+    }
+    document.addEventListener('keydown', onKey);
+    backdrop.addEventListener('click', event => { if (event.target === backdrop) close(); });
+    backdrop.querySelectorAll('[data-reader-close]').forEach(b => { b.onclick = close; });
+
+    // Font size controls
+    let fontSizePx = 17.5;
+    const bodyView = backdrop.querySelector('#article-body-view');
+    const updateFontSize = () => {
+      if (bodyView) bodyView.style.setProperty('--article-font-size', `${fontSizePx}px`);
+    };
+    const fontDec = backdrop.querySelector('#reader-font-dec');
+    const fontInc = backdrop.querySelector('#reader-font-inc');
+    if (fontDec) fontDec.onclick = () => { fontSizePx = Math.max(14, fontSizePx - 1.5); updateFontSize(); };
+    if (fontInc) fontInc.onclick = () => { fontSizePx = Math.min(26, fontSizePx + 1.5); updateFontSize(); };
+
+    // Theme controls
+    const shell = backdrop.querySelector('#reader-shell');
+    backdrop.querySelectorAll('[data-theme]').forEach(btn => {
+      btn.onclick = () => {
+        backdrop.querySelectorAll('[data-theme]').forEach(b => b.classList.remove('is-active'));
+        btn.classList.add('is-active');
+        const theme = btn.dataset.theme;
+        shell.className = `fi-reader-shell theme-${theme}`;
+      };
+    });
+
+    // Load article HTML
+    let articleData = null;
+    if (resource.content_html) {
+      articleData = resource;
+    } else {
+      if (!window._hunchetArticlesCache) {
+        try {
+          const res = await fetch('/assets/data/hunchet-articles.json');
+          if (res.ok) window._hunchetArticlesCache = await res.json();
+        } catch (e) {
+          console.warn('Failed to fetch hunchet-articles.json', e);
+        }
+      }
+      if (window._hunchetArticlesCache) {
+        articleData = window._hunchetArticlesCache[resource.id] ||
+          Object.values(window._hunchetArticlesCache).find(a => a.id === resource.id || a.title === resource.title);
+      }
+    }
+
+    if (bodyView) {
+      if (articleData && articleData.content_html) {
+        let html = articleData.content_html;
+        const wrapperIdx = html.indexOf('<div class="fyi-article-wrapper">');
+        if (wrapperIdx !== -1) html = html.slice(wrapperIdx);
+        bodyView.innerHTML = `
+          <div class="mb-6 pb-6 border-b border-line">
+            <div class="flex items-center gap-2 mb-3">
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[12px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300">${esc(articleData.category || resource.category || 'Article')}</span>
+              <span class="text-[12px] text-muted"><i class="fa-regular fa-calendar mr-1"></i>${articleData.date ? new Date(articleData.date).toLocaleDateString('km-KH', { year: 'numeric', month: 'long', day: 'numeric' }) : 'Hun Chet Blog'}</span>
+            </div>
+            <h1 class="text-2xl sm:text-3xl font-bold font-serif leading-tight mb-3">${esc(articleData.title || resource.title)}</h1>
+            <div class="flex items-center gap-2 text-[13px] text-muted">
+              <span>ដោយ <strong>${esc(articleData.author || authorName)}</strong></span>
+            </div>
+          </div>
+          ${html}
+        `;
+      } else {
+        bodyView.innerHTML = `
+          <div class="p-8 text-center">
+            <i class="fa-solid fa-newspaper text-3xl text-emerald-500 mb-3"></i>
+            <h2 class="text-xl font-bold mb-2">${esc(resource.title)}</h2>
+            <p class="text-muted mb-6">${esc(resource.description || 'Read the full devotional and biblical study on Hun Chet\'s blog.')}</p>
+            <a href="${esc(originalUrl)}" target="_blank" rel="noopener noreferrer" class="btn btn-primary">
+              <i class="fa-solid fa-arrow-up-right-from-square mr-1.5"></i>Open on hunchet.blog
+            </a>
+          </div>
+        `;
+      }
+    }
+  }
+
   async function loadLibrary() {
     const shelf = $('#shelf'); if (!shelf) return;
     const shelfFormat = String(new URLSearchParams(location.search).get('format') || '').toLowerCase();
     shelf.className = 'fi-library-shelf'
+      + (shelfFormat === 'article' ? ' is-article-shelf' : '')
       + (shelfFormat === 'video' ? ' is-video-shelf' : '')
       + (shelfFormat === 'audio' ? ' is-audio-shelf' : '');
     shelf.innerHTML = fiShelfSkeleton(6);
@@ -1184,6 +1359,9 @@
       } else if (format === 'pdf') {
         titleEl.textContent = 'PDF Books & Studies';
         if (subtitleEl) subtitleEl.textContent = 'Reading resources published by the Faith In community';
+      } else if (format === 'article') {
+        titleEl.textContent = 'Articles & Devotionals';
+        if (subtitleEl) subtitleEl.textContent = 'Biblical articles and devotionals by Hun Chet';
       } else if (format === 'video') {
         titleEl.textContent = 'Inspiration & Videos';
         if (subtitleEl) subtitleEl.textContent = 'Watch inspirational videos and teachings';
@@ -1261,6 +1439,7 @@
       const rows = [
         ['Resources', resources.length],
         ['PDF books', countOf('pdf')],
+        ['Articles', countOf('article')],
         ['Inspiration', countOf('video')],
         ['Audio', countOf('audio')],
         ['Saved by you', savedIds.size],
@@ -1628,6 +1807,190 @@
           view_count: 335,
           allow_download: true,
           can_delete: false
+        },
+        {
+          id: 'article-2398',
+          title: 'តើយើងគួររស់នៅក្នុងជីវិតដែលទទួលបានសេចក្តីសង្គ្រោះយ៉ាងដូចម្តេច?',
+          description: 'សេចក្តីសង្គ្រោះគឺជាអំណោយទានដ៏ធំធេងរបស់ព្រះ ដែលយើងមិនអាចទិញ ឬធ្វើការដើម្បីទទួលបានដោយកម្លាំងខ្លួនឯងឡើយ។ ប៉ុន្តែបន្ទាប់ពីយើងបានទទួលសេចក្តីសង្គ្រោះដោយព្រះគុណ តើយើងគួររស់នៅយ៉ាងដូចម្តេច ដើម្បីឆ្លើយតបទៅនឹងសេចក្តីស្រឡាញ់របស់ព្រះ?',
+          category: 'Theology',
+          format: 'article',
+          type: 'article',
+          author: 'Hun Chet',
+          contributor_name: 'Hun Chet',
+          translated_by: '',
+          language: 'Khmer (ភាសាខ្មែរ)',
+          file_url: 'https://hunchetblog.wordpress.com/2026/06/09/%e1%9e%8f%e1%9e%be%e1%9e%99%e1%9e%be%e1%9e%84%e1%9e%82%e1%9e%bd%e1%9e%9a%e1%9e%9a%e1%9e%9f%e1%9f%8b%e1%9e%93%e1%9f%85%e1%9e%80%e1%9f%92%e1%9e%93%e1%9e%bb%e1%9e%84%e1%9e%87%e1%9e%b8%e1%9e%9c%e1%9e%b7/',
+          download_url: 'https://hunchetblog.wordpress.com/2026/06/09/%e1%9e%8f%e1%9e%be%e1%9e%99%e1%9e%be%e1%9e%84%e1%9e%82%e1%9e%bd%e1%9e%9a%e1%9e%9a%e1%9e%9f%e1%9f%8b%e1%9e%93%e1%9f%85%e1%9e%80%e1%9f%92%e1%9e%93%e1%9e%bb%e1%9e%84%e1%9e%87%e1%9e%b8%e1%9e%9c%e1%9e%b7/',
+          open_url: 'https://hunchetblog.wordpress.com/2026/06/09/%e1%9e%8f%e1%9e%be%e1%9e%99%e1%9e%be%e1%9e%84%e1%9e%82%e1%9e%bd%e1%9e%9a%e1%9e%9a%e1%9e%9f%e1%9f%8b%e1%9e%93%e1%9f%85%e1%9e%80%e1%9f%92%e1%9e%93%e1%9e%bb%e1%9e%84%e1%9e%87%e1%9e%b8%e1%9e%9c%e1%9e%b7/',
+          filename: 'article-2398.html',
+          thumbnail_url: 'https://hunchetblog.wordpress.com/wp-content/uploads/2026/06/1c3f2-8.jpg',
+          cover_image_url: 'https://hunchetblog.wordpress.com/wp-content/uploads/2026/06/1c3f2-8.jpg',
+          image_url: 'https://hunchetblog.wordpress.com/wp-content/uploads/2026/06/1c3f2-8.jpg',
+          download_count: 24,
+          view_count: 420,
+          allow_download: true,
+          can_delete: false
+        },
+        {
+          id: 'article-2394',
+          title: 'ការនិយាយដើមគេ',
+          description: 'ការនិយាយដើមគេ គឺជាទម្លាប់មួយដែលយើងតែងតែសង្កេតឃើញមាននៅស្ទើរតែគ្រប់ទីកន្លែង មិនថានៅកន្លែងធ្វើការ សាលារៀន ឬក្នុងសង្គមនោះទេ។ ពេលខ្លះ វាហាក់ដូចជាការជជែកគ្នាលេងកម្សាន្តធម្មតា ប៉ុន្តែការនិយាយដើមគេតែងតែលាក់កំបាំងនូវជាតិពុល ដែលអាចបំផ្លាញទំនាក់ទំនង និងសេចក្តីថ្លៃថ្នូររបស់បុគ្គលម្នាក់ៗបានយ៉ាងងាយស្រួល។',
+          category: 'Christian Living',
+          format: 'article',
+          type: 'article',
+          author: 'Hun Chet',
+          contributor_name: 'Hun Chet',
+          translated_by: '',
+          language: 'Khmer (ភាសាខ្មែរ)',
+          file_url: 'https://hunchetblog.wordpress.com/2026/06/09/%e1%9e%80%e1%9e%b6%e1%9e%9a%e1%9e%93%e1%9e%b7%e1%9e%99%e1%9e%b6%e1%9e%99%e1%9e%8a%e1%9e%be%e1%9e%98%e1%9e%82%e1%9f%81/',
+          download_url: 'https://hunchetblog.wordpress.com/2026/06/09/%e1%9e%80%e1%9e%b6%e1%9e%9a%e1%9e%93%e1%9e%b7%e1%9e%99%e1%9e%b6%e1%9e%99%e1%9e%8a%e1%9e%be%e1%9e%98%e1%9e%82%e1%9f%81/',
+          open_url: 'https://hunchetblog.wordpress.com/2026/06/09/%e1%9e%80%e1%9e%b6%e1%9e%9a%e1%9e%93%e1%9e%b7%e1%9e%99%e1%9e%b6%e1%9e%99%e1%9e%8a%e1%9e%be%e1%9e%98%e1%9e%82%e1%9f%81/',
+          filename: 'article-2394.html',
+          thumbnail_url: 'https://hunchetblog.wordpress.com/wp-content/uploads/2026/06/66666-img_0549.jpeg',
+          cover_image_url: 'https://hunchetblog.wordpress.com/wp-content/uploads/2026/06/66666-img_0549.jpeg',
+          image_url: 'https://hunchetblog.wordpress.com/wp-content/uploads/2026/06/66666-img_0549.jpeg',
+          download_count: 19,
+          view_count: 385,
+          allow_download: true,
+          can_delete: false
+        },
+        {
+          id: 'article-2389',
+          title: 'គ្រីស្ទបរិស័ទ និងការប្រើប្រាស់បណ្តាញសង្គមដោយប្រុងប្រយ័ត្ន',
+          description: 'នៅក្នុងយុគសម័យឌីជីថល បណ្តាញសង្គម ដូចជា Facebook, Instagram, TikTok, YouTube ជាដើម បានក្លាយជាផ្នែកមួយដែលមិនអាចខ្វះបាននៅក្នុងជីវិតប្រចាំថ្ងៃរបស់យើង។ ក្នុងនាមជាគ្រីស្ទបរិស័ទ បណ្តាញសង្គមអាចជាឧបករណ៍ដ៏មានឥទ្ធិពលសម្រាប់ការផ្សាយដំណឹងល្អ និងការលើកទឹកចិត្ត ប៉ុន្តែវាក៏អាចជាអន្ទាក់ដែលនាំឱ្យយើងធ្លាក់ចូលទៅក្នុងការប្រៀបធៀបខ្លួនឯងជាមួយអ្នកដទៃ ការខាតបង់ពេលវេលា និងការបាត់បង់សេចក្តីសុខសាន្តផងដែរ។',
+          category: 'Christian Living',
+          format: 'article',
+          type: 'article',
+          author: 'Hun Chet',
+          contributor_name: 'Hun Chet',
+          translated_by: '',
+          language: 'Khmer (ភាសាខ្មែរ)',
+          file_url: 'https://hunchetblog.wordpress.com/2026/06/09/%e1%9e%82%e1%9f%92%e1%9e%9a%e1%9e%b8%e1%9e%9f%e1%9f%92%e1%9e%91%e1%9e%94%e1%9e%9a%e1%9e%b7%e1%9e%9f%e1%9f%90%e1%9e%91-%e1%9e%93%e1%9e%b7%e1%9e%84%e1%9e%80%e1%9e%b6%e1%9e%9a%e1%9e%94%e1%9f%92%e1%9e%9a/',
+          download_url: 'https://hunchetblog.wordpress.com/2026/06/09/%e1%9e%82%e1%9f%92%e1%9e%9a%e1%9e%b8%e1%9e%9f%e1%9f%92%e1%9e%91%e1%9e%94%e1%9e%9a%e1%9e%b7%e1%9e%9f%e1%9f%90%e1%9e%91-%e1%9e%93%e1%9e%b7%e1%9e%84%e1%9e%80%e1%9e%b6%e1%9e%9a%e1%9e%94%e1%9f%92%e1%9e%9a/',
+          open_url: 'https://hunchetblog.wordpress.com/2026/06/09/%e1%9e%82%e1%9f%92%e1%9e%9a%e1%9e%b8%e1%9e%9f%e1%9f%92%e1%9e%91%e1%9e%94%e1%9e%9a%e1%9e%b7%e1%9e%9f%e1%9f%90%e1%9e%91-%e1%9e%93%e1%9e%b7%e1%9e%84%e1%9e%80%e1%9e%b6%e1%9e%9a%e1%9e%94%e1%9f%92%e1%9e%9a/',
+          filename: 'article-2389.html',
+          thumbnail_url: 'https://hunchetblog.wordpress.com/wp-content/uploads/2026/06/3e9ab-1.jpg',
+          cover_image_url: 'https://hunchetblog.wordpress.com/wp-content/uploads/2026/06/3e9ab-1.jpg',
+          image_url: 'https://hunchetblog.wordpress.com/wp-content/uploads/2026/06/3e9ab-1.jpg',
+          download_count: 22,
+          view_count: 395,
+          allow_download: true,
+          can_delete: false
+        },
+        {
+          id: 'article-750',
+          title: 'Eric Liddell — ការរត់ដើម្បីសិរីល្អនៃព្រះ',
+          description: 'បដិសេធមិនចូលរួមប្រកួតកីឡាអូឡាពិក ដែលរៀបចំ ចំថ្ងៃអាទិត្យ ជាកីឡាករអត្តពលិកដ៏ល្បីល្បាញ បុរសម្នាក់នោះឈ្មោះថា Eric Liddell។',
+          category: 'Church History',
+          format: 'article',
+          type: 'article',
+          author: 'Hun Chet',
+          contributor_name: 'Hun Chet',
+          translated_by: '',
+          language: 'Khmer (ភាសាខ្មែរ)',
+          file_url: 'https://hunchetblog.wordpress.com/2026/04/20/eric-liddell/',
+          download_url: 'https://hunchetblog.wordpress.com/2026/04/20/eric-liddell/',
+          open_url: 'https://hunchetblog.wordpress.com/2026/04/20/eric-liddell/',
+          filename: 'article-750.html',
+          thumbnail_url: 'https://hunchetblog.wordpress.com/wp-content/uploads/2026/06/08c85-screenshot-2026-04-20-at-2.17.16-in-the-afternoon.png',
+          cover_image_url: 'https://hunchetblog.wordpress.com/wp-content/uploads/2026/06/08c85-screenshot-2026-04-20-at-2.17.16-in-the-afternoon.png',
+          image_url: 'https://hunchetblog.wordpress.com/wp-content/uploads/2026/06/08c85-screenshot-2026-04-20-at-2.17.16-in-the-afternoon.png',
+          download_count: 17,
+          view_count: 310,
+          allow_download: true,
+          can_delete: false
+        },
+        {
+          id: 'article-735',
+          title: 'អ៊ីសាក់ញូតុន — វិទ្យាសាស្ត្រ និងសេចក្តីជំនឿលើព្រះ',
+          description: 'អ៊ីសាក់ញូតុន អ្នកវិទ្យាសាស្រ្តដែលបានរកឃើញរូបមន្តរូបវិទ្យាដ៏ល្បីល្បាញ F=m.a ហើយជឿថា ច្បាប់រូបវិទ្យាគឺបានកើតមកពីព្រះជាម្ចាស់។',
+          category: 'Church History',
+          format: 'article',
+          type: 'article',
+          author: 'Hun Chet',
+          contributor_name: 'Hun Chet',
+          translated_by: '',
+          language: 'Khmer (ភាសាខ្មែរ)',
+          file_url: 'https://hunchetblog.wordpress.com/2026/04/20/735/',
+          download_url: 'https://hunchetblog.wordpress.com/2026/04/20/735/',
+          open_url: 'https://hunchetblog.wordpress.com/2026/04/20/735/',
+          filename: 'article-735.html',
+          thumbnail_url: 'https://hunchetblog.wordpress.com/wp-content/uploads/2026/06/0888a-screenshot-2026-04-20-at-2.10.33-in-the-afternoon.png',
+          cover_image_url: 'https://hunchetblog.wordpress.com/wp-content/uploads/2026/06/0888a-screenshot-2026-04-20-at-2.10.33-in-the-afternoon.png',
+          image_url: 'https://hunchetblog.wordpress.com/wp-content/uploads/2026/06/0888a-screenshot-2026-04-20-at-2.10.33-in-the-afternoon.png',
+          download_count: 21,
+          view_count: 360,
+          allow_download: true,
+          can_delete: false
+        },
+        {
+          id: 'article-712',
+          title: 'របៀបអធិស្ឋានពេលជួបបញ្ហា',
+          description: 'បញ្ហាគឺជាផ្នែកមួយនៃជីវិត ដែលយើងគ្រប់គ្នាតែងតែជួបប្រទះ។ គ្មានមនុស្សណាដែលមិនធ្លាប់ឆ្លងកាត់ទុក្ខលំបាកនៅក្នុងជីវិតនោះទេ។ បញ្ហារបស់មនុស្សម្នាក់ៗ មានខុសៗគ្នា អ្នកខ្លះមានបញ្ហាគ្រួសារ អ្នកខ្លះមានបញ្ហាការងារ អ្នកខ្លះទៀតមានបញ្ហាសុខភាព។ ប៉ុន្តែរបៀបដែលយើងដោះស្រាយនោះ គឺជាការដ៏ចំបាច់បំផុត។',
+          category: 'Prayer and Fasting',
+          format: 'article',
+          type: 'article',
+          author: 'Hun Chet',
+          contributor_name: 'Hun Chet',
+          translated_by: '',
+          language: 'Khmer (ភាសាខ្មែរ)',
+          file_url: 'https://hunchetblog.wordpress.com/2026/04/20/%e1%9e%9a%e1%9e%94%e1%9f%80%e1%9e%94%e1%9e%a2%e1%9e%92%e1%9e%b7%e1%9e%9f%e1%9f%92%e1%9e%8b%e1%9e%b6%e1%9e%93%e1%9e%96%e1%9f%81%e1%9e%9b%e1%9e%87%e1%9e%bd%e1%9e%94%e1%9e%94%e1%9e%89%e1%9f%92%e1%9e%a0/',
+          download_url: 'https://hunchetblog.wordpress.com/2026/04/20/%e1%9e%9a%e1%9e%94%e1%9f%80%e1%9e%94%e1%9e%a2%e1%9e%92%e1%9e%b7%e1%9e%9f%e1%9f%92%e1%9e%8b%e1%9e%b6%e1%9e%93%e1%9e%96%e1%9f%81%e1%9e%9b%e1%9e%87%e1%9e%bd%e1%9e%94%e1%9e%94%e1%9e%89%e1%9f%92%e1%9e%a0/',
+          open_url: 'https://hunchetblog.wordpress.com/2026/04/20/%e1%9e%9a%e1%9e%94%e1%9f%80%e1%9e%94%e1%9e%a2%e1%9e%92%e1%9e%b7%e1%9e%9f%e1%9f%92%e1%9e%8b%e1%9e%b6%e1%9e%93%e1%9e%96%e1%9f%81%e1%9e%9b%e1%9e%87%e1%9e%bd%e1%9e%94%e1%9e%94%e1%9e%89%e1%9f%92%e1%9e%a0/',
+          filename: 'article-712.html',
+          thumbnail_url: 'https://hunchetblog.wordpress.com/wp-content/uploads/2026/06/ad536-screenshot-2026-04-20-at-1.45.25-in-the-afternoon.png',
+          cover_image_url: 'https://hunchetblog.wordpress.com/wp-content/uploads/2026/06/ad536-screenshot-2026-04-20-at-1.45.25-in-the-afternoon.png',
+          image_url: 'https://hunchetblog.wordpress.com/wp-content/uploads/2026/06/ad536-screenshot-2026-04-20-at-1.45.25-in-the-afternoon.png',
+          download_count: 26,
+          view_count: 450,
+          allow_download: true,
+          can_delete: false
+        },
+        {
+          id: 'article-635',
+          title: 'សេចក្តីសង្គ្រោះ — តើអំពើល្អនិងអំពើអាក្រក់អាចកំណត់ជីវិតនិងជោគវាសនារបស់យើងបានដែរឬទេ?',
+          description: 'មនុស្សគ្រប់រូបបានធ្វើអំពើល្អ និងអំពើអាក្រក់ពេញមួយជីវិតរបស់ពួកគេ។ តើមានអ្វីដែលអាចកំណត់បានថា តើយើងជាមនុស្សល្អ ឬជាមនុស្សអាក្រក់ដែរទេ? នោះជាការលំបាកណាស់នៅក្នុងការដឹង។ តើលោកអ្នកធ្លាប់គិតទេថា ជោគវាសនារបស់យើងមិនត្រូវបានកំណត់ដោយអំពើល្អ ឬអំពើអាក្រក់ទេ?',
+          category: 'Theology',
+          format: 'article',
+          type: 'article',
+          author: 'Hun Chet',
+          contributor_name: 'Hun Chet',
+          translated_by: '',
+          language: 'Khmer (ភាសាខ្មែរ)',
+          file_url: 'https://hunchetblog.wordpress.com/2026/04/20/%e1%9e%9f%e1%9f%81%e1%9e%85%e1%9e%80%e1%9f%92%e1%9e%8f%e1%9e%b8%e1%9e%9f%e1%9e%84%e1%9f%92%e1%9e%82%e1%9f%92%e1%9e%9a%e1%9f%84%e1%9f%87/',
+          download_url: 'https://hunchetblog.wordpress.com/2026/04/20/%e1%9e%9f%e1%9f%81%e1%9e%85%e1%9e%80%e1%9f%92%e1%9e%8f%e1%9e%b8%e1%9e%9f%e1%9e%84%e1%9f%92%e1%9e%82%e1%9f%92%e1%9e%9a%e1%9f%84%e1%9f%87/',
+          open_url: 'https://hunchetblog.wordpress.com/2026/04/20/%e1%9e%9f%e1%9f%81%e1%9e%85%e1%9e%80%e1%9f%92%e1%9e%8f%e1%9e%b8%e1%9e%9f%e1%9e%84%e1%9f%92%e1%9e%82%e1%9f%92%e1%9e%9a%e1%9f%84%e1%9f%87/',
+          filename: 'article-635.html',
+          thumbnail_url: 'https://hunchetblog.wordpress.com/wp-content/uploads/2026/06/dd8f6-screenshot-2026-04-20-at-11.55.07-in-the-morning.png',
+          cover_image_url: 'https://hunchetblog.wordpress.com/wp-content/uploads/2026/06/dd8f6-screenshot-2026-04-20-at-11.55.07-in-the-morning.png',
+          image_url: 'https://hunchetblog.wordpress.com/wp-content/uploads/2026/06/dd8f6-screenshot-2026-04-20-at-11.55.07-in-the-morning.png',
+          download_count: 20,
+          view_count: 375,
+          allow_download: true,
+          can_delete: false
+        },
+        {
+          id: 'article-2279',
+          title: 'ដិតដាមនឹងហេតុការណ៍ដ៏អាក្រក់',
+          description: 'ដំណើរនៃជីវិត មនុស្សម្នាក់ឆ្លងកាត់ឧប្បត្តិហេតុ និងហេតុការណ៍មួយចំនួនដែលបន្សល់ទុកនូវស្លាកស្នាមយ៉ាងជ្រៅនៅក្នុងជីវិតរបស់ពួកគេ។ បន្ទាប់មក ពួកគេបានលាក់ទុកនូវការឈឺចាប់នោះពេញមួយជីវិត។ ពួកគេមិនអាចរំដោះខ្លួនពួកគេចេញពីការទាំងនោះបានទេ ទោះបីជាពួកគេបានប្រើវិធីសាស្រ្តជាច្រើនក៏ដោយ។',
+          category: 'Christian Living',
+          format: 'article',
+          type: 'article',
+          author: 'Hun Chet',
+          contributor_name: 'Hun Chet',
+          translated_by: '',
+          language: 'Khmer (ភាសាខ្មែរ)',
+          file_url: 'https://hunchetblog.wordpress.com/2026/04/13/blog/',
+          download_url: 'https://hunchetblog.wordpress.com/2026/04/13/blog/',
+          open_url: 'https://hunchetblog.wordpress.com/2026/04/13/blog/',
+          filename: 'article-2279.html',
+          thumbnail_url: 'https://hunchetblog.wordpress.com/wp-content/uploads/2026/06/dc574-screenshot-2026-04-20-at-2.00.38-in-the-afternoon.png',
+          cover_image_url: 'https://hunchetblog.wordpress.com/wp-content/uploads/2026/06/dc574-screenshot-2026-04-20-at-2.00.38-in-the-afternoon.png',
+          image_url: 'https://hunchetblog.wordpress.com/wp-content/uploads/2026/06/dc574-screenshot-2026-04-20-at-2.00.38-in-the-afternoon.png',
+          download_count: 16,
+          view_count: 320,
+          allow_download: true,
+          can_delete: false
         }
       ];
       const existingIds = new Set(fetched.map(it => it.id));
@@ -1661,7 +2024,12 @@
         event.preventDefault();
         const resource = rendered.find(item => item.id === row.dataset.resourceId) || resources.find(item => item.id === row.dataset.resourceId);
         if (resource) {
-          openBookReader(resource);
+          const kind = String(resource.format || '').toLowerCase();
+          if (kind === 'article') {
+            openArticleReader(resource);
+          } else {
+            openBookReader(resource);
+          }
         }
         return;
       }
@@ -1679,6 +2047,10 @@
       if (button) {
         event.preventDefault();
         const resource = rendered.find(item => item.id === row.dataset.resourceId) || resources.find(item => item.id === row.dataset.resourceId);
+        if (resource && String(resource.format || '').toLowerCase() === 'article') {
+          openArticleReader(resource);
+          return;
+        }
         try {
           const result = await api.request('cv_download_resource', { resource_id: row.dataset.resourceId });
           if (resource) {
@@ -1742,6 +2114,7 @@
       + `<label class="block text-[13px] font-semibold text-ink">Format`
       + `<select class="field mt-1" name="format" aria-label="Resource format">`
       + `<option value="pdf"${currentFormat === 'pdf' ? ' selected' : ''}>PDF Book</option>`
+      + `<option value="article"${currentFormat === 'article' ? ' selected' : ''}>Article / Devotional</option>`
       + `<option value="image"${currentFormat === 'image' ? ' selected' : ''}>Image</option>`
       + `<option value="audio"${currentFormat === 'audio' ? ' selected' : ''}>Audio</option>`
       + `<option value="video"${currentFormat === 'video' ? ' selected' : ''}>Video</option>`

@@ -6,7 +6,7 @@
 <meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
 <meta content="#ffffff" media="(prefers-color-scheme: light)" name="theme-color"/>
 <meta content="#0b1120" media="(prefers-color-scheme: dark)" name="theme-color"/>
-<meta content="Books, inspiration videos, podcasts and study plans in the Faith In library." name="description"/>
+<meta content="Books, articles, inspiration videos, podcasts and study plans in the Faith In library." name="description"/>
 <title>Faith In — Library</title>
 <link rel="icon" type="image/svg+xml" href="/favicon.svg"/>
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/images/favicon-32x32.png"/>
@@ -64,6 +64,14 @@
             <i class="fa-solid fa-file-lines text-orange-500 text-[17px]"></i>
           </div>
           <span class="font-medium text-[14.5px]">PDF Books &amp; Studies</span>
+        </a>
+      </li>
+      <li>
+        <a href="/library?format=article" class="side-link flex items-center gap-3 px-3 py-2 rounded-lg transition-colors">
+          <div class="w-5 h-5 flex items-center justify-center">
+            <i class="fa-solid fa-newspaper text-emerald-600 text-[17px]"></i>
+          </div>
+          <span class="font-medium text-[14.5px]">Articles &amp; Devotionals</span>
         </a>
       </li>
       <li>
@@ -189,6 +197,10 @@
       <i class="fa-solid fa-file-lines text-orange-500 text-[12px]"></i>
       <span>PDF Books</span>
     </a>
+    <a href="/library?format=article" class="fb-filter-chip" data-format-filter="article">
+      <i class="fa-solid fa-newspaper text-emerald-600 text-[12px]"></i>
+      <span>Articles &amp; Devotionals</span>
+    </a>
     <a href="/library?format=video" class="fb-filter-chip" data-format-filter="video">
       <i class="fa-solid fa-video text-red-500 text-[12px]"></i>
       <span>Inspiration &amp; Videos</span>
@@ -211,34 +223,32 @@
       <option value="downloads">Most downloaded</option>
       <option value="title">Title A–Z</option>
     </select>
-    <span class="fi-library-count" id="library-count" aria-live="polite"></span>
   </div>
 
-  <!-- Cards Grid -->
-  <div class="fi-library-shelf" id="shelf" aria-busy="true">
-    <div class="fb-skeleton-card" aria-hidden="true"><span class="fb-skeleton-cover"></span><span class="fb-skeleton-line"></span><span class="fb-skeleton-line is-short"></span></div>
-    <div class="fb-skeleton-card" aria-hidden="true"><span class="fb-skeleton-cover"></span><span class="fb-skeleton-line"></span><span class="fb-skeleton-line is-short"></span></div>
-    <div class="fb-skeleton-card" aria-hidden="true"><span class="fb-skeleton-cover"></span><span class="fb-skeleton-line"></span><span class="fb-skeleton-line is-short"></span></div>
+  <!-- Resource Shelf: Book Cards Grid -->
+  <div class="fi-library-shelf" id="library-shelf" aria-live="polite">
+    <!-- Rendered dynamically by faithin-live.js -->
   </div>
 
+  <!-- Empty state (hidden by default) -->
+  <div class="fi-library-empty" id="library-empty" hidden>
+    <div class="fi-library-empty-icon"><i class="fa-solid fa-book-open"></i></div>
+    <h3>No resources found</h3>
+    <p>Try clearing your search or picking a different category above.</p>
+    <button type="button" class="btn btn-secondary btn-sm" id="library-reset-filters">Reset all filters</button>
+  </div>
 </section>
 
-<!-- ───── RIGHT RAIL ───── -->
-<aside class="fi-library-right-rail">
+<!-- RIGHT RAIL: Search & Highlights -->
+<aside class="w-full lg:w-[320px] flex-shrink-0 space-y-4">
   <section class="card p-4 rounded-xl bg-surface shadow-[0_1px_2px_rgba(0,0,0,0.06)] border border-line">
-    <div class="flex items-center justify-between mb-3">
-      <h2 class="font-serif font-semibold text-[15px] flex items-center gap-2 text-ink">
-        <i class="fa-solid fa-sun text-gold text-[13px]"></i>Verse of the Day
-      </h2>
-      <button aria-label="Share verse" class="icon-btn w-8 h-8 rounded-full hover:bg-raised flex items-center justify-center text-muted">
-        <i class="fa-solid fa-share-nodes text-[13px]"></i>
-      </button>
-    </div>
-    <blockquote class="border-l-[3px] border-gold pl-3.5 py-1" id="votd">
-      <p class="font-serif italic text-[14.5px] leading-relaxed text-ink">"Your word is a lamp for my feet, a light on my path."</p>
-    </blockquote>
-    <div class="flex items-center justify-between mt-3.5 pt-3 border-t border-line">
-      <a class="text-[13px] font-semibold text-brand hover:underline" href="/bible">Open Bible Reader</a>
+    <h2 class="font-serif font-semibold text-[15px] flex items-center gap-2 text-ink mb-3">
+      <i class="fa-solid fa-sparkles text-brand text-[13px]"></i>Verse of the Day
+    </h2>
+    <div class="fi-votd-card" data-votd-card>
+      <blockquote class="font-serif text-[14px] leading-relaxed text-ink italic mb-2" data-votd-text="">
+        « ព្រះបន្ទូលទ្រង់ជាចង្កៀងបំភ្លឺផ្លូវខ្ញុំ ហើយជាពន្លឺបំភ្លឺដំណើរខ្ញុំ។ »
+      </blockquote>
       <span class="text-[11px] font-bold uppercase tracking-wide text-muted" data-votd-ref="">Psalm 119:105</span>
     </div>
   </section>
@@ -260,10 +270,10 @@
 </aside>
 
 </main>
-<script src="/faithin-app/assets/faithin-runtime.js?v=20260909-reader"></script>
-<script src="/faithin-app/assets/faithin-blob-upload.js?v=20260909-reader"></script>
-<script src="/assets/js/faith-in-backend.js?v=20260909-videos-v2"></script>
-<script src="/faithin-app/assets/faithin.js?v=20260909-reader"></script>
+<script src="/faithin-app/assets/faithin-runtime.js?v=20260909-articles-v1"></script>
+<script src="/faithin-app/assets/faithin-blob-upload.js?v=20260909-articles-v1"></script>
+<script src="/assets/js/faith-in-backend.js?v=20260909-articles-v1"></script>
+<script src="/faithin-app/assets/faithin.js?v=20260909-articles-v1"></script>
 <script>
   document.getElementById('show-more-cats')?.addEventListener('click', function () {
     const hidden = document.querySelectorAll('[data-more-cat].hidden');
@@ -276,6 +286,6 @@
     }
   });
 </script>
-<script src="/faithin-app/assets/faithin-live.js?v=20260909-videos-v2"></script>
+<script src="/faithin-app/assets/faithin-live.js?v=20260909-articles-v1"></script>
 </body>
 </html>
