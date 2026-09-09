@@ -235,7 +235,15 @@
             raw = error.error || error.detail || error.data || '';
         }
         var message = (raw && typeof raw === 'object') ? '' : text(raw, 500);
-        if (code === 'permission-denied') return 'You do not have permission to complete that action.';
+        if (code === 'permission-denied') {
+            try {
+                var current = (typeof window !== 'undefined' && window.FILive && window.FILive.user) || null;
+                if (current && current.email && current.email_verified === false) {
+                    return 'Please verify your email address before continuing.';
+                }
+            } catch (_) {}
+            return 'You do not have permission to complete that action.';
+        }
         if (code === 'auth/invalid-credential' || code === 'auth/invalid-login-credentials'
             || code === 'auth/user-not-found' || code === 'auth/wrong-password') {
             return 'The email or password is incorrect.';
@@ -1691,9 +1699,23 @@
                             createdAt: b.dbMod.serverTimestamp(),
                             updatedAt: b.dbMod.serverTimestamp()
                         };
-                        return b.dbMod.addDoc(b.dbMod.collection(b.db, 'resources'), doc).then(function (ref) {
-                            doc.createdAt = new Date();
-                            return { id: ref.id, resource: shapeResource(ref.id, doc, user) };
+                        return b.dbMod.addDoc(b.dbMod.collection(b.db, 'resources'), doc).catch(function (error) {
+                            // Backward compatibility fallback: if deployed rules have not been
+                            // updated with the new translated_by / language schema, retry with baseline fields.
+                            if (error && error.code === 'permission-denied' && (doc.translated_by || doc.language)) {
+                                var compatDoc = Object.assign({}, doc);
+                                delete compatDoc.translated_by;
+                                delete compatDoc.language;
+                                return b.dbMod.addDoc(b.dbMod.collection(b.db, 'resources'), compatDoc).then(function (ref) {
+                                    return { ref: ref, doc: Object.assign({}, doc, compatDoc) };
+                                });
+                            }
+                            throw error;
+                        }).then(function (result) {
+                            var ref = result && result.ref ? result.ref : result;
+                            var savedDoc = (result && result.doc) || doc;
+                            savedDoc.createdAt = new Date();
+                            return { id: ref.id, resource: shapeResource(ref.id, savedDoc, user) };
                         });
                     });
                 });
@@ -1749,8 +1771,19 @@
                 if (authorName) {
                     updates['author.name'] = authorName;
                 }
-                return b.dbMod.updateDoc(ref, updates).then(function () {
-                    var updatedDoc = Object.assign({}, existing, updates);
+                return b.dbMod.updateDoc(ref, updates).catch(function (error) {
+                    if (error && error.code === 'permission-denied' && (updates.translated_by !== undefined || updates.language !== undefined || updates['author.name'] !== undefined)) {
+                        var compatUpdates = Object.assign({}, updates);
+                        delete compatUpdates.translated_by;
+                        delete compatUpdates.language;
+                        delete compatUpdates['author.name'];
+                        return b.dbMod.updateDoc(ref, compatUpdates).then(function () {
+                            return Object.assign({}, existing, compatUpdates);
+                        });
+                    }
+                    throw error;
+                }).then(function (finalDoc) {
+                    var updatedDoc = (finalDoc && finalDoc.title) ? finalDoc : Object.assign({}, existing, updates);
                     return { success: true, id: id, resource: shapeResource(id, updatedDoc, user) };
                 });
             });

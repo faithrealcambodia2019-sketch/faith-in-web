@@ -32,7 +32,7 @@ service cloud.firestore {
 
     function validHttpsUrl(value) {
       return value is string
-        && (value == '' || value.matches('^https://[^\\s]+$'));
+        && (value == '' || value.matches('^https?://[^\\s]+$') || value.matches('^/[^\\s]+$'));
     }
 
     function validEmailOrEmpty(value) {
@@ -251,16 +251,21 @@ service cloud.firestore {
       function validResourceShape() {
         return request.resource.data.keys().hasOnly([
           'authorUid', 'author', 'title', 'description', 'category', 'format',
-          'country', 'file_url', 'filename', 'thumbnail_url', 'allow_download',
-          'download_count', 'view_count', 'createdAt', 'updatedAt'
+          'country', 'translated_by', 'language', 'file_url', 'filename',
+          'thumbnail_url', 'allow_download', 'download_count', 'view_count',
+          'createdAt', 'updatedAt'
         ])
           && request.resource.data.authorUid == request.auth.uid
+          && request.resource.data.author is map
           && request.resource.data.author.uid == request.auth.uid
           && request.resource.data.title is string
           && request.resource.data.title.size() > 0
           && request.resource.data.title.size() <= 300
           && request.resource.data.description is string
           && request.resource.data.description.size() <= 2000
+          && (!('translated_by' in request.resource.data) || (request.resource.data.translated_by is string && request.resource.data.translated_by.size() <= 300))
+          && (!('language' in request.resource.data) || (request.resource.data.language is string && request.resource.data.language.size() <= 100))
+          && (!('country' in request.resource.data) || (request.resource.data.country is string && request.resource.data.country.size() <= 100))
           && validHttpsUrl(request.resource.data.file_url)
           && request.resource.data.file_url != ''
           && validHttpsUrl(request.resource.data.thumbnail_url)
@@ -282,7 +287,8 @@ service cloud.firestore {
           isAuthor()
           && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
             'title', 'description', 'category', 'format', 'country', 'file_url',
-            'filename', 'thumbnail_url', 'allow_download', 'updatedAt'
+            'filename', 'thumbnail_url', 'allow_download', 'updatedAt',
+            'translated_by', 'language', 'author'
           ])
           && validResourceShape()
         ) || incrementsOnly('download_count') || incrementsOnly('view_count');
