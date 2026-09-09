@@ -1332,7 +1332,8 @@
   }
 
   async function loadLibrary() {
-    const shelf = $('#shelf'); if (!shelf) return;
+    const shelf = $('#shelf') || $('#library-shelf') || document.querySelector('.fi-library-shelf');
+    if (!shelf) return;
     const shelfFormat = String(new URLSearchParams(location.search).get('format') || '').toLowerCase();
     shelf.className = 'fi-library-shelf'
       + (shelfFormat === 'article' ? ' is-article-shelf' : '')
@@ -1463,7 +1464,10 @@
       render();
     });
     try {
-      const [result, saved] = await Promise.all([api.request('cv_get_resources'), api.request('cv_get_bookmarks').catch(() => ({ items: [] }))]);
+      const [result, saved] = await Promise.all([
+        api.request('cv_get_resources').catch(err => { console.warn('cv_get_resources fallback', err); return { items: [] }; }),
+        api.request('cv_get_bookmarks').catch(() => ({ items: [] }))
+      ]);
       const fetched = result.items || [];
       const builtin = [
         {
@@ -4027,7 +4031,7 @@
     if (tabBar) tabBar.style.display = 'none';
     const targets = {
       jobs: $$('#main h2').find(node => /recommended for you/i.test(node.textContent))?.closest('section')?.querySelector('.divide-y'),
-      library: $('#shelf'),
+      library: $('#shelf') || $('#library-shelf') || document.querySelector('.fi-library-shelf'),
       network: $$('#main h2').find(node => /people you may know/i.test(node.textContent))?.closest('section')?.querySelector('.grid'),
       notifications: $('#main > section.card')?.querySelector('.divide-y')
     };

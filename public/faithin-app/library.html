@@ -223,11 +223,14 @@
       <option value="downloads">Most downloaded</option>
       <option value="title">Title A–Z</option>
     </select>
+    <span class="fi-library-count" id="library-count" aria-live="polite"></span>
   </div>
 
-  <!-- Resource Shelf: Book Cards Grid -->
-  <div class="fi-library-shelf" id="library-shelf" aria-live="polite">
-    <!-- Rendered dynamically by faithin-live.js -->
+  <!-- Cards Grid -->
+  <div class="fi-library-shelf" id="shelf" aria-busy="true">
+    <div class="fb-skeleton-card" aria-hidden="true"><span class="fb-skeleton-cover"></span><span class="fb-skeleton-line"></span><span class="fb-skeleton-line is-short"></span></div>
+    <div class="fb-skeleton-card" aria-hidden="true"><span class="fb-skeleton-cover"></span><span class="fb-skeleton-line"></span><span class="fb-skeleton-line is-short"></span></div>
+    <div class="fb-skeleton-card" aria-hidden="true"><span class="fb-skeleton-cover"></span><span class="fb-skeleton-line"></span><span class="fb-skeleton-line is-short"></span></div>
   </div>
 
   <!-- Empty state (hidden by default) -->
@@ -270,10 +273,10 @@
 </aside>
 
 </main>
-<script src="/faithin-app/assets/faithin-runtime.js?v=20260909-articles-v1"></script>
-<script src="/faithin-app/assets/faithin-blob-upload.js?v=20260909-articles-v1"></script>
-<script src="/assets/js/faith-in-backend.js?v=20260909-articles-v1"></script>
-<script src="/faithin-app/assets/faithin.js?v=20260909-articles-v1"></script>
+<script src="/faithin-app/assets/faithin-runtime.js?v=20260909-articles-v2"></script>
+<script src="/faithin-app/assets/faithin-blob-upload.js?v=20260909-articles-v2"></script>
+<script src="/assets/js/faith-in-backend.js?v=20260909-articles-v2"></script>
+<script src="/faithin-app/assets/faithin.js?v=20260909-articles-v2"></script>
 <script>
   document.getElementById('show-more-cats')?.addEventListener('click', function () {
     const hidden = document.querySelectorAll('[data-more-cat].hidden');
@@ -286,6 +289,6 @@
     }
   });
 </script>
-<script src="/faithin-app/assets/faithin-live.js?v=20260909-articles-v1"></script>
+<script src="/faithin-app/assets/faithin-live.js?v=20260909-articles-v2"></script>
 </body>
 </html>
