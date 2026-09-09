@@ -34,6 +34,9 @@ const strictScriptPolicy = contentSecurityPolicy.replace(
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
+  outputFileTracingIncludes: {
+    "/api/bible/**/*": ["./data/bible/khmer1954/**/*"],
+  },
   turbopack: {
     root: process.cwd(),
   },

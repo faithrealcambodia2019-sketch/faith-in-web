@@ -6,6 +6,9 @@
  * audio devotionals, and sermon note planners.
  */
 
+import fs from "node:fs";
+import path from "node:path";
+
 export interface BibleBookInfo {
   name: string;
   khmerName: string;
@@ -184,6 +187,7 @@ export const BIBLE_BOOKS: BibleBookInfo[] = [
 
 export const BIBLE_VERSIONS = [
   { code: "KHMER_OLD_1954", label: "ព្រះគម្ពីរបរិសុទ្ធ ១៩៥៤ (ពគប - Khmer Old Version)", lang: "km" },
+  { code: "KHMER_OLD_1953", label: "ព្រះគម្ពីរបរិសុទ្ធ ១៩៥៣ (ពគប - Khmer Old Version 1953)", lang: "km" },
   { code: "KJV", label: "King James Version (KJV)", lang: "en" },
   { code: "WEB", label: "World English Bible (WEB)", lang: "en" },
   { code: "ASV", label: "American Standard Version (ASV 1901)", lang: "en" },
@@ -201,6 +205,73 @@ export function findBibleBook(nameOrUsfm: string): BibleBookInfo {
       (query === "psalm" && b.usfm === "PSA")
   );
   return found || BIBLE_BOOKS.find((b) => b.name === "John")!;
+}
+
+// -----------------------------------------------------------------------------
+// Canonical 66-Book Khmer Old Version 1953/1954 Data Loader
+// -----------------------------------------------------------------------------
+export interface KhmerBookChapterData {
+  title?: string;
+  subTitle?: string;
+  verses: Record<string, string>;
+  totalVerses?: number;
+}
+
+export interface KhmerBookData {
+  usfm: string;
+  name: string;
+  khmerName: string;
+  testament: "OT" | "NT";
+  chaptersCount: number;
+  versesCount: number;
+  version: string;
+  versionLabel: string;
+  chapters: Record<string, KhmerBookChapterData>;
+}
+
+const KHMER_BOOK_CACHE = new Map<string, KhmerBookData>();
+
+function getKhmer1954Dir(): string | null {
+  const candidates = [
+    path.join(process.cwd(), "data/bible/khmer1954"),
+    path.join(process.cwd(), "faith-in-web/data/bible/khmer1954"),
+    path.join(process.cwd(), "faith-in-platform/data/bible/khmer1954"),
+    path.resolve(process.cwd(), "../data/bible/khmer1954"),
+  ];
+
+  for (const dir of candidates) {
+    try {
+      if (fs.existsSync(dir)) return dir;
+    } catch {
+      // ignore
+    }
+  }
+  return null;
+}
+
+export function getKhmerBook(usfmOrName: string): KhmerBookData | null {
+  const book = findBibleBook(usfmOrName);
+  const code = (book?.usfm || usfmOrName || "").trim().toUpperCase();
+
+  if (KHMER_BOOK_CACHE.has(code)) {
+    return KHMER_BOOK_CACHE.get(code)!;
+  }
+
+  const dir = getKhmer1954Dir();
+  if (!dir) return null;
+
+  const targetFile = path.join(dir, `${code}.json`);
+  try {
+    if (fs.existsSync(targetFile)) {
+      const raw = fs.readFileSync(targetFile, "utf-8");
+      const parsed = JSON.parse(raw) as KhmerBookData;
+      KHMER_BOOK_CACHE.set(code, parsed);
+      return parsed;
+    }
+  } catch (err) {
+    console.error(`[Faith In Bible] Failed to read ${targetFile}:`, err);
+  }
+  return null;
 }
 
 // -----------------------------------------------------------------------------
@@ -691,8 +762,45 @@ export async function getBibleChapter(
   const ver = (version || "KHMER_OLD_1954").trim().toUpperCase();
 
   // 1. Khmer Version Resolution
-  if (ver === "KHMER_OLD_1954" || ver === "KHMER1954" || ver === "1270") {
-    // Check embedded store first
+  if (
+    ver === "KHMER_OLD_1954" ||
+    ver === "KHMER_OLD_1953" ||
+    ver === "KHMER1954" ||
+    ver === "KHMER1953" ||
+    ver === "1270" ||
+    ver === "KHMER" ||
+    ver === "KM"
+  ) {
+    const is1953 = ver.includes("1953");
+    const canonicalVersion = is1953 ? "KHMER_OLD_1953" : "KHMER_OLD_1954";
+    const canonicalVersionName = is1953
+      ? "ព្រះគម្ពីរបរិសុទ្ធ ១៩៥៣ (ពគប - Khmer Old Version 1953)"
+      : "ព្រះគម្ពីរបរិសុទ្ធ ១៩៥៤ (ពគប - Khmer Old Version 1954)";
+
+    // 1A. Check complete canonical 66-book dataset on disk
+    const bookData = getKhmerBook(book.usfm);
+    if (bookData?.chapters && bookData.chapters[chapter]) {
+      const chData = bookData.chapters[chapter];
+      if (chData.verses && Object.keys(chData.verses).length > 0) {
+        const items: BibleVerse[] = Object.entries(chData.verses).map(([v, text]) => ({
+          v: Number(v),
+          text,
+          reference: `${book.khmerName} ${chapter}:${v}`
+        }));
+        return {
+          book: book.name,
+          khmerBook: book.khmerName,
+          chapter,
+          version: canonicalVersion,
+          versionName: canonicalVersionName,
+          items,
+          source: "khmer-1954-canonical",
+          totalVerses: items.length
+        };
+      }
+    }
+
+    // 1B. Check embedded store next
     const stored = KHMER_SCRIPTURE_STORE[book.name]?.[chapter];
     if (stored) {
       const items: BibleVerse[] = Object.entries(stored).map(([v, text]) => ({
@@ -704,15 +812,15 @@ export async function getBibleChapter(
         book: book.name,
         khmerBook: book.khmerName,
         chapter,
-        version: "KHMER_OLD_1954",
-        versionName: "ព្រះគម្ពីរបរិសុទ្ធ ១៩៥៤ (ពគប)",
+        version: canonicalVersion,
+        versionName: canonicalVersionName,
         items,
         source: "embedded-khmer-1954",
         totalVerses: items.length
       };
     }
 
-    // Try YouVersion API if configured
+    // 1C. Try YouVersion API if configured
     const youversionKey = process.env.CV_YOUVERSION_APP_KEY || process.env.YOUVERSION_APP_KEY;
     if (youversionKey) {
       try {
@@ -735,8 +843,8 @@ export async function getBibleChapter(
                 book: book.name,
                 khmerBook: book.khmerName,
                 chapter,
-                version: "KHMER_OLD_1954",
-                versionName: "ព្រះគម្ពីរបរិសុទ្ធ ១៩៥៤ (YouVersion)",
+                version: canonicalVersion,
+                versionName: is1953 ? "ព្រះគម្ពីរបរិសុទ្ធ ១៩៥៣ (YouVersion)" : "ព្រះគម្ពីរបរិសុទ្ធ ១៩៥៤ (YouVersion)",
                 items,
                 source: "youversion",
                 totalVerses: items.length
@@ -749,7 +857,7 @@ export async function getBibleChapter(
       }
     }
 
-    // Dynamic English translation lookup with Khmer header for un-cached Khmer chapters
+    // 1D. Dynamic English translation lookup with Khmer header for un-cached chapters
     const englishChapter = await fetchEnglishChapter(book.name, chapter, "WEB");
     const items = englishChapter.items.map((item) => ({
       ...item,
@@ -759,8 +867,8 @@ export async function getBibleChapter(
       book: book.name,
       khmerBook: book.khmerName,
       chapter,
-      version: "KHMER_OLD_1954",
-      versionName: "ព្រះគម្ពីរបរិសុទ្ធ ១៩៥៤",
+      version: canonicalVersion,
+      versionName: canonicalVersionName,
       items,
       source: "bilingual-sync",
       totalVerses: items.length
@@ -877,30 +985,57 @@ export function getDailyVerse(): DailyVerseResult {
 }
 
 /**
- * Search Scripture verses by query.
+ * Search Scripture verses by query across embedded verses and all 66 canonical books.
  */
 export function searchBible(query: string, limit = 20) {
-  const q = (query || "").trim().toLowerCase();
+  const q = (query || "").trim();
   if (!q) return { items: [], query: "" };
 
+  const normQ = q.replace(/[\u200B\s]/g, "").toLowerCase();
+  const rawQ = q.toLowerCase();
   const results: Array<{ reference: string; text: string; khmerText?: string }> = [];
+  const seenRefs = new Set<string>();
 
-  // Search embedded Khmer scripture
+  // 1. Search embedded Khmer scripture first (fast & maintains key priorities)
   for (const [book, chapters] of Object.entries(KHMER_SCRIPTURE_STORE)) {
     for (const [chap, verses] of Object.entries(chapters)) {
       for (const [v, text] of Object.entries(verses)) {
-        if (text.toLowerCase().includes(q)) {
+        const normText = text.replace(/[\u200B\s]/g, "").toLowerCase();
+        if (normText.includes(normQ) || text.toLowerCase().includes(rawQ)) {
           const bookInfo = findBibleBook(book);
-          results.push({
-            reference: `${bookInfo.khmerName} ${chap}:${v}`,
-            text
-          });
-          if (results.length >= limit) break;
+          const ref = `${bookInfo.khmerName} ${chap}:${v}`;
+          if (!seenRefs.has(ref)) {
+            seenRefs.add(ref);
+            results.push({ reference: ref, text });
+            if (results.length >= limit) return { items: results, query: q, total: results.length };
+          }
         }
       }
-      if (results.length >= limit) break;
     }
-    if (results.length >= limit) break;
+  }
+
+  // 2. Search canonical 66-book dataset
+  const dir = getKhmer1954Dir();
+  if (dir) {
+    for (const b of BIBLE_BOOKS) {
+      const bookData = getKhmerBook(b.usfm);
+      if (!bookData?.chapters) continue;
+
+      for (const [chap, chData] of Object.entries(bookData.chapters)) {
+        if (!chData?.verses) continue;
+        for (const [v, text] of Object.entries(chData.verses)) {
+          const normText = text.replace(/[\u200B\s]/g, "").toLowerCase();
+          if (normText.includes(normQ) || text.toLowerCase().includes(rawQ)) {
+            const ref = `${b.khmerName} ${chap}:${v}`;
+            if (!seenRefs.has(ref)) {
+              seenRefs.add(ref);
+              results.push({ reference: ref, text });
+              if (results.length >= limit) return { items: results, query: q, total: results.length };
+            }
+          }
+        }
+      }
+    }
   }
 
   return { items: results, query: q, total: results.length };

@@ -1,0 +1,609 @@
+{
+  "version": "KHMER_OLD_1954",
+  "aliases": [
+    "KHMER_OLD_1953",
+    "KHMER1954",
+    "K1954",
+    "OVB"
+  ],
+  "label": "ព្រះគម្ពីរបរិសុទ្ធ ១៩៥៤ (ពគប - Khmer Old Version 1953/1954)",
+  "totalBooks": 66,
+  "totalChapters": 1189,
+  "totalVerses": 31070,
+  "books": [
+    {
+      "usfm": "GEN",
+      "name": "Genesis",
+      "khmerName": "លោកុប្បត្តិ",
+      "testament": "OT",
+      "chaptersCount": 50,
+      "versesCount": 1533,
+      "file": "GEN.json"
+    },
+    {
+      "usfm": "EXO",
+      "name": "Exodus",
+      "khmerName": "និក្ខមនំ",
+      "testament": "OT",
+      "chaptersCount": 40,
+      "versesCount": 1184,
+      "file": "EXO.json"
+    },
+    {
+      "usfm": "LEV",
+      "name": "Leviticus",
+      "khmerName": "លេវីវិន័យ",
+      "testament": "OT",
+      "chaptersCount": 27,
+      "versesCount": 859,
+      "file": "LEV.json"
+    },
+    {
+      "usfm": "NUM",
+      "name": "Numbers",
+      "khmerName": "ជនគណនា",
+      "testament": "OT",
+      "chaptersCount": 36,
+      "versesCount": 1288,
+      "file": "NUM.json"
+    },
+    {
+      "usfm": "DEU",
+      "name": "Deuteronomy",
+      "khmerName": "ចោទិយកថា",
+      "testament": "OT",
+      "chaptersCount": 34,
+      "versesCount": 959,
+      "file": "DEU.json"
+    },
+    {
+      "usfm": "JOS",
+      "name": "Joshua",
+      "khmerName": "យ៉ូស៊ូវ៉ា",
+      "testament": "OT",
+      "chaptersCount": 24,
+      "versesCount": 658,
+      "file": "JOS.json"
+    },
+    {
+      "usfm": "JDG",
+      "name": "Judges",
+      "khmerName": "ចៅហ្វាយ",
+      "testament": "OT",
+      "chaptersCount": 21,
+      "versesCount": 618,
+      "file": "JDG.json"
+    },
+    {
+      "usfm": "RUT",
+      "name": "Ruth",
+      "khmerName": "រូថ",
+      "testament": "OT",
+      "chaptersCount": 4,
+      "versesCount": 85,
+      "file": "RUT.json"
+    },
+    {
+      "usfm": "1SA",
+      "name": "1 Samuel",
+      "khmerName": "១ សាំយូអែល",
+      "testament": "OT",
+      "chaptersCount": 31,
+      "versesCount": 810,
+      "file": "1SA.json"
+    },
+    {
+      "usfm": "2SA",
+      "name": "2 Samuel",
+      "khmerName": "២ សាំយូអែល",
+      "testament": "OT",
+      "chaptersCount": 24,
+      "versesCount": 695,
+      "file": "2SA.json"
+    },
+    {
+      "usfm": "1KI",
+      "name": "1 Kings",
+      "khmerName": "១ ពង្សាវតាក្សត្រ",
+      "testament": "OT",
+      "chaptersCount": 22,
+      "versesCount": 816,
+      "file": "1KI.json"
+    },
+    {
+      "usfm": "2KI",
+      "name": "2 Kings",
+      "khmerName": "២ ពង្សាវតាក្សត្រ",
+      "testament": "OT",
+      "chaptersCount": 25,
+      "versesCount": 719,
+      "file": "2KI.json"
+    },
+    {
+      "usfm": "1CH",
+      "name": "1 Chronicles",
+      "khmerName": "១ របាក្សត្រ",
+      "testament": "OT",
+      "chaptersCount": 29,
+      "versesCount": 942,
+      "file": "1CH.json"
+    },
+    {
+      "usfm": "2CH",
+      "name": "2 Chronicles",
+      "khmerName": "២ របាក្សត្រ",
+      "testament": "OT",
+      "chaptersCount": 36,
+      "versesCount": 822,
+      "file": "2CH.json"
+    },
+    {
+      "usfm": "EZR",
+      "name": "Ezra",
+      "khmerName": "អែសរ៉ា",
+      "testament": "OT",
+      "chaptersCount": 10,
+      "versesCount": 280,
+      "file": "EZR.json"
+    },
+    {
+      "usfm": "NEH",
+      "name": "Nehemiah",
+      "khmerName": "នេហេមា",
+      "testament": "OT",
+      "chaptersCount": 13,
+      "versesCount": 406,
+      "file": "NEH.json"
+    },
+    {
+      "usfm": "EST",
+      "name": "Esther",
+      "khmerName": "អេសធើរ",
+      "testament": "OT",
+      "chaptersCount": 10,
+      "versesCount": 168,
+      "file": "EST.json"
+    },
+    {
+      "usfm": "JOB",
+      "name": "Job",
+      "khmerName": "យ៉ូប",
+      "testament": "OT",
+      "chaptersCount": 42,
+      "versesCount": 1070,
+      "file": "JOB.json"
+    },
+    {
+      "usfm": "PSA",
+      "name": "Psalms",
+      "khmerName": "ទំនុកតម្កើង",
+      "testament": "OT",
+      "chaptersCount": 150,
+      "versesCount": 2461,
+      "file": "PSA.json"
+    },
+    {
+      "usfm": "PRO",
+      "name": "Proverbs",
+      "khmerName": "សុភាសិត",
+      "testament": "OT",
+      "chaptersCount": 31,
+      "versesCount": 915,
+      "file": "PRO.json"
+    },
+    {
+      "usfm": "ECC",
+      "name": "Ecclesiastes",
+      "khmerName": "សាស្ដា",
+      "testament": "OT",
+      "chaptersCount": 12,
+      "versesCount": 222,
+      "file": "ECC.json"
+    },
+    {
+      "usfm": "SNG",
+      "name": "Song of Solomon",
+      "khmerName": "បទចម្រៀងព្រះបាទសាឡូម៉ូន",
+      "testament": "OT",
+      "chaptersCount": 8,
+      "versesCount": 117,
+      "file": "SNG.json"
+    },
+    {
+      "usfm": "ISA",
+      "name": "Isaiah",
+      "khmerName": "អេសាយ",
+      "testament": "OT",
+      "chaptersCount": 66,
+      "versesCount": 1292,
+      "file": "ISA.json"
+    },
+    {
+      "usfm": "JER",
+      "name": "Jeremiah",
+      "khmerName": "យេរេមា",
+      "testament": "OT",
+      "chaptersCount": 52,
+      "versesCount": 1364,
+      "file": "JER.json"
+    },
+    {
+      "usfm": "LAM",
+      "name": "Lamentations",
+      "khmerName": "បរិទេវ",
+      "testament": "OT",
+      "chaptersCount": 5,
+      "versesCount": 154,
+      "file": "LAM.json"
+    },
+    {
+      "usfm": "EZK",
+      "name": "Ezekiel",
+      "khmerName": "អេសេគាល",
+      "testament": "OT",
+      "chaptersCount": 48,
+      "versesCount": 1272,
+      "file": "EZK.json"
+    },
+    {
+      "usfm": "DAN",
+      "name": "Daniel",
+      "khmerName": "ដានីយ៉ែល",
+      "testament": "OT",
+      "chaptersCount": 12,
+      "versesCount": 357,
+      "file": "DAN.json"
+    },
+    {
+      "usfm": "HOS",
+      "name": "Hosea",
+      "khmerName": "ហូសេ",
+      "testament": "OT",
+      "chaptersCount": 14,
+      "versesCount": 196,
+      "file": "HOS.json"
+    },
+    {
+      "usfm": "JOL",
+      "name": "Joel",
+      "khmerName": "យ៉ូអែល",
+      "testament": "OT",
+      "chaptersCount": 3,
+      "versesCount": 73,
+      "file": "JOL.json"
+    },
+    {
+      "usfm": "AMO",
+      "name": "Amos",
+      "khmerName": "អេម៉ុស",
+      "testament": "OT",
+      "chaptersCount": 9,
+      "versesCount": 146,
+      "file": "AMO.json"
+    },
+    {
+      "usfm": "OBA",
+      "name": "Obadiah",
+      "khmerName": "អូបាឌា",
+      "testament": "OT",
+      "chaptersCount": 1,
+      "versesCount": 20,
+      "file": "OBA.json"
+    },
+    {
+      "usfm": "JON",
+      "name": "Jonah",
+      "khmerName": "យ៉ូណាស",
+      "testament": "OT",
+      "chaptersCount": 4,
+      "versesCount": 48,
+      "file": "JON.json"
+    },
+    {
+      "usfm": "MIC",
+      "name": "Micah",
+      "khmerName": "មីកា",
+      "testament": "OT",
+      "chaptersCount": 7,
+      "versesCount": 104,
+      "file": "MIC.json"
+    },
+    {
+      "usfm": "NAM",
+      "name": "Nahum",
+      "khmerName": "ណាហ៊ូម",
+      "testament": "OT",
+      "chaptersCount": 3,
+      "versesCount": 47,
+      "file": "NAM.json"
+    },
+    {
+      "usfm": "HAB",
+      "name": "Habakkuk",
+      "khmerName": "ហាបាគុក",
+      "testament": "OT",
+      "chaptersCount": 3,
+      "versesCount": 56,
+      "file": "HAB.json"
+    },
+    {
+      "usfm": "ZEP",
+      "name": "Zephaniah",
+      "khmerName": "សេផានា",
+      "testament": "OT",
+      "chaptersCount": 3,
+      "versesCount": 53,
+      "file": "ZEP.json"
+    },
+    {
+      "usfm": "HAG",
+      "name": "Haggai",
+      "khmerName": "ហាកាយ",
+      "testament": "OT",
+      "chaptersCount": 2,
+      "versesCount": 38,
+      "file": "HAG.json"
+    },
+    {
+      "usfm": "ZEC",
+      "name": "Zechariah",
+      "khmerName": "សាការី",
+      "testament": "OT",
+      "chaptersCount": 14,
+      "versesCount": 211,
+      "file": "ZEC.json"
+    },
+    {
+      "usfm": "MAL",
+      "name": "Malachi",
+      "khmerName": "ម៉ាឡាគី",
+      "testament": "OT",
+      "chaptersCount": 4,
+      "versesCount": 55,
+      "file": "MAL.json"
+    },
+    {
+      "usfm": "MAT",
+      "name": "Matthew",
+      "khmerName": "ម៉ាថាយ",
+      "testament": "NT",
+      "chaptersCount": 28,
+      "versesCount": 1071,
+      "file": "MAT.json"
+    },
+    {
+      "usfm": "MRK",
+      "name": "Mark",
+      "khmerName": "ម៉ាកុស",
+      "testament": "NT",
+      "chaptersCount": 16,
+      "versesCount": 679,
+      "file": "MRK.json"
+    },
+    {
+      "usfm": "LUK",
+      "name": "Luke",
+      "khmerName": "លូកា",
+      "testament": "NT",
+      "chaptersCount": 24,
+      "versesCount": 1151,
+      "file": "LUK.json"
+    },
+    {
+      "usfm": "JHN",
+      "name": "John",
+      "khmerName": "យ៉ូហាន",
+      "testament": "NT",
+      "chaptersCount": 21,
+      "versesCount": 879,
+      "file": "JHN.json"
+    },
+    {
+      "usfm": "ACT",
+      "name": "Acts",
+      "khmerName": "កិច្ចការ",
+      "testament": "NT",
+      "chaptersCount": 28,
+      "versesCount": 1006,
+      "file": "ACT.json"
+    },
+    {
+      "usfm": "ROM",
+      "name": "Romans",
+      "khmerName": "រ៉ូម",
+      "testament": "NT",
+      "chaptersCount": 16,
+      "versesCount": 433,
+      "file": "ROM.json"
+    },
+    {
+      "usfm": "1CO",
+      "name": "1 Corinthians",
+      "khmerName": "១ កូរិនថូស",
+      "testament": "NT",
+      "chaptersCount": 16,
+      "versesCount": 437,
+      "file": "1CO.json"
+    },
+    {
+      "usfm": "2CO",
+      "name": "2 Corinthians",
+      "khmerName": "២ កូរិនថូស",
+      "testament": "NT",
+      "chaptersCount": 13,
+      "versesCount": 257,
+      "file": "2CO.json"
+    },
+    {
+      "usfm": "GAL",
+      "name": "Galatians",
+      "khmerName": "កាឡាទី",
+      "testament": "NT",
+      "chaptersCount": 6,
+      "versesCount": 149,
+      "file": "GAL.json"
+    },
+    {
+      "usfm": "EPH",
+      "name": "Ephesians",
+      "khmerName": "អេភេសូរ",
+      "testament": "NT",
+      "chaptersCount": 6,
+      "versesCount": 154,
+      "file": "EPH.json"
+    },
+    {
+      "usfm": "PHP",
+      "name": "Philippians",
+      "khmerName": "ភីលីព",
+      "testament": "NT",
+      "chaptersCount": 4,
+      "versesCount": 104,
+      "file": "PHP.json"
+    },
+    {
+      "usfm": "COL",
+      "name": "Colossians",
+      "khmerName": "កូឡូស",
+      "testament": "NT",
+      "chaptersCount": 4,
+      "versesCount": 95,
+      "file": "COL.json"
+    },
+    {
+      "usfm": "1TH",
+      "name": "1 Thessalonians",
+      "khmerName": "១ ថែស្សាឡូនិច",
+      "testament": "NT",
+      "chaptersCount": 5,
+      "versesCount": 89,
+      "file": "1TH.json"
+    },
+    {
+      "usfm": "2TH",
+      "name": "2 Thessalonians",
+      "khmerName": "២ ថែស្សាឡូនិច",
+      "testament": "NT",
+      "chaptersCount": 3,
+      "versesCount": 47,
+      "file": "2TH.json"
+    },
+    {
+      "usfm": "1TI",
+      "name": "1 Timothy",
+      "khmerName": "១ ធីម៉ូថេ",
+      "testament": "NT",
+      "chaptersCount": 6,
+      "versesCount": 113,
+      "file": "1TI.json"
+    },
+    {
+      "usfm": "2TI",
+      "name": "2 Timothy",
+      "khmerName": "២ ធីម៉ូថេ",
+      "testament": "NT",
+      "chaptersCount": 4,
+      "versesCount": 83,
+      "file": "2TI.json"
+    },
+    {
+      "usfm": "TIT",
+      "name": "Titus",
+      "khmerName": "ទីតុស",
+      "testament": "NT",
+      "chaptersCount": 3,
+      "versesCount": 46,
+      "file": "TIT.json"
+    },
+    {
+      "usfm": "PHM",
+      "name": "Philemon",
+      "khmerName": "ភីលេម៉ូន",
+      "testament": "NT",
+      "chaptersCount": 1,
+      "versesCount": 25,
+      "file": "PHM.json"
+    },
+    {
+      "usfm": "HEB",
+      "name": "Hebrews",
+      "khmerName": "ហេព្រើរ",
+      "testament": "NT",
+      "chaptersCount": 13,
+      "versesCount": 303,
+      "file": "HEB.json"
+    },
+    {
+      "usfm": "JAS",
+      "name": "James",
+      "khmerName": "យ៉ាកុប",
+      "testament": "NT",
+      "chaptersCount": 5,
+      "versesCount": 108,
+      "file": "JAS.json"
+    },
+    {
+      "usfm": "1PE",
+      "name": "1 Peter",
+      "khmerName": "១ ពេត្រុស",
+      "testament": "NT",
+      "chaptersCount": 5,
+      "versesCount": 105,
+      "file": "1PE.json"
+    },
+    {
+      "usfm": "2PE",
+      "name": "2 Peter",
+      "khmerName": "២ ពេត្រុស",
+      "testament": "NT",
+      "chaptersCount": 3,
+      "versesCount": 61,
+      "file": "2PE.json"
+    },
+    {
+      "usfm": "1JN",
+      "name": "1 John",
+      "khmerName": "១ យ៉ូហាន",
+      "testament": "NT",
+      "chaptersCount": 5,
+      "versesCount": 105,
+      "file": "1JN.json"
+    },
+    {
+      "usfm": "2JN",
+      "name": "2 John",
+      "khmerName": "២ យ៉ូហាន",
+      "testament": "NT",
+      "chaptersCount": 1,
+      "versesCount": 13,
+      "file": "2JN.json"
+    },
+    {
+      "usfm": "3JN",
+      "name": "3 John",
+      "khmerName": "៣ យ៉ូហាន",
+      "testament": "NT",
+      "chaptersCount": 1,
+      "versesCount": 15,
+      "file": "3JN.json"
+    },
+    {
+      "usfm": "JUD",
+      "name": "Jude",
+      "khmerName": "យូដាស",
+      "testament": "NT",
+      "chaptersCount": 1,
+      "versesCount": 25,
+      "file": "JUD.json"
+    },
+    {
+      "usfm": "REV",
+      "name": "Revelation",
+      "khmerName": "វិវរណៈ",
+      "testament": "NT",
+      "chaptersCount": 22,
+      "versesCount": 404,
+      "file": "REV.json"
+    }
+  ]
+}

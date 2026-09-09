@@ -52,7 +52,7 @@ test('Bible Service: 66 Books Catalog', () => {
   assert.equal(psalms.chapters, 150);
 });
 
-test('Bible Service: Khmer Old Version 1954 Scripture Resolution', async () => {
+test('Bible Service: Khmer Old Version 1954 & 1953 Scripture Resolution', async () => {
   // John 3 in Khmer
   const john3 = await getBibleChapter('John', 3, 'KHMER_OLD_1954');
   assert.equal(john3.book, 'John');
@@ -63,14 +63,35 @@ test('Bible Service: Khmer Old Version 1954 Scripture Resolution', async () => {
 
   const v16 = john3.items.find(i => i.v === 16);
   assert.ok(v16, 'Should contain verse 16');
-  assert.ok(v16.text.includes('ព្រះទ្រង់ស្រឡាញ់មនុស្សលោក'), 'Verse 16 should match John 3:16 in Khmer');
+  assert.ok(v16.text.replace(/[\u200B\s]/g, '').includes('ព្រះទ្រង់ស្រឡាញ់មនុស្សលោក'), 'Verse 16 should match John 3:16 in Khmer');
+
+  // KHMER_OLD_1953 code alias support
+  const john3_1953 = await getBibleChapter('John', 3, 'KHMER_OLD_1953');
+  assert.equal(john3_1953.version, 'KHMER_OLD_1953');
+  assert.ok(john3_1953.items.length > 0);
+
+  // Genesis 1 & 50 in Khmer (Full OT coverage)
+  const gen1 = await getBibleChapter('Genesis', 1, 'KHMER_OLD_1953');
+  assert.equal(gen1.khmerBook, 'លោកុប្បត្តិ');
+  assert.equal(gen1.items.length, 31, 'Genesis 1 should have 31 verses');
+  assert.ok(gen1.items[0].text.replace(/[\u200B\s]/g, '').includes('ព្រះបានបង្កើតផ្ទៃមេឃនិងផែនដី'));
+
+  const gen50 = await getBibleChapter('Genesis', 50, 'KHMER_OLD_1954');
+  assert.equal(gen50.chapter, 50);
+  assert.equal(gen50.items.length, 26, 'Genesis 50 should have 26 verses');
+
+  // Revelation 22 in Khmer (Full NT boundary coverage)
+  const rev22 = await getBibleChapter('Revelation', 22, 'KHMER_OLD_1954');
+  assert.equal(rev22.khmerBook, 'វិវរណៈ');
+  assert.equal(rev22.chapter, 22);
+  assert.equal(rev22.items.length, 21, 'Revelation 22 should have 21 verses');
 
   // Psalm 23 in Khmer
   const psalm23 = await getBibleChapter('Psalms', 23, 'KHMER_OLD_1954');
   assert.equal(psalm23.khmerBook, 'ទំនុកតម្កើង');
   const p1 = psalm23.items.find(i => i.v === 1);
   assert.ok(p1, 'Psalm 23:1 should exist');
-  assert.ok(p1.text.includes('ព្រះយេហូវ៉ាទ្រង់ជាអ្នកគង្វាលខ្ញុំ'), 'Psalm 23:1 should match Khmer text');
+  assert.ok(p1.text.replace(/[\u200B\s]/g, '').includes('ព្រះយេហូវ៉ាទ្រង់ជាអ្នកគង្វាលខ្ញុំ'), 'Psalm 23:1 should match Khmer text');
 });
 
 test('Bible Service: English Translations (KJV, WEB, ASV)', async () => {
@@ -90,7 +111,7 @@ test('Bible Service: Parallel Chapter Comparison', async () => {
 
   const item16 = parallel.items.find(i => i.v === 16);
   assert.ok(item16, 'Parallel item 16 should exist');
-  assert.ok(item16.text1.includes('ព្រះទ្រង់ស្រឡាញ់មនុស្សលោក'), 'Khmer text column should be populated');
+  assert.ok(item16.text1.replace(/[\u200B\s]/g, '').includes('ព្រះទ្រង់ស្រឡាញ់មនុស្សលោក'), 'Khmer text column should be populated');
   assert.ok(item16.reference.includes('John 3:16') || item16.reference.includes('យ៉ូហាន'), 'Reference should match');
 });
 
@@ -147,3 +168,38 @@ test('Bible Service: Scripture Search', () => {
   assert.ok(results.items.length > 0, 'Should find verses matching search query');
   assert.ok(results.items[0].reference.includes('យ៉ូហាន 3:16'));
 });
+
+test('Bible Service: 66-Book Canonical Khmer 1953/1954 Coverage', async () => {
+  // Test Old Testament books
+  const exo20 = await getBibleChapter('Exodus', 20, 'KHMER_OLD_1953');
+  assert.equal(exo20.khmerBook, 'និក្ខមនំ');
+  assert.equal(exo20.chapter, 20);
+  assert.ok(exo20.items.length >= 26);
+
+  const isa53 = await getBibleChapter('Isaiah', 53, 'KHMER_OLD_1954');
+  assert.equal(isa53.khmerBook, 'អេសាយ');
+  assert.equal(isa53.chapter, 53);
+  assert.ok(isa53.items.length >= 12);
+
+  const mal4 = await getBibleChapter('Malachi', 4, 'KHMER_OLD_1953');
+  assert.equal(mal4.khmerBook, 'ម៉ាឡាគី');
+  assert.equal(mal4.chapter, 4);
+  assert.ok(mal4.items.length >= 6);
+
+  // Test New Testament books
+  const mat1 = await getBibleChapter('Matthew', 1, 'KHMER_OLD_1953');
+  assert.equal(mat1.khmerBook, 'ម៉ាថាយ');
+  assert.equal(mat1.chapter, 1);
+  assert.ok(mat1.items.length >= 25);
+
+  const rom8 = await getBibleChapter('Romans', 8, 'KHMER_OLD_1954');
+  assert.equal(rom8.khmerBook, 'រ៉ូម');
+  assert.equal(rom8.chapter, 8);
+  assert.ok(rom8.items.length >= 39);
+
+  const heb11 = await getBibleChapter('Hebrews', 11, 'KHMER_OLD_1953');
+  assert.equal(heb11.khmerBook, 'ហេព្រើរ');
+  assert.equal(heb11.chapter, 11);
+  assert.ok(heb11.items.length >= 40);
+});
+

@@ -1534,6 +1534,28 @@
 
     var BUILTIN_COMMUNITY_RESOURCES = [
         {
+            id: 'church-history-in-plain-language',
+            title: 'Church History in Plain Language (Fourth Edition)',
+            description: 'The bestselling, engaging history of the Christian church by Bruce L. Shelley, revised by R. L. Hatchett. Traces twenty centuries of church history through the people, movements, and pivotal ideas that shaped the faith.',
+            category: 'Church History',
+            format: 'pdf',
+            type: 'pdf',
+            author: 'Bruce L. Shelley',
+            contributor_name: 'Bruce L. Shelley (revised by R. L. Hatchett)',
+            translated_by: '',
+            language: 'English',
+            file_url: '/library/church-history-in-plain-language.pdf',
+            download_url: '/library/church-history-in-plain-language.pdf',
+            filename: 'church-history-in-plain-language.pdf',
+            thumbnail_url: '/library/church-history-cover.jpg',
+            cover_image_url: '/library/church-history-cover.jpg',
+            image_url: '/library/church-history-cover.jpg',
+            download_count: 42,
+            view_count: 215,
+            allow_download: true,
+            can_delete: false
+        },
+        {
             id: 'mhc-genesis-01-full',
             title: 'MHC លោកុប្បត្តិ ជំពូកទី១ (ពេញលេញ ៣២ ទំព័រ)',
             description: 'អភិប្រាយកណ្ឌគម្ពីរលោកុប្បត្តិ ជំពូក១ ទាំងមូល អមដោយសេចក្តីសង្កេតជាលក្ខណៈអនុវត្ត ដោយ មែធ្យូ ហិនរី បកប្រែដោយ អា៊ាម សំអាត',

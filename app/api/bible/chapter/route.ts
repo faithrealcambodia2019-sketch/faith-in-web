@@ -35,7 +35,7 @@ export async function GET(req: NextRequest) {
       items: result.items,
       translation: result.version,
       reference: `${result.khmerBook} ${result.chapter}`,
-      attribution: "Khmer Old Version (1954) & Public Domain English Translations",
+      attribution: "Khmer Old Version (1953/1954) & Public Domain English Translations",
       attributionUrl: "https://faithin.co/bible"
     });
   } catch (error) {

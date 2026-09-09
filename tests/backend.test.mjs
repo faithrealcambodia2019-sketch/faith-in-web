@@ -303,6 +303,9 @@ check('download counted', store['resources/'+rid].download_count === 1);
 r = await call({ action:'cv_update_resource', resource_id: rid, title: 'Updated Romans Guide', contributor_name: 'Pastor Peter', translator_name: 'Dara Chan' });
 check('update ok', r.success === true && store['resources/'+rid].title === 'Updated Romans Guide');
 check('author updated', store['resources/'+rid].author.name === 'Pastor Peter' && store['resources/'+rid].translated_by === 'Dara Chan');
+r = await call({ action:'cv_download_resource', resource_id: 'church-history-in-plain-language' });
+check('church history book downloadable', r.success === true && r.data.url === '/library/church-history-in-plain-language.pdf');
+
 
 console.log('\n12) Prayer requests');
 r = await call({ action:'cv_create_prayer', content:'Please pray for my mother' });
