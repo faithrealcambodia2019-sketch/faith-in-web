@@ -743,19 +743,22 @@
         + `</button></div>`;
     } else if (resource.thumbnail_url) {
       coverBox = `<div class="fb-library-cover-box">`
-        + `<div class="fb-book-3d-wrap" data-resource-download title="Download ${esc(resource.title)}">`
+        + `<div class="fb-book-3d-wrap is-clickable" ${format === 'pdf' ? 'data-resource-read title="Read ' + esc(resource.title) + '"' : 'data-resource-download title="Download ' + esc(resource.title) + '"'}>`
         + `<img src="${esc(resource.thumbnail_url)}" alt="" loading="lazy">`
+        + (format === 'pdf' ? '<span class="fi-book-read-badge"><i class="fa-solid fa-book-open"></i> Read</span>' : '')
         + `</div></div>`;
     } else {
       coverBox = `<div class="fb-library-cover-box">`
-        + `<div class="fb-book-3d-wrap" data-resource-download title="Download ${esc(resource.title)}">`
+        + `<div class="fb-book-3d-wrap is-clickable" ${format === 'pdf' ? 'data-resource-read title="Read ' + esc(resource.title) + '"' : 'data-resource-download title="Download ' + esc(resource.title) + '"'}>`
         + `<div class="fb-book-fallback">`
         + `<div class="fb-book-spine"><div class="fb-spine-line"></div><div class="fb-spine-line"></div><div class="fb-spine-line"></div></div>`
         + `<div class="fb-book-front"><div class="fb-book-badge">`
         + `<p class="fb-book-author">${esc(authorName)}</p>`
         + `<div class="fb-book-divider"></div>`
         + `<p class="fb-book-title">${esc(resource.title)}</p>`
-        + `</div></div></div></div></div>`;
+        + `</div></div></div>`
+        + (format === 'pdf' ? '<span class="fi-book-read-badge"><i class="fa-solid fa-book-open"></i> Read</span>' : '')
+        + `</div></div>`;
     }
 
     const metaBits = [resource.language, resource.category].filter(Boolean).map(esc);
@@ -772,10 +775,13 @@
       + `<span class="fb-format-pill ${meta.cls}"><i class="fa-solid ${meta.icon}"></i>${meta.label}</span>`
       + metaLine
       + `<div class="fb-card-footer">`
+      + `<div class="flex items-center gap-1.5">`
+      + (format === 'pdf' ? `<button type="button" class="fb-read-btn" data-resource-read title="Read / Preview book"><i class="fa-solid fa-book-open text-[11px]"></i><span>Read</span></button>` : '')
       + `<button type="button" class="fb-download-btn" data-resource-download title="Download resource">`
       + `<i class="fa-solid fa-download"></i>`
       + `<span>${downloadCount}</span>`
       + `</button>`
+      + `</div>`
       + `<div class="fb-card-actions">`
       + (canEdit ? `<button type="button" class="fb-action-icon-btn is-edit" title="Edit title or author" data-resource-edit><i class="fa-solid fa-pen-to-square text-[14px]"></i></button>` : '')
       + (canDelete ? `<button type="button" class="fb-action-icon-btn is-delete" title="Delete" data-resource-delete><i class="fa-regular fa-trash-can text-[15px]"></i></button>` : '')
@@ -885,6 +891,211 @@
     seek.addEventListener('input', () => { scrubbing = true; if (audio.duration) currentLabel.textContent = fiFmtTime((Number(seek.value) / 1000) * audio.duration); });
     seek.addEventListener('change', () => { if (audio.duration) audio.currentTime = (Number(seek.value) / 1000) * audio.duration; scrubbing = false; });
     load(true);
+  }
+
+  function openBookReader(resource) {
+    const fileUrl = resource.file_url || resource.download_url;
+    if (!fileUrl) {
+      toast('No document available to read.');
+      return;
+    }
+
+    const backdrop = document.createElement('div');
+    backdrop.className = 'fi-reader-backdrop';
+    backdrop.setAttribute('role', 'dialog');
+    backdrop.setAttribute('aria-modal', 'true');
+    backdrop.setAttribute('aria-label', `Reading ${resource.title}`);
+
+    const authorName = (typeof resource.author === 'object' && resource.author?.name)
+      ? resource.author.name
+      : (resource.contributor_name || resource.author || 'Faith In author');
+
+    let chapterSelectHtml = '';
+    if (resource.id === 'church-history-in-plain-language' || (resource.title && resource.title.toLowerCase().includes('church history'))) {
+      chapterSelectHtml = `
+        <select class="fi-reader-select" id="reader-chapter-select" aria-label="Jump to chapter">
+          <option value="1">📖 Cover &amp; Title</option>
+          <option value="6">📑 Contents</option>
+          <option value="11">Foreword</option>
+          <option value="13">Prologue</option>
+          <option value="16">Age of Jesus &amp; Apostles (6 BC–AD 70)</option>
+          <option value="18">Ch 1: Away with the King!</option>
+          <option value="30">Ch 2: Wineskins: Old and New</option>
+          <option value="44">Age of Catholic Christianity (70–312)</option>
+          <option value="46">Ch 3: Only Worthless People</option>
+          <option value="58">Ch 4: If the Tiber Floods</option>
+          <option value="69">Ch 5: Arguing About the Event</option>
+          <option value="86">Ch 6: The Rule of Books</option>
+          <option value="99">Ch 7: The School for Sinners</option>
+          <option value="109">Ch 8: Apostles to Intellectuals</option>
+          <option value="121">Age of Christian Roman Empire (312–590)</option>
+          <option value="123">Ch 9: Laying Her Sceptre Down</option>
+          <option value="133">Ch 10: Splitting Important Hairs</option>
+          <option value="146">Ch 11: Emmanuel! Christ in the Creeds</option>
+          <option value="156">Ch 12: Exiles from Life: Monasticism</option>
+          <option value="165">Ch 13: The Sage of the Ages: Augustine</option>
+          <option value="175">Ch 14: Peter as Pontifex Maximus</option>
+          <option value="186">Ch 15: Somewhere Between Heaven &amp; Earth</option>
+          <option value="200">Ch 16: Bending the Necks of Victors</option>
+          <option value="210">The Christian Middle Ages (590–1517)</option>
+          <option value="212">Ch 17: God's Consul: Gregory the Great</option>
+          <option value="223">Ch 18: The Search for Unity: Charlemagne</option>
+          <option value="235">Ch 19: Lifted in a Mystic Manner: Crusades</option>
+          <option value="249">Ch 20: The Nectar of Learning: Scholasticism</option>
+          <option value="263">Ch 21: A Song to Lady Poverty: Francis</option>
+          <option value="275">Ch 22: The Decline of the Papacy</option>
+          <option value="286">Ch 23: Judgment in Time: Wyclif &amp; Hus</option>
+          <option value="297">The Age of the Reformation (1517–1648)</option>
+          <option value="299">Ch 24: A Wild Boar in the Vineyard: Luther</option>
+          <option value="312">Ch 25: Radical Discipleship: Anabaptists</option>
+          <option value="322">Ch 26: Thrust into the Game: John Calvin</option>
+          <option value="331">Ch 27: The Curse upon the Crown: Church of England</option>
+          <option value="339">Ch 28: "Another Man" at Manresa: Jesuits</option>
+          <option value="351">Ch 29: Opening the Rock: America and Asia</option>
+          <option value="363">Ch 30: The Rule of the Saints: Puritanism</option>
+          <option value="374">Ch 31: Unwilling to Die for an Old Idea: Denominations</option>
+          <option value="384">The Age of Reason &amp; Revival (1648–1789)</option>
+          <option value="386">Ch 32: Aiming at the Foundations: Cult of Reason</option>
+          <option value="398">Ch 33: The Heart and Its Reasons: Pascal &amp; Pietists</option>
+          <option value="412">Ch 34: A Brand from the Burning: Wesley</option>
+          <option value="424">Ch 35: A New Order of the Ages: Great Awakening</option>
+          <option value="435">The Age of Progress (1789–1914)</option>
+          <option value="437">Ch 36: Restoration of Fortresses: Catholicism</option>
+          <option value="450">Ch 37: A New Social Frontier: England</option>
+          <option value="460">Ch 38: To Earth's Remotest People: Missions</option>
+          <option value="471">Ch 39: The Destiny of a Nation: Christian America</option>
+          <option value="483">Ch 40: A Bridge for Intelligent Moderns: Liberalism</option>
+          <option value="496">Ch 41: Nothing to Lose but Chains: Social Crisis</option>
+          <option value="508">The Age of Ideologies (1914–1989)</option>
+          <option value="510">Ch 42: Graffiti on a Wall of Shame</option>
+          <option value="523">Ch 43: Rootless Immigrants in a Sick Society</option>
+          <option value="537">Ch 44: New Creeds for Breakfast: Ecumenism</option>
+          <option value="548">Ch 45: The Medicine of Mercy: Vatican II</option>
+          <option value="559">The Age of Global Expansion (1900–)</option>
+          <option value="561">Ch 46: Christianity in the West: Decline &amp; Reconstruction</option>
+          <option value="576">Ch 47: Shift to the Global South</option>
+          <option value="591">Ch 48: Windows to the Christian World: China, Korea, East Africa</option>
+          <option value="600">Epilogue: Paul, the Spirit, and the People of God</option>
+          <option value="608">Notes</option>
+          <option value="622">List of Popes from Leo I to Present</option>
+          <option value="630">Index of People, Movements, Events</option>
+        </select>
+      `;
+    }
+
+    backdrop.innerHTML = `
+      <div class="fi-reader-shell theme-light" id="reader-shell">
+        <header class="fi-reader-header">
+          <div class="fi-reader-meta">
+            ${resource.thumbnail_url ? `<img src="${esc(resource.thumbnail_url)}" class="fi-reader-cover-thumb" alt="">` : '<div class="fi-reader-cover-placeholder"><i class="fa-solid fa-book"></i></div>'}
+            <div class="min-w-0">
+              <div class="flex items-center gap-2">
+                <span class="fi-reader-cat-tag">${esc(resource.category || 'Book')}</span>
+                <span class="fi-reader-pages-tag">PDF</span>
+              </div>
+              <h1 class="fi-reader-title" title="${esc(resource.title)}">${esc(resource.title)}</h1>
+              <p class="fi-reader-author">By ${esc(authorName)}</p>
+            </div>
+          </div>
+
+          <div class="fi-reader-controls">
+            ${chapterSelectHtml}
+            <div class="fi-reader-theme-group" role="group" aria-label="Reading theme">
+              <button type="button" class="fi-reader-theme-btn is-active" data-theme="light" title="Light reading mode"><i class="fa-solid fa-sun"></i></button>
+              <button type="button" class="fi-reader-theme-btn" data-theme="sepia" title="Sepia book mode"><i class="fa-solid fa-book"></i></button>
+              <button type="button" class="fi-reader-theme-btn" data-theme="dark" title="Night mode"><i class="fa-solid fa-moon"></i></button>
+            </div>
+
+            <button type="button" class="fi-reader-download-btn" data-reader-download title="Download full book PDF">
+              <i class="fa-solid fa-download mr-1.5"></i>
+              <span>Download Book</span>
+            </button>
+
+            <a href="${esc(fileUrl)}" target="_blank" rel="noopener" class="icon-btn" title="Open PDF in new tab">
+              <i class="fa-solid fa-arrow-up-right-from-square"></i>
+            </a>
+
+            <button type="button" class="icon-btn" data-reader-close aria-label="Close book reader">
+              <i class="fa-solid fa-xmark text-[16px]"></i>
+            </button>
+          </div>
+        </header>
+
+        <div class="fi-reader-stage">
+          <div class="fi-reader-book-frame-wrap">
+            <div class="fi-book-spine-accent"></div>
+            <iframe class="fi-reader-iframe" id="reader-iframe" src="${esc(fileUrl)}#toolbar=1&navpanes=1" title="${esc(resource.title)}"></iframe>
+          </div>
+        </div>
+
+        <footer class="fi-reader-footer">
+          <div class="flex items-center gap-3">
+            <span class="text-[12.5px] opacity-80"><i class="fa-solid fa-file-pdf mr-1 text-red-500"></i>${esc(resource.filename || 'Book Document')}</span>
+            <span class="opacity-50">·</span>
+            <span class="text-[12.5px] opacity-80"><i class="fa-solid fa-download mr-1 text-brand"></i><span data-reader-count>${Number(resource.download_count || 0)}</span> downloads</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <button type="button" class="btn btn-sm btn-primary flex items-center gap-1.5" data-reader-download>
+              <i class="fa-solid fa-download text-[12px]"></i><span>Download PDF</span>
+            </button>
+            <button type="button" class="btn btn-sm btn-secondary" data-reader-close>Close</button>
+          </div>
+        </footer>
+      </div>
+    `;
+
+    document.body.appendChild(backdrop);
+
+    const onKey = event => { if (event.key === 'Escape') close(); };
+    function close() {
+      document.removeEventListener('keydown', onKey);
+      backdrop.remove();
+    }
+    document.addEventListener('keydown', onKey);
+    backdrop.addEventListener('click', event => { if (event.target === backdrop) close(); });
+    backdrop.querySelectorAll('[data-reader-close]').forEach(b => { b.onclick = close; });
+
+    const triggerDownload = async () => {
+      try {
+        const result = await api.request('cv_download_resource', { resource_id: resource.id });
+        resource.download_count = (resource.download_count || 0) + 1;
+        const countSpan = backdrop.querySelector('[data-reader-count]');
+        if (countSpan) countSpan.textContent = String(resource.download_count);
+        const dlUrl = result.download_url || result.url || fileUrl;
+        const a = document.createElement('a');
+        a.href = dlUrl;
+        a.download = resource.filename || 'book.pdf';
+        a.target = '_blank';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        toast('Downloading book...');
+      } catch (err) {
+        window.open(fileUrl, '_blank', 'noopener');
+      }
+    };
+    backdrop.querySelectorAll('[data-reader-download]').forEach(b => { b.onclick = triggerDownload; });
+
+    const chSelect = backdrop.querySelector('#reader-chapter-select');
+    if (chSelect) {
+      chSelect.addEventListener('change', (e) => {
+        const pageNum = e.target.value;
+        const iframe = backdrop.querySelector('#reader-iframe');
+        if (iframe) {
+          iframe.src = `${fileUrl}#page=${pageNum}&toolbar=1&navpanes=1`;
+        }
+      });
+    }
+
+    const shell = backdrop.querySelector('#reader-shell');
+    backdrop.querySelectorAll('[data-theme]').forEach(btn => {
+      btn.onclick = () => {
+        backdrop.querySelectorAll('[data-theme]').forEach(b => b.classList.remove('is-active'));
+        btn.classList.add('is-active');
+        const theme = btn.dataset.theme;
+        shell.className = `fi-reader-shell theme-${theme}`;
+      };
+    });
   }
 
   async function loadLibrary() {
@@ -1146,6 +1357,15 @@
       if (remove) { event.preventDefault(); if (!confirm('Delete this resource?')) return; await api.request('cv_delete_resource', { resource_id: row.dataset.resourceId }); resources = resources.filter(resource => resource.id !== row.dataset.resourceId); render(); toast('Resource deleted'); return; }
       const save = event.target.closest('[data-resource-save]');
       if (save) { event.preventDefault(); const id = row.dataset.resourceId; await api.request('cv_toggle_bookmark', { object_id: id, object_type: 'resource' }); if (savedIds.has(id)) savedIds.delete(id); else savedIds.add(id); toast(savedIds.has(id) ? 'Resource saved' : 'Resource removed'); render(); renderStats(); return; }
+      const read = event.target.closest('[data-resource-read]');
+      if (read) {
+        event.preventDefault();
+        const resource = rendered.find(item => item.id === row.dataset.resourceId) || resources.find(item => item.id === row.dataset.resourceId);
+        if (resource) {
+          openBookReader(resource);
+        }
+        return;
+      }
       const play = event.target.closest('[data-resource-play]');
       if (play) {
         event.preventDefault();
@@ -1156,7 +1376,34 @@
         openMediaPlayer(resource, kind === 'audio' ? rendered.filter(item => String(item.format || '').toLowerCase() === 'audio') : [resource]);
         return;
       }
-      const button = event.target.closest('[data-resource-download]'); if (!button) return; event.preventDefault(); const result = await api.request('cv_download_resource', { resource_id: row.dataset.resourceId }); if (result.url) window.open(result.url, '_blank', 'noopener');
+      const button = event.target.closest('[data-resource-download]');
+      if (button) {
+        event.preventDefault();
+        const resource = rendered.find(item => item.id === row.dataset.resourceId) || resources.find(item => item.id === row.dataset.resourceId);
+        try {
+          const result = await api.request('cv_download_resource', { resource_id: row.dataset.resourceId });
+          if (resource) {
+            resource.download_count = (resource.download_count || 0) + 1;
+            const countEl = row.querySelector('.fb-download-btn span');
+            if (countEl) countEl.textContent = String(resource.download_count);
+          }
+          const dlUrl = result.download_url || result.url || (resource ? (resource.download_url || resource.file_url) : '');
+          if (dlUrl) {
+            const a = document.createElement('a');
+            a.href = dlUrl;
+            a.download = (resource && resource.filename) ? resource.filename : 'book.pdf';
+            a.target = '_blank';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            toast('Download started');
+          }
+        } catch (_) {
+          const fallbackUrl = resource ? (resource.download_url || resource.file_url) : '';
+          if (fallbackUrl) window.open(fallbackUrl, '_blank', 'noopener');
+        }
+        return;
+      }
     });
     // The header search drives the same filter, and keeps the library's own
     // field in step so the two never disagree.

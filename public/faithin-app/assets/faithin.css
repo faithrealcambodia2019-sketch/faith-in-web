@@ -2413,6 +2413,346 @@ html.dark .fb-format-pill.is-zip   { background: rgba(71, 85, 105, .3); color: #
   border:1px solid rgb(var(--line)); background:rgb(var(--raised));
 }
 
+/* --- in-app book reader & preview modal ---------------------------------- */
+.fi-reader-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 280;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  background: rgba(4, 8, 20, 0.88);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+.fi-reader-shell {
+  width: 100%;
+  max-width: 1240px;
+  height: 94vh;
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+  color: #0f172a;
+  border-radius: 16px;
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  overflow: hidden;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+.fi-reader-shell.theme-sepia {
+  background: #fbf0d9;
+  color: #433422;
+  border-color: #e5d3b3;
+}
+.fi-reader-shell.theme-dark {
+  background: #18191a;
+  color: #f1f5f9;
+  border-color: #334155;
+}
+
+.fi-reader-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 18px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  background: inherit;
+  flex-shrink: 0;
+}
+.fi-reader-shell.theme-dark .fi-reader-header {
+  border-bottom-color: rgba(255, 255, 255, 0.1);
+}
+.fi-reader-shell.theme-sepia .fi-reader-header {
+  border-bottom-color: rgba(67, 52, 34, 0.12);
+}
+
+.fi-reader-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+.fi-reader-cover-thumb {
+  width: 36px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 4px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  flex-shrink: 0;
+}
+.fi-reader-cover-placeholder {
+  width: 36px;
+  height: 50px;
+  border-radius: 4px;
+  background: #e2e8f0;
+  display: grid;
+  place-items: center;
+  color: #64748b;
+  flex-shrink: 0;
+}
+.fi-reader-title {
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.25;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 380px;
+}
+.fi-reader-author {
+  font-size: 12px;
+  opacity: 0.75;
+  line-height: 1.3;
+}
+.fi-reader-cat-tag {
+  display: inline-block;
+  padding: 1px 7px;
+  border-radius: 999px;
+  font-size: 10.5px;
+  font-weight: 600;
+  background: rgba(47, 91, 234, 0.12);
+  color: #2F5BEA;
+}
+.fi-reader-pages-tag {
+  display: inline-block;
+  padding: 1px 6px;
+  border-radius: 999px;
+  font-size: 10.5px;
+  font-weight: 600;
+  background: rgba(239, 68, 68, 0.12);
+  color: #ef4444;
+}
+
+.fi-reader-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+.fi-reader-select {
+  height: 34px;
+  font-size: 12.5px;
+  padding: 0 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  background: rgba(255, 255, 255, 0.9);
+  color: inherit;
+  cursor: pointer;
+  max-width: 250px;
+}
+.fi-reader-shell.theme-dark .fi-reader-select {
+  background: #242526;
+  border-color: #3e4042;
+  color: #e4e6eb;
+}
+.fi-reader-shell.theme-sepia .fi-reader-select {
+  background: #f4e6c9;
+  border-color: #d6be96;
+  color: #433422;
+}
+
+.fi-reader-page-nav {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12.5px;
+}
+.fi-reader-page-input {
+  width: 44px;
+  height: 32px;
+  text-align: center;
+  border-radius: 6px;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  background: transparent;
+  color: inherit;
+  font-variant-numeric: tabular-nums;
+  font-size: 12px;
+  padding: 0 4px;
+}
+.fi-reader-shell.theme-dark .fi-reader-page-input {
+  border-color: #3e4042;
+}
+.fi-reader-shell.theme-sepia .fi-reader-page-input {
+  border-color: #d6be96;
+}
+
+.fi-reader-theme-group {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 8px;
+  padding: 2px;
+}
+.fi-reader-shell.theme-dark .fi-reader-theme-group {
+  background: rgba(255, 255, 255, 0.08);
+}
+.fi-reader-theme-btn {
+  width: 30px;
+  height: 28px;
+  border-radius: 6px;
+  display: grid;
+  place-items: center;
+  font-size: 12px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: inherit;
+  opacity: 0.6;
+  transition: opacity 0.15s, background 0.15s;
+}
+.fi-reader-theme-btn:hover {
+  opacity: 1;
+}
+.fi-reader-theme-btn.is-active {
+  background: #ffffff;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+  opacity: 1;
+  color: #2F5BEA;
+}
+.fi-reader-shell.theme-dark .fi-reader-theme-btn.is-active {
+  background: #3a3b3c;
+  color: #60a5fa;
+}
+.fi-reader-shell.theme-sepia .fi-reader-theme-btn.is-active {
+  background: #f5e3ba;
+  color: #854d0e;
+}
+
+.fi-reader-download-btn {
+  height: 34px;
+  padding: 0 14px;
+  font-size: 12.5px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 8px;
+  background: #2F5BEA;
+  color: #ffffff;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(47, 91, 234, 0.3);
+  transition: background 0.15s ease, transform 0.1s ease;
+}
+.fi-reader-download-btn:hover {
+  background: #254ac5;
+  transform: translateY(-1px);
+}
+.fi-reader-download-btn:active {
+  transform: translateY(0);
+}
+
+.fi-reader-stage {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+  display: flex;
+  background: #474b4e;
+  overflow: hidden;
+}
+.fi-reader-shell.theme-sepia .fi-reader-stage {
+  background: #4a3c2c;
+}
+.fi-reader-shell.theme-dark .fi-reader-stage {
+  background: #111315;
+}
+
+.fi-reader-book-frame-wrap {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+}
+.fi-book-spine-accent {
+  width: 14px;
+  background: linear-gradient(90deg, #1e293b 0%, #475569 45%, #0f172a 100%);
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.45);
+  flex-shrink: 0;
+  border-right: 1px solid rgba(255, 215, 0, 0.35);
+}
+.fi-reader-shell.theme-sepia .fi-book-spine-accent {
+  background: linear-gradient(90deg, #451a03 0%, #92400e 45%, #351402 100%);
+  border-right-color: rgba(251, 191, 36, 0.45);
+}
+.fi-reader-iframe {
+  flex: 1;
+  height: 100%;
+  border: none;
+  background: #fff;
+}
+
+.fi-reader-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 18px;
+  background: inherit;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  font-size: 12px;
+  flex-shrink: 0;
+}
+.fi-reader-shell.theme-dark .fi-reader-footer {
+  border-top-color: rgba(255, 255, 255, 0.1);
+}
+.fi-reader-shell.theme-sepia .fi-reader-footer {
+  border-top-color: rgba(67, 52, 34, 0.12);
+}
+
+.fb-read-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #ffffff;
+  background: #2F5BEA;
+  padding: 4px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  border: none;
+  transition: background 0.15s ease, transform 0.1s ease;
+}
+.fb-read-btn:hover {
+  background: #254ac5;
+  transform: translateY(-1px);
+}
+.fb-read-btn:active {
+  transform: translateY(0);
+}
+
+.fb-book-3d-wrap.is-clickable {
+  cursor: pointer;
+}
+.fi-book-read-badge {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  background: rgba(15, 23, 42, 0.88);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  white-space: nowrap;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.35);
+  border: 1px solid rgba(255,255,255,0.2);
+}
+.fb-library-card:hover .fi-book-read-badge {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
 body.fi-auth-locked, body.fi-logged-out{ overflow:hidden !important; background:#f0f2f5 !important; }
 body.fi-auth-locked > header,
 body.fi-auth-locked > #main,

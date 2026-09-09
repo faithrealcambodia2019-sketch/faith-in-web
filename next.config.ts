@@ -4,7 +4,7 @@ const contentSecurityPolicy = [
   "default-src 'self'",
   "base-uri 'self'",
   "object-src 'none'",
-  "frame-ancestors 'none'",
+  "frame-ancestors 'self'",
   "form-action 'self'",
   "script-src 'self' 'unsafe-inline' https://www.gstatic.com https://accounts.google.com https://apis.google.com",
   "style-src 'self' 'unsafe-inline' https://accounts.google.com",
@@ -15,7 +15,7 @@ const contentSecurityPolicy = [
   // realtime messaging screen when the SDK negotiates a socket rather than
   // long polling.
   "connect-src 'self' https://*.googleapis.com wss://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com https://*.supabase.co https://*.storage.supabase.co https://accounts.google.com https://bible-api.com https://auth.faithin.co",
-  "frame-src https://accounts.google.com https://*.firebaseapp.com https://auth.faithin.co",
+  "frame-src 'self' https://accounts.google.com https://*.firebaseapp.com https://auth.faithin.co",
   "worker-src 'self' blob:",
   "manifest-src 'self'",
   "upgrade-insecure-requests",
@@ -99,7 +99,7 @@ const nextConfig: NextConfig = {
         headers: [
           { key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains; preload" },
           { key: "X-Content-Type-Options", value: "nosniff" },
-          { key: "X-Frame-Options", value: "DENY" },
+          { key: "X-Frame-Options", value: "SAMEORIGIN" },
           { key: "X-XSS-Protection", value: "0" },
           { key: "X-Permitted-Cross-Domain-Policies", value: "none" },
           { key: "Origin-Agent-Cluster", value: "?1" },
