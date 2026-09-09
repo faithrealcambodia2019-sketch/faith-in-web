@@ -6,7 +6,7 @@
 <meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
 <meta content="#ffffff" media="(prefers-color-scheme: light)" name="theme-color"/>
 <meta content="#0b1120" media="(prefers-color-scheme: dark)" name="theme-color"/>
-<meta content="Books, sermons, podcasts and study plans in the Faith In library." name="description"/>
+<meta content="Books, inspiration videos, podcasts and study plans in the Faith In library." name="description"/>
 <title>Faith In — Library</title>
 <link rel="icon" type="image/svg+xml" href="/favicon.svg"/>
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/images/favicon-32x32.png"/>
@@ -71,7 +71,7 @@
           <div class="w-5 h-5 flex items-center justify-center">
             <i class="fa-solid fa-video text-red-500 text-[17px]"></i>
           </div>
-          <span class="font-medium text-[14.5px]">Sermons &amp; Videos</span>
+          <span class="font-medium text-[14.5px]">Inspiration &amp; Videos</span>
         </a>
       </li>
       <li>
@@ -88,6 +88,12 @@
 
     <h2 class="text-[16px] font-bold text-ink mt-3 mb-2 px-1">Categories</h2>
     <ul class="flex flex-col space-y-0.5" data-categories="">
+      <li>
+        <a href="/library?category=Inspiration" class="side-link flex items-center px-3 py-1.5 rounded-lg transition-colors text-[14px] font-semibold text-red-600">
+          <i class="fa-solid fa-fire mr-2 text-red-500 text-[13px]"></i>
+          <span>Inspiration</span>
+        </a>
+      </li>
       <li>
         <a href="/library?category=Matthew Henry" class="side-link flex items-center px-3 py-1.5 rounded-lg transition-colors text-[14px] font-semibold text-[#2F5BEA]">
           <i class="fa-solid fa-book-bible mr-2 text-[#2F5BEA] text-[13px]"></i>
@@ -185,7 +191,7 @@
     </a>
     <a href="/library?format=video" class="fb-filter-chip" data-format-filter="video">
       <i class="fa-solid fa-video text-red-500 text-[12px]"></i>
-      <span>Sermons &amp; Videos</span>
+      <span>Inspiration &amp; Videos</span>
     </a>
     <a href="/library?format=audio" class="fb-filter-chip" data-format-filter="audio">
       <i class="fa-solid fa-headphones text-purple-500 text-[12px]"></i>
@@ -256,7 +262,7 @@
 </main>
 <script src="/faithin-app/assets/faithin-runtime.js?v=20260909-reader"></script>
 <script src="/faithin-app/assets/faithin-blob-upload.js?v=20260909-reader"></script>
-<script src="/assets/js/faith-in-backend.js?v=20260909-videos-v1"></script>
+<script src="/assets/js/faith-in-backend.js?v=20260909-videos-v2"></script>
 <script src="/faithin-app/assets/faithin.js?v=20260909-reader"></script>
 <script>
   document.getElementById('show-more-cats')?.addEventListener('click', function () {
@@ -270,6 +276,6 @@
     }
   });
 </script>
-<script src="/faithin-app/assets/faithin-live.js?v=20260909-videos-v1"></script>
+<script src="/faithin-app/assets/faithin-live.js?v=20260909-videos-v2"></script>
 </body>
 </html>

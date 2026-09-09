@@ -731,7 +731,7 @@
     // card at their natural ratio instead of sitting inside a book shelf box.
     let coverBox = '';
     if (isMedia) {
-      const badge = format === 'video' ? 'Sermon' : 'Audio';
+      const badge = format === 'video' ? 'Inspiration' : 'Audio';
       const fallbackIcon = format === 'video' ? 'fa-video' : 'fa-headphones';
       coverBox = `<div class="fb-library-cover-box is-media is-${format}">`
         + `<button type="button" class="fi-cover-media" data-resource-play aria-label="Play ${esc(resource.title)}">`
@@ -1185,8 +1185,8 @@
         titleEl.textContent = 'PDF Books & Studies';
         if (subtitleEl) subtitleEl.textContent = 'Reading resources published by the Faith In community';
       } else if (format === 'video') {
-        titleEl.textContent = 'Sermons & Videos';
-        if (subtitleEl) subtitleEl.textContent = 'Watch teachings and sermon series';
+        titleEl.textContent = 'Inspiration & Videos';
+        if (subtitleEl) subtitleEl.textContent = 'Watch inspirational videos and teachings';
       } else if (format === 'audio') {
         titleEl.textContent = 'Podcasts & Audio';
         if (subtitleEl) subtitleEl.textContent = 'Listen to sermons and podcasts';
@@ -1261,7 +1261,7 @@
       const rows = [
         ['Resources', resources.length],
         ['PDF books', countOf('pdf')],
-        ['Sermons', countOf('video')],
+        ['Inspiration', countOf('video')],
         ['Audio', countOf('audio')],
         ['Saved by you', savedIds.size],
       ];
@@ -1393,7 +1393,7 @@
           id: 'tf-video-01-love-can-change-everything',
           title: 'Love Can Change Everything (ក្តីស្រលាញ់អាចផ្លាស់ប្តូរគ្រប់យ៉ាង)',
           description: 'ក្តីស្រលាញ់អាចផ្លាស់ប្តូរគ្រប់យ៉ាង — From True Friend Cambodia (53K views). Teaching on how God\'s love transforms hearts, lives, and relationships.',
-          category: 'Christian Living',
+          category: 'Inspiration',
           format: 'video',
           type: 'video',
           author: 'True Friend Cambodia',
@@ -1417,7 +1417,7 @@
           id: 'tf-video-02-fighting-demons',
           title: 'Fighting Demons (បណ្តេញវិញ្ញាណអាក្រក់)',
           description: 'បណ្តេញវិញ្ញាណអាក្រក់ — Biblical teaching from True Friend Cambodia on spiritual warfare, freedom in Christ, and authority over evil spirits (14K views).',
-          category: 'Spiritual Warfare',
+          category: 'Inspiration',
           format: 'video',
           type: 'video',
           author: 'True Friend Cambodia',
@@ -1441,7 +1441,7 @@
           id: 'tf-video-03-unwanted',
           title: 'Unwanted (អ្វីដែលអ្នកមិនចង់បាន)',
           description: 'អ្វីដែលអ្នកមិនចង់បាន — Encouragement and biblical perspective from True Friend Cambodia on finding peace and God\'s purpose through unexpected trials (9.7K views).',
-          category: 'Daily Devotionals',
+          category: 'Inspiration',
           format: 'video',
           type: 'video',
           author: 'True Friend Cambodia',
@@ -1465,7 +1465,7 @@
           id: 'tf-video-04-words-that-hurt',
           title: 'Words That Hurt (ពាក្យសម្តីឈឺចាប់)',
           description: 'ពាក្យសម្តីឈឺចាប់ — Teaching on the power of speech, guarding our tongue, and biblical healing from hurtful words from True Friend Cambodia (6.2K views).',
-          category: 'Christian Living',
+          category: 'Inspiration',
           format: 'video',
           type: 'video',
           author: 'True Friend Cambodia',
@@ -1489,7 +1489,7 @@
           id: 'tf-video-05-the-apple',
           title: 'The Apple — Salvation Given Freely (ផ្លែប៉ោម)',
           description: 'ផ្លែប៉ោម — An illustration and Gospel message explaining how salvation is a gift received freely through Jesus Christ from True Friend Cambodia (3.2K views).',
-          category: 'Theology',
+          category: 'Inspiration',
           format: 'video',
           type: 'video',
           author: 'True Friend Cambodia',
@@ -1513,7 +1513,7 @@
           id: 'tf-video-06-unwanted-sweet-love',
           title: 'Unwanted — When Sweet Love Turns Bitter (ក្តីស្រលាញ់ផ្អែមល្ហែមបានតែដំបូង)',
           description: 'ក្តីស្រលាញ់ផ្អែមល្ហែមបានតែដំបូង — Real-life reflection and biblical guidance on relationships, heartbreak, and finding unconditional love in God (2.2K views).',
-          category: 'Marriage and Family',
+          category: 'Inspiration',
           format: 'video',
           type: 'video',
           author: 'True Friend Cambodia',
@@ -1537,7 +1537,7 @@
           id: 'tf-video-07-does-god-exist',
           title: 'Does God Exist? (តើមានព្រះដែរឬទេ?)',
           description: 'តើមានព្រះដែរឬទេ? — Apologetics and thoughtful biblical evidence examining the existence of God from True Friend Cambodia (1K views).',
-          category: 'Apologetics',
+          category: 'Inspiration',
           format: 'video',
           type: 'video',
           author: 'True Friend Cambodia',
@@ -1561,7 +1561,7 @@
           id: 'tf-video-08-freedom-beauty-of-life',
           title: 'Freedom Is the True Beauty of Life (សេរីភាពជាភាពស្រស់ស្អាតនៃជីវិតដ៏ពិត)',
           description: 'សេរីភាពជាភាពស្រស់ស្អាតនៃជីវិតដ៏ពិត — Inspirational reflection on true spiritual freedom and inner peace through Jesus Christ (716 views).',
-          category: 'Daily Devotionals',
+          category: 'Inspiration',
           format: 'video',
           type: 'video',
           author: 'True Friend Cambodia',
@@ -1585,7 +1585,7 @@
           id: 'tf-video-09-why-am-i-poor',
           title: 'Why Am I Poor? (ហេតុអ្វីខ្ញុំក្រ)',
           description: 'ហេតុអ្វីខ្ញុំក្រ — Deep, compassionate teaching on poverty, hardship, contentment, and the true eternal wealth found in Christ (489 views).',
-          category: 'Christian Living',
+          category: 'Inspiration',
           format: 'video',
           type: 'video',
           author: 'True Friend Cambodia',
@@ -1609,7 +1609,7 @@
           id: 'tf-video-10-tired-of-everything',
           title: 'I\'m Tired of Everything (ខ្ញុំហត់នឿយហើយ)',
           description: 'ខ្ញុំហត់នឿយហើយ — A heartfelt message of comfort for when you feel exhausted and overwhelmed, pointing to Jesus\' invitation: "Come to me, all who are weary" (335 views).',
-          category: 'Daily Devotionals',
+          category: 'Inspiration',
           format: 'video',
           type: 'video',
           author: 'True Friend Cambodia',
