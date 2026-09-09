@@ -3,7 +3,7 @@ import type { NextConfig } from "next";
 const contentSecurityPolicy = [
   "default-src 'self'",
   "base-uri 'self'",
-  "object-src 'none'",
+  "object-src 'self' blob: data: https://*.supabase.co https://*.storage.supabase.co https://docs.google.com",
   "frame-ancestors 'self'",
   "form-action 'self'",
   "script-src 'self' 'unsafe-inline' https://www.gstatic.com https://accounts.google.com https://apis.google.com",
@@ -15,7 +15,7 @@ const contentSecurityPolicy = [
   // realtime messaging screen when the SDK negotiates a socket rather than
   // long polling.
   "connect-src 'self' https://*.googleapis.com wss://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com https://*.supabase.co https://*.storage.supabase.co https://accounts.google.com https://bible-api.com https://auth.faithin.co",
-  "frame-src 'self' https://accounts.google.com https://*.firebaseapp.com https://auth.faithin.co",
+  "frame-src 'self' blob: data: https://*.supabase.co https://*.storage.supabase.co https://docs.google.com https://drive.google.com https://accounts.google.com https://*.firebaseapp.com https://auth.faithin.co https://*.vercel-storage.com https://www.youtube.com https://www.youtube-nocookie.com",
   "worker-src 'self' blob:",
   "manifest-src 'self'",
   "upgrade-insecure-requests",

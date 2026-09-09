@@ -910,6 +910,13 @@
       ? resource.author.name
       : (resource.contributor_name || resource.author || 'Faith In author');
 
+    // Build absolute URL for Google Docs Viewer compatibility
+    const absUrl = /^https?:\/\//i.test(fileUrl)
+      ? fileUrl
+      : (window.location.origin + (fileUrl.startsWith('/') ? '' : '/') + fileUrl);
+    const gdocsUrl = `https://docs.google.com/viewer?embedded=true&url=${encodeURIComponent(absUrl)}`;
+    const directSrc = `${fileUrl}#toolbar=1&navpanes=1`;
+
     let chapterSelectHtml = '';
     if (resource.id === 'church-history-in-plain-language' || (resource.title && resource.title.toLowerCase().includes('church history'))) {
       chapterSelectHtml = `
@@ -1006,12 +1013,17 @@
               <button type="button" class="fi-reader-theme-btn" data-theme="dark" title="Night mode"><i class="fa-solid fa-moon"></i></button>
             </div>
 
+            <button type="button" class="fi-reader-viewer-btn" id="reader-toggle-viewer" title="Toggle between Direct PDF and Google Docs Viewer">
+              <i class="fa-solid fa-arrows-rotate"></i>
+              <span id="reader-mode-label">Google View</span>
+            </button>
+
             <button type="button" class="fi-reader-download-btn" data-reader-download title="Download full book PDF">
               <i class="fa-solid fa-download mr-1.5"></i>
               <span>Download Book</span>
             </button>
 
-            <a href="${esc(fileUrl)}" target="_blank" rel="noopener" class="icon-btn" title="Open PDF in new tab">
+            <a href="${esc(fileUrl)}" target="_blank" rel="noopener noreferrer" class="icon-btn" title="Open PDF in new tab">
               <i class="fa-solid fa-arrow-up-right-from-square"></i>
             </a>
 
@@ -1024,7 +1036,7 @@
         <div class="fi-reader-stage">
           <div class="fi-reader-book-frame-wrap">
             <div class="fi-book-spine-accent"></div>
-            <iframe class="fi-reader-iframe" id="reader-iframe" src="${esc(fileUrl)}#toolbar=1&navpanes=1" title="${esc(resource.title)}"></iframe>
+            <iframe class="fi-reader-iframe" id="reader-iframe" src="${esc(directSrc)}" title="${esc(resource.title)}" allow="fullscreen"></iframe>
           </div>
         </div>
 
@@ -1035,6 +1047,9 @@
             <span class="text-[12.5px] opacity-80"><i class="fa-solid fa-download mr-1 text-brand"></i><span data-reader-count>${Number(resource.download_count || 0)}</span> downloads</span>
           </div>
           <div class="flex items-center gap-2">
+            <a href="${esc(fileUrl)}" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline flex items-center gap-1.5">
+              <i class="fa-solid fa-arrow-up-right-from-square text-[12px]"></i><span>Open in New Tab</span>
+            </a>
             <button type="button" class="btn btn-sm btn-primary flex items-center gap-1.5" data-reader-download>
               <i class="fa-solid fa-download text-[12px]"></i><span>Download PDF</span>
             </button>
@@ -1054,6 +1069,26 @@
     document.addEventListener('keydown', onKey);
     backdrop.addEventListener('click', event => { if (event.target === backdrop) close(); });
     backdrop.querySelectorAll('[data-reader-close]').forEach(b => { b.onclick = close; });
+
+    let currentMode = 'direct';
+    const switchViewerMode = () => {
+      const iframe = backdrop.querySelector('#reader-iframe');
+      const label = backdrop.querySelector('#reader-mode-label');
+      if (!iframe) return;
+      if (currentMode === 'direct') {
+        currentMode = 'gdocs';
+        iframe.src = gdocsUrl;
+        if (label) label.textContent = 'Direct View';
+        toast('Switched to Google Docs Viewer');
+      } else {
+        currentMode = 'direct';
+        iframe.src = directSrc;
+        if (label) label.textContent = 'Google View';
+        toast('Switched to Direct PDF Viewer');
+      }
+    };
+    const viewerToggleBtn = backdrop.querySelector('#reader-toggle-viewer');
+    if (viewerToggleBtn) viewerToggleBtn.onclick = switchViewerMode;
 
     const triggerDownload = async () => {
       try {
@@ -1082,7 +1117,10 @@
         const pageNum = e.target.value;
         const iframe = backdrop.querySelector('#reader-iframe');
         if (iframe) {
+          currentMode = 'direct';
           iframe.src = `${fileUrl}#page=${pageNum}&toolbar=1&navpanes=1`;
+          const label = backdrop.querySelector('#reader-mode-label');
+          if (label) label.textContent = 'Google View';
         }
       });
     }
