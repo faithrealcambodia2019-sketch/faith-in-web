@@ -745,7 +745,6 @@
       coverBox = `<div class="fb-library-cover-box">`
         + `<div class="fb-book-3d-wrap is-clickable" ${format === 'pdf' ? 'data-resource-read title="Read ' + esc(resource.title) + '"' : 'data-resource-download title="Download ' + esc(resource.title) + '"'}>`
         + `<img src="${esc(resource.thumbnail_url)}" alt="" loading="lazy">`
-        + `<span class="fb-book-shine"></span>`
         + (format === 'pdf' ? '<span class="fi-book-read-badge"><i class="fa-solid fa-book-open"></i> Read</span>' : '')
         + `</div></div>`;
     } else {
@@ -758,7 +757,6 @@
         + `<div class="fb-book-divider"></div>`
         + `<p class="fb-book-title">${esc(resource.title)}</p>`
         + `</div></div></div>`
-        + `<span class="fb-book-shine"></span>`
         + (format === 'pdf' ? '<span class="fi-book-read-badge"><i class="fa-solid fa-book-open"></i> Read</span>' : '')
         + `</div></div>`;
     }
@@ -1049,25 +1047,15 @@
     document.body.appendChild(backdrop);
 
     const onKey = event => { if (event.key === 'Escape') close(); };
-    let isClosing = false;
     function close() {
-      if (isClosing) return;
-      isClosing = true;
       document.removeEventListener('keydown', onKey);
-      backdrop.classList.add('is-closing');
-      setTimeout(() => { backdrop.remove(); }, 220);
+      backdrop.remove();
     }
     document.addEventListener('keydown', onKey);
     backdrop.addEventListener('click', event => { if (event.target === backdrop) close(); });
     backdrop.querySelectorAll('[data-reader-close]').forEach(b => { b.onclick = close; });
 
-    const triggerDownload = async (btn) => {
-      const originalHtml = btn ? btn.innerHTML : null;
-      if (btn) {
-        btn.classList.add('is-downloading');
-        const span = btn.querySelector('span');
-        if (span) span.textContent = 'Downloading...';
-      }
+    const triggerDownload = async () => {
       try {
         const result = await api.request('cv_download_resource', { resource_id: resource.id });
         resource.download_count = (resource.download_count || 0) + 1;
@@ -1081,57 +1069,18 @@
         document.body.appendChild(a);
         a.click();
         a.remove();
-        if (btn) {
-          const span = btn.querySelector('span');
-          if (span) span.textContent = 'Downloaded!';
-          setTimeout(() => {
-            btn.classList.remove('is-downloading');
-            if (originalHtml) btn.innerHTML = originalHtml;
-          }, 2000);
-        }
         toast('Downloading book...');
       } catch (err) {
-        if (btn) {
-          btn.classList.remove('is-downloading');
-          if (originalHtml) btn.innerHTML = originalHtml;
-        }
         window.open(fileUrl, '_blank', 'noopener');
       }
     };
-    backdrop.querySelectorAll('[data-reader-download]').forEach(b => {
-      b.onclick = (e) => {
-        e.preventDefault();
-        triggerDownload(b);
-      };
-    });
+    backdrop.querySelectorAll('[data-reader-download]').forEach(b => { b.onclick = triggerDownload; });
 
     const chSelect = backdrop.querySelector('#reader-chapter-select');
     if (chSelect) {
       chSelect.addEventListener('change', (e) => {
         const pageNum = e.target.value;
         const iframe = backdrop.querySelector('#reader-iframe');
-        const stage = backdrop.querySelector('.fi-reader-stage');
-        if (stage) {
-          let curlOverlay = stage.querySelector('.fi-page-turn-overlay');
-          if (!curlOverlay) {
-            curlOverlay = document.createElement('div');
-            curlOverlay.className = 'fi-page-turn-overlay';
-            stage.appendChild(curlOverlay);
-          }
-          curlOverlay.classList.remove('is-turning');
-          void curlOverlay.offsetWidth;
-          curlOverlay.classList.add('is-turning');
-
-          const opt = chSelect.options[chSelect.selectedIndex];
-          const label = opt ? opt.textContent.trim() : `Page ${pageNum}`;
-          let toastEl = stage.querySelector('.fi-chapter-toast');
-          if (toastEl) toastEl.remove();
-          toastEl = document.createElement('div');
-          toastEl.className = 'fi-chapter-toast';
-          toastEl.innerHTML = `<i class="fa-solid fa-book-open mr-2 text-blue-400"></i>${esc(label)}`;
-          stage.appendChild(toastEl);
-          setTimeout(() => { toastEl?.remove(); }, 2500);
-        }
         if (iframe) {
           iframe.src = `${fileUrl}#page=${pageNum}&toolbar=1&navpanes=1`;
         }
@@ -1430,7 +1379,6 @@
       const button = event.target.closest('[data-resource-download]');
       if (button) {
         event.preventDefault();
-        button.classList.add('is-downloading');
         const resource = rendered.find(item => item.id === row.dataset.resourceId) || resources.find(item => item.id === row.dataset.resourceId);
         try {
           const result = await api.request('cv_download_resource', { resource_id: row.dataset.resourceId });
@@ -1453,8 +1401,6 @@
         } catch (_) {
           const fallbackUrl = resource ? (resource.download_url || resource.file_url) : '';
           if (fallbackUrl) window.open(fallbackUrl, '_blank', 'noopener');
-        } finally {
-          setTimeout(() => { button.classList.remove('is-downloading'); }, 1400);
         }
         return;
       }
