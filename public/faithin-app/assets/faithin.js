@@ -127,15 +127,15 @@
 
           <div class="relative ml-1" data-menu-root>
             <button class="flex items-center gap-1.5 rounded-pill p-0.5 pr-1.5 hover:bg-raised transition${['profile','settings','studio'].includes(page) ? ' ring-2 ring-brand ring-offset-2 ring-offset-surface' : ''}" data-menu-btn aria-haspopup="menu" aria-expanded="false">
-              <span class="avatar w-8 h-8 text-[12px]" style="background:linear-gradient(135deg,#2f5bea,#1e40af)">HC</span>
+              <span class="avatar w-8 h-8 text-[12px]" data-current-user-avatar style="background:linear-gradient(135deg,#2f5bea,#1e40af)">HC</span>
               <i class="fa-solid fa-chevron-down text-[10px] text-faint"></i>
             </button>
             <div class="absolute right-0 mt-2 w-60 card shadow-pop p-1.5 hidden animate-pop-in" data-menu data-account-menu role="menu">
               <div class="px-3 py-2.5 flex items-center gap-3 border-b border-line mb-1.5">
-                <span class="avatar w-10 h-10 text-[13px]" style="background:linear-gradient(135deg,#2f5bea,#1e40af)">HC</span>
+                <span class="avatar w-10 h-10 text-[13px]" data-current-user-avatar style="background:linear-gradient(135deg,#2f5bea,#1e40af)">HC</span>
                 <div class="min-w-0">
-                  <p class="text-[14px] font-semibold truncate">Hun Chet</p>
-                  <p class="text-[12px] text-muted truncate">Faith In member</p>
+                  <p class="text-[14px] font-semibold truncate" data-current-user-name>Hun Chet</p>
+                  <p class="text-[12px] text-muted truncate" data-current-user-headline>Faith In member</p>
                 </div>
               </div>
               <a href="/profile" class="side-link${page === 'profile' ? ' is-active' : ''}" role="menuitem"><i class="fa-regular fa-user"></i>View profile</a>

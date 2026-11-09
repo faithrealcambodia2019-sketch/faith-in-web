@@ -561,8 +561,11 @@
       document.getElementById('fi-global-bubble-launcher')?.remove();
     }
     if (page !== 'profile') {
-      $$('a, h1, h2').filter(node => node.textContent.trim() === 'Hun Chet' || node.hasAttribute('data-current-user-name')).forEach(node => {
+      $$('a, h1, h2, h3, p').filter(node => node.textContent.trim() === 'Hun Chet' || node.hasAttribute('data-current-user-name')).forEach(node => {
         node.innerHTML = esc(displayName) + (session ? verificationBadgeMarkup(session) : '');
+      });
+      $$('[data-current-user-headline]').forEach(node => {
+        node.textContent = session ? (session.role || session.headline || 'Faith In member') : 'Christian community';
       });
       $$('p').filter(node => /Faith In member\s*·\s*Phnom Penh/i.test(node.textContent)).forEach(node => { node.textContent = session ? ['Faith In member', session.location].filter(Boolean).join(' · ') : 'Sign in to join the community'; });
       $$('.avatar').filter(node => node.textContent.trim() === 'HC' || node.textContent.trim() === 'FI').forEach(node => { if (!node.closest('[data-post-id],[data-user-uid]')) node.textContent = api.initials(displayName); });
