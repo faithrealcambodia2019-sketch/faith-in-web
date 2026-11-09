@@ -5,6 +5,17 @@ import nextTypeScript from "eslint-config-next/typescript";
 export default defineConfig([
   ...nextVitals,
   ...nextTypeScript,
+  {
+    rules: {
+      "@typescript-eslint/no-unused-vars": [
+        "warn",
+        {
+          argsIgnorePattern: "^_",
+          varsIgnorePattern: "^_",
+        },
+      ],
+    },
+  },
   globalIgnores([
     ".next/**",
     "out/**",
@@ -13,5 +24,6 @@ export default defineConfig([
     // The visual runtime is versioned as a browser asset while it is migrated
     // feature-by-feature into typed React modules.
     "public/assets/js/**",
+    "public/faithin-app/assets/**",
   ]),
 ]);

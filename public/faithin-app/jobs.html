@@ -22,12 +22,16 @@
 <!-- ───── LEFT RAIL ───── -->
 <aside class="hidden lg:block lg:sticky lg:top-[72px] space-y-4">
 <nav class="card p-2 space-y-0.5">
-<a class="side-link" href="/jobs?view=saved"><i class="fa-solid fa-bookmark text-blue-500"></i>My jobs</a>
-
-
-
+<a class="side-link" href="/jobs"><i class="fa-solid fa-briefcase text-emerald-600"></i>All roles</a>
+<a class="side-link" href="/jobs?view=saved"><i class="fa-solid fa-bookmark text-blue-500"></i>My saved jobs</a>
+<a class="side-link" href="/profile"><i class="fa-solid fa-user text-indigo-500"></i>My ministry profile</a>
 <a class="side-link" href="/settings"><i class="fa-solid fa-gear text-muted"></i>Application settings</a>
 </nav>
+<section class="card p-4 space-y-2">
+<h3 class="text-[13.5px] font-bold text-ink">Hiring for Ministry?</h3>
+<p class="text-[12px] text-muted leading-relaxed">Reach passionate believers ready to serve in your church, school, or non-profit.</p>
+<button class="btn btn-primary w-full !py-2 text-[13px] mt-1" onclick="document.querySelector('header button')?.click()">Post a role</button>
+</section>
 </aside>
 <!-- ───── CENTER ───── -->
 <section class="space-y-4 min-w-0">
@@ -70,6 +74,25 @@
 </section>
 <!-- ───── RIGHT RAIL ───── -->
 <aside class="hidden xl:block xl:sticky xl:top-[72px] space-y-4">
+<section class="card p-4 space-y-3">
+<h3 class="text-[14.5px] font-bold text-ink flex items-center gap-2">
+<i class="fa-solid fa-lightbulb text-amber-500 text-[14px]"></i>Job seeker tips
+</h3>
+<ul class="text-[12.5px] text-muted space-y-2 leading-relaxed">
+<li class="flex items-start gap-2">
+<i class="fa-solid fa-check text-emerald-500 text-[11px] mt-1 shrink-0"></i>
+<span>Keep your profile headline &amp; location updated for local search.</span>
+</li>
+<li class="flex items-start gap-2">
+<i class="fa-solid fa-check text-emerald-500 text-[11px] mt-1 shrink-0"></i>
+<span>Attach your ministry portfolio or sermon links in your bio.</span>
+</li>
+<li class="flex items-start gap-2">
+<i class="fa-solid fa-check text-emerald-500 text-[11px] mt-1 shrink-0"></i>
+<span>Connect directly with church leaders and ministry teams.</span>
+</li>
+</ul>
+</section>
 <footer class="px-2 pb-4 text-center space-y-2">
 <p class="text-[11.5px] text-muted">
 <a class="hover:text-brand hover:underline" href="/about">About</a> 

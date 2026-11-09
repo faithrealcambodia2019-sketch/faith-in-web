@@ -6,13 +6,8 @@ import {
   BookOpen,
   Globe,
   Shield,
-  Heart,
   CheckCircle2,
-  Users,
   Target,
-  Zap,
-  MapPin,
-  Mail,
   Building,
 } from "lucide-react";
 

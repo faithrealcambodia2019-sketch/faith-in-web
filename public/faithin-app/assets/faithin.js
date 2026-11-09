@@ -29,19 +29,28 @@
   ];
 
   /* ── theme ──────────────────────────────────────────────────────────────────
-     Three modes: 'system' (default), 'light', 'dark'. Held in memory only —
-     persist it server-side with the user's account preferences.
+     Three modes: 'system' (default), 'light', 'dark'. Persisted in localStorage
+     and synced with the user's account preferences.
      ------------------------------------------------------------------------ */
   const root = document.documentElement;
   const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
   let themeMode = 'system';
+  try {
+    themeMode = localStorage.getItem('fi_theme') || 'system';
+  } catch (_) {}
 
   function applyTheme() {
     const dark = themeMode === 'dark' || (themeMode === 'system' && prefersDark.matches);
     root.classList.toggle('dark', dark);
     document.dispatchEvent(new CustomEvent('fi:theme', { detail: { mode: themeMode, dark } }));
   }
-  function setTheme(mode) { themeMode = mode; applyTheme(); }
+  function setTheme(mode) {
+    themeMode = mode;
+    try {
+      localStorage.setItem('fi_theme', mode);
+    } catch (_) {}
+    applyTheme();
+  }
   prefersDark.addEventListener('change', () => { if (themeMode === 'system') applyTheme(); });
   applyTheme();
 
